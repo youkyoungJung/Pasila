@@ -1,7 +1,11 @@
 <script setup></script>
 
 <template>
-  <div>아아, 여기는 home입니다.</div>
+  <div class="title">아아, 여기는 home입니다.</div>
 </template>
 
-<style scoped></style>
+<style lang="scss">
+.title {
+  @include font-factory($fs-5, bold);
+}
+</style>

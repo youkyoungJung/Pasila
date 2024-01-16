@@ -1,0 +1,29 @@
+$main: #ff495c;
+$yellow: #f4ff19;
+$orange: #ff8000;
+$gray: #cecece;
+$dark: #3c3c3c;
+
+// font
+$noto: 'Noto Sans KR';
+
+$fs-1: 16px;
+$fs-2: 18px;
+$fs-3: 20px;
+$fs-4: 32px;
+$fs-5: 40px;
+
+@mixin font-factory($size, $weight, $color: $dark) {
+  font-family: $noto;
+  font-size: $size;
+  font-weight: $weight;
+  color: $color;
+}
+
+//flex-box - default: row
+@mixin flex-box($align, $justify, $direction: row) {
+  display: flex;
+  flex-direction: $direction;
+  align-items: $align;
+  justify-content: $justify;
+}
