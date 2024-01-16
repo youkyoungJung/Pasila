@@ -94,17 +94,27 @@ class TextStyleTransferDataset(Dataset):
 
     return model_inputs
 
-row_data = {"messages": []}
+data = []
 
-#for i in range(0, df.shape[0]):
-for i in range(2666, 26667):
+for i in range(0, df.shape[0]):
   row = df.iloc[i].dropna()
-  print(row)
-  #for j in range(1, )
+  formal_text = row[0]
 
-  #formal = df.iloc[i, ]
+  for j in range(1, row.size):
+    row_data = {"messages": []}
+    target_style = row.index[j]
+    target_style_name = style_map[target_style]
+    target_style_text = row[j]
 
-  #row_data["messages"].append()
+    row_data["messages"].extend([
+        {"role": "system", "content": f"내가 말하는 말을 {target_style_name} 말투로 말해줘."},
+        {"role": "user", "content": f"{formal_text}"},
+        {"role": "assistant", "content": f"{row[j]}"}
+    ])
+    data.append(row_data)
 
 
-#row = df.iloc[:].dropna()
+import json 
+
+with open("style_jsonl.jsonl" , encoding= "utf-8",mode="w") as file:
+for i in data: file.write(json.dumps(i) + "\n")
