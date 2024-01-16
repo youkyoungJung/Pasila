@@ -1,4 +1,4 @@
-package org.ssafy.pasila.global.gpt3.model;
+package org.ssafy.pasila.global.infra.gpt3.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,14 +8,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Message {
-
     private String content;
-
     private String role;
 
     public Message(String role, String prompt) {
         this.role = role;
         this.content = prompt;
     }
-
 }
