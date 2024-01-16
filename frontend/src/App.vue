@@ -1,9 +1,10 @@
 <script setup>
 import { RouterView } from 'vue-router'
+import VHeader from '@/components/common/VHeader.vue'
 </script>
 
 <template>
-  <header></header>
+  <v-header />
   <RouterView />
 </template>
 
