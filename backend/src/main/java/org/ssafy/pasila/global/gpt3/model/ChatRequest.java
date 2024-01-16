@@ -1,6 +1,5 @@
-package org.ssafy.pasila.global.model;
+package org.ssafy.pasila.global.gpt3.model;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

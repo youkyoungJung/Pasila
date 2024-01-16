@@ -1,4 +1,4 @@
-package org.ssafy.pasila.global.config;
+package org.ssafy.pasila.global.gpt3.config;
 
 
 import org.springframework.beans.factory.annotation.Qualifier;

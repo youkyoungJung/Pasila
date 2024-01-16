@@ -1,4 +1,4 @@
-package org.ssafy.pasila.global.controller;
+package org.ssafy.pasila.global.gpt3.controller;
 
 
 import lombok.extern.slf4j.Slf4j;
@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.ssafy.pasila.global.model.ChatRequest;
-import org.ssafy.pasila.global.model.ChatResponse;
+import org.ssafy.pasila.global.gpt3.model.ChatRequest;
+import org.ssafy.pasila.global.gpt3.model.ChatResponse;
 
 
 @RestController
