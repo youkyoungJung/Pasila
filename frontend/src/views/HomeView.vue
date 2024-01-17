@@ -1,7 +1,13 @@
-<script setup></script>
+<script setup>
+import VCategory from '@/components/common/VCategory.vue';
+import VAll from '@/components/category/VAll.vue';
+</script>
 
 <template>
-  <div class="title">아아, 여기는 home입니다.</div>
+  <div>
+    <VCategory />
+    <VAll />
+  </div>
 </template>
 
 <style lang="scss">
