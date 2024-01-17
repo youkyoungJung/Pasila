@@ -3,10 +3,7 @@ package org.ssafy.pasila.domain.product.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jdk.jfr.Label;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -17,29 +14,28 @@ import java.util.Date;
  * JPA 테이블 생성
  */
 @Entity
-@Lazy
-@Table(name="Product")
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
+@Table(name = "product")
+@Getter
+@Setter
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty
-    private int id;
+    @GeneratedValue
+    private Long id;
 
-    @Column(nullable = false)
-    @JsonProperty
-    private String sellerId;
-    private int largeCategoryId;
-    private int middleCategoryId;
-    private int detailCategoryId;
+    private String seller_id;
 
-    @Column(nullable = false)
-    @JsonProperty
+//    @ManyToOne
+//    private LargeCategory largeCategory_id;
+//    @ManyToOne
+//    private MiddleCategory middleCategory_id;
+//    @ManyToOne
+//    private DetailCategory detailCategory_id;
+
     private String name;
-    private String desc;
+    private String description;
     private Date created_at;
+    private Date updated_at;
+    private String thumbnail;
 
 }
