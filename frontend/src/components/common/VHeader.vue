@@ -11,11 +11,13 @@ const goHome = () => {
 
 <template>
   <header>
-    <img src="@/assets/img/pasila-logo.png" alt="logo" @click="goHome()" class="logo" />
+    <router-link to="/">
+      <img src="@/assets/img/pasila-logo.png" alt="logo" @click="goHome()" class="logo" />
+    </router-link>
     <div class="menu">
       <v-search></v-search>
       <nav>
-        <router-link to="">
+        <router-link to="/">
           <span class="icon-color">
             <font-awesome-icon icon="fa-regular fa-calendar-check" size="2x" />
           </span>
