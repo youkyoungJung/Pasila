@@ -11,7 +11,7 @@
 .search-box {
   @include box(20rem, 2rem, $soft-pink, 2rem, 0, 0.3rem 1rem);
   @include flex-box(center, space-between);
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25) inset;
+  @include inset-shadow();
   input {
     @include font-factory($fs-1, 400, $light-dark);
     background: none;
