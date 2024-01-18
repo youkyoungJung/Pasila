@@ -1,21 +1,16 @@
 package org.ssafy.pasila.domain.product.controller;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.product.dto.ProductRequest;
 import org.ssafy.pasila.domain.product.entity.DetailCategory;
 import org.ssafy.pasila.domain.product.entity.LargeCategory;
 import org.ssafy.pasila.domain.product.entity.MiddleCategory;
 import org.ssafy.pasila.domain.product.entity.Product;
-import org.ssafy.pasila.domain.product.repository.DetailCategoryRepository;
-import org.ssafy.pasila.domain.product.repository.LargeCategoryRepository;
-import org.ssafy.pasila.domain.product.repository.MiddleCategoryRepository;
-import org.ssafy.pasila.domain.product.repository.ProductRepository;
+import org.ssafy.pasila.domain.product.repository.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +25,9 @@ public class ProductController {
     private final LargeCategoryRepository largeCategoryRepository;
     private final MiddleCategoryRepository middleCategoryRepository;
     private final DetailCategoryRepository detailCategoryRepository;
+    private final ProductJoinRepository productJoinRepository;
 
+    // Product 생성
     // Product 생성
     @PostMapping("/product")
     public ResponseEntity<Product> createProduct(@RequestBody ProductRequest productRequest) {
@@ -62,5 +59,18 @@ public class ProductController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
+
+    @GetMapping("/product")
+    public List<Product> getAllProducts() {
+//        List<Product> result = productRepository.findAllFetchJoin();
+//
+//        log.info("result: {}", result);
+//        return result;
+//        return productJoinRepository.findAllWithLargeCategory();
+        List<Product> result = productRepository.findAllWithCategories();
+
+        return productRepository.findAllWithCategories();
+    }
+
 
 }

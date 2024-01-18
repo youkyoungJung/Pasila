@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-
+@Table(name = "large_category")
 public class LargeCategory {
 
     @Id
@@ -23,6 +23,6 @@ public class LargeCategory {
     String imageUrl;
 
     @OneToMany(mappedBy = "largeCategory", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products = new ArrayList<>();
+    private List<Product> products;
 
 }

@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Product Entity 파일
@@ -15,7 +16,7 @@ import java.util.Date;
 @Table(name = "product")
 @Getter
 @Setter
-
+@ToString
 public class Product {
 
     @Id
@@ -52,9 +53,36 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+
     private String thumbnail;
+
+//    @Transient
+//    @Column(name = "large_category_id")
+//    private Long largeCategoryId;
+//
+//    @Transient
+//    @Column(name = "middle_category_id")
+//    private Long middleCategoryId;
+//
+//    @Transient
+//    @Column(name = "detail_category_id")
+//    private Long detailCategoryId;
 
     //==관련 메서드 ==//
 
+//    @PostLoad
+//    private void onLoad() {
+//        if (largeCategory != null) {
+//            largeCategoryId = largeCategory.getId();
+//        }
+//
+//        if (middleCategory != null) {
+//            middleCategoryId = middleCategory.getId();
+//        }
+//
+//        if (detailCategory != null) {
+//            detailCategoryId = detailCategory.getId();
+//        }
+//    }
 
 }
