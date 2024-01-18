@@ -3,6 +3,7 @@ import LiveCamera from '@/components/live/LiveCamera.vue'
 import LiveScript from '@/components/live/LiveScript.vue'
 import LiveStock from '@/components/live/LiveStock.vue'
 import LiveChat from '@/components/live/LiveChat.vue'
+import LiveQuestion from '@/components/live/LiveQuestion.vue'
 </script>
 
 <template>
@@ -15,7 +16,9 @@ import LiveChat from '@/components/live/LiveChat.vue'
       <live-stock></live-stock>
       <live-chat></live-chat>
     </section>
-    <section class="col-3"></section>
+    <section class="col-3">
+      <live-question></live-question>
+    </section>
   </div>
 </template>
 
@@ -28,10 +31,11 @@ import LiveChat from '@/components/live/LiveChat.vue'
     padding: 0 1rem 0 0;
   }
   .col-2 {
-    width: 20%;
+    width: 25%;
+    padding: 0 1rem 0 0;
   }
   .col-3 {
-    width: 30%;
+    width: 25%;
   }
 }
 </style>
