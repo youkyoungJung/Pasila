@@ -5,14 +5,15 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import {
   faMagnifyingGlass,
   faCircleChevronLeft,
-  faCircleChevronRight
+  faCircleChevronRight,
+  faPaperPlane
 } from '@fortawesome/free-solid-svg-icons'
 import { faCalendarCheck, faUser } from '@fortawesome/free-regular-svg-icons'
 
 import App from './App.vue'
 import router from './router'
 
-library.add(faMagnifyingGlass, faCircleChevronLeft, faCircleChevronRight)
+library.add(faMagnifyingGlass, faCircleChevronLeft, faCircleChevronRight, faPaperPlane)
 library.add(faCalendarCheck, faUser)
 
 const app = createApp(App)

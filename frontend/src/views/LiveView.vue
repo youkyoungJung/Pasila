@@ -28,10 +28,10 @@ import LiveChat from '@/components/live/LiveChat.vue'
     padding: 0 1rem 0 0;
   }
   .col-2 {
-    width: 25%;
+    width: 20%;
   }
   .col-3 {
-    width: 25%;
+    width: 30%;
   }
 }
 </style>
