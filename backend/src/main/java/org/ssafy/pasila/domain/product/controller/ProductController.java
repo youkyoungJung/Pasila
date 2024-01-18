@@ -14,6 +14,7 @@ import org.ssafy.pasila.domain.product.repository.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -29,47 +30,64 @@ public class ProductController {
 
     // Product 생성
     // Product 생성
-    @PostMapping("/product")
-    public ResponseEntity<Product> createProduct(@RequestBody ProductRequest productRequest) {
-
-        log.info("largeCategoryId: {}", productRequest.getLargeCategoryId());
-        Product product = productRequest.getProduct();
-        Long largeCategoryId = productRequest.getLargeCategoryId();
-        Long middleCategoryId = productRequest.getMiddleCategoryId();
-        Long detailCategoryId = productRequest.getDetailCategoryId();
-
-        // category 없을 경우 예외 발생
-        LargeCategory largeCategory = largeCategoryRepository.findById(largeCategoryId)
-                .orElseThrow(() -> new RuntimeException("LargeCategory not found"));
-        MiddleCategory middleCategory = middleCategoryRepository.findById(middleCategoryId)
-                .orElseThrow(() -> new RuntimeException("MiddleCategory not found"));
-        DetailCategory detailCategory = detailCategoryRepository.findById(detailCategoryId)
-                .orElseThrow(() -> new RuntimeException("DetailCategory not found"));
-
-        // product에 categoryId 주입
-        product.setLargeCategory(largeCategory);
-        product.setMiddleCategory(middleCategory);
-        product.setDetailCategory(detailCategory);
-
-        // 생성 시간 저장
-        product.setCreatedAt(LocalDateTime.now());
-
-        // repository를 통한 저장
-        Product savedProduct = productRepository.save(product);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
-    }
+//    @PostMapping("/product")
+//    public ResponseEntity<Product> createProduct(@RequestBody ProductRequest productRequest) {
+//
+//        log.info("largeCategoryId: {}", productRequest.getLargeCategoryId());
+//        Product product = productRequest.getProduct();
+//        Long largeCategoryId = productRequest.getLargeCategoryId();
+//        Long middleCategoryId = productRequest.getMiddleCategoryId();
+//        Long detailCategoryId = productRequest.getDetailCategoryId();
+//
+//        // category 없을 경우 예외 발생
+//        LargeCategory largeCategory = largeCategoryRepository.findById(largeCategoryId)
+//                .orElseThrow(() -> new RuntimeException("LargeCategory not found"));
+//        MiddleCategory middleCategory = middleCategoryRepository.findById(middleCategoryId)
+//                .orElseThrow(() -> new RuntimeException("MiddleCategory not found"));
+//        DetailCategory detailCategory = detailCategoryRepository.findById(detailCategoryId)
+//                .orElseThrow(() -> new RuntimeException("DetailCategory not found"));
+//
+//        // product에 categoryId 주입
+//        product.setLargeCategory(largeCategory);
+//        product.setMiddleCategory(middleCategory);
+//        product.setDetailCategory(detailCategory);
+//
+//        // 생성 시간 저장
+//        product.setCreatedAt(LocalDateTime.now());
+//
+//        // repository를 통한 저장
+//        Product savedProduct = productRepository.save(product);
+//
+//        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
+//    }
 
     @GetMapping("/product")
-    public List<Product> getAllProducts() {
+    public List<ProductRequest> getAllProducts() {
 //        List<Product> result = productRepository.findAllFetchJoin();
 //
 //        log.info("result: {}", result);
 //        return result;
 //        return productJoinRepository.findAllWithLargeCategory();
-        List<Product> result = productRepository.findAllWithCategories();
-
-        return productRepository.findAllWithCategories();
+//        List<Product> result = productRepository.findAllWithCategories();
+//        List<ProductRequest> productRequests = result.stream()
+//                .map(product -> {
+//                    ProductRequest productRequest = new ProductRequest();
+//                    productRequest.setId(product.getId());
+//                    productRequest.setSellerId(product.getSellerId());
+//                    productRequest.setLargeCategoryId(product.getLargeCategory().getId());
+//                    productRequest.setMiddleCategoryId(product.getMiddleCategory().getId());
+//                    productRequest.setDetailCategoryId(product.getDetailCategory().getId());
+//                    productRequest.setName(product.getName());
+//                    productRequest.setDescription(product.getDescription());
+//                    productRequest.setCreatedAt(product.getCreatedAt());
+//                    productRequest.setUpdatedAt(product.getUpdatedAt());
+//                    productRequest.setThumbnail(product.getThumbnail());
+//                    return productRequest;
+//                })
+//                .toList();
+//
+//        return productRequests;
+        return productJoinRepository.findAllWithLargeCategory();
     }
 
 
