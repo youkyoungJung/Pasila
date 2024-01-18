@@ -1,9 +1,6 @@
 package org.ssafy.pasila.domain.product.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,10 +10,12 @@ import lombok.Setter;
 public class DetailCategory {
 
     @Id
-    @GeneratedValue
-    @Column(name = "id")
+    @Column(name = "detail_category_id")
     Long id;
-    Long middlecategory_id;
+
+    @ManyToOne
+    @JoinColumn(name = "middle_category_id")
+    MiddleCategory middleCategory;
     String name;
 
 }

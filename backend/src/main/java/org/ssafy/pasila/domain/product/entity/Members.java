@@ -11,21 +11,30 @@ import java.util.Date;
 @Setter
 public class Members {
     @Id
+    @Column(name="members_id")
     @GeneratedValue
     Long id;
     String email;
     String name;
     String channel;
+
+    @Column(name="get_channel_desc")
     String getChannelDesc;
+
     String password;
     String phone;
     String address;
-    String address_detail;
+
+    @Column(name = "address_detail")
+    String addressDetail;
     boolean gender;
     Date birth;
     String bank;
     String profile;
+
+    @Column(name = "create_at")
     Date createAt;
+
     String token;
 
 }
