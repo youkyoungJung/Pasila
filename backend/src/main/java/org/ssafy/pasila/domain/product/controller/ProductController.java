@@ -1,20 +1,16 @@
 package org.ssafy.pasila.domain.product.controller;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.product.dto.ProductRequest;
-import org.ssafy.pasila.domain.product.entity.DetailCategory;
-import org.ssafy.pasila.domain.product.entity.LargeCategory;
-import org.ssafy.pasila.domain.product.entity.MiddleCategory;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -29,66 +25,53 @@ public class ProductController {
     private final ProductJoinRepository productJoinRepository;
 
     // Product 생성
-    // Product 생성
 //    @PostMapping("/product")
-//    public ResponseEntity<Product> createProduct(@RequestBody ProductRequest productRequest) {
+//    public void createProduct(@RequestBody ProductRequest productRequest) {
 //
-//        log.info("largeCategoryId: {}", productRequest.getLargeCategoryId());
-//        Product product = productRequest.getProduct();
-//        Long largeCategoryId = productRequest.getLargeCategoryId();
-//        Long middleCategoryId = productRequest.getMiddleCategoryId();
-//        Long detailCategoryId = productRequest.getDetailCategoryId();
+////        Long largeCategoryId = productRequest.getLargeCategoryId();
+////        Long middleCategoryId = productRequest.getMiddleCategoryId();
+////        Long detailCategoryId = productRequest.getDetailCategoryId();
 //
-//        // category 없을 경우 예외 발생
-//        LargeCategory largeCategory = largeCategoryRepository.findById(largeCategoryId)
-//                .orElseThrow(() -> new RuntimeException("LargeCategory not found"));
-//        MiddleCategory middleCategory = middleCategoryRepository.findById(middleCategoryId)
-//                .orElseThrow(() -> new RuntimeException("MiddleCategory not found"));
-//        DetailCategory detailCategory = detailCategoryRepository.findById(detailCategoryId)
-//                .orElseThrow(() -> new RuntimeException("DetailCategory not found"));
-//
-//        // product에 categoryId 주입
-//        product.setLargeCategory(largeCategory);
-//        product.setMiddleCategory(middleCategory);
-//        product.setDetailCategory(detailCategory);
-//
-//        // 생성 시간 저장
-//        product.setCreatedAt(LocalDateTime.now());
+////        Product product = getProduct(largeCategoryId, middleCategoryId, detailCategoryId);
 //
 //        // repository를 통한 저장
-//        Product savedProduct = productRepository.save(product);
-//
-//        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
+//        productJoinRepository.save(productRequest);
 //    }
 
     @GetMapping("/product")
     public List<ProductRequest> getAllProducts() {
-//        List<Product> result = productRepository.findAllFetchJoin();
-//
-//        log.info("result: {}", result);
-//        return result;
-//        return productJoinRepository.findAllWithLargeCategory();
-//        List<Product> result = productRepository.findAllWithCategories();
-//        List<ProductRequest> productRequests = result.stream()
-//                .map(product -> {
-//                    ProductRequest productRequest = new ProductRequest();
-//                    productRequest.setId(product.getId());
-//                    productRequest.setSellerId(product.getSellerId());
-//                    productRequest.setLargeCategoryId(product.getLargeCategory().getId());
-//                    productRequest.setMiddleCategoryId(product.getMiddleCategory().getId());
-//                    productRequest.setDetailCategoryId(product.getDetailCategory().getId());
-//                    productRequest.setName(product.getName());
-//                    productRequest.setDescription(product.getDescription());
-//                    productRequest.setCreatedAt(product.getCreatedAt());
-//                    productRequest.setUpdatedAt(product.getUpdatedAt());
-//                    productRequest.setThumbnail(product.getThumbnail());
-//                    return productRequest;
-//                })
-//                .toList();
-//
-//        return productRequests;
-        return productJoinRepository.findAllWithLargeCategory();
+
+        return productJoinRepository.findAllWithCategory();
     }
+
+    @GetMapping("/product/{id}")
+    public Optional<Product> getProduct(@PathVariable("id") Long id){
+        return productRepository.findById(id);
+    }
+
+//    @PutMapping("/product/{id}")
+//    public UpdateProductResponse updateProduct(@PathVariable("id") Long id, @Valid UpdateProductRequest request){
+//
+////       return new UpdateMemberResponse()
+//    }
+
+    @Data
+    @AllArgsConstructor
+    static class UpdateProductResponse{
+
+            private Long id;
+            private String name;
+    }
+
+    @Data
+    static class UpdateProductRequest{
+
+        private String name;
+    }
+
+
+
+
 
 
 }

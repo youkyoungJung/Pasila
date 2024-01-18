@@ -25,9 +25,9 @@ public class ProductRequest {
 //    private Product product;
 
     private Long id;
-//    private Long sellerId;
-//    private String name;
-//    private String description;
+    private Long sellerId;
+    private String name;
+    private String description;
 //    private LocalDateTime createdAt;
 //    private LocalDateTime updatedAt;
 //    private String thumbnail;

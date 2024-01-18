@@ -15,19 +15,16 @@ import java.util.List;
 public class ProductJoinRepository {
     private final EntityManager em;
 
-//             return em.createQuery(
-//                     "select new jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryDto(o.id, m.name, o.orderDate, o.status, d.address)" +
-//                     " from Order o" +
-//                     " join o.member m" +
-//                     " join o.delivery d", OrderSimpleQueryDto.class)
-
-    public List<ProductRequest> findAllWithLargeCategory() {
+    public List<ProductRequest> findAllWithCategory() {
         return em.createQuery(
-                        "SELECT new org.ssafy.pasila.domain.product.dto.ProductRequest(p.id, l.id, m.id) " +
+                        "SELECT new org.ssafy.pasila.domain.product.dto.ProductRequest" +
+                                "(p.id, p.sellerId, p.name, p.description, " +
+                                "l.id, m.id) " +
                                 "FROM Product p " +
                                 "join p.largeCategory l " +
-                                "join p.middleCategory m" ,  ProductRequest.class)
+                                "join p.middleCategory m",  ProductRequest.class)
                 .getResultList();
     }
+
 
 }
