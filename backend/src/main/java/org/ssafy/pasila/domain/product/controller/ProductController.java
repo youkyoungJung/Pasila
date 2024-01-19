@@ -50,13 +50,14 @@ public class ProductController {
         return productJoinRepository.findAllWithCategory();
     }
 
-    //id 에 따른 상품 조회,
+    // id 에 따른 상품 조회,
     // 추후 카테고리 정보 가져오기 (완료)
     @GetMapping("/product/{id}")
     public Optional<ProductResponse> getProduct(@PathVariable("id") Long id){
         return Optional.ofNullable(productJoinRepository.findById(id));
     }
 
+    // 상품 정보 수정
     // 추후 request에 @Valid 설정
     @PutMapping("/product/{id}")
     public  ResponseEntity<String> updateProduct(@PathVariable("id") Long id, @RequestBody ProductRequest request){
@@ -72,6 +73,19 @@ public class ProductController {
         }
     }
 
+    //상품 정보 삭제
+    @DeleteMapping("/product/{id}")
+    ResponseEntity<String> deleteProduct(@PathVariable("id") Long id){
+
+        try{
+            productRepository.deleteById(id);
+            return ResponseEntity.status(HttpStatus.OK).body("success: 삭제 완료");
+
+        }catch(Exception e){
+            String errorMessage = "An error occurred: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+        }
+    }
 
 
 
