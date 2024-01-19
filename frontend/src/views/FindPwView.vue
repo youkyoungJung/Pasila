@@ -4,9 +4,9 @@
         <div class="content">
             <section class="long-type">
                     <div class="label">이메일</div>
-                    <input type="text" placeholder="이메일을 입력하세요" class="long-input">
+                    <input type="text" placeholder="이메일을 입력하세요" v-model="email" class="long-input">
             </section>
-            <button @click="find-pw" class="find-pw">이메일로 비밀번호 찾기</button>
+            <button @click="findPw" class="find-pw">이메일로 비밀번호 찾기</button>
             <button @click="login" class="login">로그인으로 돌아가기</button>
 
         </div>
@@ -14,8 +14,18 @@
 </template>
 
 <script setup>
+import router from '@/router';
+import { ref } from 'vue';
+
+const email = ref('');
 const login = () => {
-    // router.push("/login");
+    router.push("/login");
+}
+
+const findPw = () => {
+    //이메일 디비에 존재하면 진행하기 
+    router.push("/findpw/send");
+
 }
 </script>
 
@@ -57,6 +67,7 @@ const login = () => {
             margin-top: 30px;
             border: none;
             color: white;
+            cursor: pointer;
             }
 
         }

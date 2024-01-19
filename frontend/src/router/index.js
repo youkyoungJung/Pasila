@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
 import JoinView from '../views/JoinView.vue';
 import FindPwView from '../views/FindPwView.vue';
+import FindPwSendView from '@/views/FindPwSendView.vue';
 
 
 const router = createRouter({
@@ -28,6 +29,11 @@ const router = createRouter({
       name: 'findpw',
       component: FindPwView,
     },
+    {
+      path: '/findpw/send',
+      name: 'findpwsend',
+      component: FindPwSendView,
+    }
   ]
 })
 
