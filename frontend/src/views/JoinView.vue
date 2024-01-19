@@ -1,48 +1,59 @@
 <template>
     <div class="container">
         <div class="header">회원가입</div>
-        <!-- 프로필 사진 추가 필요-->
         <div class="content">
+            <section class="profile">
+                <div>
+                    <div v-if="user.profile != ''">
+                        <img :src="user.profile" id="profileImg" class="profile-img">
+                    </div>
+                    <div v-else="user.profile === ''">
+                        <font-awesome-icon icon="fa-regular fa-user" class="profile-img" />
+                    </div>
+                </div>
+                <label for="file">프로필 사진 등록</label>
+                <input type="file" id="file" @change="uploadImg" accept="image/*" class="profile-choose" />
+            </section>
             <section class="short-type">
-                <div class="label">이메일</div>
+                <label for="email">이메일</label>
                 <div class="input-area">
-                    <input type="email" placeholder="메일을 입력하세요" class="short-input">
+                    <input type="email" id="email" v-model="user.email" placeholder="메일을 입력하세요" class="short-input">
                     <input type="submit" value="중복확인" class="input-btn">
                 </div>
             </section>
             <section class="long-type">
-                <div class="label">이름</div>
-                <input type="text" placeholder="이름을 입력하세요" class="long-input">
+                <label for="name">이름</label>
+                <input type="text" id="name" v-model="user.name" placeholder="이름을 입력하세요" class="long-input">
             </section>
             <section class="short-type">
-                <div class="label">채널명</div>
+                <label for="channelName">채널명</label>
                 <div class="input-area">
-                    <input type="text" placeholder="채널명을 입력하세요" class="short-input">
+                    <input type="text" id="channelName" v-model="user.channelName" placeholder="채널명을 입력하세요" class="short-input">
                     <input type="submit" value="중복확인" class="input-btn">
                 </div>
             </section>
             <section class="long-type">
-                <div class="label">비밀번호</div>
-                <input type="password" placeholder="비밀번호를 입력하세요" class="long-input">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" v-model="user.password" placeholder="비밀번호를 입력하세요" class="long-input">
             </section>
             <section class="long-type">
-                <div class="label">비밀번호 확인</div>
-                <input type="password" placeholder="비밀번호를 한 번 더 입력하세요" class="long-input">
+                <label for="passwordCheck">비밀번호 확인</label>
+                <input type="password" id="passwordCheck" placeholder="비밀번호를 한 번 더 입력하세요" class="long-input">
                 <div style="margin: 2px; color: #ff495c; font-size: 10px;">
                     비밀번호 맞는지 확인하는 텍스트
                 </div>
             </section>
             <section class="short-type">
-                <div class="label">휴대폰</div>
+                <label for="phoneNumber">휴대폰</label>
                 <div class="input-area">
-                    <input id="phone-number" type="number" placeholder="휴대폰 번호를 입력하세요" class="short-input">
+                    <input id="phoneNumber" type="number" v-model="user.phone" placeholder="휴대폰 번호를 입력하세요" class="short-input">
                     <input type="submit" value="번호받기" class="input-btn">
                 </div>
             </section>
             <section class="short-type">
-                <div class="label">인증번호 확인</div>
+                <label for="phoneCheck">인증번호 확인</label>
                 <div class="input-area">
-                    <input id="phone-number-check" type="number" placeholder="인증번호를 입력하세요" class="short-input">
+                    <input id="phoneCheck" type="number" placeholder="인증번호를 입력하세요" class="short-input">
                     <input type="submit" value="인증확인" class="input-btn">
                 </div>
                 <div style="margin: 2px; color: #ff495c; font-size: 10px;" >
@@ -50,29 +61,29 @@
                 </div>
             </section>
             <section class="short-type">
-                <div class="label">주소</div>
+                <label for="address">주소</label>
                 <div class="input-area">
-                    <input type="text" placeholder="주소를 입력하세요" class="short-input">
+                    <input type="text" id="address" v-model="user.address" placeholder="주소를 입력하세요" class="short-input">
                     <input type="submit" value="주소검색" class="input-btn">
                 </div>
             </section>
             <section class="long-type">
-                <div class="label">상세주소</div>
-                <input type="text" placeholder="상세주소를 입력하세요" class="long-input">
+                <label for="detailAddress">상세주소</label>
+                <input type="text" id="detailAddress" v-model="user.detailAddress" placeholder="상세주소를 입력하세요" class="long-input">
             </section>
             <section class="long-type">
                 <form>
-                    <div class="label">성별</div>
-                    <div class="radio">
-                        <label><input type="radio" name="성별" value="남성">남성</label>
-                        <label><input type="radio" name="성별" value="여성">여성</label>
-                        <label><input type="radio" name="성별" value="선택안함">선택안함</label>
+                    <label for="gender">성별</label>
+                    <div class="radio" id="gender">
+                        <label><input type="radio" name="성별" value="남성" v-model="user.gender">남성</label>
+                        <label><input type="radio" name="성별" value="여성" v-model="user.gender">여성</label>
+                        <label><input type="radio" name="성별" value="선택안함" v-model="user.gender">선택안함</label>
                     </div>
                 </form>
             </section>
             <section class="long-type">
-                <div class="label">생년월일</div>
-                <input type="date" class="long-input">
+                <label for="birth">생년월일</label>
+                <input type="date" id="birth" v-model="user.birth" class="long-input">
             </section>
             <button @click="join" class="join">회원가입</button>
         </div>
@@ -80,10 +91,40 @@
 </template>
 
 <script setup>
+import router from '@/router';
 import { ref } from 'vue';
 
+const user = ref({
+    profile: '',
+    email: '',
+    name: '',
+    channelName: '',
+    password: '',
+    phone: '',
+    address: '',
+    detailAddress: '',
+    gender: '',
+    birth: '',
+});
+
+const uploadImg = () => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        user.value.profile = e.target.result;
+    }
+    reader.readAsDataURL(file.files[0]);
+    console.log(user.value);
+}
+
+    
+
 const join = () => {
-    console.log("회원가입 후 메인페이지 가쟈");
+    //user.value 백에 넘겨주고 메인페이지 가야함
+    if (user.value.birth != '') {
+        user.value.birth += ' 00:00:00';
+    }
+    console.log(user.value)
+    router.push("/");
 }
 
 </script>
@@ -106,10 +147,38 @@ const join = () => {
         @include flex-box($direction: column, $justify: none);
         @include font-factory(13px, bold);
         
+        .profile {
+            @include box(100%, 10%, white, 0, 2px, 5px);
+            @include flex-box($direction: column);
+            
+            .profile-img {
+                @include box(60px, 60px, none, 50%, 2px, 5px);
+                
+                
+            }
+
+            label {
+                @include font-factory(10px, null);
+            }
+            .profile-choose {
+                @include font-factory(13px, null);
+                width: 0;
+                height: 0;
+                padding: 0;
+                overflow: hidden;
+                border: 0;
+                // text-align: flex-end;
+                // border: 1px solid $dark;
+                // background-color: white;
+                // margin-left: 10px;
+                // padding: 5px;
+            }
+            
+        }
         .long-type {
             @include box(90%, 10%, null, 0, 2px, 5px);
 
-            .label {
+            label {
                 text-align: flex-start;
             }
 
