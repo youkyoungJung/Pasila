@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.ssafy.pasila.domain.product.dto.product.ProductResponse;
+import org.ssafy.pasila.domain.product.entity.Product;
 
 import java.util.List;
 
@@ -11,6 +12,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductJoinRepository {
     private final EntityManager em;
+
+    public void save(Product product){
+        if(product.getId() == null){
+            em.persist(product);
+        }else{
+            em.merge(product);
+        }
+    }
+
+    public Product findOne(Long id) {
+        return em.find(Product.class, id);
+    }
+
 
     public List<ProductResponse> findAllWithCategory() {
         return em.createQuery(
