@@ -56,33 +56,5 @@ public class Product {
 
     private String thumbnail;
 
-//    @Transient
-//    @Column(name = "large_category_id")
-//    private Long largeCategoryId;
-//
-//    @Transient
-//    @Column(name = "middle_category_id")
-//    private Long middleCategoryId;
-//
-//    @Transient
-//    @Column(name = "detail_category_id")
-//    private Long detailCategoryId;
-
-    //==관련 메서드 ==//
-
-//    @PostLoad
-//    private void onLoad() {
-//        if (largeCategory != null) {
-//            largeCategoryId = largeCategory.getId();
-//        }
-//
-//        if (middleCategory != null) {
-//            middleCategoryId = middleCategory.getId();
-//        }
-//
-//        if (detailCategory != null) {
-//            detailCategoryId = detailCategory.getId();
-//        }
-//    }
 
 }

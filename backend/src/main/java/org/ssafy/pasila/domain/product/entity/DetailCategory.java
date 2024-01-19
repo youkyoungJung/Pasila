@@ -25,4 +25,8 @@ public class DetailCategory {
     MiddleCategory middleCategory;
     String name;
 
+    public DetailCategory(Long id){
+        this.id = id;
+    }
+
 }

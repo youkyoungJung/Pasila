@@ -12,7 +12,6 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Data
 @NoArgsConstructor
 public class MiddleCategory {
 
@@ -20,10 +19,15 @@ public class MiddleCategory {
     @Column(name = "middle_category_id")
     Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "large_category_id")
-    LargeCategory largeCategory;
+    @OneToMany
+    @JoinColumn(name = "large_category")
+    List<LargeCategory> largeCategory;
 
     String name;
+
+    public MiddleCategory(Long id){
+        this.id = id;
+    }
+
 
 }

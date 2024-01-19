@@ -14,7 +14,6 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "large_category")
-@Data
 @NoArgsConstructor
 public class LargeCategory {
 
@@ -28,5 +27,14 @@ public class LargeCategory {
 
     @OneToMany(mappedBy = "largeCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products;
+
+    public void add(Product product){
+        product.setLargeCategory(this);
+        getProducts().add(product);
+    }
+
+    public LargeCategory(Long id){
+        this.id = id;
+    }
 
 }

@@ -1,4 +1,4 @@
-package org.ssafy.pasila.domain.product.dto;
+package org.ssafy.pasila.domain.product.dto.product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import org.ssafy.pasila.domain.product.entity.DetailCategory;
 import org.ssafy.pasila.domain.product.entity.LargeCategory;
 import org.ssafy.pasila.domain.product.entity.MiddleCategory;
@@ -22,18 +23,18 @@ import java.util.Date;
 @AllArgsConstructor
 @Data
 public class ProductRequest {
-//    private Product product;
+    private Product product;
 
-    private Long id;
-    private Long sellerId;
-    private String name;
-    private String description;
+//    private Long id;
+//    private Long sellerId;
+//    private String name;
+//    private String description;
 //    private LocalDateTime createdAt;
 //    private LocalDateTime updatedAt;
 //    private String thumbnail;
 
     private Long largeCategoryId;
     private Long middleCategoryId;
-//    private Long detailCategoryId;
+    private Long detailCategoryId;
 
 }

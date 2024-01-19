@@ -1,7 +1,8 @@
-package org.ssafy.pasila.domain.product.dto;
+package org.ssafy.pasila.domain.product.dto.product;
 
 public class LargeCategory {
     private Long id;
     private String name;
     private String imageUrl;
+
 }
