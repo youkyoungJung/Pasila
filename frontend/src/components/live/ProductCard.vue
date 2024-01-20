@@ -1,6 +1,6 @@
 <script setup>
 defineProps({
-  product: Array
+  product: Object
 })
 </script>
 
@@ -26,7 +26,6 @@ defineProps({
   @include flex-box(center, flex-start);
   .thumbnail {
     @include box(18rem, 9rem, null, 0.625rem, null, null);
-    background-repeat: no-repeat;
   }
   .right {
     margin-left: 1rem;
