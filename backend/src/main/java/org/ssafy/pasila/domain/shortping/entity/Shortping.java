@@ -1,5 +1,6 @@
 package org.ssafy.pasila.domain.shortping.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -25,9 +26,11 @@ public class Shortping {
 
     private Long likeCnt;
 
+    @Column(name = "video_url")
+    private String videoUrl;
+
     private LocalDateTime createdAt;
 
-    // 추가하고싶다
-    // private LocalDateTime isActive;
+    private LocalDateTime isActive;
 
 }

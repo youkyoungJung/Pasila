@@ -19,7 +19,7 @@ import java.util.Date;
 @Table(name = "members")
 public class Member {
     enum Gender {
-        M, W
+        M, F, N
     }
 
     @Id
@@ -51,9 +51,8 @@ public class Member {
     @Column(name = "address_detail", length = 50)
     private String addressDetail;
 
-    private boolean gender;
-//    @Column()
-//    private Gender gender;
+    @Column()
+    private Gender gender;
 
     @Column(columnDefinition = "DATE")
     private Date birth;
@@ -72,6 +71,9 @@ public class Member {
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     private Timestamp createdAt;
+
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    private Timestamp deletedAt;
 
     @Column(length = 256)
     private String token;

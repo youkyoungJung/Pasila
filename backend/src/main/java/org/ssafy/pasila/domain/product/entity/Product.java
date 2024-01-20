@@ -36,6 +36,8 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    private LocalDateTime isActive;
+
 //    @ManyToOne()
 //    private LargeCategory largeCategory;
 //

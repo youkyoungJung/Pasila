@@ -1,13 +1,11 @@
 package org.ssafy.pasila.domain.live.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ssafy.pasila.domain.shortping.entity.Shortping;
 
 import java.time.LocalDateTime;
 
@@ -23,25 +21,31 @@ public class Live {
 
     private String title;
 
-    // 해당 부분 네이밍 이렇게 가져가는거 어떨지?
+    @Column(name = "live_on_at")
     private LocalDateTime liveOnAt;
 
+    @Column(name = "live_off_at")
     private LocalDateTime liveOffAt;
 
     private String script;
 
-    // 해당부분도 네이밍 url 붙이는게 어떨지 -> 직관적으로
+    @Column(name = "full_video_url")
     private String fullVideoUrl;
 
-    // Shortping 테이블이 아닌 여기 있는 자체가 이상함
-    private String shortVideoUrl;
-
+    @Column(name = "like_cnt")
     private Long likeCnt;
+
+    @Column(name = "is_on")
+    private boolean isOn;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    private boolean isOn;
+    @Column(name = "is_active")
+    private LocalDateTime isActive;
+
+//    @OneToOne
+//    private Shortping shortping;
 
 
     //private Long userId;
