@@ -7,7 +7,7 @@ defineProps({
 <template>
   <div class="card">
     <div
-      :style="{ background: `url(${product?.thumbnail}), cover no-repeat ` }"
+      :style="{ background: `center / cover url(${product?.thumbnail}) no-repeat` }"
       class="thumbnail"
     ></div>
     <div class="right">
@@ -22,7 +22,7 @@ defineProps({
 
 <style lang="scss" scoped>
 .card {
-  @include box(75%, 11rem, $light-gray, 1.25rem, 0, 1rem);
+  @include box(75%, 11rem, $light-gray, 1.25rem, 1rem 0, 1rem);
   @include flex-box(center, flex-start);
   .thumbnail {
     @include box(18rem, 9rem, null, 0.625rem, null, null);
