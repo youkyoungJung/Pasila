@@ -5,8 +5,10 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.product.entity.DetailCategory;
 import org.ssafy.pasila.domain.product.entity.LargeCategory;
 import org.ssafy.pasila.domain.product.dto.product.ProductRequest;
@@ -31,11 +33,12 @@ public class ProductController {
     private final ProductService productService;
 
     // Product 생성, 추후 @Valid 설정
-    @PostMapping("/product")
-    public ResponseEntity<String> createProduct(@RequestBody ProductRequest productRequest) {
+    @PostMapping(value = "/product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> createProduct(@RequestPart(value = "pr") ProductRequest productRequest,
+                                                @RequestPart(value = "image", required = false) MultipartFile image) {
 
         try{
-            productService.saveProduct(productRequest);
+            productService.saveProduct(productRequest, image);
             return ResponseEntity.status(HttpStatus.CREATED).body("success");
 
         }catch(Exception e){
