@@ -1,10 +1,10 @@
 <script setup>
-import VCategory from '@/components/common/VCategory.vue';
+import vCategory from '@/components/common/v-category.vue';
 </script>
 
 <template>
   <div>
-    <VCategory />
+    <v-category />
   </div>
 </template>
 
