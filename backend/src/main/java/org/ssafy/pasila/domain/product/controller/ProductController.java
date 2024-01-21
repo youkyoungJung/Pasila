@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.product.dto.product.ProductRequest;
 import org.ssafy.pasila.domain.product.dto.product.ProductResponse;
-import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.*;
 import org.ssafy.pasila.domain.product.service.ProductService;
 
@@ -56,18 +55,24 @@ public class ProductController {
 
     // 상품 정보 수정
     // 추후 request에 @Valid 설정
+    // 추후 여러 Image 삭제시 수정 필요 (List<String> deleteImageFilesName)
     @PutMapping("/product/{id}")
-    public  ResponseEntity<String> updateProduct(@PathVariable("id") Long id, @RequestBody ProductRequest request){
+    public  ResponseEntity<String> updateProduct(@PathVariable("id") Long id,
+                                                 @RequestPart(value = "pr") ProductRequest request,
+                                                 @RequestPart(value = "delete_image", required = false) String deleteImageName,
+                                                 @RequestPart(value = "new_image", required = false) MultipartFile newImageName){
 
         try{
             log.info("request: {}", request);
-            productService.updateProduct(id, request);
-            return ResponseEntity.status(HttpStatus.OK).body("success");
+
+                productService.updateProduct(id, request, deleteImageName, newImageName);
 
         }catch(Exception e){
             String errorMessage = "An error occurred: " + e.getMessage();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
+
+        return ResponseEntity.status(HttpStatus.OK).body("success");
     }
 
     //상품 정보 삭제

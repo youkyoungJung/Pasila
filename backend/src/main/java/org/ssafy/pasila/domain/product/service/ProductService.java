@@ -61,18 +61,28 @@ public class ProductService {
     }
 
     //상품 수정
-    //TODO : 1. 파일 수정권 변경
+    //TODO : 0. 파일 수정권 변경
     @Transactional
-    public void updateProduct(Long id, ProductRequest productRequest) {
+    public void updateProduct(Long id, ProductRequest productRequest, String deleteImageName, MultipartFile newImageFile) throws IOException {
 
         LargeCategory largeCategory = new LargeCategory(productRequest.getLargeCategoryId());
         MiddleCategory middleCategory = new MiddleCategory(productRequest.getMiddleCategoryId());
         DetailCategory detailCategory = new DetailCategory(productRequest.getDetailCategoryId());
-
         Product result = productJoinRepository.findOne(id);
+
+        if(deleteImageName != null && !deleteImageName.isEmpty()){
+            log.info("deleteImageName이 들어왔습니다.");
+            s3Uploader.deleteImage(deleteImageName);
+            result.setThumbnail("");
+        }
+        if(newImageFile != null && !newImageFile.isEmpty()){
+            log.info("newImageFile이 들어왔습니다.");
+            String storedFileName = s3Uploader.upload(newImageFile, "images");
+            result.setThumbnail(storedFileName);
+        }
+
         result.setName(productRequest.getProduct().getName());
         result.setDescription(productRequest.getProduct().getDescription());
-        result.setThumbnail(productRequest.getProduct().getThumbnail());
         result.setUpdatedAt(LocalDateTime.now());
         result.setLargeCategory(largeCategory);
         result.setMiddleCategory(middleCategory);
@@ -108,5 +118,6 @@ public class ProductService {
         String result = product.get().getThumbnail();
         return result;
     }
+
 
 }
