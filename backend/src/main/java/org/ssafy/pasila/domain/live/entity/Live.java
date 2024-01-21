@@ -12,6 +12,7 @@ import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -57,14 +58,14 @@ public class Live {
     @OneToOne
     private Shortping shortping;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
     @OneToOne
     private Product product;
 
-    @OneToMany(mappedBy = "livelog")
-    private List<Livelog> livelogs;
+    @OneToMany(mappedBy = "live", cascade = CascadeType.ALL)
+    private List<Livelog> livelogs = new ArrayList<>();
 
 }

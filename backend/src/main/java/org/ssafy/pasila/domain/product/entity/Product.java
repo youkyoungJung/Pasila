@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.ssafy.pasila.domain.member.entity.Member;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -42,15 +43,15 @@ public class Product {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     private LargeCategory largeCategory;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     private MiddleCategory middleCategory;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     private DetailCategory detailCategory;
 
     @OneToMany(mappedBy = "product")
-    private List<ProductOption> productOption;
+    private List<ProductOption> productOption = new ArrayList<>();
 }

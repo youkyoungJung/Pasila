@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "product_option")
 public class ProductOption {
-    @Id
+    @Id @GeneratedValue
     private Long id;
 
     @Column(length = 20)
@@ -27,7 +27,7 @@ public class ProductOption {
     @Column(name = "discount_price")
     private Long discountPrice;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 }

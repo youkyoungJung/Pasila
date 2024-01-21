@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "livelog")
 public class Livelog {
-    @Id
+    @Id @GeneratedValue
     private Long id;
 
     private LocalDateTime start;
@@ -30,7 +30,7 @@ public class Livelog {
     @Column(length = 30)
     private String subtitle;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "live_id")
     private Live live;
 }

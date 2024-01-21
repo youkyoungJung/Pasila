@@ -74,18 +74,18 @@ public class Member {
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     private Timestamp createdAt;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private Timestamp deletedAt;
 
     @Column(length = 256)
     private String token;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Order> orders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Live> liveList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Product> products = new ArrayList<>();
 }
