@@ -1,12 +1,12 @@
 package org.ssafy.pasila.domain.shortping.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.product.entity.Product;
 
 import java.time.LocalDateTime;
 
@@ -20,17 +20,25 @@ public class Shortping {
     @Id
     private String id;
 
-    // private String productId;
-
+    @Column(length = 30)
     private String title;
 
+    @Column(name = "like_cnt")
     private Long likeCnt;
 
     @Column(name = "video_url")
     private String videoUrl;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "is_active")
     private LocalDateTime isActive;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+//    @OneToOne
+//    private Live live;
 }

@@ -5,9 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.catalina.User;
+import org.hibernate.annotations.GenericGenerator;
+import org.ssafy.pasila.domain.member.entity.Member;
+import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 
@@ -17,8 +22,12 @@ import java.time.LocalDateTime;
 @Builder
 public class Live {
     @Id
+//    @GeneratedValue(generator = "uuid2")
+//    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+//    @Column(columnDefinition = "BINARY(16)")
     private String id;
 
+    @Column(length = 30)
     private String title;
 
     @Column(name = "live_on_at")
@@ -27,7 +36,8 @@ public class Live {
     @Column(name = "live_off_at")
     private LocalDateTime liveOffAt;
 
-    private String script;
+    @Lob
+    private String script; // 필요하지 않으면 굳이 읽지 않는 것이 좋음
 
     @Column(name = "full_video_url")
     private String fullVideoUrl;
@@ -44,12 +54,17 @@ public class Live {
     @Column(name = "is_active")
     private LocalDateTime isActive;
 
-//    @OneToOne
-//    private Shortping shortping;
+    @OneToOne
+    private Shortping shortping;
 
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    //private Long userId;
-    //private String productId;
+    @OneToOne
+    private Product product;
 
+    @OneToMany(mappedBy = "livelog")
+    private List<Livelog> livelogs;
 
 }

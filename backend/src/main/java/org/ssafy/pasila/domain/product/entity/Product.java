@@ -1,15 +1,14 @@
 package org.ssafy.pasila.domain.product.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ssafy.pasila.domain.member.entity.Member;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -18,7 +17,7 @@ import java.time.LocalDateTime;
 
 @Entity
 public class Product {
-    @Id
+    @Id @GeneratedValue
     private String id;
 
     @Column(length = 30)
@@ -36,12 +35,22 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    private LocalDateTime isActive;
+    @Column(name = "is_active")
+    private boolean isActive;
 
-//    @ManyToOne()
-//    private LargeCategory largeCategory;
-//
-//    private MiddleCategory middleCategory;
-//
-//    private DetailCategory detailCategory;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne()
+    private LargeCategory largeCategory;
+
+    @ManyToOne()
+    private MiddleCategory middleCategory;
+
+    @ManyToOne()
+    private DetailCategory detailCategory;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductOption> productOption;
 }

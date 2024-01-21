@@ -5,9 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.order.entity.Order;
+import org.ssafy.pasila.domain.product.entity.Product;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 @AllArgsConstructor
@@ -18,10 +23,6 @@ import java.util.Date;
 @Entity
 @Table(name = "members")
 public class Member {
-    enum Gender {
-        M, F, N
-    }
-
     @Id
     @Column()
     @GeneratedValue
@@ -51,7 +52,7 @@ public class Member {
     @Column(name = "address_detail", length = 50)
     private String addressDetail;
 
-    @Column()
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Column(columnDefinition = "DATE")
@@ -67,6 +68,7 @@ public class Member {
     private String profile;
 
     @Column(name = "login_type")
+    @Enumerated(EnumType.STRING)
     private LoginType loginType;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
@@ -77,4 +79,13 @@ public class Member {
 
     @Column(length = 256)
     private String token;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<Order> orders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<Live> liveList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<Product> products = new ArrayList<>();
 }

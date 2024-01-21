@@ -1,7 +1,6 @@
 package org.ssafy.pasila.domain.live.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,19 +8,29 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+
+@Entity
+@Table(name = "livelog")
 public class Livelog {
     @Id
     private Long id;
-    private String liveId;
-    private LocalDateTime start;
-    private LocalDateTime end;
-    private String title;
-    private String subTitle;
 
+    private LocalDateTime start;
+
+    private LocalDateTime end;
+
+    @Column(length = 30)
+    private String title;
+
+    @Column(length = 30)
+    private String subtitle;
+
+    @ManyToOne
+    @JoinColumn(name = "live_id")
+    private Live live;
 }
