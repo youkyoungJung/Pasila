@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.ssafy.pasila.domain.member.entity.Member;
 
 import java.time.LocalDateTime;
@@ -18,10 +22,12 @@ import java.util.List;
 
 @Entity
 public class Product {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "VARCHAR(255)")
     private String id;
 
-    @Column(length = 30)
+    @Column(length = 30, nullable = false)
     private String name;
 
     @Column(length = 10000)
@@ -30,13 +36,17 @@ public class Product {
     @Column(length = 2083)
     private String thumbnail;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+
     @Column(name = "is_active")
+    @ColumnDefault("true")
     private boolean isActive;
 
     @ManyToOne

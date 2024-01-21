@@ -5,11 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.product.entity.Product;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,10 +24,9 @@ import java.util.List;
 @Builder
 
 @Entity
-@Table(name = "members")
+@Table(name = "member")
 public class Member {
     @Id
-    @Column()
     @GeneratedValue
     private Long id;
 
@@ -71,11 +73,13 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private LoginType loginType;
 
+    @CreationTimestamp
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
-    private Timestamp deletedAt;
+    private LocalDateTime deletedAt;
 
     @Column(length = 256)
     private String token;
