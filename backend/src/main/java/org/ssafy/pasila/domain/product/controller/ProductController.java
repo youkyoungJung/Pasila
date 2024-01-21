@@ -1,7 +1,5 @@
 package org.ssafy.pasila.domain.product.controller;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -9,16 +7,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.ssafy.pasila.domain.product.entity.DetailCategory;
-import org.ssafy.pasila.domain.product.entity.LargeCategory;
 import org.ssafy.pasila.domain.product.dto.product.ProductRequest;
 import org.ssafy.pasila.domain.product.dto.product.ProductResponse;
-import org.ssafy.pasila.domain.product.entity.MiddleCategory;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.*;
 import org.ssafy.pasila.domain.product.service.ProductService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,7 +75,7 @@ public class ProductController {
     ResponseEntity<String> deleteProduct(@PathVariable("id") Long id){
 
         try{
-            productRepository.deleteById(id);
+            productService.deleteProduct(id);
             return ResponseEntity.status(HttpStatus.OK).body("success: 삭제 완료");
 
         }catch(Exception e){
@@ -89,6 +83,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
     }
+
 
 
 

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.product.dto.product.ProductRequest;
-import org.ssafy.pasila.domain.product.dto.product.ProductResponse;
 import org.ssafy.pasila.domain.product.entity.DetailCategory;
 import org.ssafy.pasila.domain.product.entity.LargeCategory;
 import org.ssafy.pasila.domain.product.entity.MiddleCategory;
@@ -62,6 +61,7 @@ public class ProductService {
     }
 
     //상품 수정
+    //TODO : 1. 파일 수정권 변경
     @Transactional
     public void updateProduct(Long id, ProductRequest productRequest) {
 
@@ -81,5 +81,32 @@ public class ProductService {
     }
 
     //상품 삭제
+    @Transactional
+    public void deleteProduct(Long id){
+
+        String originImageUrl = "";
+        originImageUrl = findProductImageUrl(id);
+
+        log.info("originImageUrl: {}", originImageUrl);
+
+
+        if (!originImageUrl.isEmpty()) {  //imageUrl이 있을 경우 S3접근
+            //imageUrl 로 S3에 있는 originalFilename 접근을 위한 split 사용
+            String splitStr = ".com/";
+            String fileName = originImageUrl.substring(originImageUrl.lastIndexOf(splitStr) + splitStr.length());
+            s3Uploader.deleteImage(fileName);
+            log.info("success: deleteImage 수행");
+        }
+
+        productRepository.deleteById(id);
+
+    }
+
+    //상품 이미지 url 찾기
+    public String findProductImageUrl(Long id){
+        Optional<Product> product = productRepository.findById(id);
+        String result = product.get().getThumbnail();
+        return result;
+    }
 
 }

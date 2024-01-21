@@ -39,7 +39,7 @@ public class ProductJoinRepository {
 
     public ProductResponse findById(Long productId){
         return em.createQuery("Select new org.ssafy.pasila.domain.product.dto.product.ProductResponse" +
-                        "(p.id, p.sellerId, p.name, p.description, p.createdAt, l.id, m.id, d.id) " +
+                        "(p.id, p.sellerId, p.name, p.description, p.createdAt, p.thumbnail, l.id, m.id, d.id) " +
                         "FROM Product p " +
                         "join p.largeCategory l " +
                         "join p.middleCategory m " +

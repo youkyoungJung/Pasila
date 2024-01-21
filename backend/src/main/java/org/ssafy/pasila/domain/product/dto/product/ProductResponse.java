@@ -28,8 +28,23 @@ public class ProductResponse {
                            LocalDateTime createdAt, Long largeCategoryId, Long middleCategoryId, Long detailCategoryId){
         this.id = id;
         this.sellerId = sellerId;
+        this.name = name;
         this.description = description;
         this.createdAt = createdAt;
+        this.largeCategoryId = largeCategoryId;
+        this.middleCategoryId = middleCategoryId;
+        this.detailCategoryId = detailCategoryId;
+    }
+
+    public ProductResponse(Long id, Long sellerId, String name, String description,
+                           LocalDateTime createdAt,
+                           String thumbnail, Long largeCategoryId, Long middleCategoryId, Long detailCategoryId){
+        this.id = id;
+        this.sellerId = sellerId;
+        this.name = name;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.thumbnail = thumbnail;
         this.largeCategoryId = largeCategoryId;
         this.middleCategoryId = middleCategoryId;
         this.detailCategoryId = detailCategoryId;
