@@ -1,7 +1,11 @@
-<script setup></script>
+<script setup>
+import VCategory from '@/components/common/VCategory.vue'
+</script>
 
 <template>
-  <div class="title">아아, 여기는 home입니다.</div>
+  <div>
+    <v-category />
+  </div>
 </template>
 
 <style lang="scss">
