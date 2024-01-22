@@ -6,7 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.product.dto.product.ProductRequest;
+import org.ssafy.pasila.domain.product.entity.Category;
 import org.ssafy.pasila.domain.product.entity.Product;
+import org.ssafy.pasila.domain.product.repository.CategoryRepository;
+import org.ssafy.pasila.domain.product.repository.CategoryRepository2;
 import org.ssafy.pasila.domain.product.repository.ProductJoinRepository;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
@@ -26,24 +29,20 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductJoinRepository productJoinRepository;
+    private final CategoryRepository2 categoryRepository;
     private final S3Uploader s3Uploader;
 
     //상품 등록
     @Transactional
     public void saveProduct(ProductRequest productRequest, MultipartFile image) throws IOException {
 
-        LargeCategory largeCategory = new LargeCategory(productRequest.getLargeCategoryId());
-        MiddleCategory middleCategory = new MiddleCategory(productRequest.getMiddleCategoryId());
-        DetailCategory detailCategory = new DetailCategory(productRequest.getDetailCategoryId());
-
-
-        log.info("largeCategoryId: {}", productRequest.getLargeCategoryId());
+//        log.info("largeCategoryId: {}", productRequest.getLargeCategoryId());
         Product savedProduct = productRequest.getProduct();
-        savedProduct.setLargeCategory(largeCategory);
-        savedProduct.setMiddleCategory(middleCategory);
-        savedProduct.setDetailCategory(detailCategory);
-        savedProduct.getDetailCategory().setId(productRequest.getDetailCategoryId());
-        savedProduct.setCreatedAt(LocalDateTime.now());
+        Category category = categoryRepository.findOne(productRequest.getCategoryId());
+//        Category category1 = new Category();
+//        category1.setId(productRequest.getCategoryId());
+        log.info("category: {}", category);
+        savedProduct.setCategory(category);
 
         if(!image.isEmpty()){
             String storedFileName = s3Uploader.upload(image, "images");
@@ -58,30 +57,32 @@ public class ProductService {
     //상품 수정
     //TODO : 0. 파일 수정권 변경
     @Transactional
-    public void updateProduct(Long id, ProductRequest productRequest, String deleteImageName, MultipartFile newImageFile) throws IOException {
+    public void updateProduct(String id, ProductRequest productRequest, String deleteImageName, MultipartFile newImageFile) throws IOException {
 
-        LargeCategory largeCategory = new LargeCategory(productRequest.getLargeCategoryId());
-        MiddleCategory middleCategory = new MiddleCategory(productRequest.getMiddleCategoryId());
-        DetailCategory detailCategory = new DetailCategory(productRequest.getDetailCategoryId());
+        Product product = productRequest.getProduct();
         Product result = productJoinRepository.findOne(id);
+//        Product result = productJoinRepository.findOne(id);
+
+        if(productRequest.getCategoryId() != null){
+            Category category = categoryRepository.findOne(productRequest.getCategoryId());
+            result.setCategory(category);
+        }
 
         if(deleteImageName != null && !deleteImageName.isEmpty()){
             log.info("deleteImageName이 들어왔습니다.");
             s3Uploader.deleteImage(deleteImageName);
             result.setThumbnail("");
         }
+
         if(newImageFile != null && !newImageFile.isEmpty()){
             log.info("newImageFile이 들어왔습니다.");
             String storedFileName = s3Uploader.upload(newImageFile, "images");
             result.setThumbnail(storedFileName);
         }
 
-        result.setName(productRequest.getProduct().getName());
-        result.setDescription(productRequest.getProduct().getDescription());
-        result.setUpdatedAt(LocalDateTime.now());
-        result.setLargeCategory(largeCategory);
-        result.setMiddleCategory(middleCategory);
-        result.setDetailCategory(detailCategory);
+//        result.setName(productRequest.getProduct().getName());
+//        result.setDescription(productRequest.getProduct().getDescription());
+
         log.info("반영 result : {}", result);
     }
 

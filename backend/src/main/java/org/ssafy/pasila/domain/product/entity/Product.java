@@ -1,15 +1,11 @@
 package org.ssafy.pasila.domain.product.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
 import org.ssafy.pasila.domain.member.entity.Member;
 
 import java.time.LocalDateTime;
@@ -22,6 +18,7 @@ import java.util.List;
 @Builder
 
 @Entity
+@DynamicUpdate
 public class Product {
     @Id @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")

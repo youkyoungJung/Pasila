@@ -77,7 +77,7 @@ public class ProductController {
     // 추후 여러 Image 삭제시 수정 필요 (List<String> deleteImageFilesName)
     @Operation(summary = "Update product", description = "id 로 제품을 업데이트한다.")
     @PutMapping("/product/{id}")
-    public  ResponseEntity<String> updateProduct(@PathVariable("id") Long id,
+    public  ResponseEntity<String> updateProduct(@PathVariable("id") String id,
                                                  @RequestPart(value = "pr") ProductRequest request,
                                                  @RequestPart(value = "delete_image", required = false) String deleteImageName,
                                                  @RequestPart(value = "new_image", required = false) MultipartFile newImageName){

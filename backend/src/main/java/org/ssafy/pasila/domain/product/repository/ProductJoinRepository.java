@@ -21,7 +21,7 @@ public class ProductJoinRepository {
         }
     }
 
-    public Product findOne(Long id) {
+    public Product findOne(String id) {
         return em.find(Product.class, id);
     }
 
