@@ -1,5 +1,12 @@
 package org.ssafy.pasila.domain.product.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,6 +26,9 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+
+@Tag(name = "Product", description = "Product API")
+
 public class ProductController {
 
     private final ProductRepository productRepository;
@@ -26,6 +36,13 @@ public class ProductController {
     private final ProductService productService;
 
     // Product 생성, 추후 @Valid 설정
+    @Operation(summary = "Save product", description = "상품을 등록한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {
+                            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductResponse.class)))
+                    })
+    })
     @PostMapping(value = "/product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> createProduct(@RequestPart(value = "pr") ProductRequest productRequest,
                                                 @RequestPart(value = "image", required = false) MultipartFile image) {

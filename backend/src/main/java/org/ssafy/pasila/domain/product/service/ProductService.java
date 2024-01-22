@@ -2,8 +2,6 @@ package org.ssafy.pasila.domain.product.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +12,7 @@ import org.ssafy.pasila.domain.product.entity.MiddleCategory;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.ProductJoinRepository;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
-import org.ssafy.pasila.global.infra.s3.service.S3Uploader;
+import org.ssafy.pasila.global.infra.s3.S3Uploader;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
