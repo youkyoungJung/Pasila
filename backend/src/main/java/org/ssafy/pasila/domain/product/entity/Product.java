@@ -2,59 +2,60 @@ package org.ssafy.pasila.domain.product.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.ssafy.pasila.domain.member.entity.Member;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Product Entity 파일
- * JPA 테이블 생성
- */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+
 @Entity
-@Table(name = "product")
-@Getter
-@Setter
-@ToString
 public class Product {
+    @Id @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "VARCHAR(255)")
+    private String id;
 
-    @Id
-    @GeneratedValue
-    @Column(name="product_id")
-    private Long id;
-
-    @Column(name="seller_id")
-    private Long sellerId;
-
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="large_category_id")
-    @JsonIgnore
-    private LargeCategory largeCategory;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="middle_category_id")
-    @JsonIgnore
-    private MiddleCategory middleCategory;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="detail_category_id")
-    @JsonIgnore
-    private DetailCategory detailCategory;
-
+    @Column(length = 30, nullable = false)
     private String name;
 
+    @Column(length = 10000)
     private String description;
 
-    @Column(name = "create_at")
+    @Column(length = 2083)
+    private String thumbnail;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_active")
+    @ColumnDefault("true")
+    private boolean isActive;
 
-    private String thumbnail;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Category category;
 
+    @OneToMany(mappedBy = "product")
+    private List<ProductOption> productOption = new ArrayList<>();
 }

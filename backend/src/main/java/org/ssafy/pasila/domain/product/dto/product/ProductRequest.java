@@ -1,22 +1,11 @@
 package org.ssafy.pasila.domain.product.dto.product;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import org.ssafy.pasila.domain.product.entity.DetailCategory;
-import org.ssafy.pasila.domain.product.entity.LargeCategory;
-import org.ssafy.pasila.domain.product.entity.MiddleCategory;
 import org.ssafy.pasila.domain.product.entity.Product;
-
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Builder
 @NoArgsConstructor
