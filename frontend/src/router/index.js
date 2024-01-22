@@ -1,8 +1,11 @@
+
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
 import JoinView from '../views/JoinView.vue';
 import FindPwView from '../views/FindPwView.vue';
+import LiveView from '../views/LiveView.vue'
+import ScheduleView from '../views/ScheduleView.vue'
 
 
 const router = createRouter({
@@ -27,7 +30,16 @@ const router = createRouter({
       path: '/findpw',
       name: 'findpw',
       component: FindPwView,
+    },{
+      path: '/live/:id',
+      name: 'live',
+      component: LiveView
     },
+    {
+      path: '/schedule',
+      name: 'schedule',
+      component: ScheduleView
+    }
   ]
 })
 
