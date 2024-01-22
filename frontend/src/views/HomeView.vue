@@ -1,5 +1,5 @@
 <script setup>
-import vCategory from '@/components/common/v-category.vue'
+import VCategory from '@/components/common/VCategory.vue'
 </script>
 
 <template>

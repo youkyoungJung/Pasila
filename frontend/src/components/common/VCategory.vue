@@ -1,6 +1,6 @@
 <script setup>
-import VBestShortping from '@/components/main/v-best-shortping.vue';
-import VLive from '@/components/main/v-live.vue';
+import BestShortping from '@/components/main/BestShortping.vue';
+import Live from '@/components/main/Live.vue';
 import { ref } from 'vue';
 
 
@@ -147,8 +147,8 @@ const selectSmallCate = (name) => {
 
         
     </div>
-    <v-best-shortping />
-    <v-live />
+    <best-shortping />
+    <live />
 </template>
 
 
