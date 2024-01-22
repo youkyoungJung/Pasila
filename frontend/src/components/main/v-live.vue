@@ -87,8 +87,8 @@ const goShortping = () => {
     <div class="container">
         <div class="running">
             <div class="title">
-                <span style="color: #ff495c;">라이브 </span>방송
-                <span class="subtitle">지금 진행중인 라이브 방송을 한눈에!</span>
+                둘러보기
+                <span class="subtitle">원하는 상품을 찾아보세요!</span>
             </div>
             <div class="order-type">
                 <div class="live-short-btn">
@@ -109,7 +109,7 @@ const goShortping = () => {
                     <div class="numbering">
                         <div>
                             <!-- <video :src="video.src" class="input-video" /> -->
-                            <img :src="video.src" class="input-video">
+                            <div class="input-video" v-bind:style="{backgroundImage: `url(${video.src})`}"></div>
                             <div class="user-info">
                                 <img :src="video.profile" class="user-profile">
                                 <div class="user-name">
@@ -137,14 +137,17 @@ const goShortping = () => {
 
     .running {
         @include box(90%, 100%, null, 0, 5px, 5px);
-        @include flex-box($align: flex-start, $direction: column);
+        @include flex-box($align: center, $direction: column);
 
         .title {
             @include font-factory($fs-4, bold);
-            
+            @include box(100%, null, null, 0, 0, 0);
+            @include flex-box($align: flex-end, $justify: flex-start);
             .subtitle {
+                display: inline-block;
                 font-size: 13px;
                 margin-left: 5px;
+                line-height: 28px;
             }
         }
 
@@ -192,24 +195,25 @@ const goShortping = () => {
         }
         
         .video-container {
-            @include box(95%, 90%, null, 0, 15px, 10px);
-            @include flex-box($justify: flex-start);
+            @include box(100%, 90%, null, 0, 5px, 10px);
+            @include flex-box();
             overflow: hidden;
             flex-wrap: wrap;
             
             
             
             .videos {
-                @include box(500px, 400px, none, none, 10px, 5px);
+                @include box(500px, 400px, none, none, 5px, 5px);
                 @include flex-box();
                 @include font-factory($fs-1, bold);
                 float: left;
                 
                 .input-video {
+                    background-size: cover;
                     width: 400px;
                     height: 300px;
                     border-radius: 10px;
-                    margin-left: 10px;
+                    margin-left: 10px
                     
                     
                 }

@@ -57,7 +57,7 @@ const videos = ref([
                         <div>{{ i + 1 }}</div>
                         <div>
                             <!-- <video :src="video.src" class="input-video" /> -->
-                            <img :src="video.src" class="input-video">
+                            <div class="input-video" v-bind:style="{backgroundImage: `url(${video.src})`}"></div>
                             <div class="user-info">
                                 <img :src="video.profile" class="user-profile">
                                 <div class="user-name">
@@ -95,14 +95,14 @@ const videos = ref([
         }
         
         .video-container {
-            @include box(95%, 90%, null, 0, 15px, 10px);
+            @include box(95%, 90%, null, 0, 5px, 10px);
             @include flex-box($justify: flex-start);
             overflow-x: auto;
             overflow-y: hidden;
             white-space: nowrap;
 
             .videos {
-                @include box(500px, 400px, none, none, 10px, 5px);
+                @include box(500px, 400px, none, none, 5px, 5px);
                 @include flex-box();
                 .numbering {
                     @include flex-box($align: flex-start);
@@ -110,10 +110,12 @@ const videos = ref([
                 
                 }
                 .input-video {
+                    background-size: cover;
                     width: 400px;
                     height: 300px;
                     border-radius: 10px;
                     margin-left: 10px
+                    
                     
                 }
                 .user-info {

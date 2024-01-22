@@ -114,6 +114,7 @@ const selectBigCate = (name) => {
     selectedBigCate.value = name; 
    
     if (selectedBigCate.value == '전체') {
+        selectedBigCate.value = '';
         selectedMidCate.value = '';
         selectedSmallCate.value = '';
     }
@@ -138,22 +139,10 @@ const selectSmallCate = (name) => {
             <div class="big-category">
                 <li v-for="category in categories" :key="category" class="big-cate-li" @click="selectBigCate(category.name)">
                     <img :src="category.img">
-                    <div class="select-big-name" v-if="category.name == selectedBigCate" >{{ category.name }}</div>
-                    <div class="type-big-name" v-else>{{ category.name }}</div>
+                    <div :class="[category.name == selectedBigCate ? 'select-big-name' : 'type-big-name']">{{ category.name }}</div>
                 </li>
             </div>
-            <div class="mid-category" v-if="selectedBigCate != '' && selectedBigCate != '전체'">
-                <li v-for="midCategory in midCategories" :key="midCategory" class="mid-cate-li" @click="selectMidCate(midCategory.name)">
-                    <div class="select-name" v-if="midCategory.name == selectedMidCate">{{ midCategory.name }}</div>
-                    <div class="type-name" v-else>{{ midCategory.name }}</div>
-                </li>
-            </div>
-            <div class="small-category" v-if="selectedMidCate != '' && selectedMidCate != '전체'">
-                <li v-for="smallCategory in smallCategories" :key="smallCategory" class="small-cate-li" @click="selectSmallCate(smallCategory.name)">
-                    <div class="select-name" v-if="smallCategory.name == selectedSmallCate">{{ smallCategory.name }}</div>
-                    <div class="type-name" v-else>{{ smallCategory.name }}</div>
-                </li>
-            </div>
+
         </ul>
 
         
@@ -167,7 +156,6 @@ const selectSmallCate = (name) => {
 <style lang="scss" scoped>
 .container {
     @include flex-box();
-    
    
     .category {
         @include box(100%, 30%, none, 0, 5px, 2px);
@@ -186,20 +174,6 @@ const selectSmallCate = (name) => {
             margin-top: 5px;
         }
 
-        .select-name {
-            @include box(90%, 100%, none, 0, 0, 0);
-            @include font-factory(13px, 500);
-            color: $main;
-            border-bottom: 1px solid $main;
-            margin-top: 5px;
-            
-        }
-        .type-name {
-            @include box(90%, 100%, none, 0, 0, 0);
-            @include font-factory(13px, 500);
-            margin-top: 5px;
-            border-bottom: 1px dashed $dark;
-        }
 
         .big-category {
             @include box(100%, 60%, none, 0, 5px, 2px);
@@ -217,28 +191,6 @@ const selectSmallCate = (name) => {
             
         }
 
-        .mid-category {
-            @include box(90%, 20%, whitesmoke, 0, 5px, 2px);
-            @include flex-box($align: left, $direction: row);
-
-            .mid-cate-li {
-                @include flex-box($justify: flex-start);
-                @include box(90%, 100%, none, 0, 2px, 3px);
-                // border-bottom: 1px solid $dark;
-                text-align: center;
-                
-            }
-        }
-
-        .small-category {
-            @include box(90%, 20%, none, 5px, 5px, 2px);
-            @include flex-box($align: left, $direction: row);
-            .small-cate-li {
-                @include flex-box($justify: flex-start);
-                @include box(90%, 100%, none, 0, 2px, 3px);
-                text-align: center;
-            }
-        }
     }
 }
 
