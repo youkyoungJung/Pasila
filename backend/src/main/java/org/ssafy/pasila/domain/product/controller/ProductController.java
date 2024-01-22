@@ -58,6 +58,7 @@ public class ProductController {
     }
 
     // 모든 상품 조회
+    @Operation(summary = "getAllProducts", description = "모든 상품을 조회한다.")
     @GetMapping("/product")
     public List<ProductResponse> getAllProducts() {
         return productJoinRepository.findAllWithCategory();
@@ -65,6 +66,7 @@ public class ProductController {
 
     // id 에 따른 상품 조회,
     // 추후 카테고리 정보 가져오기 (완료)
+    @Operation(summary = "get Product", description = "id 로 제품 하나를 조회한다.")
     @GetMapping("/product/{id}")
     public Optional<ProductResponse> getProduct(@PathVariable("id") Long id){
         return Optional.ofNullable(productJoinRepository.findById(id));
@@ -73,6 +75,7 @@ public class ProductController {
     // 상품 정보 수정
     // 추후 request에 @Valid 설정
     // 추후 여러 Image 삭제시 수정 필요 (List<String> deleteImageFilesName)
+    @Operation(summary = "Update product", description = "id 로 제품을 업데이트한다.")
     @PutMapping("/product/{id}")
     public  ResponseEntity<String> updateProduct(@PathVariable("id") Long id,
                                                  @RequestPart(value = "pr") ProductRequest request,
@@ -93,6 +96,7 @@ public class ProductController {
     }
 
     //상품 정보 삭제
+    @Operation(summary = "Delete product", description = "id로 제품을 삭제한다.")
     @DeleteMapping("/product/{id}")
     ResponseEntity<String> deleteProduct(@PathVariable("id") Long id){
 
@@ -105,10 +109,5 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
     }
-
-
-
-
-
 
 }
