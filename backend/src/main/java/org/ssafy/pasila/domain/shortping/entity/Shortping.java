@@ -35,7 +35,7 @@ public class Shortping {
     private LocalDateTime createdAt;
 
     @Column(name = "is_active")
-    private LocalDateTime isActive;
+    private boolean isActive;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
