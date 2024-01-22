@@ -16,15 +16,26 @@
             </section>
             <button @click="login" class="login">로그인</button>
             <button @click="join" class="join">회원가입</button>
-
-            <!-- 소셜로그인 버튼 필요 -->
+            <hr>
+            <div class="social-login" @click="googleLogin">
+                <img src="@/assets/img/google-logo.png">
+                <button class="social-btn">구글로 시작하기</button>
+            </div>
+            <div class="social-login" @click="kakaoLogin">
+                <img src="@/assets/img/kakao-logo.png">
+                <button class="social-btn">카카오로 시작하기</button>
+            </div>
+            <div class="social-login" @click="naverLogin">
+                <img src="@/assets/img/naver-logo.png">
+                <button class="social-btn">네이버로 시작하기</button>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
 import router from '@/router';
-import { ref } from 'vue';
+import { initCustomFormatter, ref } from 'vue';
 import JoinView from './JoinView.vue';
 
 const user = ref({
@@ -44,6 +55,50 @@ const join = () => {
     router.push("/join");
 }
 
+//소셜 로그인 당시 필수나 선택으로 가져온 정보를 회원가입 페이지에 넣어주기
+//그리고 필수적으로 이메일을 받아서 이메일로 로그인 가능!
+const googleLogin = () => {
+    console.log("google");
+    try {
+        window.location.href ="https://accounts.google.com/o/oauth2/auth?" +
+        "client_id=7996849508-02pnc5dga9l9aae1o138b9ng9irsmpkq.apps.googleusercontent.com&"+
+        "redirect_uri=https://localhost:5173/auth/google&"+
+        "response_type=token&"+
+        "scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
+    } catch(e) {
+        console.log(e)
+    }
+  
+//   const parsedHash = new URLSearchParams(window.location.hash.substring(1));
+//   const accessToken = parsedHash.get("access_token");
+//   console.log(accessToken);
+  // const { data } = await Api.post("oauth/google", { accessToken });
+}
+
+
+
+const kakaoLogin = () => {
+    console.log("kakao");
+    // Init() {
+    //     window.Kakao.init(process.env.VUE_APP_KAKAO_APP_KEY);
+    // },
+    
+    // GetMe(authObj) {
+    //     console.log(authObj);
+    //     window.Kakao.API.request({
+    //         url: '/v2/user/me',
+    //         success: async res => {
+    //             console.log(res);
+    //             const kakao_account = res.kakao_account;
+    //             const req
+    //         }
+    //     })
+    // }
+}
+
+const naverLogin = () => {
+    console.log("naver")
+}
 </script>
 
 <style lang="scss" scoped>
@@ -108,5 +163,29 @@ const join = () => {
         }
     }
 
+    hr {
+        width: 90%;
+        margin: 35px 0px;
+    }
+
+    .social-login {
+        @include box(80%, 80%, whitesmoke, 0, 10px, 10px);
+        @include flex-box();
+        vertical-align: middle;
+        cursor: pointer;
+        
+        img {
+            width: 5%;
+            height: 5%;
+            vertical-align: middle;
+            
+        }
+        .social-btn {
+            cursor: pointer;
+            background-color: whitesmoke;
+            border: none;
+            
+        }
+    }
 }
 </style>
