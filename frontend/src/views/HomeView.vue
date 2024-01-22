@@ -1,11 +1,7 @@
-<script setup>
-import VCategory from '@/components/common/VCategory.vue';
-</script>
+<script setup></script>
 
 <template>
-  <div>
-    <VCategory />
-  </div>
+  <div></div>
 </template>
 
 <style lang="scss">
