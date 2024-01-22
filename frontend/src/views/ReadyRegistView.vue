@@ -1,10 +1,13 @@
 <script setup>
-import step from '@/components/ready/Step.vue'
+import steps from '@/components/ready/Steps.vue'
+import { ref } from 'vue'
+
+const step = ref('register')
 </script>
 
 <template>
   <div>
-    <step />
+    <steps :data="step" />
   </div>
 </template>
 
