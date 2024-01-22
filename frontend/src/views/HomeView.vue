@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-  <div class="title">아아, 여기는 home입니다.</div>
+  <div></div>
 </template>
 
 <style lang="scss">
