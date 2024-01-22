@@ -22,7 +22,7 @@ defineProps({
     @include box(10rem, 10rem, $gray, 50%, 0 2rem 0 0, 0);
   }
   .name {
-    @include font-factory($fs-5, bold);
+    @include font-factory($fs-4, bold);
   }
   .desc {
     @include font-factory($fs-3, 500);
