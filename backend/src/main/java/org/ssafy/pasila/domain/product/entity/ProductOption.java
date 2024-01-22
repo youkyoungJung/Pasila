@@ -25,7 +25,7 @@ public class ProductOption {
     private Integer price;
 
     @Column(name = "discount_price")
-    private Long discountPrice;
+    private Integer discountPrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
