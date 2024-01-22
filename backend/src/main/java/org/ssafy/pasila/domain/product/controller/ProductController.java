@@ -57,7 +57,7 @@ public class ProductController {
     // 추후 request에 @Valid 설정
     // 추후 여러 Image 삭제시 수정 필요 (List<String> deleteImageFilesName)
     @PutMapping("/product/{id}")
-    public  ResponseEntity<String> updateProduct(@PathVariable("id") Long id,
+    public  ResponseEntity<String> updateProduct(@PathVariable("id") String id,
                                                  @RequestPart(value = "pr") ProductRequest request,
                                                  @RequestPart(value = "delete_image", required = false) String deleteImageName,
                                                  @RequestPart(value = "new_image", required = false) MultipartFile newImageName){
@@ -77,7 +77,7 @@ public class ProductController {
 
     //상품 정보 삭제
     @DeleteMapping("/product/{id}")
-    ResponseEntity<String> deleteProduct(@PathVariable("id") Long id){
+    ResponseEntity<String> deleteProduct(@PathVariable("id") String id){
 
         try{
             productService.deleteProduct(id);

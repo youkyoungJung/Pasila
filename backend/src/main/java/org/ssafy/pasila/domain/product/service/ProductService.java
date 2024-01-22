@@ -8,16 +8,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.product.dto.product.ProductRequest;
-import org.ssafy.pasila.domain.product.entity.DetailCategory;
-import org.ssafy.pasila.domain.product.entity.LargeCategory;
-import org.ssafy.pasila.domain.product.entity.MiddleCategory;
-import org.ssafy.pasila.domain.product.entity.Product;
+import org.ssafy.pasila.domain.product.entity.*;
+import org.ssafy.pasila.domain.product.repository.CategoryRepository;
 import org.ssafy.pasila.domain.product.repository.ProductJoinRepository;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
 import org.ssafy.pasila.global.infra.s3.service.S3Uploader;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -31,44 +31,57 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductJoinRepository productJoinRepository;
+    private final CategoryRepository categoryRepository;
     private final S3Uploader s3Uploader;
 
     //상품 등록
     @Transactional
     public void saveProduct(ProductRequest productRequest, MultipartFile image) throws IOException {
 
-        LargeCategory largeCategory = new LargeCategory(productRequest.getLargeCategoryId());
-        MiddleCategory middleCategory = new MiddleCategory(productRequest.getMiddleCategoryId());
-        DetailCategory detailCategory = new DetailCategory(productRequest.getDetailCategoryId());
+        Objects.requireNonNull(productRequest, "ProductRequest는 null이 될 수 없습니다");
+        Objects.requireNonNull(image, "이미지는 null이 될 수 없습니다");
 
-
-        log.info("largeCategoryId: {}", productRequest.getLargeCategoryId());
         Product savedProduct = productRequest.getProduct();
-        savedProduct.setLargeCategory(largeCategory);
-        savedProduct.setMiddleCategory(middleCategory);
-        savedProduct.setDetailCategory(detailCategory);
-        savedProduct.getDetailCategory().setId(productRequest.getDetailCategoryId());
-        savedProduct.setCreatedAt(LocalDateTime.now());
+        Category category = categoryRepository.findById(productRequest.getCategory().getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 카테고리가 없습니다."));
+        List<ProductOption> productOptions = productRequest.getProductOptions();
 
-        if(!image.isEmpty()){
-            String storedFileName = s3Uploader.upload(image, "images");
-            savedProduct.setThumbnail(storedFileName);
-        }
+        // 이미지 처리 메서드 호출
+        handleImage(savedProduct, image);
+
+        // ProductService의 initializeProduct 메서드 활용
+        savedProduct = initializeProduct(savedProduct, category, productOptions);
 
         // repository를 통한 저장
         productRepository.save(savedProduct);
-
     }
+
+    // 이미지 처리 메서드
+    private void handleImage(Product savedProduct, MultipartFile image) throws IOException {
+        if (!image.isEmpty()) {
+            String storedFileName = s3Uploader.upload(image, "images");
+            savedProduct.setThumbnail(storedFileName);
+        }
+    }
+
+    // ProductService의 비즈니스 로직 메서드
+    private Product initializeProduct(Product product, Category category, List<ProductOption> productOptions) {
+        return Product.initializeProduct(product, category, productOptions);
+    }
+
 
     //상품 수정
     //TODO : 0. 파일 수정권 변경
     @Transactional
-    public void updateProduct(Long id, ProductRequest productRequest, String deleteImageName, MultipartFile newImageFile) throws IOException {
+    public void updateProduct(String id, ProductRequest productRequest, String deleteImageName, MultipartFile newImageFile) throws IOException {
 
-        LargeCategory largeCategory = new LargeCategory(productRequest.getLargeCategoryId());
-        MiddleCategory middleCategory = new MiddleCategory(productRequest.getMiddleCategoryId());
-        DetailCategory detailCategory = new DetailCategory(productRequest.getDetailCategoryId());
-        Product result = productJoinRepository.findOne(id);
+        Product result = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 상품이 없습니다."));
+
+
+        Category category = categoryRepository.findById(productRequest.getCategory().getId())
+                .orElseThrow(()-> new IllegalArgumentException("해당 아이디에 대한 카테고리가 없습니다."));
+
 
         if(deleteImageName != null && !deleteImageName.isEmpty()){
             log.info("deleteImageName이 들어왔습니다.");
@@ -81,18 +94,14 @@ public class ProductService {
             result.setThumbnail(storedFileName);
         }
 
-        result.setName(productRequest.getProduct().getName());
-        result.setDescription(productRequest.getProduct().getDescription());
-        result.setUpdatedAt(LocalDateTime.now());
-        result.setLargeCategory(largeCategory);
-        result.setMiddleCategory(middleCategory);
-        result.setDetailCategory(detailCategory);
+        result.updateProduct(productRequest.getProduct(), category);
+
         log.info("반영 result : {}", result);
     }
 
     //상품 삭제
     @Transactional
-    public void deleteProduct(Long id){
+    public void deleteProduct(String id){
 
         String originImageUrl = "";
         originImageUrl = findProductImageUrl(id);
@@ -113,11 +122,13 @@ public class ProductService {
     }
 
     //상품 이미지 url 찾기
-    public String findProductImageUrl(Long id){
+    public String findProductImageUrl(String id){
         Optional<Product> product = productRepository.findById(id);
         String result = product.get().getThumbnail();
         return result;
     }
+
+
 
 
 }
