@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.product.entity.Product;
 
@@ -29,6 +30,7 @@ public class Shortping {
     @Column(name = "video_url")
     private String videoUrl;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -38,7 +40,4 @@ public class Shortping {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     private Product product;
-
-//    @OneToOne
-//    private Live live;
 }

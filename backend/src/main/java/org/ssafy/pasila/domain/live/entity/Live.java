@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.catalina.User;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.product.entity.Product;
@@ -49,14 +50,12 @@ public class Live {
     @Column(name = "is_on")
     private boolean isOn;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "is_active")
     private LocalDateTime isActive;
-
-    @OneToOne
-    private Shortping shortping;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

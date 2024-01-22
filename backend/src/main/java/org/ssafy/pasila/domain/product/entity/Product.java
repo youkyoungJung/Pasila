@@ -44,7 +44,6 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-
     @Column(name = "is_active")
     @ColumnDefault("true")
     private boolean isActive;
@@ -54,13 +53,7 @@ public class Product {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private LargeCategory largeCategory;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private MiddleCategory middleCategory;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private DetailCategory detailCategory;
+    private Category category;
 
     @OneToMany(mappedBy = "product")
     private List<ProductOption> productOption = new ArrayList<>();

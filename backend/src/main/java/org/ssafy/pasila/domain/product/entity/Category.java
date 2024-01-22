@@ -15,14 +15,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "middle_category")
-public class MiddleCategory {
+public class Category {
     @Id
     private Long id;
 
-    @Column(length = 20)
+    @Column(length = 10)
     private String name;
 
-    @Column(name = "large_category_id")
-    private Long largeCategoryId;
+    @Column(name = "image_url", length = 2083)
+    private String imageUrl;
 }
