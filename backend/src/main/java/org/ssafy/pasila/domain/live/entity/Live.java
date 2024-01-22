@@ -45,7 +45,7 @@ public class Live {
     private String fullVideoUrl;
 
     @Column(name = "like_cnt")
-    private Long likeCnt;
+    private Integer likeCnt;
 
     @Column(name = "is_on")
     private boolean isOn;

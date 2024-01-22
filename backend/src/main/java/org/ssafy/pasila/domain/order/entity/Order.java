@@ -48,10 +48,6 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "product_id")
-//    private Product product;
-
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "product_option_id")
     private ProductOption productOption;
