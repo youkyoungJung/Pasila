@@ -17,13 +17,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity
+@Table(name = "orders")
 public class Order {
     @Id
     @GeneratedValue
     private Long id;
 
     @Column(name = "order_cnt")
-    private Long orderCnt;
+    private Integer orderCnt;
 
     @Column(length = 10)
     private String name;
@@ -34,7 +35,7 @@ public class Order {
     @Column(length = 10)
     private String status;
 
-    private Long price;
+    private Integer price;
 
     @CreationTimestamp
     @Column(name = "created_at")

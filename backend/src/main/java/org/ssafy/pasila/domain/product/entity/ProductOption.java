@@ -20,9 +20,9 @@ public class ProductOption {
     @Column(length = 20)
     private String name;
 
-    private Long stock;
+    private Integer stock;
 
-    private Long price;
+    private Integer price;
 
     @Column(name = "discount_price")
     private Long discountPrice;

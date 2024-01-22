@@ -25,7 +25,7 @@ public class Shortping {
     private String title;
 
     @Column(name = "like_cnt")
-    private Long likeCnt;
+    private Integer likeCnt;
 
     @Column(name = "video_url")
     private String videoUrl;
