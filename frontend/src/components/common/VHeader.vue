@@ -22,9 +22,11 @@ const goHome = () => {
             <font-awesome-icon icon="fa-regular fa-calendar-check" size="2x" />
           </span>
         </router-link>
+        <router-link to="/login">
         <span class="icon-color">
           <font-awesome-icon icon="fa-regular fa-user" size="2x" />
         </span>
+      </router-link>
       </nav>
     </div>
   </header>
