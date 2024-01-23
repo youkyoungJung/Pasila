@@ -7,7 +7,7 @@ import FindPwSendView from '@/views/FindPwSendView.vue'
 import LiveView from '@/views/LiveView.vue'
 import ScheduleView from '@/views/ScheduleView.vue'
 import ReadyRegistView from '@/views/ReadyRegistView.vue'
-
+import ReadyScriptView from '@/views/ReadyScriptView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -50,6 +50,11 @@ const router = createRouter({
       path: '/ready/regist',
       name: 'readyregist',
       component: ReadyRegistView
+    },
+    {
+      path: '/ready/script',
+      name: 'readyscript',
+      component: ReadyScriptView
     }
   ]
 })

@@ -19,7 +19,7 @@ const stepName = ['상품 등록', '대본 작성', '챗봇 생성', '라이브 
 .step-container {
   @include flex-box($justify: flex-start);
   @include box(100%, null, null, 0, 2px, 5px);
-  margin-left: 30px;
-  margin-top: 30px;
+  margin-left: 1rem;
+  margin-top: 1rem;
 }
 </style>

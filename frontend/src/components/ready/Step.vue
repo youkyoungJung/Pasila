@@ -15,7 +15,6 @@ const props = defineProps({
     default: 'default type'
   }
 })
-console.log(props)
 </script>
 
 <template>
@@ -26,9 +25,7 @@ console.log(props)
         :class="[props.data == 'register' ? 'icon-number' : 'no-icon-number']"
       />
     </div>
-    <span :class="[props.data == 'register' ? 'step-text' : 'no-step-text']">{{
-      props.names
-    }}</span>
+    <span :class="[props.data == 'register' ? 'step-text' : 'no-step-text']">상품 등록</span>
     <font-awesome-icon icon="fa-solid fa-minus" class="icon-dash" size="2x" />
   </div>
   <div class="steps">
@@ -66,8 +63,7 @@ console.log(props)
 .step-container {
   @include flex-box($justify: flex-start);
   @include box(100%, null, null, 0, 2px, 5px);
-  margin-left: 30px;
-  margin-top: 30px;
+
   .steps {
     @include flex-box();
   }
