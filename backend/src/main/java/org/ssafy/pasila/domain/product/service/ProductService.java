@@ -31,7 +31,6 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final ProductJoinRepository productJoinRepository;
     private final CategoryRepository categoryRepository;
     private final ProductOptionRepository productOptionRepository;
     private final S3Uploader s3Uploader;
@@ -51,27 +50,24 @@ public class ProductService {
             option.addProduct(savedProduct);
             productOptionRepository.save(option);
         }
-
-        // 이미지 처리 메서드 호출
-        handleImage(savedProduct, image);
-
         // repository를 통한 저장
         productRepository.save(savedProduct);
+        // 이미지 처리 메서드 호출
+        handleImage(savedProduct, image);
     }
 
     // 이미지 처리 메서드
     private void handleImage(Product product, MultipartFile image) throws IOException {
         if (!image.isEmpty()) {
             log.info("product:{}", product);
-            String storedFileName = s3Uploader.upload(image, "images");
-            product.setThumbnail(storedFileName);
+            String storedFileName = s3Uploader.upload(product.getId(), image, "images");
+            product.addThumbnailUrl(storedFileName);
         }
     }
 
     //상품 수정
-    //TODO : 0. 파일 수정권 변경
     @Transactional
-    public void updateProduct(String id, ProductRequest productRequest, String deleteImageName, MultipartFile newImageFile) throws IOException {
+    public void updateProduct(String id, ProductRequest productRequest, MultipartFile newImageFile) throws IOException {
 
         Product result = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 상품이 없습니다."));
@@ -82,23 +78,23 @@ public class ProductService {
 
         List<ProductOption> productOptions = productRequest.getProductOptions();
         for(ProductOption option : productOptions){
-            productOptionRepository.findById(option.getId());
-            option.updateProductOption(option);
-        }
-
-        //TODO: Image 파일 uuid 혹은 product_id 로 바꾸기
-        if(deleteImageName != null && !deleteImageName.isEmpty()){
-            log.info("deleteImageName이 들어왔습니다.");
-            s3Uploader.deleteImage(deleteImageName);
-            result.setThumbnail("");
-        }
-        if(newImageFile != null && !newImageFile.isEmpty()){
-            log.info("newImageFile이 들어왔습니다.");
-            String storedFileName = s3Uploader.upload(newImageFile, "images");
-            result.setThumbnail(storedFileName);
+            ProductOption update = productOptionRepository.findById(option.getId())
+                    .orElseThrow(()->new IllegalArgumentException("option id 가 없습니다"));
+            update.updateProductOption(option);
         }
 
         result.updateProduct(productRequest.getProduct(), category);
+        //새로운 이미지 변경
+        String originImageUrl = result.getThumbnail();
+        log.info("originImageUrl:{}", originImageUrl);
+        if (!newImageFile.isEmpty()) {  //imageUrl이 있을 경우 S3접근
+            //imageUrl 로 S3에 있는 originalFilename 접근을 위한 split 사용
+            String splitStr = ".com/";
+            String fileName = originImageUrl.substring(originImageUrl.lastIndexOf(splitStr) + splitStr.length());
+            s3Uploader.deleteImage(fileName);
+            log.info("success: deleteImage 수행");
+            handleImage(result, newImageFile);
+        }
 
         log.info("반영 result : {}", result);
     }
@@ -111,7 +107,6 @@ public class ProductService {
         originImageUrl = findProductImageUrl(id);
 
         log.info("originImageUrl: {}", originImageUrl);
-
 
         if (!originImageUrl.isEmpty()) {  //imageUrl이 있을 경우 S3접근
             //imageUrl 로 S3에 있는 originalFilename 접근을 위한 split 사용
@@ -131,8 +126,5 @@ public class ProductService {
                 .orElseThrow(()-> new IllegalArgumentException("id에 해당하는 Product 가 없습니다."));
         return product.getThumbnail();
     }
-
-
-
 
 }

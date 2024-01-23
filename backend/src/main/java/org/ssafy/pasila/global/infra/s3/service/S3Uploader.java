@@ -36,14 +36,15 @@ public class S3Uploader {
 
     // MultipartFile을 전달받아 File로 전환한 후 S3에 업로드
     // 추 후 같은 이미지 파일 이름을 보낼시 처리 하기
-    public String upload(MultipartFile multipartFile, String dirName) throws IOException {
-        File uploadFile = convert(multipartFile)
+    public String upload(String id, MultipartFile multipartFile, String dirName) throws IOException {
+        File uploadFile = convert(id, multipartFile)
                 .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
         return upload(uploadFile, dirName);
     }
 
     private String upload(File uploadFile, String dirName) {
         String fileName = dirName + "/" + uploadFile.getName();
+
         String uploadImageUrl = putS3(uploadFile, fileName);
 
         removeNewFile(uploadFile);  // 로컬에 생성된 File 삭제 (MultipartFile -> File 전환 하며 로컬에 파일 생성됨)
@@ -72,14 +73,15 @@ public class S3Uploader {
         }
     }
 
-    private Optional<File> convert(MultipartFile file) throws  IOException {
+    private Optional<File> convert(String id, MultipartFile file) throws  IOException {
         String originName = file.getOriginalFilename();
 
         assert originName != null;
         final String ext = originName.substring(originName.lastIndexOf("."));
-        final String saveFileName = getUuid() + ext;
+//        final String saveFileName = getUuid() + ext;
+        final String saveFileName = id + ext;
 
-        File convertFile = new File("pasila_thumbnail_"+saveFileName);
+        File convertFile = new File(saveFileName);
         if(convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
                 fos.write(file.getBytes());
@@ -91,6 +93,7 @@ public class S3Uploader {
 
     //s3 파일 삭제
     public void deleteImage(String originalFilename)  {
+
         amazonS3Client.deleteObject(bucket, originalFilename);
         log.info("success : delete Image in S3");
     }

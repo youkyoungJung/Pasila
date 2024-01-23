@@ -1,10 +1,7 @@
 package org.ssafy.pasila.domain.product.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -21,7 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
+@ToString(exclude = {"category", "productOptions"})
+//@ToString(exclude = "productOptions")
 @Entity
 public class Product {
     @Id @GeneratedValue(generator = "uuid2")
@@ -75,5 +73,9 @@ public class Product {
         this.name = product.getName();
         this.description = product.getDescription();
         this.category = category;
+    }
+
+    public void addThumbnailUrl(String url){
+        this.thumbnail = url;
     }
 }

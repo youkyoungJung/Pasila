@@ -59,13 +59,11 @@ public class ProductController {
     @PutMapping("/product/{id}")
     public  ResponseEntity<String> updateProduct(@PathVariable("id") String id,
                                                  @RequestPart(value = "pr") ProductRequest request,
-                                                 @RequestPart(value = "delete_image", required = false) String deleteImageName,
                                                  @RequestPart(value = "new_image", required = false) MultipartFile newImageName){
 
         try{
-            log.info("request: {}", request);
-
-                productService.updateProduct(id, request, deleteImageName, newImageName);
+                log.info("request: {}", request);
+                productService.updateProduct(id, request, newImageName);
 
         }catch(Exception e){
             String errorMessage = "An error occurred: " + e.getMessage();

@@ -9,10 +9,9 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class ProductResponse {
 
-    private Long id;
+    private String id;
     private Long sellerId;
     private String name;
     private String description;
@@ -20,34 +19,25 @@ public class ProductResponse {
     private LocalDateTime updatedAt;
     private String thumbnail;
 
-    private Long largeCategoryId;
-    private Long middleCategoryId;
-    private Long detailCategoryId;
-
-    public ProductResponse(Long id, Long sellerId, String name, String description,
-                           LocalDateTime createdAt, Long largeCategoryId, Long middleCategoryId, Long detailCategoryId){
+    public ProductResponse(String id, String name){
         this.id = id;
-        this.sellerId = sellerId;
         this.name = name;
-        this.description = description;
-        this.createdAt = createdAt;
-        this.largeCategoryId = largeCategoryId;
-        this.middleCategoryId = middleCategoryId;
-        this.detailCategoryId = detailCategoryId;
     }
 
-    public ProductResponse(Long id, Long sellerId, String name, String description,
-                           LocalDateTime createdAt,
-                           String thumbnail, Long largeCategoryId, Long middleCategoryId, Long detailCategoryId){
+    public ProductResponse(String id, String name, String description){
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
+    public ProductResponse(String id, Long sellerId, String name, String description,
+                           LocalDateTime createdAt, String thumbnail){
         this.id = id;
         this.sellerId = sellerId;
         this.name = name;
         this.description = description;
         this.createdAt = createdAt;
         this.thumbnail = thumbnail;
-        this.largeCategoryId = largeCategoryId;
-        this.middleCategoryId = middleCategoryId;
-        this.detailCategoryId = detailCategoryId;
     }
 
 }

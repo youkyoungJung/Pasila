@@ -28,22 +28,14 @@ public class ProductJoinRepository {
 
     public List<ProductResponse> findAllWithCategory() {
         return em.createQuery(
-                        "SELECT new org.ssafy.pasila.domain.product.dto.product.ProductResponse" +
-                                "(p.id, p.sellerId, p.name, p.description, p.createdAt, l.id, m.id, d.id) " +
-                                "FROM Product p " +
-                                "join p.largeCategory l " +
-                                "join p.middleCategory m " +
-                                "join p.detailCategory d ",  ProductResponse.class)
+                        "SELECT new org.ssafy.pasila.domain.product.dto.product.ProductResponse(p.id, p.name) " +
+                                "FROM Product p " ,  ProductResponse.class)
                 .getResultList();
     }
 
     public ProductResponse findById(Long productId){
-        return em.createQuery("Select new org.ssafy.pasila.domain.product.dto.product.ProductResponse" +
-                        "(p.id, p.sellerId, p.name, p.description, p.createdAt, p.thumbnail, l.id, m.id, d.id) " +
+        return em.createQuery("Select new org.ssafy.pasila.domain.product.dto.product.ProductResponse(p.id, p.name, p.description) " +
                         "FROM Product p " +
-                        "join p.largeCategory l " +
-                        "join p.middleCategory m " +
-                        "join p.detailCategory d " +
                         "where p.id = :productId " , ProductResponse.class)
                 .setParameter("productId", productId).getSingleResult();
     }
