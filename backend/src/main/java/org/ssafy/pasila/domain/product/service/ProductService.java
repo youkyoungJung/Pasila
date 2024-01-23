@@ -31,14 +31,14 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final ProductJoinRepository productJoinRepository;
-    private final CategoryRepository categoryRepository;
     private final ProductOptionRepository productOptionRepository;
+    private final CategoryRepository categoryRepository;
     private final S3Uploader s3Uploader;
 
     //상품 등록
     @Transactional
     public void saveProduct(ProductRequest productRequest, MultipartFile image) throws IOException {
+
 
         Product savedProduct = productRequest.getProduct();
         Category category = categoryRepository.findById(productRequest.getCategory().getId())
@@ -49,10 +49,14 @@ public class ProductService {
             option.addProduct(savedProduct);
             productOptionRepository.save(option);
         }
-//        savedProduct.addProductWithCategoryWithOption(savedProduct, category, (ProductOption) productRequest.getProductOptions());
 
         // 이미지 처리 메서드 호출
-        handleImage(savedProduct, image);
+        if(!image.isEmpty()){
+            handleImage(savedProduct, image);
+        }
+
+        // ProductService의 initializeProduct 메서드 활용
+        savedProduct.initializeProduct(savedProduct, category);
 
         // repository를 통한 저장
         productRepository.save(savedProduct);
@@ -65,6 +69,7 @@ public class ProductService {
             savedProduct.setThumbnail(storedFileName);
         }
     }
+
 
     //상품 수정
     //TODO : 0. 파일 수정권 변경
@@ -125,8 +130,9 @@ public class ProductService {
 
     //상품 이미지 url 찾기
     public String findProductImageUrl(String id){
-        Optional<Product> product = productRepository.findById(id);
-        String result = product.get().getThumbnail();
+        Product product = productRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("id 값에 해당하는 product가 없습니다."));
+        String result = product.getThumbnail();
         return result;
     }
 
