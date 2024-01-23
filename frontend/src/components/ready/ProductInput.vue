@@ -26,7 +26,7 @@ const discount = (per) => {
   product.value.formatDiscPrice = product.value.discountPrice.toLocaleString('en-US')
 }
 
-//아래 겹치는 함수는 싹다 합쳐야합니다 && 최대 개수 제한하기(int)
+//아래 겹치는 함수는 싹다 합침필요 && 최대 개수 제한하기(int)
 const changeInput = () => {
   const parsedAmount = parseFloat(product.value.formatRegular.replace(/,/g, '')) || 0
   product.value.formatRegular = parsedAmount.toLocaleString('en-US')
@@ -63,7 +63,7 @@ const changeCnt3 = () => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="content">
     <div class="product-input">
       <div class="product-name">
         <label for="name">품명</label>
@@ -154,20 +154,15 @@ const changeCnt3 = () => {
         </div>
       </div>
     </div>
-    <div class="editor">
-      <div class="editor-body">
-        <editor />
-      </div>
-    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.container {
-  @include box(100%, 100%, none, 0, 0.8rem, 0.8rem);
-  @include flex-box($align: flex-start, $direction: column);
+.content {
+  @include box(95%, 100%, none, 0, 0.3rem, 0.1rem);
+  @include flex-box($align: center, $direction: column);
   @include font-factory($fs-1, null);
-  border-right: 1px solid $main;
+
   .product-input {
     @include box(95%, 95%, none, 0, 0.3rem, 0.1rem);
 

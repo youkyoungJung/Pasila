@@ -1,5 +1,7 @@
 <script setup>
-import { reactive } from 'vue'
+import { reactive, defineEmits } from 'vue'
+
+const emits = defineEmits(['preview-content'])
 
 const state = reactive({
   content: '',
@@ -29,17 +31,18 @@ const state = reactive({
 })
 
 const onEditorBlur = (quill) => {
-  console.log('editor blur!', quill)
+  // console.log('editor blur!', quill)
 }
 const onEditorFocus = (quill) => {
-  console.log('editor focus!', quill)
+  // console.log('editor focus!', quill)
 }
 const onEditorReady = (quill) => {
-  console.log('editor ready!', quill)
+  // console.log('editor ready!', quill)
 }
 const onEditorChange = ({ quill, html, text }) => {
-  console.log('editor change!', quill, html, text)
+  // console.log('editor change!', quill, html, text)
   state._content = html
+  emits('preview-content', state._content)
 }
 
 setTimeout(() => {
@@ -48,12 +51,29 @@ setTimeout(() => {
 </script>
 
 <template>
-  <quill-editor
-    v-model:value="state.content"
-    :options="state.editorOption"
-    @blur="onEditorBlur($event)"
-    @focus="onEditorFocus($event)"
-    @ready="onEditorReady($event)"
-    @change="onEditorChange($event)"
-  />
+  <div class="editor-body">
+    <quill-editor
+      v-model:value="state.content"
+      :options="state.editorOption"
+      @blur="onEditorBlur($event)"
+      @focus="onEditorFocus($event)"
+      @ready="onEditorReady($event)"
+      @change="onEditorChange($event)"
+    />
+  </div>
 </template>
+
+<style lang="scss">
+.ql-toolbar.ql-snow {
+  @include box(95%, 100%, $light-gray, 0, 0, 0);
+}
+section {
+  @include box(95%, 100%, white, 0, 0, 0);
+}
+
+.editor-body {
+  @include box(95%, 100%, none, 0, 0.3rem, 0.1rem);
+  @include flex-box($align: flex-start, $direction: column);
+  @include font-factory($fs-1, null);
+}
+</style>

@@ -6,22 +6,32 @@ import { ref } from 'vue'
 
 const step = ref('script')
 const nextStep = ref('chatbot')
-
-// const sendProduct = () => {
-//   //상품 정보 보내기
-// }
 </script>
 
 <template>
   <div class="container">
     <steps :data="step" />
-
-    <next-button :data="nextStep" />
+    <div class="next-btn">
+      <next-button :data="nextStep" />
+    </div>
+    <div class="body"></div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .container {
-  @include box(95%, 100%, null, 0, 0.8rem, 0.5rem);
+  @include box(95%, 100%, none, 0.3rem, 0.8rem, 0.5rem);
+
+  .next-btn {
+    @include box(100%, null, 0, 0, 0, 0);
+    @include flex-box($justify: flex-end);
+  }
+
+  .body {
+    @include box(100%, 80%, none, 0, 0.3rem, 0.1rem);
+    @include flex-box($align: flex-start, $justify: space-evenly);
+    border: 1px solid $main;
+    border-radius: 0.5rem;
+  }
 }
 </style>
