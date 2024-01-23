@@ -23,9 +23,7 @@ const sendProduct = () => {
 <template>
   <div class="container">
     <steps :data="step" />
-    <div class="next-btn">
-      <next-button :data="nextStep" @click="sendProduct" />
-    </div>
+    <next-button :data="nextStep" @click="sendProduct" />
     <div class="body">
       <div class="input-type">
         <product-input />
@@ -43,10 +41,6 @@ const sendProduct = () => {
 .container {
   @include box(95%, 100%, none, 0.3rem, 0.8rem, 0.5rem);
 
-  .next-btn {
-    @include box(100%, null, 0, 0, 0, 0);
-    @include flex-box($justify: flex-end);
-  }
   .body {
     @include box(100%, 80%, none, 0, 0.3rem, 0.1rem);
     @include flex-box($align: flex-start, $justify: space-evenly);
