@@ -67,10 +67,12 @@ public class Product {
     }
 
     //== 생성 메서드 ==//
-    public void initializeProduct(Product product, Category category){
+    public void addProductWithCategoryWithOption(Product product, Category category, ProductOption... productOption){
         this.category = category;
+        for(ProductOption option : productOption){
+            product.addProductOption(option);
+        }
     }
-
     public void updateProduct(Product product, Category category) {
         this.name = product.getName();
         this.description = product.getDescription();

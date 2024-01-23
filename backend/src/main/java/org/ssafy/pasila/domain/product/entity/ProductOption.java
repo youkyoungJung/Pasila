@@ -31,6 +31,10 @@ public class ProductOption {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    //== 연관메서드==//
+    public void addProduct(Product product){
+        this.product = product;
+    }
 
     public void updateProductOption(ProductOption productOption){
         this.id = productOption.getId();
@@ -39,10 +43,4 @@ public class ProductOption {
         this.price = productOption.getPrice();
         this.discountPrice = productOption.getDiscountPrice();
     }
-
-    //== 생성 메서드 ==//
-    public void addProduct(Product product){
-        this.product = product;
-    }
-
 }
