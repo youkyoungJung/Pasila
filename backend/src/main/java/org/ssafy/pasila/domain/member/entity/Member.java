@@ -91,4 +91,9 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Product> products = new ArrayList<>();
+
+    //profile 관련 메서드
+    public void addProfile(String url){
+        this.profile = url;
+    }
 }
