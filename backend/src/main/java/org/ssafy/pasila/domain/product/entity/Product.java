@@ -20,7 +20,6 @@ import java.util.List;
 @Builder
 
 @Entity
-@DynamicUpdate
 public class Product {
     @Id
     @Column(columnDefinition = "VARCHAR(12)")
