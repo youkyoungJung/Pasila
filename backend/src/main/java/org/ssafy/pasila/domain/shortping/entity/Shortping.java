@@ -6,10 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.sqids.Sqids;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.product.entity.Product;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 
@@ -19,7 +22,20 @@ import java.time.LocalDateTime;
 @Builder
 public class Shortping {
     @Id
+    @Column(columnDefinition = "VARCHAR(8)")
     private String id;
+
+    @PrePersist
+    public void createUniqId() {
+        Sqids sqids = Sqids.builder()
+                .minLength(8)
+                .build();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        long timestampAsLong = timestamp.getTime();
+        String newId = sqids.encode(List.of(timestampAsLong, 2L));
+
+        this.id = newId;
+    }
 
     @Column(length = 30)
     private String title;
