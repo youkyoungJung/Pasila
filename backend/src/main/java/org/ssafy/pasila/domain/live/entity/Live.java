@@ -57,8 +57,6 @@ public class Live {
     @Column(name = "full_video_url", length = 2083)
     private String fullVideoUrl;
 
-    @Column(length = 2083)
-    private String thumbnail;
 
     @Column(name = "like_cnt")
     private Integer likeCnt;
