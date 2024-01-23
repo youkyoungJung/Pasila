@@ -11,6 +11,7 @@ import org.ssafy.pasila.domain.product.dto.product.ProductRequest;
 import org.ssafy.pasila.domain.product.entity.*;
 import org.ssafy.pasila.domain.product.repository.CategoryRepository;
 import org.ssafy.pasila.domain.product.repository.ProductJoinRepository;
+import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
 import org.ssafy.pasila.global.infra.s3.service.S3Uploader;
 
@@ -32,25 +33,26 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductJoinRepository productJoinRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductOptionRepository productOptionRepository;
     private final S3Uploader s3Uploader;
 
     //상품 등록
     @Transactional
     public void saveProduct(ProductRequest productRequest, MultipartFile image) throws IOException {
 
-        Objects.requireNonNull(productRequest, "ProductRequest는 null이 될 수 없습니다");
-        Objects.requireNonNull(image, "이미지는 null이 될 수 없습니다");
-
         Product savedProduct = productRequest.getProduct();
         Category category = categoryRepository.findById(productRequest.getCategory().getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 카테고리가 없습니다."));
+
         List<ProductOption> productOptions = productRequest.getProductOptions();
+        for(ProductOption option : productOptions){
+            option.addProduct(savedProduct);
+            productOptionRepository.save(option);
+        }
+//        savedProduct.addProductWithCategoryWithOption(savedProduct, category, (ProductOption) productRequest.getProductOptions());
 
         // 이미지 처리 메서드 호출
         handleImage(savedProduct, image);
-
-        // ProductService의 initializeProduct 메서드 활용
-        savedProduct = initializeProduct(savedProduct, category, productOptions);
 
         // repository를 통한 저장
         productRepository.save(savedProduct);
@@ -64,12 +66,6 @@ public class ProductService {
         }
     }
 
-    // ProductService의 비즈니스 로직 메서드
-    private Product initializeProduct(Product product, Category category, List<ProductOption> productOptions) {
-        return Product.initializeProduct(product, category, productOptions);
-    }
-
-
     //상품 수정
     //TODO : 0. 파일 수정권 변경
     @Transactional
@@ -82,7 +78,13 @@ public class ProductService {
         Category category = categoryRepository.findById(productRequest.getCategory().getId())
                 .orElseThrow(()-> new IllegalArgumentException("해당 아이디에 대한 카테고리가 없습니다."));
 
+        List<ProductOption> productOptions = productRequest.getProductOptions();
+        for(ProductOption option : productOptions){
+            productOptionRepository.findById(option.getId());
+            option.updateProductOption(option);
+        }
 
+        //TODO: Image 파일 uuid 혹은 product_id 로 바꾸기
         if(deleteImageName != null && !deleteImageName.isEmpty()){
             log.info("deleteImageName이 들어왔습니다.");
             s3Uploader.deleteImage(deleteImageName);

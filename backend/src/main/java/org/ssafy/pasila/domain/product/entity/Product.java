@@ -67,19 +67,11 @@ public class Product {
     }
 
     //== 생성 메서드 ==//
-    public static Product initializeProduct(Product product, Category category, List<ProductOption> productOptions){
-        Product create = new Product();
-        create.setName(product.getName());
-        create.setDescription(product.getDescription());
-        create.setCreatedAt(LocalDateTime.now());
-        create.setCategory(category);
-        for(ProductOption productOption : productOptions){
-            create.addProductOption(productOption);
+    public void addProductWithCategoryWithOption(Product product, Category category, ProductOption... productOption){
+        this.category = category;
+        for(ProductOption option : productOption){
+            product.addProductOption(option);
         }
-        create.setThumbnail(product.getThumbnail());
-        create.setActive(true);
-        return create;
-
     }
     public void updateProduct(Product product, Category category) {
         this.name = product.getName();
