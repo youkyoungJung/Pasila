@@ -11,6 +11,7 @@ const goNext = () => {
   router.push(`/ready/${props.data}`)
 }
 </script>
+
 <template>
   <div>
     <button @click="goNext" class="next-btn">다음 단계 ></button>
