@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import VideoCard from '@/components/common/VideoCard.vue'
 
 //라이브, 숏핑 확인하고
 //받아오면 정렬대로 뿌리기
@@ -87,28 +88,9 @@ const goShortping = () => {
         </div>
       </div>
       <div class="video-container">
-        <div v-for="(video, i) in videos" :key="i" class="videos">
-          <div class="numbering">
-            <div>
-              <!-- <video :src="video.src" class="input-video" /> -->
-              <div
-                class="input-video"
-                v-bind:style="{ backgroundImage: `url(${video.src})` }"
-              ></div>
-              <div class="user-info">
-                <img :src="video.profile" class="user-profile" />
-                <div class="user-name">
-                  <div>{{ video.name }}</div>
-                  <div>{{ video.title }}</div>
-                </div>
-                <div class="price">
-                  <div class="origin-price">{{ video.price }}</div>
-                  <div class="discount-price">{{ video.discountPrice }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <template v-for="(video, i) in videos" :key="i">
+          <video-card :video="video"></video-card>
+        </template>
       </div>
     </div>
   </div>
@@ -179,16 +161,12 @@ const goShortping = () => {
 
     .video-container {
       @include box(100%, 90%, null, 0, 5px, 10px);
-      @include flex-box();
+      @include flex-box(flex-start);
       overflow: hidden;
       flex-wrap: wrap;
 
       .videos {
-        @include box(500px, 400px, none, none, 5px, 5px);
         @include flex-box();
-        @include font-factory($fs-1, bold);
-        float: left;
-
         .input-video {
           background-size: cover;
           background-position: center;
