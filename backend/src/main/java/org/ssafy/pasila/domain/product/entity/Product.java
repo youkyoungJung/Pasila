@@ -9,8 +9,10 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.sqids.Sqids;
 import org.ssafy.pasila.domain.member.entity.Member;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +24,21 @@ import java.util.List;
 
 @Entity
 public class Product {
-    @Id @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "VARCHAR(255)")
+    @Id
+    @Column(columnDefinition = "VARCHAR(12)")
     private String id;
+
+    @PrePersist
+    public void createUserUniqId() {
+        Sqids sqids = Sqids.builder()
+                .minLength(12)
+                .build();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        long timestampAsLong = timestamp.getTime();
+        String newId = sqids.encode(List.of(timestampAsLong));
+
+        this.id = newId;
+    }
 
     @Column(length = 30, nullable = false)
     private String name;
