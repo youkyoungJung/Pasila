@@ -54,8 +54,11 @@ public class Live {
     @Lob
     private String script; // 필요하지 않으면 굳이 읽지 않는 것이 좋음
 
-    @Column(name = "full_video_url")
+    @Column(name = "full_video_url", length = 2083)
     private String fullVideoUrl;
+
+    @Column(length = 2083)
+    private String thumbnail;
 
     @Column(name = "like_cnt")
     private Integer likeCnt;
@@ -68,7 +71,7 @@ public class Live {
     private LocalDateTime createdAt;
 
     @Column(name = "is_active")
-    private LocalDateTime isActive;
+    private boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

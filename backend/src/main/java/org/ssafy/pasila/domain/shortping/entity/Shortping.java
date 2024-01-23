@@ -43,8 +43,11 @@ public class Shortping {
     @Column(name = "like_cnt")
     private Integer likeCnt;
 
-    @Column(name = "video_url")
+    @Column(name = "video_url", length = 2083)
     private String videoUrl;
+
+    @Column(length = 2083)
+    private String thumbnail;
 
     @CreationTimestamp
     @Column(name = "created_at")
