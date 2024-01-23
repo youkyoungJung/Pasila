@@ -43,13 +43,14 @@ public class ProductService {
         Product savedProduct = productRequest.getProduct();
         Category category = categoryRepository.findById(productRequest.getCategory().getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 카테고리가 없습니다."));
+        // 카테고리 저장
+        savedProduct.addProductWithCategory(category);
 
         List<ProductOption> productOptions = productRequest.getProductOptions();
         for(ProductOption option : productOptions){
             option.addProduct(savedProduct);
             productOptionRepository.save(option);
         }
-//        savedProduct.addProductWithCategoryWithOption(savedProduct, category, (ProductOption) productRequest.getProductOptions());
 
         // 이미지 처리 메서드 호출
         handleImage(savedProduct, image);
@@ -59,10 +60,11 @@ public class ProductService {
     }
 
     // 이미지 처리 메서드
-    private void handleImage(Product savedProduct, MultipartFile image) throws IOException {
+    private void handleImage(Product product, MultipartFile image) throws IOException {
         if (!image.isEmpty()) {
+            log.info("product:{}", product);
             String storedFileName = s3Uploader.upload(image, "images");
-            savedProduct.setThumbnail(storedFileName);
+            product.setThumbnail(storedFileName);
         }
     }
 
@@ -125,9 +127,9 @@ public class ProductService {
 
     //상품 이미지 url 찾기
     public String findProductImageUrl(String id){
-        Optional<Product> product = productRepository.findById(id);
-        String result = product.get().getThumbnail();
-        return result;
+        Product product = productRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("id에 해당하는 Product 가 없습니다."));
+        return product.getThumbnail();
     }
 
 

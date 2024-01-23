@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.ssafy.pasila.domain.product.entity.Product;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Slf4j
@@ -49,6 +51,10 @@ public class S3Uploader {
         return uploadImageUrl;      // 업로드된 파일의 S3 URL 주소 반환
     }
 
+    private static String getUuid() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
+
     //s3 파일 업로드
     private String putS3(File uploadFile, String fileName) {
         amazonS3Client.putObject(
@@ -67,7 +73,13 @@ public class S3Uploader {
     }
 
     private Optional<File> convert(MultipartFile file) throws  IOException {
-        File convertFile = new File(file.getOriginalFilename());
+        String originName = file.getOriginalFilename();
+
+        assert originName != null;
+        final String ext = originName.substring(originName.lastIndexOf("."));
+        final String saveFileName = getUuid() + ext;
+
+        File convertFile = new File("pasila_thumbnail_"+saveFileName);
         if(convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
                 fos.write(file.getBytes());
