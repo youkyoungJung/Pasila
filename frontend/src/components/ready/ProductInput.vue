@@ -1,5 +1,7 @@
 <script setup>
+import editor from '@/components/editor/Editor.vue'
 import { ref } from 'vue'
+
 const product = ref({
   name: '',
   regularPrice: null,
@@ -105,7 +107,7 @@ const discount = (per) => {
     </div>
     <div class="editor">
       <div class="editor-body">
-        <h2>히히 에디터 히히</h2>
+        <editor />
       </div>
     </div>
   </div>

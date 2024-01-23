@@ -10,6 +10,7 @@ import {
   fas
 } from '@fortawesome/free-solid-svg-icons'
 import { faCalendarCheck, faUser, far } from '@fortawesome/free-regular-svg-icons'
+import { quillEditor } from 'vue3-quill'
 
 import App from './App.vue'
 import router from './router'
@@ -21,6 +22,7 @@ const app = createApp(App)
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 
+app.use(quillEditor)
 app.use(createPinia())
 app.use(router)
 
