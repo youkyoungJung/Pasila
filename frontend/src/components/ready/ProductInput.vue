@@ -4,7 +4,7 @@ import { ref } from 'vue'
 
 const product = ref({
   name: '',
-  regularPrice: null,
+  regularPrice: 0,
   discountPercent: null,
   discountPrice: null,
   stock: {
@@ -12,12 +12,53 @@ const product = ref({
     option2: null,
     option3: null
   },
-  explain: ''
+  explain: '',
+  formatRegular: '',
+  formatDiscPrice: '',
+  formatOption1: '',
+  formatOption2: '',
+  formatOption3: ''
 })
 
 const discount = (per) => {
   product.value.discountPercent = per
   product.value.discountPrice = Math.round(((100 - per) / 100) * product.value.regularPrice)
+  product.value.formatDiscPrice = product.value.discountPrice.toLocaleString('en-US')
+}
+
+//아래 겹치는 함수는 싹다 합쳐야합니다 && 최대 개수 제한하기(int)
+const changeInput = () => {
+  const parsedAmount = parseFloat(product.value.formatRegular.replace(/,/g, '')) || 0
+  product.value.formatRegular = parsedAmount.toLocaleString('en-US')
+  const temp = product.value.formatRegular.replace(/,/g, '')
+  product.value.regularPrice = parseFloat(temp)
+}
+
+const changePrice = () => {
+  const parsedAmount = parseFloat(product.value.formatDiscPrice.replace(/,/g, '')) || 0
+  product.value.formatDiscPrice = parsedAmount.toLocaleString('en-US')
+  const temp = product.value.formatDiscPrice.replace(/,/g, '')
+  product.value.discountPrice = parseFloat(temp)
+}
+
+const changeCnt1 = () => {
+  const parsedAmount = parseFloat(product.value.formatOption1.replace(/,/g, '')) || 0
+  console.log(parsedAmount)
+  product.value.formatOption1 = parsedAmount.toLocaleString('en-US')
+  const temp = product.value.formatOption1.replace(/,/g, '')
+  product.value.stock.option1 = parseFloat(temp)
+}
+const changeCnt2 = () => {
+  const parsedAmount = parseFloat(product.value.formatOption2.replace(/,/g, '')) || 0
+  product.value.formatOption2 = parsedAmount.toLocaleString('en-US')
+  const temp = product.value.formatOption2.replace(/,/g, '')
+  product.value.stock.option2 = parseFloat(temp)
+}
+const changeCnt3 = () => {
+  const parsedAmount = parseFloat(product.value.formatOption3.replace(/,/g, '')) || 0
+  product.value.formatOption3 = parsedAmount.toLocaleString('en-US')
+  const temp = product.value.formatOption3.replace(/,/g, '')
+  product.value.stock.option3 = parseFloat(temp)
 }
 </script>
 
@@ -43,11 +84,12 @@ const discount = (per) => {
             <label for="regularPrice">정가</label>
             <div>
               <input
-                type="number"
+                type="text"
                 id="regularPrice"
                 placeholder="정가를 입력하세요"
-                v-model="product.regularPrice"
+                v-model="product.formatRegular"
                 class="product-price-input"
+                @input="changeInput()"
               />
               <span>원</span>
             </div>
@@ -58,11 +100,12 @@ const discount = (per) => {
             <input type="number" class="product-percent-input" v-model="product.discountPercent" />%
             <button @click="discount(product.discountPercent)" class="price-btn">적용</button>
             <input
-              type="number"
+              type="text"
               id="discountPrice"
               placeholder="할인가를 입력하세요"
-              v-model="product.discountPrice"
+              v-model="product.formatDiscPrice"
               class="product-price-input"
+              @input="changePrice()"
             />원
           </div>
           <div class="discount-btn">
@@ -78,28 +121,34 @@ const discount = (per) => {
           <div class="stock-option">
             <label for="option1">구성1</label>
             <input
-              type="number"
+              type="text"
               id="option1"
               placeholder="개수 입력"
               class="product-price-input"
+              v-model="product.formatOption1"
+              @input="changeCnt1()"
             />개
           </div>
           <div class="stock-option">
             <label for="option2">구성2</label>
             <input
-              type="number"
+              type="text"
               id="option2"
               placeholder="개수 입력"
               class="product-price-input"
+              v-model="product.formatOption2"
+              @input="changeCnt2()"
             />개
           </div>
           <div class="stock-option">
             <label for="option3">구성3</label>
             <input
-              type="number"
+              type="text"
               id="option3"
               placeholder="개수 입력"
               class="product-price-input"
+              v-model="product.formatOption3"
+              @input="changeCnt3()"
             />개
           </div>
         </div>
@@ -134,10 +183,11 @@ const discount = (per) => {
       padding-bottom: 1rem;
       border-bottom: 2px solid $main;
       .product-name-input {
-        @include box(40%, 2rem, none, 0, 0, 0.1rem);
+        @include box(40%, 2rem, $light-gray, 0.3rem, 0, 0.1rem);
         border: none;
-
+        outline: none;
         margin-top: 5px;
+        padding-left: 1rem;
       }
     }
 
@@ -150,20 +200,22 @@ const discount = (per) => {
       .price {
         @include box(100%, null, none, 0, 0.1rem, 0.1rem);
         @include flex-box(center, space-between);
+        padding-bottom: 0.4rem;
         border-bottom: 1px solid $main;
+        margin-right: 1rem;
+
+        span {
+          margin-left: 0.3rem;
+        }
         label {
           font-size: $fs-1;
           font-weight: normal;
         }
 
-        margin-right: 1rem;
-        span {
-          margin-left: 0.35rem;
-        }
-
         .product-percent-input {
-          @include box(3rem, 2rem, none, 0, 0, 0.1rem);
+          @include box(3rem, 2rem, $light-gray, 0, 0.1rem, 0.1rem);
           border: none;
+          outline: none;
           text-align: right;
         }
       }
@@ -182,9 +234,11 @@ const discount = (per) => {
     }
 
     .product-price-input {
-      @include box(10rem, 2rem, none, 0, 0, 0.1rem);
+      @include box(10rem, 2rem, $light-gray, 0.3rem, 0.1rem, 0.1rem);
       border: none;
+      outline: none;
       text-align: right;
+      padding-right: 0.3rem;
     }
     .product-stock {
       @include box(95%, 100%, none, 0, 0.1rem, 0.3rem);
@@ -199,13 +253,15 @@ const discount = (per) => {
         }
         .stock-option {
           border-bottom: 1px solid $main;
+          padding-top: 0.3rem;
+          padding-bottom: 0.4rem;
         }
       }
     }
   }
 
   .editor-body {
-    @include box(95%, 95%, pink, 0, 0.3rem, 0.1rem);
+    @include box(95%, 95%, $light-gray, 0, 0.3rem, 0);
   }
 }
 </style>
