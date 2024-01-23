@@ -24,8 +24,8 @@ defineProps({
 
 <style lang="scss" scoped>
 .video-card {
-  margin-right: 1rem;
-  padding: 0.5rem;
+  margin: 0 1rem;
+  padding: 1rem 2rem;
   .input-video {
     background-size: cover;
     background-position: center;

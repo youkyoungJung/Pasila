@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import VideoCard from '@/components/common/VideoCard.vue'
+import ToggleButton from '@/components/common/ToggleButton.vue'
 
 //라이브, 숏핑 확인하고
 //받아오면 정렬대로 뿌리기
@@ -74,10 +75,7 @@ const goShortping = () => {
         <span class="subtitle">원하는 상품을 찾아보세요!</span>
       </div>
       <div class="order-type">
-        <div class="live-short-btn">
-          <button :class="[isLive ? 'chosen-btn' : 'no-btn']" @click="goLive">라이브</button>
-          <button :class="[isLive ? 'no-btn' : 'chosen-btn']" @click="goShortping">숏핑</button>
-        </div>
+        <toggle-button></toggle-button>
         <div>
           <form action="#">
             <select name="orders" id="order" class="select-type">
@@ -120,24 +118,6 @@ const goShortping = () => {
     .order-type {
       @include flex-box($justify: space-between);
       @include box(100%, 10%, null, 0, 2px, 5px);
-      .live-short-btn {
-        margin-top: 5px;
-        .chosen-btn {
-          @include font-factory($fs-2, bold);
-          @include box(150px, 100%, $main, 10px, 10px, 10px);
-          border: 1px solid $main;
-          color: white;
-          cursor: pointer;
-        }
-
-        .no-btn {
-          @include font-factory($fs-2, bold);
-          @include box(150px, 100%, white, 10px, 10px, 10px);
-          border: 1px solid $main;
-          color: $main;
-          cursor: pointer;
-        }
-      }
 
       .select-type {
         @include font-factory($fs-2, null);
@@ -164,43 +144,6 @@ const goShortping = () => {
       @include flex-box(flex-start);
       overflow: hidden;
       flex-wrap: wrap;
-
-      .videos {
-        @include flex-box();
-        .input-video {
-          background-size: cover;
-          background-position: center;
-          width: 400px;
-          height: 300px;
-          border-radius: 10px;
-          margin-left: 10px;
-        }
-        .user-info {
-          @include font-factory($fs-1, null);
-          @include flex-box($justify: space-evenly);
-
-          .user-profile {
-            @include box(50px, 50px, null, 50px, 5px, 2px);
-            align-items: flex-start;
-          }
-          .user-name {
-            @include box(60%, 100%, null, 0, 5px, 2px);
-          }
-          .price {
-            @include box(20%, 100%, null, 0, 5px, 2px);
-            text-align: right;
-
-            .origin-price {
-              @include font-factory(11px, null);
-              text-decoration: line-through;
-            }
-
-            .discount-price {
-              @include font-factory($fs-1, bold, $main);
-            }
-          }
-        }
-      }
     }
   }
 }

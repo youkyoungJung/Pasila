@@ -1,5 +1,6 @@
 <script setup>
 import ChannelProfile from '@/components/channel/ChannelProfile.vue'
+import ToggleButton from '@/components/common/ToggleButton.vue'
 
 const member = {
   name: '김가을',
@@ -11,6 +12,7 @@ const member = {
 <template>
   <div class="channel">
     <channel-profile :member="member"></channel-profile>
+    <toggle-button></toggle-button>
   </div>
 </template>
 
