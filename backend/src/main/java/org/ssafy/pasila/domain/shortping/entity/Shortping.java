@@ -26,7 +26,7 @@ public class Shortping {
     private String id;
 
     @PrePersist
-    public void createUserUniqId() {
+    public void createUniqId() {
         Sqids sqids = Sqids.builder()
                 .minLength(8)
                 .build();
