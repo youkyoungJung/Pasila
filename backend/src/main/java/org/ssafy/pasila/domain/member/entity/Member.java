@@ -12,6 +12,7 @@ import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.product.entity.Product;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,7 +59,7 @@ public class Member {
     private Gender gender;
 
     @Column(columnDefinition = "DATE")
-    private Date birth;
+    private LocalDate birth;
 
     @Column(length = 10)
     private String bank;
