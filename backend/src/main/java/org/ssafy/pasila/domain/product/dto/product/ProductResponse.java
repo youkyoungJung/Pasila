@@ -31,10 +31,10 @@ public class ProductResponse {
         this.description = description;
     }
 
-    public ProductResponse(String id, String name, String description,
+    public ProductResponse(String id, Long sellerId, String name, String description,
                            LocalDateTime createdAt, String thumbnail, Long categoryId){
         this.id = id;
-//        this.sellerId = sellerId;
+        this.sellerId = sellerId;
         this.name = name;
         this.description = description;
         this.createdAt = createdAt;
