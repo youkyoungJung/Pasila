@@ -1,21 +1,35 @@
 package org.ssafy.pasila.domain.live.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
 import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequest;
+import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponse;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 
 @Slf4j
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/live")
+@Tag(name = "Live", description = "Live API")
 public class LiveApiController {
 
     private final GptClient gptService;
 
+    @Operation(summary = "Create Qsheet", description = "큐시트를 생성합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreateQsheetResponse.class))})
+    })
     @PostMapping("/sheet")
     public ResponseEntity<?> createQsheet(@RequestBody CreateQsheetRequest request) {
         try {
@@ -33,7 +47,12 @@ public class LiveApiController {
         }
     }
 
-    @GetMapping("/sheet-test")
+    @Operation(summary = "Create Qsheet Sample", description = "큐시트 샘플을 제공합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreateQsheetResponse.class))})
+    })
+    @GetMapping("/sheet/example")
     public ResponseEntity<?> createQsheetTest() {
         return ResponseEntity.ok().body("큐시트:\n" +
                 "\n" +
