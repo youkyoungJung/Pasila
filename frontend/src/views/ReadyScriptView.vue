@@ -39,17 +39,17 @@ const nextStep = ref('chatbot')
   .body {
     @include box(100%, 80%, none, 0, 0.3rem, 0.1rem);
     @include flex-box($align: flex-start, $justify: space-evenly);
-    border: 1px solid $main;
+    border: 2px solid $main;
     border-radius: 0.5rem;
 
     .select {
-      @include box(48%, 100%, yellow, 0, 0.3rem, 0.1rem);
-      @include flex-box();
+      @include box(48%, 100%, white, 0, 0.3rem, 0.1rem);
+      @include flex-box($align: flex-start);
     }
 
     .result {
       @include box(48%, 100%, white, 0, 0.3rem, 0.1rem);
-      @include flex-box();
+      @include flex-box($align: flex-start);
       border-left: 1px solid $main;
     }
   }

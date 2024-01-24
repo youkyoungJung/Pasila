@@ -17,25 +17,25 @@ const saveScript = () => {
 
 <style lang="scss" scoped>
 .result-body {
-  @include box(90%, 100%, white, 0, 0.3rem, 0.1rem);
+  @include box(95%, 100%, white, 0, 0.3rem, 0.1rem);
   @include font-factory($fs-1, null);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
   .script {
-    @include box(30rem, 10rem, $light-gray, 0.3rem, 0.3rem, 0.5rem);
+    @include box(95%, 20rem, $light-gray, 0.3rem, 0.3rem, 0.5rem);
     overflow-y: scroll;
     overflow-x: hidden;
     word-wrap: break-word;
   }
   .script::-webkit-scrollbar {
-    width: 0.5rem;
+    width: 0.3rem;
   }
-  .script::-webkit-scrollbar-track {
-    background: $soft-pink; /*스크롤바 뒷 배경 색상*/
-  }
+
   .script::-webkit-scrollbar-thumb {
     height: 30%; /* 스크롤바의 길이 */
     background: $main; /* 스크롤바의 색상 */
-
     border-radius: 10px;
   }
   .button-box {
@@ -45,6 +45,7 @@ const saveScript = () => {
       @include box(8rem, 2rem, $main, 0.3rem, 0.1rem, 0.1rem);
       border: none;
       color: white;
+      cursor: pointer;
     }
   }
 }

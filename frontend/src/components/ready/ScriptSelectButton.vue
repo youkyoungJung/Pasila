@@ -12,20 +12,7 @@ const selectBtn = () => {
 </script>
 
 <template>
-  <div>
-    <button @click="selectBtn" class="btn">{{ props.word }}</button>
-  </div>
+  <button @click="selectBtn" class="btn">{{ props.word }}</button>
 </template>
 
-<style lang="scss" scoped>
-.btn {
-  @include box(5rem, 2rem, $light-gray, 0.3rem, 0.3rem, 0.3rem);
-  border: none;
-  cursor: pointer;
-}
-.select-btn {
-  @include box(5rem, 2rem, $main, 0.3rem, 0.3rem, 0.3rem);
-  border: none;
-  cursor: pointer;
-}
-</style>
+<style lang="scss" scoped></style>
