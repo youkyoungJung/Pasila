@@ -6,6 +6,8 @@ import {
   faMagnifyingGlass,
   faCircleChevronLeft,
   faCircleChevronRight,
+  faChevronUp,
+  faChevronDown,
   faPaperPlane
 } from '@fortawesome/free-solid-svg-icons'
 import { faCalendarCheck, faUser } from '@fortawesome/free-regular-svg-icons'
@@ -13,7 +15,14 @@ import { faCalendarCheck, faUser } from '@fortawesome/free-regular-svg-icons'
 import App from './App.vue'
 import router from './router'
 
-library.add(faMagnifyingGlass, faCircleChevronLeft, faCircleChevronRight, faPaperPlane)
+library.add(
+  faMagnifyingGlass,
+  faCircleChevronLeft,
+  faCircleChevronRight,
+  faPaperPlane,
+  faChevronUp,
+  faChevronDown
+)
 library.add(faCalendarCheck, faUser)
 
 const app = createApp(App)
