@@ -9,7 +9,7 @@ import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.product.dto.product.ProductRequest;
 import org.ssafy.pasila.domain.product.entity.*;
 import org.ssafy.pasila.domain.product.repository.CategoryRepository;
-import org.ssafy.pasila.domain.product.repository.MemberRepository;
+import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
