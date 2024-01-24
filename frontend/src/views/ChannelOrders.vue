@@ -23,6 +23,17 @@ const myProductList = [
         price: 36000,
         discountPrice: 20000
       }
+    ],
+    Orders: [
+      {
+        name: '상남자',
+        address: '서울시 강남구 역삼동 23-3 동화빌라 402호',
+        productOption: { name: '핑크' },
+        order_cnt: 3,
+        status: '준비중',
+        deletedAt: '',
+        price: 60000
+      }
     ]
   },
   {
@@ -95,36 +106,66 @@ const myProductList = [
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in myProductList" :key="index">
-            <td class="product">
-              <div class="thumbnail" :style="{ backgroundImage: `url(${item.thumbnail})` }"></div>
-              <div class="right">
-                <span class="name">{{ item.name }}</span>
-                <div class="price-line">
-                  <span class="price">{{
-                    item.ProductOptions[0].price.toLocaleString('kr-KR')
-                  }}</span>
-                  <span class="discount-price">{{
-                    item.ProductOptions[0].discountPrice.toLocaleString('kr-KR')
-                  }}</span>
+          <template v-for="(item, index) in myProductList" :key="index">
+            <tr>
+              <td class="product">
+                <div class="thumbnail" :style="{ backgroundImage: `url(${item.thumbnail})` }"></div>
+                <div class="right">
+                  <span class="name">{{ item.name }}</span>
+                  <div class="price-line">
+                    <span class="price">{{
+                      item.ProductOptions[0].price.toLocaleString('kr-KR')
+                    }}</span>
+                    <span class="discount-price">{{
+                      item.ProductOptions[0].discountPrice.toLocaleString('kr-KR')
+                    }}</span>
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td class="date">{{ item.createdAt.substring(0, 10) }}</td>
-            <td class="option-stock">
-              <template v-for="(option, index2) in item.ProductOptions" :key="index2">
-                <div>
-                  <span class="name">{{ option.name }} : </span>
-                  <span class="stock">{{ option.stock === 0 ? '품절' : option.stock }}</span>
-                </div>
-              </template>
-            </td>
-            <td class="list-btn">
-              <span>
-                <font-awesome-icon icon="fa-solid fa-chevron-down" />
-              </span>
-            </td>
-          </tr>
+              </td>
+              <td class="date">{{ item.createdAt.substring(0, 10) }}</td>
+              <td class="option-stock">
+                <template v-for="(option, index2) in item.ProductOptions" :key="index2">
+                  <div>
+                    <span class="name">{{ option.name }} : </span>
+                    <span class="stock">{{ option.stock === 0 ? '품절' : option.stock }}</span>
+                  </div>
+                </template>
+              </td>
+              <td class="list-btn">
+                <span>
+                  <font-awesome-icon icon="fa-solid fa-chevron-down" />
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4">
+                <table style="table-layout: fixed; width: 100%">
+                  <thead>
+                    <tr>
+                      <th>구매자</th>
+                      <th>배송지</th>
+                      <th>구매 옵션</th>
+                      <th>배송 상태</th>
+                      <th>주문 취소</th>
+                      <th>결제 금액</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template v-for="(order, index3) in item.Orders" :key="index3">
+                      <tr>
+                        <td>{{ order.name }}</td>
+                        <td>{{ order.address }}</td>
+                        <td>{{ order.productOption.name }}<br />{{ order.order_cnt }}개</td>
+                        <td>{{ order.status }}</td>
+                        <td><button>주문 취소</button></td>
+                        <td>{{ order.price }}</td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </section>
