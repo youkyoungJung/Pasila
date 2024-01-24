@@ -1,4 +1,4 @@
-package org.ssafy.pasila.global.infra.s3.service;
+package org.ssafy.pasila.global.infra.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;

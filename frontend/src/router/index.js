@@ -6,6 +6,7 @@ import FindPwView from '../views/FindPwView.vue'
 import FindPwSendView from '@/views/FindPwSendView.vue'
 import LiveView from '../views/LiveView.vue'
 import ScheduleView from '../views/ScheduleView.vue'
+import ChannelView from '../views/ChannelView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +45,11 @@ const router = createRouter({
       path: '/schedule',
       name: 'schedule',
       component: ScheduleView
+    },
+    {
+      path: '/channel/:id',
+      name: 'channel',
+      component: ChannelView
     }
   ]
 })

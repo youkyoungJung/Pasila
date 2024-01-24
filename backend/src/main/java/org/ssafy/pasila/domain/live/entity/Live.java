@@ -8,12 +8,15 @@ import lombok.NoArgsConstructor;
 import org.apache.catalina.User;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.sqids.Sqids;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -24,10 +27,20 @@ import java.util.List;
 @Builder
 public class Live {
     @Id
-//    @GeneratedValue(generator = "uuid2")
-//    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-//    @Column(columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "VARCHAR(10)")
     private String id;
+
+    @PrePersist
+    public void createUniqId() {
+        Sqids sqids = Sqids.builder()
+                .minLength(8)
+                .build();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        long timestampAsLong = timestamp.getTime();
+        String newId = sqids.encode(Arrays.asList(timestampAsLong, 1L));
+
+        this.id = newId;
+    }
 
     @Column(length = 30)
     private String title;
@@ -41,8 +54,9 @@ public class Live {
     @Lob
     private String script; // 필요하지 않으면 굳이 읽지 않는 것이 좋음
 
-    @Column(name = "full_video_url")
+    @Column(name = "full_video_url", length = 2083)
     private String fullVideoUrl;
+
 
     @Column(name = "like_cnt")
     private Integer likeCnt;
@@ -55,7 +69,7 @@ public class Live {
     private LocalDateTime createdAt;
 
     @Column(name = "is_active")
-    private LocalDateTime isActive;
+    private boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
