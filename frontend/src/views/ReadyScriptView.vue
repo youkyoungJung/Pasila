@@ -13,9 +13,7 @@ const nextStep = ref('chatbot')
 <template>
   <div class="container">
     <steps :data="step" />
-    <div class="next-btn">
-      <next-button :data="nextStep" />
-    </div>
+
     <div class="body">
       <div class="select">
         <script-select />
@@ -23,6 +21,9 @@ const nextStep = ref('chatbot')
       <div class="result">
         <script-result />
       </div>
+    </div>
+    <div class="next-btn">
+      <next-button :data="nextStep" />
     </div>
   </div>
 </template>

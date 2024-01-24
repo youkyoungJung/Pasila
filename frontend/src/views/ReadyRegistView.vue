@@ -23,17 +23,15 @@ const sendProduct = () => {
 <template>
   <div class="container">
     <steps :data="step" />
-    <next-button :data="nextStep" @click="sendProduct" />
     <div class="body">
-      <div class="input-type">
+      <div class="input-body">
         <product-input />
+      </div>
+      <div class="editor-body">
         <editor :message="preview" @preview-content="update" />
       </div>
-      <div class="preview">
-        <label for="preview">미리보기</label>
-        <preview :preview="preview" id="preview" />
-      </div>
     </div>
+    <next-button :data="nextStep" @click="sendProduct" />
   </div>
 </template>
 
@@ -42,15 +40,23 @@ const sendProduct = () => {
   @include box(95%, 100%, none, 0.3rem, 0.8rem, 0.5rem);
 
   .body {
-    @include box(100%, 80%, none, 0, 0.3rem, 0.1rem);
+    @include box(100%, 80%, white, 0, 0.3rem, 0.1rem);
     @include flex-box($align: flex-start, $justify: space-evenly);
     border: 2px solid $main;
     border-radius: 0.5rem;
 
-    .input-type {
+    .input-body {
+      @include box(48%, 100%, white, 0, 0.3rem, 0.1rem);
       display: flex;
       flex-direction: column;
       border-right: 1px solid $main;
+    }
+
+    .editor-body {
+      @include box(48%, 100%, white, 0, 0.3rem, 0.1rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .preview {
       @include box(70%, 40rem, none, 0.3rem, 0.8rem, 0.1rem);

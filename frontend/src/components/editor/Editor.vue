@@ -7,7 +7,7 @@ const state = reactive({
   content: '',
   _content: '',
   editorOption: {
-    placeholder: '',
+    placeholder: '여기에 상품 사진 등록과 상품 정보 입력을 할 수 있어요!',
     modules: {
       toolbar: [
         ['bold', 'italic', 'underline', 'strike'],
@@ -22,7 +22,6 @@ const state = reactive({
         [{ color: [] }, { background: [] }],
         [{ font: [] }],
         [{ align: [] }],
-        ['clean'],
         ['link', 'image', 'video']
       ]
     }
@@ -51,7 +50,7 @@ setTimeout(() => {
 </script>
 
 <template>
-  <div class="editor-body">
+  <div class="editor-box">
     <quill-editor
       v-model:value="state.content"
       :options="state.editorOption"
@@ -71,9 +70,9 @@ section {
   @include box(95%, 100%, white, 0, 0, 0);
 }
 
-.editor-body {
+.editor-box {
   @include box(95%, 100%, none, 0, 0.3rem, 0.1rem);
-  @include flex-box($align: flex-start, $direction: column);
   @include font-factory($fs-1, null);
+  @include flex-box($direction: column);
 }
 </style>
