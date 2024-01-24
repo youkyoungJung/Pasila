@@ -19,6 +19,7 @@ import org.ssafy.pasila.domain.product.dto.product.ProductResponse;
 import org.ssafy.pasila.domain.product.repository.*;
 import org.ssafy.pasila.domain.product.service.ProductService;
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,6 @@ import java.util.Optional;
 
 public class ProductController {
 
-    private final ProductRepository productRepository;
     private final ProductJoinRepository productJoinRepository;
     private final ProductService productService;
 

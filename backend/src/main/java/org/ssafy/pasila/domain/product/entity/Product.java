@@ -78,16 +78,20 @@ public class Product {
     }
 
     //== 생성 메서드 ==//
-    public void addProductWithCategory(Category category){
+    /**상품 저장 시 카테고리와 seller 정보를 저장할 수 있는 메서드 */
+    public void addProductWithCategoryWithMember(Category category, Member member){
         this.category = category;
+        this.member = member;
     }
 
+    /** product 관련 없데이트 , 카테고리 변경 */
     public void updateProduct(Product product, Category category) {
         this.name = product.getName();
         this.description = product.getDescription();
         this.category = category;
     }
 
+    /** 썸네일을 저장하거나 변경할 때 사용하는 메서드*/
     public void addThumbnailUrl(String url){
         this.thumbnail = url;
     }

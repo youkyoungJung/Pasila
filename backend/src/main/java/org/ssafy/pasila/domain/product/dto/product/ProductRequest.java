@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.product.entity.Category;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
@@ -19,6 +20,7 @@ public class ProductRequest {
 
     private Product product;
     private Category category;
+    private Member member;
     private List<ProductOption> productOptions;
 
 }
