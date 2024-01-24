@@ -53,7 +53,7 @@ public class Shortping {
     @Column(name = "is_active")
     private boolean isActive;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 }

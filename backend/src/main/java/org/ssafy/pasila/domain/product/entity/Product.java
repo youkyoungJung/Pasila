@@ -1,11 +1,15 @@
 package org.ssafy.pasila.domain.product.entity;
 
 import jakarta.persistence.*;
+
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.ssafy.pasila.domain.member.entity.Member;
+
+import jakarta.persistence.CascadeType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -68,7 +72,8 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 
-    @OneToMany(mappedBy = "product")
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductOption> productOptions = new ArrayList<>();
 
     //==연관 메서드 ==//
@@ -76,6 +81,7 @@ public class Product {
         productOptions.add(productOption);
         productOption.setProduct(this);
     }
+
 
     //== 생성 메서드 ==//
     /**상품 저장 시 카테고리와 seller 정보를 저장할 수 있는 메서드 */
@@ -95,4 +101,6 @@ public class Product {
     public void addThumbnailUrl(String url){
         this.thumbnail = url;
     }
+
+
 }
