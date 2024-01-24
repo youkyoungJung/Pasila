@@ -1,12 +1,17 @@
 package org.ssafy.pasila.domain.member.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import org.ssafy.pasila.domain.member.entity.Member;
 
-import java.util.Optional;
+@Repository
+@RequiredArgsConstructor
+public class MemberRepository{
+    private final EntityManager em;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
-
-    Optional<Member> findMemberByMemberId(Long memberId);
+    public Member findByMemberId(Long memberId){
+        return em.find(Member.class, memberId);
+    };
 
 }
