@@ -93,7 +93,6 @@ public class S3Uploader {
 
     //s3 파일 삭제
     public void deleteImage(String originalFilename)  {
-
         amazonS3Client.deleteObject(bucket, originalFilename);
         log.info("success : delete Image in S3");
     }

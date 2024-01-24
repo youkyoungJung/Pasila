@@ -13,7 +13,7 @@ import org.ssafy.pasila.domain.product.repository.CategoryRepository;
 import org.ssafy.pasila.domain.product.repository.ProductJoinRepository;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
-import org.ssafy.pasila.global.infra.s3.service.S3Uploader;
+import org.ssafy.pasila.global.infra.s3.S3Uploader;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
