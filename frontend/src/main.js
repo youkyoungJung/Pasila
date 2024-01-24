@@ -6,20 +6,23 @@ import {
   faMagnifyingGlass,
   faCircleChevronLeft,
   faCircleChevronRight,
-  faPaperPlane
+  faPaperPlane,
+  fas
 } from '@fortawesome/free-solid-svg-icons'
-import { faCalendarCheck, faUser } from '@fortawesome/free-regular-svg-icons'
+import { faCalendarCheck, faUser, far } from '@fortawesome/free-regular-svg-icons'
+import { quillEditor } from 'vue3-quill'
 
 import App from './App.vue'
 import router from './router'
 
 library.add(faMagnifyingGlass, faCircleChevronLeft, faCircleChevronRight, faPaperPlane)
-library.add(faCalendarCheck, faUser)
+library.add(faCalendarCheck, faUser, fas, far)
 
 const app = createApp(App)
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 
+app.use(quillEditor)
 app.use(createPinia())
 app.use(router)
 

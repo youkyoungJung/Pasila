@@ -1,12 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import LoginView from '../views/LoginView.vue'
-import JoinView from '../views/JoinView.vue'
-import FindPwView from '../views/FindPwView.vue'
+import HomeView from '@/views/HomeView.vue'
+import LoginView from '@/views/LoginView.vue'
+import JoinView from '@/views/JoinView.vue'
+import FindPwView from '@/views/FindPwView.vue'
 import FindPwSendView from '@/views/FindPwSendView.vue'
-import LiveView from '../views/LiveView.vue'
-import ScheduleView from '../views/ScheduleView.vue'
-import ChannelView from '../views/ChannelView.vue'
+import LiveView from '@/views/LiveView.vue'
+import ScheduleView from '@/views/ScheduleView.vue'
+import ChannelView from '@/views/ChannelView.vue'
+import ReadyRegistView from '@/views/ReadyRegistView.vue'
+import ReadyScriptView from '@/views/ReadyScriptView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +52,16 @@ const router = createRouter({
       path: '/channel/:id',
       name: 'channel',
       component: ChannelView
+    },
+    {
+      path: '/ready/regist',
+      name: 'readyregist',
+      component: ReadyRegistView
+    },
+    {
+      path: '/ready/script',
+      name: 'readyscript',
+      component: ReadyScriptView
     }
   ]
 })
