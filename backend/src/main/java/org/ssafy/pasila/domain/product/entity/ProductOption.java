@@ -30,4 +30,17 @@ public class ProductOption {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    //== 연관메서드==//
+    public void addProduct(Product product){
+        this.product = product;
+    }
+
+    public void updateProductOption(ProductOption productOption){
+        this.id = productOption.getId();
+        this.name = productOption.getName();
+        this.stock = productOption.getStock();
+        this.price = productOption.getPrice();
+        this.discountPrice = productOption.getDiscountPrice();
+    }
 }
