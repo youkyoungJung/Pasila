@@ -34,6 +34,14 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.sqids:sqids:0.1.0'
+	// https://mvnrepository.com/artifact/com.twilio.sdk/twilio
+	implementation group: 'com.twilio.sdk', name: 'twilio', version: '9.14.1'
+	// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+	implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore
+	implementation group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.15'
+
+
 }
 
 tasks.named('test') {

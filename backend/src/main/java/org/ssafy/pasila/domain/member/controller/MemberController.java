@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.service.MemberService;
+import org.ssafy.pasila.domain.member.service.SendMsgService;
+
+import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -20,7 +23,9 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    //유효한 이메일인지 확인
+    private  final SendMsgService sendMsgService;
+
+    //유효한 이메일인지 확인하는 부분 추가
     @GetMapping("/member/email")
     public ResponseEntity<?> checkEmail(@RequestParam String email){
 
@@ -35,7 +40,6 @@ public class MemberController {
 
     @GetMapping("/member/channel/{channel}")
     public ResponseEntity<?> checkChannel(@PathVariable("channel") String channel){
-
         if(memberService.checkChannel(channel)) {
             return new ResponseEntity<Boolean>(true, HttpStatus.OK);
         } else {
@@ -43,13 +47,16 @@ public class MemberController {
         }
     }
 
-    @PostMapping("/memeber/join")
-    public ResponseEntity<?> join(@RequestPart("file") MultipartFile file , @RequestPart("member") Member member){
+    @PostMapping("/member/join")
+    public ResponseEntity<?> join(@RequestPart("file") MultipartFile file , @RequestPart("member") Member member) throws IOException {
         memberService.join(member, file);
         return new ResponseEntity<Boolean>(true , HttpStatus.OK);
     }
 
-
+    @GetMapping("/member/sms")
+    public void sendMsg(@RequestParam String phoneNum){
+        sendMsgService.sendSMS(phoneNum);
+    }
 
 
 }
