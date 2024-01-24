@@ -8,6 +8,12 @@ import { ref } from 'vue'
 
 const step = ref('script')
 const nextStep = ref('chatbot')
+const script = ref('')
+
+const update = (message) => {
+  script.value = message
+  console.log(message)
+}
 </script>
 
 <template>
@@ -16,10 +22,10 @@ const nextStep = ref('chatbot')
 
     <div class="body">
       <div class="select">
-        <script-select />
+        <script-select @script="update" />
       </div>
       <div class="result">
-        <script-result />
+        <script-result :script="script" />
       </div>
     </div>
     <div class="next-btn">

@@ -1,13 +1,22 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, defineEmits } from 'vue'
 import ScriptSelectButton from '@/components/ready/ScriptSelectButton.vue'
+import { getScript } from '@/components/api/ScriptAPI.js'
 
+const emits = defineEmits(['script'])
 const data = ref({
   tone: '',
   accent: '',
   input: ''
 })
+const sendData = () => {
+  emits('script', data.value)
+  console.log('send Data!!!')
+}
 
+const failLog = () => {
+  console.log('Fail')
+}
 const tones = ref({ 사장님어: String, 왕어: String, 언니어: String, BJ: String })
 const accents = ref({ 친근한: String, 공손한: String, 신뢰있는: String, 발랄한: String })
 
@@ -23,8 +32,11 @@ const selectAccent = (i) => {
   selectedAccent.value = i
 }
 
-const getScript = () => {
-  console.log(data.value)
+const script = ref('')
+const makeScript = () => {
+  console.log(JSON.stringify(data.value))
+  // getScript(data, sendData, failLog)
+  sendData()
 }
 </script>
 
@@ -63,7 +75,7 @@ const getScript = () => {
       <textarea type="text" id="input-area" class="input-area" v-model="data.input"></textarea>
     </div>
     <div class="button-box">
-      <button @click="getScript" class="get-btn">생성하기</button>
+      <button @click="makeScript" class="make-btn">생성하기</button>
     </div>
   </div>
 </template>
@@ -125,7 +137,7 @@ const getScript = () => {
     display: flex;
     justify-content: center;
 
-    .get-btn {
+    .make-btn {
       @include box(8rem, 2rem, $main, 0.3rem, 0.1rem, 0.1rem);
       border: none;
       color: white;

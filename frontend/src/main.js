@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import axios from 'axios'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import {
@@ -19,6 +20,8 @@ library.add(faMagnifyingGlass, faCircleChevronLeft, faCircleChevronRight, faPape
 library.add(faCalendarCheck, faUser, fas, far)
 
 const app = createApp(App)
+axios.defaults.baseURL = 'http://localhost:8080'
+app.config.globalProperties.$axios = axios
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 

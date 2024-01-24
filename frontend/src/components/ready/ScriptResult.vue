@@ -1,4 +1,8 @@
 <script setup>
+import { defineProps, ref } from 'vue'
+
+const props = defineProps(['script'])
+
 const saveScript = () => {
   //스크립트 저장하기
 }
@@ -7,7 +11,9 @@ const saveScript = () => {
 <template>
   <div class="result-body">
     <div id="script" class="script">
-      <!--대본생성 후 텍스트-->
+      <div class="script-text">
+        {{ props.script }}
+      </div>
     </div>
     <div class="button-box">
       <button @click="saveScript" class="save-btn">저장하기</button>
@@ -28,6 +34,10 @@ const saveScript = () => {
     overflow-y: scroll;
     overflow-x: hidden;
     word-wrap: break-word;
+
+    .script-text {
+      @include font-factory($fs-1, null);
+    }
   }
   .script::-webkit-scrollbar {
     width: 0.3rem;

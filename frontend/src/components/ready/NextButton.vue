@@ -7,7 +7,6 @@ const props = defineProps({
 })
 
 const goNext = () => {
-  console.log(props.product)
   router.push(`/ready/${props.data}`)
 }
 </script>
