@@ -55,17 +55,17 @@ public class ProductController {
         }
     }
 
-    // 모든 상품 조회
-    @Operation(summary = "get all product", description = "모든 상품을 조회한다.")
+    // 모든 상품 조회 (카테고리 조인)
+    @Operation(summary = "get all product with category", description = "모든 상품을 조회한다.(카테고리까지 나옴)")
     @GetMapping("/product")
     public List<ProductResponse> getAllProducts() {
         return productJoinRepository.findAllWithCategory();
     }
 
-    // id 에 따른 상품 조회
+    // id 에 따른 상품 조회 (카테고리 조인)
     @Operation(summary = "get product", description = "상품을 조회한다(id)")
     @GetMapping("/product/{id}")
-    public Optional<ProductResponse> getProduct(@PathVariable("id") Long id){
+    public Optional<ProductResponse> getProduct(@PathVariable("id") String id){
         return Optional.ofNullable(productJoinRepository.findById(id));
     }
 

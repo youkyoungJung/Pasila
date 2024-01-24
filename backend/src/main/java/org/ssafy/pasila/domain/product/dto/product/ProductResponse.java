@@ -18,6 +18,7 @@ public class ProductResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String thumbnail;
+    private Long categoryId;
 
     public ProductResponse(String id, String name){
         this.id = id;
@@ -30,14 +31,15 @@ public class ProductResponse {
         this.description = description;
     }
 
-    public ProductResponse(String id, Long sellerId, String name, String description,
-                           LocalDateTime createdAt, String thumbnail){
+    public ProductResponse(String id, String name, String description,
+                           LocalDateTime createdAt, String thumbnail, Long categoryId){
         this.id = id;
-        this.sellerId = sellerId;
+//        this.sellerId = sellerId;
         this.name = name;
         this.description = description;
         this.createdAt = createdAt;
         this.thumbnail = thumbnail;
+        this.categoryId = categoryId;
     }
 
 }
