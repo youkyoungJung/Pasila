@@ -9,6 +9,7 @@ import ScheduleView from '@/views/ScheduleView.vue'
 import ChannelView from '@/views/ChannelView.vue'
 import ReadyRegistView from '@/views/ReadyRegistView.vue'
 import ReadyScriptView from '@/views/ReadyScriptView.vue'
+import ReadyChatbotView from '@/views/ReadyChatbotView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,6 +63,11 @@ const router = createRouter({
       path: '/ready/script',
       name: 'readyscript',
       component: ReadyScriptView
+    },
+    {
+      path: '/ready/chatbot',
+      name: 'readychatbot',
+      component: ReadyChatbotView
     }
   ]
 })
