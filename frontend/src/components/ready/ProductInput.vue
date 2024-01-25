@@ -161,6 +161,7 @@ const changeCnt3 = () => {
   @include box(95%, 100%, none, 0, 0.3rem, 0.1rem);
   @include flex-box($align: center, $direction: column);
   @include font-factory($fs-1, null);
+  margin-top: 2rem;
 
   .product-input {
     @include box(95%, 95%, none, 0, 0.3rem, 0.1rem);

@@ -29,17 +29,7 @@ const state = reactive({
   disabled: false
 })
 
-const onEditorBlur = (quill) => {
-  // console.log('editor blur!', quill)
-}
-const onEditorFocus = (quill) => {
-  // console.log('editor focus!', quill)
-}
-const onEditorReady = (quill) => {
-  // console.log('editor ready!', quill)
-}
 const onEditorChange = ({ quill, html, text }) => {
-  // console.log('editor change!', quill, html, text)
   state._content = html
   emits('preview-content', state._content)
 }
@@ -54,9 +44,6 @@ setTimeout(() => {
     <quill-editor
       v-model:value="state.content"
       :options="state.editorOption"
-      @blur="onEditorBlur($event)"
-      @focus="onEditorFocus($event)"
-      @ready="onEditorReady($event)"
       @change="onEditorChange($event)"
     />
   </div>
@@ -64,15 +51,20 @@ setTimeout(() => {
 
 <style lang="scss">
 .ql-toolbar.ql-snow {
-  @include box(95%, 100%, $light-gray, 0, 0, 0);
+  @include box(98%, 100%, $light-gray, 0, 0, 0);
 }
 section {
-  @include box(95%, 100%, white, 0, 0, 0);
+  @include box(98%, 100%, white, 0, 0, 0.3rem);
+}
+.ql-editor {
+  @include box(100%, 25rem, white, 0, 0, 0);
 }
 
 .editor-box {
-  @include box(95%, 100%, none, 0, 0.3rem, 0.1rem);
+  @include box(98%, 100%, none, 0, 0.3rem, 0.1rem);
   @include font-factory($fs-1, null);
   @include flex-box($direction: column);
+  margin-top: 0;
+  padding-top: 0;
 }
 </style>
