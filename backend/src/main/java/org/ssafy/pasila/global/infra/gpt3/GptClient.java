@@ -12,8 +12,8 @@ import org.ssafy.pasila.global.infra.gpt3.model.ChatResponse;
 @Service
 public class GptClient {
 
-    @Qualifier("openaiRestTemplate")
     @Autowired
+    @Qualifier("openaiRestTemplate")
     private RestTemplate restTemplate;
 
     @Value("${openai.model}")

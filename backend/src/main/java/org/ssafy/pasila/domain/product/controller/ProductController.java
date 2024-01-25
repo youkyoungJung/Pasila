@@ -14,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.ssafy.pasila.domain.error.ErrorCode;
+import org.ssafy.pasila.domain.error.RestApiException;
 import org.ssafy.pasila.domain.product.dto.product.ProductRequest;
 import org.ssafy.pasila.domain.product.dto.product.ProductResponse;
 import org.ssafy.pasila.domain.product.repository.*;
@@ -51,6 +53,7 @@ public class ProductController {
 
         }catch(Exception e){
             String errorMessage = "An error occurred: " + e.getMessage();
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
     }
@@ -67,6 +70,7 @@ public class ProductController {
     @GetMapping("/product/{id}")
     public Optional<ProductResponse> getProduct(@PathVariable("id") String id){
         return Optional.ofNullable(productJoinRepository.findById(id));
+
     }
 
     // 상품 정보 수정
@@ -101,5 +105,9 @@ public class ProductController {
             String errorMessage = "An error occurred: " + e.getMessage();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
+    }
+    @GetMapping("/test")
+    public ResponseEntity<?> test() {
+        throw new RestApiException(ErrorCode.BAD_REQUEST);
     }
 }
