@@ -26,6 +26,7 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api")
 @Tag(name = "Product", description = "Product API")
 

@@ -19,6 +19,7 @@ import org.ssafy.pasila.global.infra.gpt3.GptClient;
 @Slf4j
 @AllArgsConstructor
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/live")
 @Tag(name = "Live", description = "Live API")
 public class LiveApiController {
