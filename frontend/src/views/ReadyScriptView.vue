@@ -12,7 +12,6 @@ const script = ref('')
 
 const update = (message) => {
   script.value = message
-  console.log(message)
 }
 </script>
 

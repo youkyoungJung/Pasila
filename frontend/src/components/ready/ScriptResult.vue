@@ -30,7 +30,7 @@ const saveScript = () => {
   justify-content: center;
 
   .script {
-    @include box(95%, 20rem, $light-gray, 0.3rem, 0.3rem, 0.5rem);
+    @include box(95%, 18em, $light-gray, 0.3rem, 0.5rem, 0.5rem);
     overflow-y: scroll;
     overflow-x: hidden;
     word-wrap: break-word;

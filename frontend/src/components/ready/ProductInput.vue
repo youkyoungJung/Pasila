@@ -43,7 +43,6 @@ const changePrice = () => {
 
 const changeCnt1 = () => {
   const parsedAmount = parseFloat(product.value.formatOption1.replace(/,/g, '')) || 0
-  console.log(parsedAmount)
   product.value.formatOption1 = parsedAmount.toLocaleString('en-US')
   const temp = product.value.formatOption1.replace(/,/g, '')
   product.value.stock.option1 = parseFloat(temp)

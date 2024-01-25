@@ -6,9 +6,10 @@ const form = formDataAxios()
 const url = ''
 
 const getScript = async (deal, success, fail) => {
-  await local.post(`${url}/ready/script`, JSON.stringify(deal))
-  const successed = await success()
-  const failed = await fail()
+  console.log(JSON.stringify(deal))
+  const res = await local.post(`${url}/api/live/sheet`, JSON.stringify(deal))
+  await success(res.json())
+  await fail()
 }
 
 const setImg = (img, success, fail) => {

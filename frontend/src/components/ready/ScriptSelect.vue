@@ -5,24 +5,26 @@ import { getScript } from '@/components/api/ScriptAPI.js'
 
 const emits = defineEmits(['script'])
 const data = ref({
-  tone: '',
-  accent: '',
-  input: ''
+  style: '',
+  userName: '재즈박',
+  productName: '빅파이',
+  description: ''
 })
-const sendData = () => {
-  emits('script', data.value)
+const sendData = (e) => {
+  console.log(e)
+  emits('script', e)
   console.log('send Data!!!')
 }
 
 const failLog = () => {
-  console.log('Fail')
+  console.error()
 }
 const tones = ref({ 사장님어: String, 왕어: String, 언니어: String, BJ: String })
 const accents = ref({ 친근한: String, 공손한: String, 신뢰있는: String, 발랄한: String })
 
 const selectedTone = ref('')
 const selectTone = (i) => {
-  data.value.tone = i
+  data.value.style = i
   selectedTone.value = i
 }
 
@@ -34,9 +36,8 @@ const selectAccent = (i) => {
 
 const script = ref('')
 const makeScript = () => {
-  console.log(JSON.stringify(data.value))
-  // getScript(data, sendData, failLog)
-  sendData()
+  data.value.description = script.value.replaceAll('\n', '')
+  getScript(data.value, sendData, failLog)
 }
 </script>
 
@@ -54,7 +55,7 @@ const makeScript = () => {
         </div>
       </div>
     </div>
-    <div class="accents">
+    <!-- <div class="accents">
       <label for="accent">분위기</label>
       <div class="buttons">
         <div v-for="(index, accent) in accents" :key="index">
@@ -65,14 +66,14 @@ const makeScript = () => {
           />
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="self-input">
       <label for="input-area">상품 설명을 직접 입력해 보세요!</label>
       <span style="font-size: 9px">
         Tip! 상품 소개, 구성, 라이브 방송 혜택, 특징, 차별점(가격비교) 등 자세한 내용이 들어가면 더
         효과적인 스크립트가 만들어 집니다.</span
       >
-      <textarea type="text" id="input-area" class="input-area" v-model="data.input"></textarea>
+      <textarea type="text" id="input-area" class="input-area" v-model="script"></textarea>
     </div>
     <div class="button-box">
       <button @click="makeScript" class="make-btn">생성하기</button>
@@ -98,7 +99,7 @@ const makeScript = () => {
     padding: 0.5rem;
 
     .input-area {
-      @include box(95%, 7rem, white, 0.3rem, 0.3rem, 0.3rem);
+      @include box(95%, 10rem, white, 0.3rem, 0.3rem, 0.3rem);
       border: 1px $main solid;
       border-radius: 0.3rem;
       overflow-y: scroll;
