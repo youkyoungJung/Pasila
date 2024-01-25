@@ -14,8 +14,11 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100 # 100~1000 권장
 
-logging.level:
-  org.hibernate.SQL: debug
+logging:
+  level:
+    org.hibernate.SQL: debug
+  file:
+    path: logs
 #  org.hibernate.type: trace
 
 #chatGpt
