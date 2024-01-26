@@ -35,7 +35,7 @@ const props = defineProps({
         :class="[props.data == 'script' ? 'icon-number' : 'no-icon-number']"
       />
     </div>
-    <span :class="[props.data == 'script' ? 'step-text' : 'no-step-text']">대본 작성</span>
+    <span :class="[props.data == 'script' ? 'step-text' : 'no-step-text']">대본 생성</span>
     <font-awesome-icon icon="fa-solid fa-minus" class="icon-dash" size="2x" />
   </div>
   <div class="steps">

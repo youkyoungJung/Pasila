@@ -6,7 +6,7 @@ const props = defineProps({
   data: String
 })
 
-const stepName = ['상품 등록', '대본 작성', '챗봇 생성', '라이브 예약']
+const stepName = ['상품 등록', '대본 생성', '챗봇 생성', '라이브 예약']
 </script>
 
 <template>
