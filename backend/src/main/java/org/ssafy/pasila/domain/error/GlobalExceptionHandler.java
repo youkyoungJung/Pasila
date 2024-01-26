@@ -16,7 +16,6 @@ public class GlobalExceptionHandler  extends ResponseEntityExceptionHandler {
         ErrorCode errorCode = ex.getErrorCode();
         return handleExceptionInternal(errorCode);
     };
-
     // handleExceptionInternal() 메소드를 오버라이딩해 응답 커스터마이징
     private ResponseEntity<ErrorResponse> handleExceptionInternal(ErrorCode errorCode) {
         return ResponseEntity

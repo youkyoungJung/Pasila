@@ -49,6 +49,9 @@ public class ProductController {
 
         try{
             productService.saveProduct(productRequest, image);
+//            if(result.isEmpty()){
+//                throw new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST);
+//            }
             return ResponseEntity.status(HttpStatus.CREATED).body("success");
 
         }catch(Exception e){
