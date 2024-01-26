@@ -1,19 +1,20 @@
 <script setup>
-import { defineProps, ref } from 'vue'
+import { defineProps } from 'vue'
 
 const props = defineProps(['script'])
 
 const saveScript = () => {
   //스크립트 저장하기
+  alert('저장 되었습니다.')
 }
 </script>
 
 <template>
   <div class="result-body">
     <div id="script" class="script">
-      <div class="script-text">
+      <textarea class="script-text">
         {{ props.script }}
-      </div>
+      </textarea>
     </div>
     <div class="button-box">
       <button @click="saveScript" class="save-btn">저장하기</button>
@@ -31,19 +32,24 @@ const saveScript = () => {
 
   .script {
     @include box(95%, 18em, $light-gray, 0.3rem, 0.5rem, 0.5rem);
-    overflow-y: scroll;
-    overflow-x: hidden;
-    word-wrap: break-word;
+    padding-top: 0.2rem;
 
     .script-text {
+      @include box(100%, 100%, $light-gray, 0, 0, 0.3rem);
       @include font-factory($fs-1, null);
+      border: none;
+      resize: none;
+      overflow-y: scroll;
+      word-wrap: break-word;
+      outline: none;
+      padding-top: 0;
     }
   }
-  .script::-webkit-scrollbar {
+  .script-text::-webkit-scrollbar {
     width: 0.3rem;
   }
 
-  .script::-webkit-scrollbar-thumb {
+  .script-text::-webkit-scrollbar-thumb {
     height: 30%; /* 스크롤바의 길이 */
     background: $main; /* 스크롤바의 색상 */
     border-radius: 10px;

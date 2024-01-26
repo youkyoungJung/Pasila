@@ -1,7 +1,7 @@
 <script setup>
 import { ref, defineEmits } from 'vue'
 import ScriptSelectButton from '@/components/ready/ScriptSelectButton.vue'
-import { getScript } from '@/components/api/ScriptAPI.js'
+import { getScript, getScriptExample } from '@/components/api/ScriptAPI.js'
 
 const emits = defineEmits(['script'])
 const data = ref({
@@ -10,16 +10,8 @@ const data = ref({
   productName: '빅파이',
   description: ''
 })
-const sendData = (e) => {
-  console.log(e)
-  emits('script', e)
-  console.log('send Data!!!')
-}
 
-const failLog = () => {
-  console.error()
-}
-const tones = ref({ 사장님어: String, 왕어: String, 언니어: String, BJ: String })
+const tones = ref({ 구어체: String, 왕: String, enfp: String, 아재: String })
 const accents = ref({ 친근한: String, 공손한: String, 신뢰있는: String, 발랄한: String })
 
 const selectedTone = ref('')
@@ -38,6 +30,14 @@ const script = ref('')
 const makeScript = () => {
   data.value.description = script.value.replaceAll('\n', '')
   getScript(data.value, sendData, failLog)
+}
+
+const sendData = (e) => {
+  emits('script', e)
+}
+
+const failLog = () => {
+  console.error()
 }
 </script>
 

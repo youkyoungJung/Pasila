@@ -20,7 +20,7 @@ library.add(faMagnifyingGlass, faCircleChevronLeft, faCircleChevronRight, faPape
 library.add(faCalendarCheck, faUser, fas, far)
 
 const app = createApp(App)
-axios.defaults.baseURL = 'http://localhost:8080'
+axios.defaults.baseURL = 'http://i10a402.p.ssafy.io:8080'
 app.config.globalProperties.$axios = axios
 
 app.component('font-awesome-icon', FontAwesomeIcon)

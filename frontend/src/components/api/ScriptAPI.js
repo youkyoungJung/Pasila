@@ -3,12 +3,17 @@ import { localAxios, formDataAxios } from '@/components/api/APIModule.js'
 const local = localAxios()
 const form = formDataAxios()
 
-const url = ''
+const url = '/api/live'
+
+const getScriptExample = async (deal, success, fail) => {
+  const res = await local.get(`${url}/sheet/example`, JSON.stringify(deal))
+  await success(res.data)
+  await fail()
+}
 
 const getScript = async (deal, success, fail) => {
-  console.log(JSON.stringify(deal))
-  const res = await local.post(`${url}/api/live/sheet`, JSON.stringify(deal))
-  await success(res.json())
+  const res = await local.post(`${url}/sheet`, JSON.stringify(deal))
+  await success(res.data)
   await fail()
 }
 
@@ -24,4 +29,4 @@ const getDeal = (id, success, fail) => {
   local.get(`${url}/deal`, { params: { id } }).then(success).catch(fail)
 }
 
-export { getScript, setImg, getList, getDeal }
+export { getScript, getScriptExample, setImg, getList, getDeal }
