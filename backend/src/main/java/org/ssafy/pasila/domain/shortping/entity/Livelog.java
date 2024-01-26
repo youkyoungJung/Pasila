@@ -1,10 +1,11 @@
-package org.ssafy.pasila.domain.live.entity;
+package org.ssafy.pasila.domain.shortping.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ssafy.pasila.domain.live.entity.Live;
 
 import java.time.LocalDateTime;
 
