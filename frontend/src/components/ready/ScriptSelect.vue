@@ -55,7 +55,7 @@ const failLog = () => {
         </div>
       </div>
     </div>
-    <!-- <div class="accents">
+    <div class="accents">
       <label for="accent">분위기</label>
       <div class="buttons">
         <div v-for="(index, accent) in accents" :key="index">
@@ -66,7 +66,7 @@ const failLog = () => {
           />
         </div>
       </div>
-    </div> -->
+    </div>
     <div class="self-input">
       <label for="input-area">상품 설명을 직접 입력해 보세요!</label>
       <span style="font-size: 9px">

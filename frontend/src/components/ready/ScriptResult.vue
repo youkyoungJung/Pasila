@@ -31,7 +31,7 @@ const saveScript = () => {
   justify-content: center;
 
   .script {
-    @include box(95%, 18em, $light-gray, 0.3rem, 0.5rem, 0.5rem);
+    @include box(95%, 23em, $light-gray, 0.3rem, 0.5rem, 0.5rem);
     padding-top: 0.2rem;
 
     .script-text {
