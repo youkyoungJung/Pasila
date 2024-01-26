@@ -1,51 +1,53 @@
 package org.ssafy.pasila.domain.member.service;
 
-import com.twilio.Twilio;
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
+
 import lombok.RequiredArgsConstructor;
+
+
+import net.nurigo.sdk.NurigoApp;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
+import net.nurigo.sdk.message.service.DefaultMessageService;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
 public class SendMsgServiceImpl implements SendMsgService {
 
-    @Value("${twilio.sid}")
-    private String sid ;
+    @Value("${coolsms.apiKey}")
+    private String apiKey ;
 
-    @Value("${twilio.token}")
-    private String token ;
+    @Value("${coolsms.apiSecret}")
+    private String apiSecret ;
 
-    @Value("${twilio.country}")
-    private String country;
+    @Value("${coolsms.fromNumber}")
+    private String fromNumber;
 
-    @Value("${twilio.sendNumber}")
-    private String sendNumber;
+    private DefaultMessageService messageService;
 
-    //return은 굳이? 바로 redis로 보내는게 좋을것 같다.
+
+    // 바로 redis로 보내기
     public int sendSMS (String phoneNum) {
-        Twilio.init(sid, token);
 
         // 휴대폰 인증번호 생성
         int authNum = randomNum();
 
-        // 전송대상 휴대폰 번호
-        String sendTarget = "+"+ country + phoneNum;
+        messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecret, "https://api.coolsms.co.kr");
 
-        // 전송 메세지
-        String authMsg = "[" + authNum + "]" ;
+        Message message = new Message();
 
+        // 랜덤한 인증 번호 생성
+        int randomNum = randomNum();
 
-        Message message = Message.creator(
-                // to
-                new PhoneNumber(sendTarget),
-                // from
-                new PhoneNumber(sendNumber),
+        message.setFrom(fromNumber);
+        message.setTo(phoneNum);
+        message.setText(Integer.toString(authNum));
 
-                // message
-                authMsg).create();
+        this.messageService.sendOne(new SingleMessageSendingRequest(message));
+        // 발신 정보 설정
 
         return authNum;
 
