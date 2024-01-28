@@ -15,6 +15,7 @@ import { quillEditor } from 'vue3-quill'
 
 import App from './App.vue'
 import router from './router'
+import VueDOMPurifyHTML from 'vue-dompurify-html'
 
 library.add(faMagnifyingGlass, faCircleChevronLeft, faCircleChevronRight, faPaperPlane)
 library.add(faCalendarCheck, faUser, fas, far)
@@ -25,6 +26,7 @@ app.config.globalProperties.$axios = axios
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 
+app.use(VueDOMPurifyHTML)
 app.use(quillEditor)
 app.use(createPinia())
 app.use(router)
