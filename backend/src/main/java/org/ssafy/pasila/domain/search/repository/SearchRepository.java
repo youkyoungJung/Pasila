@@ -10,46 +10,56 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-
 public class SearchRepository {
     private final EntityManager em;
 
-    public List<SearchLiveResponse> findAllByNameForLive(String keyword) {
-        String likeParam = "%"+keyword+"%";
+    public List<SearchLiveResponse> findAllByNameForLive(String keyword, String sort) {
+        String orderByClause = getOrderByClause(sort);
+        String likeParam = createLikeParam(keyword);
+
         return em.createQuery(
                         "SELECT new org.ssafy.pasila.domain.search.dto.SearchLiveResponse" +
                                 "(l.id, l.title, m.name, m.channel, p.name) " +
-                                "FROM Live l  left Join l.product p  left  Join l.member m " +
-                                "where l.title Like :keyword " +
-                                "or p.name Like :keyword " +
-                                "or m.channel Like :keyword " +
-                                "and l.isActive = true "
-                        ,  SearchLiveResponse.class)
-                .setParameter("keyword", likeParam)
-                .setParameter("keyword", likeParam)
+                                "FROM Live l LEFT JOIN l.product p LEFT JOIN l.member m " +
+                                "WHERE (l.title LIKE :keyword " +
+                                "OR p.name LIKE :keyword " +
+                                "OR m.channel LIKE :keyword) " +
+                                "AND l.isActive = true " +
+                                orderByClause
+                        , SearchLiveResponse.class)
                 .setParameter("keyword", likeParam)
                 .getResultList();
     }
 
-    public List<SearchShortpingResponse> findAllByNameForShortping(String keyword){
-        String likeParam = "%"+keyword+"%";
+    public List<SearchShortpingResponse> findAllByNameForShortping(String keyword, String sort) {
+        String orderByClause = getOrderByClause(sort);
+        String likeParam = createLikeParam(keyword);
+
         return em.createQuery(
                         "SELECT new org.ssafy.pasila.domain.search.dto.SearchShortpingResponse" +
                                 "(s.id, s.title) " +
-                                "FROM Shortping s  left Join s.product p  left  Join p.member m " +
-                                "where s.title Like :keyword " +
-                                "or p.name Like :keyword " +
-                                "or m.channel Like :keyword " +
-                                "and s.isActive = true "
-                        ,  SearchShortpingResponse.class)
+                                "FROM Shortping s LEFT JOIN s.product p LEFT JOIN p.member m " +
+                                "WHERE s.title LIKE :keyword " +
+                                "OR p.name LIKE :keyword " +
+                                "OR m.channel LIKE :keyword " +
+                                "AND s.isActive = true " +
+                                orderByClause
+                        , SearchShortpingResponse.class)
                 .setParameter("keyword", likeParam)
-                .setParameter("keyword", likeParam)
-                .setParameter("keyword", likeParam)
-//                .setParameter("true", 1)
                 .getResultList();
-
     }
 
+    /** 정렬 조건 (인기순/최신순) */
+    private String getOrderByClause(String sort) {
+        if ("popularity".equals(sort)) {
+            return "ORDER BY l.likeCnt DESC"; // 인기도(popularity) 내림차순으로 정렬
+        } else {
+            return "ORDER BY l.createdAt DESC"; // 생성일자(createdAt) 내림차순으로 정렬
+        }
+    }
 
-
+    /** keyword 로 검색 */
+    private String createLikeParam(String keyword) {
+        return "%" + keyword + "%";
+    }
 }

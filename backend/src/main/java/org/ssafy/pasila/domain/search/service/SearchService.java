@@ -19,15 +19,16 @@ public class SearchService {
     /** product name, live_title, channel_name
      *  검색 키워드에 해당하는 Live 모음집
      * */
-    public List<SearchLiveResponse> searchForLive(String keyword){
-        return searchRepository.findAllByNameForLive(keyword);
+    public List<SearchLiveResponse> searchForLive(String keyword, String sort){
+
+        return searchRepository.findAllByNameForLive(keyword, sort);
     }
 
     /**product name, live_title, short_title
      *  검색 키워드에 해당하는 Shortping 모음집
      * */
-    public List<SearchShortpingResponse> searchForShortping(String keyword){
-        return searchRepository.findAllByNameForShortping(keyword);
+    public List<SearchShortpingResponse> searchForShortping(String keyword, String sort){
+        return searchRepository.findAllByNameForShortping(keyword, sort);
     }
 
 
