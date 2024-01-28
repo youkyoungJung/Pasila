@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ssafy.pasila.domain.live.entity.Live;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 
 @Data
@@ -21,9 +21,9 @@ public class Livelog {
     @Id @GeneratedValue
     private Long id;
 
-    private LocalDateTime start;
+    private LocalTime start;
 
-    private LocalDateTime end;
+    private LocalTime end;
 
     @Column(length = 30)
     private String title;
@@ -34,4 +34,10 @@ public class Livelog {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "live_id")
     private Live live;
+
+    public void setLive(Live live) {
+        this.live = live;
+        live.getLivelogs().add(this);
+    }
+
 }
