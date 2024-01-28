@@ -5,15 +5,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.search.dto.SearchLiveResponse;
 import org.ssafy.pasila.domain.search.dto.SearchShortpingResponse;
 import org.ssafy.pasila.domain.search.service.SearchService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -28,15 +26,24 @@ public class SearchController {
     @Operation(summary = "Search Live", description = "Live에 대한 검색기능을 제공합니다.")
     //TODO: 0. 예외처리하기
     @GetMapping(value="/live")
-    public List<SearchLiveResponse> getAllResultsForLive(@Parameter String keyword, @RequestParam(name = "sort", defaultValue = "popularity") String sort){
+    public List<SearchLiveResponse> getAllResultsForLive(@RequestParam String keyword, @RequestParam(name = "sort", defaultValue = "popularity") String sort){
 
         return searchService.searchForLive(keyword, sort);
     }
 
     @Operation(summary = "Search Shortping", description = "Shortping에 대한 검색기능을 제공합니다.")
     @GetMapping(value="/shortping")
-    public List<SearchShortpingResponse> getAllResultsForShortping(@Parameter String keyword, @RequestParam(name = "sort", defaultValue = "popularity") String sort){
+    public List<SearchShortpingResponse> getAllResultsForShortping(@RequestParam String keyword, @RequestParam(name = "sort", defaultValue = "popularity") String sort){
         return searchService.searchForShortping(keyword, sort);
     }
 
+    @Operation(summary = "Search Category", description = "Category에 대한 검색기능을 제공합니다.")
+    @GetMapping(value="/category/{id}")
+    public List<SearchLiveResponse> getAllResultsForCategory(@PathVariable Optional<Long> id, @RequestParam(name = "sort", defaultValue = "popularity") String sort){
+        if(id.isPresent()){
+            return searchService.searchForCategory(Long.parseLong(String.valueOf(id)), sort);
+        }else{
+            return searchService.searchForCategory(Long.parseLong(String.valueOf(1)), sort);
+        }
+    }
 }

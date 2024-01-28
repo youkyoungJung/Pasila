@@ -32,4 +32,8 @@ public class SearchService {
     }
 
 
+    public List<SearchLiveResponse> searchForCategory(Long id, String sort) {
+//        return searchRepository.findAllByIdForCategory(id, sort);
+        return null;
+    }
 }
