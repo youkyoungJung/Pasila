@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref } from 'vue'
 import ScriptSelectButton from '@/components/ready/ScriptSelectButton.vue'
 import { getScript, getScriptExample } from '@/components/api/ScriptAPI.js'
 

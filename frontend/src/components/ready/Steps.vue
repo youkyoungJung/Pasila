@@ -1,6 +1,5 @@
 <script setup>
 import Step from '@/components/ready/Step.vue'
-import { defineProps } from 'vue'
 
 const props = defineProps({
   data: String

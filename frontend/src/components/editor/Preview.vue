@@ -1,17 +1,13 @@
 <script setup>
-import { reactive, defineProps, computed } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps(['preview'])
 
-const editorText = computed({
+let editorText = computed({
   get: () => props.preview,
   set: (val) => {
     editorText = val
   }
-})
-
-const state = reactive({
-  disabled: true
 })
 </script>
 

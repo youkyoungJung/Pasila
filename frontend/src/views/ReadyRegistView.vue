@@ -75,6 +75,7 @@ const tabs = ref(['작성하기', '미리보기'])
       display: flex;
       flex-direction: column;
       border-left: 1px solid $main;
+      min-height: 30rem;
       margin-top: 2rem;
 
       .tabs {
