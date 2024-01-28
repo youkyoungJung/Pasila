@@ -22,7 +22,8 @@ public class SearchRepository {
                                 "FROM Live l  left Join l.product p  left  Join l.member m " +
                                 "where l.title Like :keyword " +
                                 "or p.name Like :keyword " +
-                                "or m.channel Like :keyword "
+                                "or m.channel Like :keyword " +
+                                "and l.isActive = true "
                         ,  SearchLiveResponse.class)
                 .setParameter("keyword", likeParam)
                 .setParameter("keyword", likeParam)
@@ -38,11 +39,13 @@ public class SearchRepository {
                                 "FROM Shortping s  left Join s.product p  left  Join p.member m " +
                                 "where s.title Like :keyword " +
                                 "or p.name Like :keyword " +
-                                "or m.channel Like :keyword "
+                                "or m.channel Like :keyword " +
+                                "and s.isActive = true "
                         ,  SearchShortpingResponse.class)
                 .setParameter("keyword", likeParam)
                 .setParameter("keyword", likeParam)
                 .setParameter("keyword", likeParam)
+//                .setParameter("true", 1)
                 .getResultList();
 
     }
