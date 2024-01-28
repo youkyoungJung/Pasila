@@ -24,7 +24,7 @@ public class SearchRepository {
                                 "WHERE (l.title LIKE :keyword " +
                                 "OR p.name LIKE :keyword " +
                                 "OR m.channel LIKE :keyword) " +
-                                "AND l.isActive = true " +
+//                                "AND l.isActive = true " +
                                 orderByClause
                         , SearchLiveResponse.class)
                 .setParameter("keyword", likeParam)
@@ -51,10 +51,10 @@ public class SearchRepository {
 
     /** 정렬 조건 (인기순/최신순) */
     private String getOrderByClause(String sort) {
-        if ("popularity".equals(sort)) {
-            return "ORDER BY l.likeCnt DESC"; // 인기도(popularity) 내림차순으로 정렬
-        } else {
+        if ("created_at".equals(sort)) {
             return "ORDER BY l.createdAt DESC"; // 생성일자(createdAt) 내림차순으로 정렬
+        } else {
+            return "ORDER BY l.likeCnt DESC"; // 인기도(popularity) 내림차순으로 정렬
         }
     }
 

@@ -28,14 +28,14 @@ public class SearchController {
     @Operation(summary = "Search Live", description = "Live에 대한 검색기능을 제공합니다.")
     //TODO: 0. 예외처리하기
     @GetMapping(value="/live")
-    public List<SearchLiveResponse> getAllResultsForLive(@Parameter String keyword, @RequestParam(name = "sort", defaultValue = "created_at") String sort){
+    public List<SearchLiveResponse> getAllResultsForLive(@Parameter String keyword, @RequestParam(name = "sort", defaultValue = "popularity") String sort){
 
         return searchService.searchForLive(keyword, sort);
     }
 
     @Operation(summary = "Search Shortping", description = "Shortping에 대한 검색기능을 제공합니다.")
     @GetMapping(value="/shortping")
-    public List<SearchShortpingResponse> getAllResultsForShortping(@Parameter String keyword, @RequestParam(name = "sort", defaultValue = "created_at") String sort){
+    public List<SearchShortpingResponse> getAllResultsForShortping(@Parameter String keyword, @RequestParam(name = "sort", defaultValue = "popularity") String sort){
         return searchService.searchForShortping(keyword, sort);
     }
 
