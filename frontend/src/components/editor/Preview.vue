@@ -13,7 +13,7 @@ let editorText = computed({
 
 <template>
   <div class="preview-body">
-    <div v-html="editorText" id="preview" class="content ql-editor"></div>
+    <div v-dompurify-html="editorText" id="preview" class="content ql-editor"></div>
   </div>
 </template>
 
