@@ -92,4 +92,30 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Product> products = new ArrayList<>();
+
+    /**
+     * 마이페이지 - member 수정
+     */
+    public void updateMember(String name, String channel, String password, String phone,
+                             String address, String addressDetail, Gender gender,
+                             LocalDate birth, String bank, String account, String profile) {
+        this.name = name;
+        this.channel = channel;
+        this.password = password;
+        this.phone = phone;
+        this.address = address;
+        this.addressDetail = addressDetail;
+        this.gender = gender;
+        this.birth = birth;
+        this.bank = bank;
+        this.account = account;
+        this.profile = profile;
+    }
+
+    /**
+     * 프로필 이미지 저장/수정
+     */
+    public void editProfileUrl(String url) {
+        this.profile = url;
+    }
 }

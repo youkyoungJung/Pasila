@@ -3,7 +3,7 @@ package org.ssafy.pasila.domain.member.repository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.ssafy.pasila.domain.member.dto.PersonalInfo.PersonalInfoResponse;
+import org.ssafy.pasila.domain.member.dto.response.PersonalInfoResponse;
 
 @Repository
 @RequiredArgsConstructor
