@@ -45,9 +45,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void join(Member member, MultipartFile profileFile) throws IOException {
         // profileFile 을 S3에서 받아온 url 주소를 member profile
-
-        String url = uploader.upload(profileFile , "member");
-        member.addProfile(url);
+        if(!profileFile.isEmpty()) {
+            String url = uploader.upload(profileFile, "member");
+            member.addProfile(url);
+        }
         memberRepository.save(member);
     }
 

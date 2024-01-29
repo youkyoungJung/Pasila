@@ -38,14 +38,8 @@ dependencies {
 	// https://mvnrepository.com/artifact/net.nurigo/sdk
 	implementation group: 'net.nurigo', name: 'sdk', version: '4.3.0'
 
-	// 트윌리오
-//	// https://mvnrepository.com/artifact/com.twilio.sdk/twilio
-//	implementation group: 'com.twilio.sdk', name: 'twilio', version: '9.14.1'
-//	// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
-//	implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
-//// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore
-//	implementation group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.15'
-//
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 
 }
 
