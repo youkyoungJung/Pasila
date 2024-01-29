@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.member.entity.Member;
-import org.ssafy.pasila.domain.product.dto.product.ProductRequest;
+import org.ssafy.pasila.domain.product.dto.ProductRequest;
 import org.ssafy.pasila.domain.product.entity.*;
 import org.ssafy.pasila.domain.product.repository.CategoryRepository;
 import org.ssafy.pasila.domain.product.repository.MemberRepository;
@@ -69,16 +69,20 @@ public class ProductService {
         return savedProduct;
     }
 
-    /**상품을 찾는 메서드*/
+    /**
+     * 상품을 찾는 메서드
+     */
     private Product getProductById(String id) {
         return productRepository.findById(id)
+//                .orElseThrow();
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 상품이 없습니다."));
     }
 
     /** 멤버를 찾는 메서드*/
     private Member getMemberById(Long id){
         return memberRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException("해당 아이디에 대한 멤버정보가 없습니다."));
+                .orElseThrow();
+//                .orElseThrow(()-> new IllegalArgumentException("해당 아이디에 대한 멤버정보가 없습니다."));
     }
 
     /**카테고리 정보를 찾는 메서드*/

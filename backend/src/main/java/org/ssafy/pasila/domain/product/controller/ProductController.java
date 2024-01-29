@@ -11,12 +11,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
-import org.ssafy.pasila.domain.product.dto.product.ProductRequest;
-import org.ssafy.pasila.domain.product.dto.product.ProductResponse;
+import org.ssafy.pasila.domain.product.dto.ProductRequest;
+import org.ssafy.pasila.domain.product.dto.ProductResponse;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.*;
 import org.ssafy.pasila.domain.product.service.ProductService;
@@ -24,7 +23,6 @@ import org.ssafy.pasila.domain.product.service.ProductService;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -48,7 +46,7 @@ public class ProductController {
     public ApiCommonResponse<Product> createProduct(@RequestPart(value = "pr") ProductRequest productRequest,
                                                     @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
 
-        Product product = productService.saveProduct(productRequest, image);
+          Product product = productService.saveProduct(productRequest, image);
 
 //        log.info("controller: {}", product);
         return ApiCommonResponse.successResponse(HttpStatus.CREATED, product);

@@ -33,24 +33,6 @@ public class ApiCommonResponse<T>{
         return new ApiCommonResponse<>(statusCode, SUCCESS_STATUS, null, null);
     }
 
-    public static ApiCommonResponse<?> failResponse(HttpStatus statusCode, BindingResult bindingResult) {
-        Map<String, String> errors = new HashMap<>();
-
-        List<ObjectError> allErrors = bindingResult.getAllErrors();
-        for (ObjectError error : allErrors) {
-            if (error instanceof FieldError) {
-                errors.put(((FieldError) error).getField(), error.getDefaultMessage());
-            } else {
-                errors.put(error.getObjectName(), error.getDefaultMessage());
-            }
-        }
-        return new ApiCommonResponse<>(statusCode, FAIL_STATUS, errors, null);
-    }
-
-    public static ApiCommonResponse<?> errorResponse(HttpStatus statusCode, String message) {
-        return new ApiCommonResponse<>(statusCode, ERROR_STATUS, null, message);
-    }
-
     private ApiCommonResponse(HttpStatus statusCode, String status, T data, String message) {
         this.statusCode = statusCode;
         this.status = status;

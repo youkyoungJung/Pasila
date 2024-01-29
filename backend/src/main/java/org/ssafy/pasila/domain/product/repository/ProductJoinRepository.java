@@ -3,7 +3,7 @@ package org.ssafy.pasila.domain.product.repository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.ssafy.pasila.domain.product.dto.product.ProductResponse;
+import org.ssafy.pasila.domain.product.dto.ProductResponse;
 import org.ssafy.pasila.domain.product.entity.Product;
 
 import java.util.List;
