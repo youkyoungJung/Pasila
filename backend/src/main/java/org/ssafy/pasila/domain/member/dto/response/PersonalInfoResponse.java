@@ -1,4 +1,4 @@
-package org.ssafy.pasila.domain.member.dto.PersonalInfo;
+package org.ssafy.pasila.domain.member.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
