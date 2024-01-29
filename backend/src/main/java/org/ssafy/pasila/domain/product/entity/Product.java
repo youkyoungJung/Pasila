@@ -1,5 +1,6 @@
 package org.ssafy.pasila.domain.product.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -15,6 +16,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.sqids.Sqids;
+import org.ssafy.pasila.domain.shortping.entity.Shortping;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -72,9 +75,13 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 
-
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductOption> productOptions = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
+    private Shortping shortping;
+
 
     //==연관 메서드 ==//
     public void addProductOption(ProductOption productOption){

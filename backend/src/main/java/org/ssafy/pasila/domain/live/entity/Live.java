@@ -5,13 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.catalina.User;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import org.sqids.Sqids;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.product.entity.Product;
-import org.ssafy.pasila.domain.shortping.entity.Shortping;
+import org.ssafy.pasila.domain.shortping.entity.Livelog;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;

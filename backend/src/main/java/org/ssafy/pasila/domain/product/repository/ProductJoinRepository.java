@@ -37,7 +37,7 @@ public class ProductJoinRepository {
     public ProductResponse findById(String productId){
         return em.createQuery("Select new org.ssafy.pasila.domain.product.dto.product.ProductResponse" +
                         "(p.id, m.id, p.name, p.description, p.createdAt, p.thumbnail, c.id) " +
-                        "FROM Product p Join p.category c Join p.member" +
+                        "FROM Product p Join p.category c Join p.member m " +
                         "where p.id = :productId " , ProductResponse.class)
                 .setParameter("productId", productId).getSingleResult();
     }
