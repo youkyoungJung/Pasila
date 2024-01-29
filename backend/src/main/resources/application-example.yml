@@ -20,9 +20,10 @@ logging.level:
 
 #chatGpt
 openai:
-  model: gpt-3.5-turbo
+  model: gpt-3.5-turbo # 기본 모델
+  style-model: ft:gpt-3.5-turbo-1106:personal::8hjOZRLW # 말투 학습 모델
   api:
-    url: https://api.openai.com/v1/chat/completions
+    url: https://api.openai.com/v1
     key:
     id:
 

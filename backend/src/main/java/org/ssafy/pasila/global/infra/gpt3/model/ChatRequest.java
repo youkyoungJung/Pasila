@@ -14,13 +14,17 @@ public class ChatRequest {
     private String model;
     private List<Message> messages;
     // private int n;
-    // private double temperature;
+    private double temperature;
+    private double top_p;
+    // private double presence_penalty;
 
-    public ChatRequest(String model, String system, String prompt) {
+    public ChatRequest(String model, String system, String prompt, double temperature, double top_p) {
         this.model = model;
         this.messages = new ArrayList<>();
         this.messages.add(new Message("system", system));
-        this.messages.add(new Message("assistant", prompt));
+        this.messages.add(new Message("user", prompt));
+        this.temperature = temperature;
+        this.top_p = top_p;
     }
 
 }

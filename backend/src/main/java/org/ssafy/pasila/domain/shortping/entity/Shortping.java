@@ -1,10 +1,8 @@
 package org.ssafy.pasila.domain.shortping.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.sqids.Sqids;
 import org.ssafy.pasila.domain.live.entity.Live;
@@ -18,17 +16,16 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Shortping {
     @Id
-    @Column(columnDefinition = "VARCHAR(8)")
+    @Column(columnDefinition = "VARCHAR(10)")
     private String id;
 
     @PrePersist
     public void createUniqId() {
         Sqids sqids = Sqids.builder()
-                .minLength(8)
+                .minLength(10)
                 .build();
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         long timestampAsLong = timestamp.getTime();
@@ -37,7 +34,7 @@ public class Shortping {
         this.id = newId;
     }
 
-    @Column(length = 30)
+    @Column(length = 30, nullable = false)
     private String title;
 
     @Column(name = "like_cnt")
@@ -51,9 +48,27 @@ public class Shortping {
     private LocalDateTime createdAt;
 
     @Column(name = "is_active")
+    @ColumnDefault("true")
     private boolean isActive;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    public void setProduct(Product product) {
+        this.product = product;
+        product.setShortping(this);
+    }
+
+    public static Shortping createShortping(String title, String videoUrl, Product product) {
+        Shortping shortping = new Shortping();
+        shortping.setTitle(title);
+        shortping.setVideoUrl(videoUrl);
+        shortping.setProduct(product);
+        shortping.setLikeCnt(0);
+        shortping.setActive(true);
+        return shortping;
+    }
+
+
 }
