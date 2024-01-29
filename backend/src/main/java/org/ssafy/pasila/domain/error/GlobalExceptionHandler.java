@@ -1,8 +1,10 @@
 package org.ssafy.pasila.domain.error;
 
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -21,6 +23,17 @@ public class GlobalExceptionHandler  extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(errorCode.getHttpStatus().value())
                 .body(new ErrorResponse(errorCode));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(SuccessException.class)
+    public ResponseEntity<SuccessResponse> handleSuccess(SuccessException ex) {
+        SuccessResponse successResponse = new SuccessResponse(
+                HttpStatus.OK.value(),
+                HttpStatus.OK.getReasonPhrase(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 
 }

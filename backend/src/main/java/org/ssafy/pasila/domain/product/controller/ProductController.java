@@ -49,9 +49,6 @@ public class ProductController {
 
         try{
             productService.saveProduct(productRequest, image);
-//            if(result.isEmpty()){
-//                throw new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST);
-//            }
             return ResponseEntity.status(HttpStatus.CREATED).body("success");
 
         }catch(Exception e){
@@ -109,8 +106,5 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
     }
-    @GetMapping("/test")
-    public ResponseEntity<?> test() {
-        throw new RestApiException(ErrorCode.BAD_REQUEST);
-    }
+
 }
