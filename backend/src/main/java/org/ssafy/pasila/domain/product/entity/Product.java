@@ -1,5 +1,6 @@
 package org.ssafy.pasila.domain.product.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -63,17 +64,21 @@ public class Product {
 
     @Column(name = "is_active")
     @ColumnDefault("true")
+//    @Convert(converter = YesNoConverter.class)
     private boolean isActive;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
+
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private Category category;
 
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<ProductOption> productOptions = new ArrayList<>();
 
     //==연관 메서드 ==//

@@ -30,30 +30,33 @@ public class ProductService {
 
     // 상품 저장 서비스
     @Transactional
-    public void saveProduct(ProductRequest productRequest, MultipartFile image) throws IOException {
+    public Product saveProduct(ProductRequest productRequest, MultipartFile image) throws IOException {
         Product savedProduct = saveProductInfo(productRequest);
         saveProductOptions(savedProduct, productRequest.getProductOptions());
         productRepository.save(savedProduct);
         handleImage(savedProduct, image);
+        return savedProduct;
     }
 
     // 상품 수정 서비스
     @Transactional
-    public void updateProduct(String id, ProductRequest productRequest, MultipartFile newImageFile) throws IOException {
+    public Product updateProduct(String id, ProductRequest productRequest, MultipartFile newImageFile) throws IOException {
         Product result = getProductById(id);
         Category category = getCategoryById(productRequest.getCategory().getId());
         updateProductOptions(productRequest.getProductOptions());
         result.updateProduct(productRequest.getProduct(), category);
         handleNewImage(result, newImageFile);
         log.info("반영 result : {}", result);
+        return result;
     }
 
     // 상품 삭제 서비스
     @Transactional
-    public void deleteProduct(String id) {
+    public Product deleteProduct(String id) {
         Product product = getProductById(id);
         deleteImageIfExists(product.getThumbnail());
-        productRepository.deleteById(id);
+        product.setActive(false);
+        return product;
     }
 
     //== 서비스에 필요한 관련 메서드 작성 ==//
@@ -138,7 +141,7 @@ public class ProductService {
      * S3에서의 기존 사진이 삭제되어야함.
      * */
     private void deleteImageIfExists(String imageUrl) {
-        if (!imageUrl.isEmpty()) {
+        if (imageUrl != null && !imageUrl.isEmpty()) {
             String fileName = extractFileName(imageUrl);
             s3Uploader.deleteImage(fileName);
             log.info("success: deleteImage 수행");

@@ -14,14 +14,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.ssafy.pasila.domain.error.ErrorCode;
-import org.ssafy.pasila.domain.error.RestApiException;
+import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.product.dto.product.ProductRequest;
 import org.ssafy.pasila.domain.product.dto.product.ProductResponse;
+import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.*;
 import org.ssafy.pasila.domain.product.service.ProductService;
 
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,67 +45,53 @@ public class ProductController {
                     @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductResponse.class)))
             })})
     @PostMapping(value = "/product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> createProduct(@RequestPart(value = "pr") ProductRequest productRequest,
-                                                @RequestPart(value = "image", required = false) MultipartFile image) {
+    public ApiCommonResponse<Product> createProduct(@RequestPart(value = "pr") ProductRequest productRequest,
+                                                    @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
 
-        try{
-            productService.saveProduct(productRequest, image);
-            return ResponseEntity.status(HttpStatus.CREATED).body("success");
+        Product product = productService.saveProduct(productRequest, image);
 
-        }catch(Exception e){
-            String errorMessage = "An error occurred: " + e.getMessage();
+//        log.info("controller: {}", product);
+        return ApiCommonResponse.successResponse(HttpStatus.CREATED, product);
 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
-        }
     }
 
     // 모든 상품 조회 (카테고리 조인)
     @Operation(summary = "get all product with category", description = "모든 상품을 조회한다.(카테고리까지 나옴)")
     @GetMapping("/product")
-    public List<ProductResponse> getAllProducts() {
-        return productJoinRepository.findAllWithCategory();
+    public ApiCommonResponse<List<ProductResponse>> getAllProducts() {
+        List<ProductResponse> list = productJoinRepository.findAllWithCategory();
+        return ApiCommonResponse.successResponse(HttpStatus.ACCEPTED, list);
+//        return productJoinRepository.findAllWithCategory();
     }
 
     // id 에 따른 상품 조회 (카테고리 조인)
     @Operation(summary = "get product", description = "상품을 조회한다(id)")
     @GetMapping("/product/{id}")
-    public Optional<ProductResponse> getProduct(@PathVariable("id") String id){
-        return Optional.ofNullable(productJoinRepository.findById(id));
+    public ApiCommonResponse<ProductResponse> getProduct(@PathVariable("id") String id){
+        ProductResponse response = productJoinRepository.findById(id);
+        return ApiCommonResponse.successResponse(HttpStatus.OK, response);
 
     }
 
     // 상품 정보 수정
     @Operation(summary = "update product", description = "상품을 수정한다.")
     @PutMapping("/product/{id}")
-    public  ResponseEntity<String> updateProduct(@PathVariable("id") String id,
+    public  ApiCommonResponse<Product> updateProduct(@PathVariable("id") String id,
                                                  @RequestPart(value = "pr") ProductRequest request,
-                                                 @RequestPart(value = "new_image", required = false) MultipartFile newImageName){
+                                                 @RequestPart(value = "new_image", required = false) MultipartFile newImageName) throws IOException {
 
-        try{
-                log.info("request: {}", request);
-                productService.updateProduct(id, request, newImageName);
+        log.info("request: {}", request);
+        Product product = productService.updateProduct(id, request, newImageName);
+        return ApiCommonResponse.successResponse(HttpStatus.CREATED, product);
 
-        }catch(Exception e){
-            String errorMessage = "An error occurred: " + e.getMessage();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body("success");
     }
-
-    //상품 정보 삭제
+    //상품 정보 삭제 - isActive
     @Operation(summary = "delete product", description = "상품을 삭제한다.")
     @DeleteMapping("/product/{id}")
-    ResponseEntity<String> deleteProduct(@PathVariable("id") String id){
+    ApiCommonResponse<Product> deleteProduct(@PathVariable("id") String id){
 
-        try{
-            productService.deleteProduct(id);
-            return ResponseEntity.status(HttpStatus.OK).body("success: 삭제 완료");
-
-        }catch(Exception e){
-            String errorMessage = "An error occurred: " + e.getMessage();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
-        }
+        Product product = productService.deleteProduct(id);
+        return ApiCommonResponse.successResponse(HttpStatus.OK, product);
     }
 
 }

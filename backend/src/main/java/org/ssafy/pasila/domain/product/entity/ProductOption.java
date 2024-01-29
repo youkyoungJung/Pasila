@@ -1,10 +1,7 @@
 package org.ssafy.pasila.domain.product.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
@@ -13,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "product_option")
+@ToString(exclude = "product")
 public class ProductOption {
     @Id @GeneratedValue
     private Long id;
