@@ -21,6 +21,7 @@ public class MemberService {
     private final S3Uploader s3Uploader;
 
     @Transactional
+    //TODO 비밀번호 암호화, 계좌번호 암호화
     public void updateMember(Long id, PersonalInfoRequest personalInfoRequest, MultipartFile newImageFile) throws IOException {
         Member result = getMemberById(id);
         result.updateMember(personalInfoRequest.getName(), personalInfoRequest.getChannel(), personalInfoRequest.getPassword(),
