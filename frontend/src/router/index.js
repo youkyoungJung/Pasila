@@ -7,6 +7,7 @@ import FindPwSendView from '@/views/FindPwSendView.vue'
 import LiveView from '@/views/LiveView.vue'
 import ScheduleView from '@/views/ScheduleView.vue'
 import ChannelView from '@/views/ChannelView.vue'
+import ChannelOrders from '@/views/ChannelOrders.vue'
 import ReadyRegistView from '@/views/ReadyRegistView.vue'
 import ReadyScriptView from '@/views/ReadyScriptView.vue'
 import ReadyChatbotView from '@/views/ReadyChatbotView.vue'
@@ -53,6 +54,11 @@ const router = createRouter({
       path: '/channel/:id',
       name: 'channel',
       component: ChannelView
+    },
+    {
+      path: '/channel/:id/orders',
+      name: 'orders',
+      component: ChannelOrders
     },
     {
       path: '/ready/regist',
