@@ -32,8 +32,7 @@ public class Order {
     @Column(length = 50)
     private String address;
 
-    @Column(length = 10)
-    private String status;
+
 
     private Integer price;
 
