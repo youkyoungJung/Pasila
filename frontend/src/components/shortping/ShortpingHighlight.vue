@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import NewHighlight from '@/components/shortping/NewHighlight.vue'
-import Highlight from '@/components/shortping/HighLight.vue'
+import Highlight from '@/components/shortping/Highlight.vue'
 
 const highlights = ref([
   {
