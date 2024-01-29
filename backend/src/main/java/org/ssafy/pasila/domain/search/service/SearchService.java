@@ -30,10 +30,5 @@ public class SearchService {
     public List<SearchShortpingResponse> searchForShortping(String keyword, String sort){
         return searchRepository.findAllByNameForShortping(keyword, sort);
     }
-
-
-    public List<SearchLiveResponse> searchForCategory(Long id, String sort) {
-//        return searchRepository.findAllByIdForCategory(id, sort);
-        return null;
-    }
+    
 }

@@ -37,13 +37,4 @@ public class SearchController {
         return searchService.searchForShortping(keyword, sort);
     }
 
-    @Operation(summary = "Search Category", description = "Category에 대한 검색기능을 제공합니다.")
-    @GetMapping(value="/category/{id}")
-    public List<SearchLiveResponse> getAllResultsForCategory(@PathVariable Optional<Long> id, @RequestParam(name = "sort", defaultValue = "popularity") String sort){
-        if(id.isPresent()){
-            return searchService.searchForCategory(Long.parseLong(String.valueOf(id)), sort);
-        }else{
-            return searchService.searchForCategory(Long.parseLong(String.valueOf(1)), sort);
-        }
-    }
 }
