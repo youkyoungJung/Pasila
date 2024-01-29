@@ -30,5 +30,5 @@ public class SearchService {
     public List<SearchShortpingResponse> searchForShortping(String keyword, String sort){
         return searchRepository.findAllByNameForShortping(keyword, sort);
     }
-    
+
 }

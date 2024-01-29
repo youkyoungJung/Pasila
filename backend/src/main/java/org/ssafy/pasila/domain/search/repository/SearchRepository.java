@@ -24,7 +24,7 @@ public class SearchRepository {
                                 "WHERE (l.title LIKE :keyword " +
                                 "OR p.name LIKE :keyword " +
                                 "OR m.channel LIKE :keyword) " +
-//                                "AND l.isActive = true " +
+                                "AND l.isActive = true " +
                                 orderByClause
                         , SearchLiveResponse.class)
                 .setParameter("keyword", likeParam)
