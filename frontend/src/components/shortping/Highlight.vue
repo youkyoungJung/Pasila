@@ -1,4 +1,8 @@
 <script setup>
+import { ref } from 'vue'
+
+const props = defineProps({ data: Object })
+
 const deleteHighlight = () => {
   //하이라이트 삭제하기
 }
@@ -8,43 +12,47 @@ const deleteHighlight = () => {
   <div class="highlight">
     <div class="highlight-top">
       <div class="highlight-time">
-        <input type="number" />~
-        <input type="number" />
+        <div>{{ props.data.highlightStartTime }}</div>
+        ~
+        <div>{{ props.data.highlightEndTime }}</div>
       </div>
       <button @click="deleteHighlight" class="delete-btn">삭제</button>
     </div>
     <div class="highlight-title">
       <label for="title">제목</label>
-      <input id="title" type="text" placeholder="제목을 입력해주세요." />
+      <div>{{ props.data.highlightTitle }}</div>
     </div>
     <div class="highlight-subtitle">
       <label for="subtitle">자막</label>
-      <input id="subtitle" type="text" placeholder="자막을 입력해주세요." />
+      <div class="subtitle-text">{{ props.data.highlightSubtitle }}</div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .highlight {
-  @include box(95%, 10rem, white, 0.2rem, 0, 0.1rem);
-  @include font-factory($fs-1, bold);
+  @include box(95%, 10rem, white, 0.2rem, 0, 0.3rem);
+  @include font-factory($fs-1, null);
   @include drop-shadow;
 
   .highlight-top {
-    @include box(95%, 25%, white, 0.2rem, 0, 0.1rem);
+    @include box(98%, 25%, white, 0.2rem, 0, 0.1rem);
     display: flex;
     justify-content: space-between;
     align-items: center;
     .highlight-time {
-      @include box(50%, 70%, $yellow, 0.1rem, 0, 0.2rem);
+      @include box(40%, 60%, $soft-pink, 0.3rem, 0.4rem, 0.2rem);
+      border: 1px solid $soft-pink;
       display: flex;
       justify-content: space-evenly;
 
       input {
         width: 45%;
         border: none;
+        border-bottom: 1px solid $dark;
         background-color: $yellow;
         outline: none;
+        font-weight: bold;
       }
     }
     .delete-btn {
@@ -58,17 +66,9 @@ const deleteHighlight = () => {
 
   .highlight-title {
     @include box(95%, 25%, white, 0.2rem, 0, 0.3rem);
+    display: flex;
+    align-items: flex-start;
 
-    input {
-      width: 60%;
-      border: none;
-      outline: none;
-      background-color: $light-dark;
-    }
-  }
-
-  .highlight-subtitle {
-    @include box(95%, 35%, white, 0.2rem, 0, 0.3rem);
     input {
       width: 60%;
       border: none;
@@ -77,8 +77,34 @@ const deleteHighlight = () => {
     }
   }
 
+  .highlight-subtitle {
+    @include box(95%, 35%, white, 0.2rem, 0, 0.3rem);
+    display: flex;
+    align-items: flex-start;
+
+    input {
+      width: 60%;
+      border: none;
+      outline: none;
+      background-color: $light-gray;
+    }
+    textarea {
+      resize: none;
+      outline: none;
+      width: 60%;
+      border: none;
+      background-color: $light-gray;
+    }
+    .subtitle-text {
+      @include box(88%, 100%, null, 0, 0, 0);
+      word-wrap: break-word;
+    }
+  }
+
   label {
+    width: 8%;
     margin-right: 0.5rem;
+    font-weight: bold;
   }
 }
 </style>

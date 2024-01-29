@@ -1,8 +1,16 @@
 <script setup>
-import ShortpingTitle from '@/components/shortping/ShortpingTitle.vue'
+import { ref } from 'vue'
+
 import ShortpingVideo from '@/components/shortping/ShortpingVideo.vue'
-import ShortpingTimeline from '@/components/shortping/ShortpingTimeline.vue'
 import ShortpingHighlight from '@/components/shortping/ShortpingHighlight.vue'
+
+const shortping = ref({
+  title: ''
+})
+
+const complete = () => {
+  //제작 완료버튼
+}
 </script>
 
 <template>
@@ -15,12 +23,17 @@ import ShortpingHighlight from '@/components/shortping/ShortpingHighlight.vue'
     </div>
     <div class="shortping-body">
       <div class="show-video">
-        <shortping-title />
+        <input
+          type="text"
+          placeholder="숏핑의 제목을 입력하세요."
+          id="shortpingTitle"
+          v-model="shortping.title"
+        />
         <shortping-video />
-        <shortping-timeline />
       </div>
       <div class="show-highlight">
         <shortping-highlight />
+        <button @click="complete" class="complete-btn">제작 완료</button>
       </div>
     </div>
   </div>
@@ -28,10 +41,12 @@ import ShortpingHighlight from '@/components/shortping/ShortpingHighlight.vue'
 
 <style lang="scss" scoped>
 .container {
-  @include font-factory(null, null, null);
-  padding: 2rem;
+  @include font-factory($fs-1, null, null);
+  padding: 1rem;
+
   .short-title {
     @include font-factory($fs-4, bold);
+    margin-bottom: 1rem;
 
     .short-subtitle {
       @include font-factory($fs-1, 400);
@@ -40,23 +55,38 @@ import ShortpingHighlight from '@/components/shortping/ShortpingHighlight.vue'
   }
 
   .shortping-body {
-    @include box(100%, 100%, blue, 0, 0, 0);
+    @include box(100%, 100%, white, 0, 0, 0);
     display: flex;
     align-items: flex-start;
     justify-content: space-around;
     .show-video {
-      @include box(58%, 100%, red, 0, 0, 0);
+      @include box(58%, 100%, white, 0, 0, 0);
       display: flex;
       flex-direction: column;
+      align-items: center;
+
+      input {
+        @include box(70%, 2rem, $light-gray, 0.2rem, 0.1rem, 0.1rem);
+        @include drop-shadow;
+        padding-left: 1rem;
+        border: none;
+        outline: none;
+      }
     }
 
     .show-highlight {
-      @include box(38%, 100%, pink, 0, 0, 0);
+      @include box(38%, 100%, white, 0, 0, 0);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
     }
+  }
+  .complete-btn {
+    @include box(30%, 2rem, $main, 0.3rem, 0.2rem, 0.2rem);
+    border: none;
+    color: white;
+    cursor: pointer;
   }
 }
 </style>
