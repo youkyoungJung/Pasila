@@ -35,7 +35,7 @@ public class LiveApiController {
     public ResponseEntity<?> createQsheet(@RequestBody CreateQsheetRequest request) {
         try {
             String qsheet = gptService.generateQsheet(
-                    "판매자",
+                    request.getUserName(),
                     request.getProductName(),
                     request.getDescription()
             );
