@@ -7,6 +7,8 @@ import {
   faMagnifyingGlass,
   faCircleChevronLeft,
   faCircleChevronRight,
+  faChevronUp,
+  faChevronDown,
   faPaperPlane,
   fas
 } from '@fortawesome/free-solid-svg-icons'
@@ -17,7 +19,14 @@ import App from './App.vue'
 import router from './router'
 import VueDOMPurifyHTML from 'vue-dompurify-html'
 
-library.add(faMagnifyingGlass, faCircleChevronLeft, faCircleChevronRight, faPaperPlane)
+library.add(
+  faMagnifyingGlass,
+  faCircleChevronLeft,
+  faCircleChevronRight,
+  faPaperPlane,
+  faChevronUp,
+  faChevronDown
+)
 library.add(faCalendarCheck, faUser, fas, far)
 
 const app = createApp(App)

@@ -11,6 +11,7 @@ import EditView from '@/views/EditView.vue'
 import LiveView from '@/views/LiveView.vue'
 import ScheduleView from '@/views/ScheduleView.vue'
 import ChannelView from '@/views/ChannelView.vue'
+import ChannelOrders from '@/views/ChannelOrders.vue'
 import ReadyRegistView from '@/views/ReadyRegistView.vue'
 import ReadyScriptView from '@/views/ReadyScriptView.vue'
 import ReadyChatbotView from '@/views/ReadyChatbotView.vue'
@@ -62,6 +63,11 @@ const router = createRouter({
       path: '/edit/:id',
       name: 'edit',
       component: EditView
+    },
+    {
+      path: '/channel/:id/orders',
+      name: 'orders',
+      component: ChannelOrders
     },
     {
       path: '/ready/regist',
