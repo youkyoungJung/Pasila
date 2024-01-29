@@ -33,14 +33,19 @@ public class ShortpingApiControlller {
     @Operation(summary = "Create Shortping", description = "숏핑을 생성합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ShortpingResponse.class))})
+                    content = {@Content(mediaType = "application/json")})
     })
     @PostMapping("/api/shortping")
     public ResponseEntity<?> shortpingList(@RequestBody ShortpingRequest shortpingRequest) {
         Shortping shortping = shortpingService.saveShortping(shortpingRequest);
-        return ResponseEntity.ok().body(shortping);
+        return ResponseEntity.ok().body(shortping.getId());
     }
 
+    @Operation(summary = "Get Shortping Detail", description = "Id에 해당하는 숏핑 상세 정보를 가져옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ShortpingResponse.class))})
+    })
     @GetMapping("/api/shortping/{id}")
     public ResponseEntity<?> shortpingDetail(@PathVariable String id) {
         ShortpingResponse shortpingResponse = shortpingQueryRepository.findWithProductMember(id);
