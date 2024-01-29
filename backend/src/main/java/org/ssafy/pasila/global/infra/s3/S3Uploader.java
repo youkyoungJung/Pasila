@@ -65,6 +65,7 @@ public class S3Uploader {
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 
+    // 로컬에 저장된 이미지 지우기
     private void removeNewFile(File targetFile) {
         if(targetFile.delete()) {
             log.info("파일이 삭제되었습니다.");
@@ -73,6 +74,7 @@ public class S3Uploader {
         }
     }
 
+    // 로컬에 파일 저장
     private Optional<File> convert(String id, MultipartFile file) throws  IOException {
         String originName = file.getOriginalFilename();
 

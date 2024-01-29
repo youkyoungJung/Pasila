@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.shortping.dto.request.ShortpingRequest;
 import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponse;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
@@ -50,6 +51,12 @@ public class ShortpingApiControlller {
     public ResponseEntity<?> shortpingDetail(@PathVariable String id) {
         ShortpingResponse shortpingResponse = shortpingQueryRepository.findWithProductMember(id);
         return ResponseEntity.badRequest().body(shortpingResponse);
+    }
+
+    @PostMapping("/api/shortping/highlight")
+    public ResponseEntity<?> getHighlight(@RequestPart(value = "video") MultipartFile video) {
+        String result = shortpingService.getHighlightList(video);
+        return ResponseEntity.ok().body(result);
     }
 
 //    @PostMapping("/api/shortping/highlight")

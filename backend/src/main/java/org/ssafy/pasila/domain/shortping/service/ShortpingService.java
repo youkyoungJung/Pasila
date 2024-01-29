@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
 import org.ssafy.pasila.domain.product.entity.Product;
@@ -14,7 +15,11 @@ import org.ssafy.pasila.domain.shortping.entity.Livelog;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
 import org.ssafy.pasila.domain.shortping.repository.LivelogRepository;
 import org.ssafy.pasila.domain.shortping.repository.ShortpingRepository;
+import org.ssafy.pasila.global.infra.gpt3.GptClient;
+import org.ssafy.pasila.global.infra.gpt3.model.Script;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +37,7 @@ public class ShortpingService {
 
     private final LivelogRepository livelogRepository;
 
+    private final GptClient gptService;
 
     @Transactional
     public Shortping saveShortping(ShortpingRequest shortpingRequest) {
@@ -56,11 +62,32 @@ public class ShortpingService {
         return livelogs;
     }
 
+
+    // 하이라이트 추천
+    public String getHighlightList(MultipartFile file) {
+        try {
+            Path videoPath = Paths.get("resources/video/sample.mp4");
+            List<Script> segments = gptService.speechToText(file).getSegments();
+
+            if(segments == null || segments.isEmpty()) {
+                return "No response";
+            }
+
+            for (Script s: segments) {
+                log.info("{}", s.toString());
+            }
+
+            return "success";
+
+        } catch(Exception e) {
+            log.info("{}", e.getMessage());
+            return "fail";
+        }
+    }
+
     private Product getProductById(String id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 상품이 존재하지 않습니다"));
     }
-
-
 
 }

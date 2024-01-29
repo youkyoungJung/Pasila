@@ -1,14 +1,27 @@
 package org.ssafy.pasila.global.infra.gpt3;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.global.infra.gpt3.model.ChatRequest;
 import org.ssafy.pasila.global.infra.gpt3.model.ChatResponse;
+import org.ssafy.pasila.global.infra.gpt3.model.TranscriptionResponse;
 
+import java.io.IOException;
+import java.util.List;
+
+@Slf4j
 @Service
 public class GptClient {
 
@@ -75,5 +88,28 @@ public class GptClient {
 
         // return the first response
         return response.getChoices().get(0).getMessage().getContent();
+    }
+
+    public TranscriptionResponse speechToText(MultipartFile file) throws RestClientException, IOException {
+        ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
+            @Override
+            public String getFilename() {
+                return file.getOriginalFilename();
+            }
+        };
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", fileResource);
+        body.add("model", "whisper-1");
+        body.add("language", "ko");
+        body.add("response_format", "verbose_json");
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        TranscriptionResponse response = restTemplate.postForObject(apiUrl + "/audio/transcriptions", requestEntity, TranscriptionResponse.class);
+
+        return response;
     }
 }
