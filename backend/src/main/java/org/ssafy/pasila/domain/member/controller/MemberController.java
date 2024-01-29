@@ -2,52 +2,37 @@ package org.ssafy.pasila.domain.member.controller;
 
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.ssafy.pasila.domain.member.entity.Member;
-import org.ssafy.pasila.domain.member.service.MemberService;
+import org.ssafy.pasila.domain.member.dto.PersonalInfo.PersonalInfoResponse;
+import org.ssafy.pasila.domain.member.repository.PersonalInfoRepository;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+@RequestMapping("/api")
+@Tag(name = "Member", description = "Member API")
 public class MemberController {
 
-    private final MemberService memberService;
+    private final PersonalInfoRepository personalInfoRepository;
 
-    // 마이페이지 - 내 정보 조회
-    @Operation(summary = "personal-info: get member", description = "마이페이지에서 id를 기준으로 사용자 정보를 조회")
-    @GetMapping("/personal-info/{memberId}")
-    public ResponseEntity<?> getMember(@PathVariable("memberId") Long memberId) {
-        Member member = memberService.findByMemberId(memberId);
-        return handleSuccess(member);
+    // 마이페이지(personal-info)
+
+    // 회원 정보 조회 by id
+    @Operation(summary = "get member by id", description = "마이페이지 - id로 회원 정보 조회")
+    @GetMapping("/personal-info/{id}")
+//    public ResponseEntity<?> getMember(@PathVariable("id") Long id) {
+//        return response.handleSuccess(200, personalInfoRepository.findById(id));
+//    }
+    public Optional<PersonalInfoResponse> getMember(@PathVariable("id") Long id){
+        return Optional.ofNullable(personalInfoRepository.findById(id));
     }
 
-    private ResponseEntity<Map<String, Object>> handleSuccess(Object data) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("success", true);
-        result.put("data", data);
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
-    }
-
-    private ResponseEntity<Map<String, Object>> handleFail(Object data) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("success", false);
-        result.put("data", data);
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> exceptionHanlder(Exception e) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("success", false);
-        result.put("data", e.getMessage());
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
 }
