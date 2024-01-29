@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.member.dto.request.PersonalInfoRequest;
 import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.product.entity.Product;
 
@@ -96,20 +97,18 @@ public class Member {
     /**
      * 마이페이지 - member 수정
      */
-    public void updateMember(String name, String channel, String password, String phone,
-                             String address, String addressDetail, Gender gender,
-                             LocalDate birth, String bank, String account, String profile) {
-        this.name = name;
-        this.channel = channel;
-        this.password = password;
-        this.phone = phone;
-        this.address = address;
-        this.addressDetail = addressDetail;
-        this.gender = gender;
-        this.birth = birth;
-        this.bank = bank;
-        this.account = account;
-        this.profile = profile;
+    public void updateMember(PersonalInfoRequest personalInfoRequest) {
+        this.name = personalInfoRequest.getName();
+        this.channel = personalInfoRequest.getChannel();
+        this.password = personalInfoRequest.getPassword();
+        this.phone = personalInfoRequest.getPhone();
+        this.address = personalInfoRequest.getAddress();
+        this.addressDetail = personalInfoRequest.getAddressDetail();
+        this.gender = personalInfoRequest.getGender();
+        this.birth = personalInfoRequest.getBirth();
+        this.bank = personalInfoRequest.getBank();
+        this.account = personalInfoRequest.getAccount();
+        this.profile = personalInfoRequest.getProfile();
     }
 
     /**

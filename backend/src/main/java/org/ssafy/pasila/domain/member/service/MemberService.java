@@ -24,10 +24,7 @@ public class MemberService {
     //TODO 비밀번호 암호화, 계좌번호 암호화
     public void updateMember(Long id, PersonalInfoRequest personalInfoRequest, MultipartFile newImageFile) throws IOException {
         Member result = getMemberById(id);
-        result.updateMember(personalInfoRequest.getName(), personalInfoRequest.getChannel(), personalInfoRequest.getPassword(),
-                personalInfoRequest.getPhone(), personalInfoRequest.getAddress(), personalInfoRequest.getAddressDetail(),
-                personalInfoRequest.getGender(), personalInfoRequest.getBirth(), personalInfoRequest.getBank(),
-                personalInfoRequest.getAccount(), personalInfoRequest.getProfile());
+        result.updateMember(personalInfoRequest);
         handleImage(result, newImageFile);
         log.info("update member: {}", result);
     }
