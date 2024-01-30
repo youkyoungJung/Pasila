@@ -66,15 +66,10 @@ public class ShortpingService {
     // 하이라이트 추천
     public String getHighlightList(MultipartFile file) {
         try {
-            Path videoPath = Paths.get("resources/video/sample.mp4");
             List<Script> segments = gptService.speechToText(file).getSegments();
 
             if(segments == null || segments.isEmpty()) {
                 return "No response";
-            }
-
-            for (Script s: segments) {
-                log.info("{}", s.toString());
             }
 
             return "success";
