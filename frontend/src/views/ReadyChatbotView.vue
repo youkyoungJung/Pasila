@@ -18,10 +18,7 @@ const addQuestion = () => {
 }
 
 const removeQuestion = (i) => {
-  console.log(questions.value)
-  console.log(i)
-  const temp = questions.value.splice(i, 1)
-  console.log(temp)
+  questions.value.splice(i, 1)
   console.log(questions.value)
 }
 </script>
@@ -34,11 +31,14 @@ const removeQuestion = (i) => {
       <div v-for="(question, index) in questions" :key="index" class="chatbot-input">
         <chatbot-input
           @data="
-            (q, a) => {
-              question.q = q
-              question.a = a
+            (e) => {
+              question.q = e.q
+              question.a = e.a
+              console.log(questions)
             }
           "
+          :q="question.q"
+          :a="question.a"
         />
         <button class="remove-btn" @click="removeQuestion(index)">질문 삭제</button>
       </div>
@@ -63,7 +63,7 @@ const removeQuestion = (i) => {
       margin-bottom: 1rem;
     }
     .add-btn {
-      @include box(53%, 100%, white, 0.3rem, 0.1rem, 0.1rem);
+      @include box(50%, 100%, white, 0.3rem, 0.1rem, 0.1rem);
       cursor: pointer;
       border: 1px solid $main;
       color: $main;
