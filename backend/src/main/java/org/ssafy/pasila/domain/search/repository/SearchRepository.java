@@ -14,7 +14,7 @@ public class SearchRepository {
     private final EntityManager em;
 
     public List<SearchLiveResponse> findAllByNameForLive(String keyword, String sort) {
-        String orderByClause = getOrderByClause(sort);
+        String orderByClause = getOrderByClause(sort, "live");
         String likeParam = createLikeParam(keyword);
 
         return em.createQuery(
@@ -25,6 +25,7 @@ public class SearchRepository {
                                 "OR p.name LIKE :keyword " +
                                 "OR m.channel LIKE :keyword) " +
                                 "AND l.isActive = true " +
+                                "AND l.liveOnAt IS NOT NULL " +
                                 orderByClause
                         , SearchLiveResponse.class)
                 .setParameter("keyword", likeParam)
@@ -32,7 +33,7 @@ public class SearchRepository {
     }
 
     public List<SearchShortpingResponse> findAllByNameForShortping(String keyword, String sort) {
-        String orderByClause = getOrderByClause(sort);
+        String orderByClause = getOrderByClause(sort, "shortping");
         String likeParam = createLikeParam(keyword);
 
         return em.createQuery(
@@ -49,12 +50,13 @@ public class SearchRepository {
                 .getResultList();
     }
 
-    /** 정렬 조건 (인기순/최신순) */
-    private String getOrderByClause(String sort) {
-        if ("created_at".equals(sort)) {
-            return "ORDER BY l.createdAt DESC"; // 생성일자(createdAt) 내림차순으로 정렬
+    /** 정렬 조건 (인기순/최신순) - popularity/latest */
+    private String getOrderByClause(String sort, String classify) {
+        //라이브인지 숏핑인지 구분
+        if ("live".equals(classify)) {
+            return "ORDER BY l." + (sort.equals("latest") ? "liveOnAt" : "likeCnt") + " DESC " ;
         } else {
-            return "ORDER BY l.likeCnt DESC"; // 인기도(popularity) 내림차순으로 정렬
+            return "ORDER BY s." + (sort.equals("latest") ? "createdAt" : "likeCnt") + " DESC ";
         }
     }
 
