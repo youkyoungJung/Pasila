@@ -1,3 +1,4 @@
+///*
 //package org.ssafy.pasila;
 //
 //import jakarta.annotation.PostConstruct;
@@ -69,3 +70,4 @@
 //
 //    }
 //}
+//*/

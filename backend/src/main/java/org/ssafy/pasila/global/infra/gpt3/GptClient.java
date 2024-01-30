@@ -25,8 +25,8 @@ import java.util.List;
 @Service
 public class GptClient {
 
-    @Qualifier("openaiRestTemplate")
     @Autowired
+    @Qualifier("openaiRestTemplate")
     private RestTemplate restTemplate;
 
     @Value("${openai.model}")

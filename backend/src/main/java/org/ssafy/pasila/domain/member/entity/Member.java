@@ -1,10 +1,8 @@
 package org.ssafy.pasila.domain.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.ssafy.pasila.domain.live.entity.Live;
@@ -27,6 +25,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "member")
+@ToString(exclude = {"orders", "liveList", "products"})
 public class Member {
     @Id
     @GeneratedValue
@@ -86,13 +85,24 @@ public class Member {
     private String token;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Live> liveList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Product> products = new ArrayList<>();
+
+
+    /**
+     * 프로필 이미지 저장/수정
+     */
+    public void addProfile(String url){
+        this.profile = url;
+    }
 
     /**
      * 마이페이지 - member 수정
@@ -111,10 +121,4 @@ public class Member {
         this.profile = personalInfoRequest.getProfile();
     }
 
-    /**
-     * 프로필 이미지 저장/수정
-     */
-    public void editProfileUrl(String url) {
-        this.profile = url;
-    }
 }
