@@ -3,10 +3,27 @@ import { ref, watch } from 'vue'
 
 const question = ref('')
 const answer = ref('')
+const isSaved = ref(false)
 const emit = defineEmits(['data'])
+const props = defineProps({ q: String, a: String })
+
+watch([() => props.q, () => props.a], ([q, a]) => {
+  if (q !== '' && a != '') {
+    question.value = q
+    answer.value = a
+  } else {
+    question.value = ''
+    answer.value = ''
+    isSaved.value = false
+  }
+})
+
 const saveQuestion = () => {
-  emit('data', { q: question, a: answer })
-  console.log(emit)
+  if (question.value == '' || answer.value == '') alert('질문과 답변을 입력해주세요!')
+  else {
+    emit('data', { q: question.value, a: answer.value })
+    isSaved.value = true
+  }
 }
 </script>
 
@@ -32,7 +49,8 @@ const saveQuestion = () => {
         v-model="answer"
       />
     </div>
-    <button class="save-btn" @click="saveQuestion()">질문 저장</button>
+    <button class="saved-btn" v-if="isSaved">저장 완료</button>
+    <button @click="saveQuestion" class="none-save-btn" v-else>질문 저장</button>
   </div>
 </template>
 
@@ -57,10 +75,16 @@ const saveQuestion = () => {
     border: none;
     outline: none;
   }
-  .save-btn {
+  .none-save-btn {
     @include box(30%, 10%, white, 0.3rem, 0.1rem, 0.2rem);
     cursor: pointer;
     color: $main;
+    border: 1px solid $main;
+  }
+
+  .saved-btn {
+    @include box(30%, 10%, $main, 0.3rem, 0.1rem, 0.2rem);
+    color: white;
     border: 1px solid $main;
   }
 }
