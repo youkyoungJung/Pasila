@@ -96,6 +96,14 @@ public class Member {
     @JsonIgnore
     private List<Product> products = new ArrayList<>();
 
+
+    /**
+     * 프로필 이미지 저장/수정
+     */
+    public void addProfile(String url){
+        this.profile = url;
+    }
+
     /**
      * 마이페이지 - member 수정
      */
@@ -113,10 +121,4 @@ public class Member {
         this.profile = personalInfoRequest.getProfile();
     }
 
-    /**
-     * 프로필 이미지 저장/수정
-     */
-    public void editProfileUrl(String url) {
-        this.profile = url;
-    }
 }
