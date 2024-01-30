@@ -30,12 +30,13 @@ public class ProductService {
 
     // 상품 저장 서비스
     @Transactional
-    public Product saveProduct(ProductRequest productRequest, MultipartFile image) throws IOException {
+    public void saveProduct(ProductRequest productRequest, MultipartFile image) throws IOException {
         Product savedProduct = saveProductInfo(productRequest);
         saveProductOptions(savedProduct, productRequest.getProductOptions());
         productRepository.save(savedProduct);
         handleImage(savedProduct, image);
-        return savedProduct;
+
+//        return savedProduct;
     }
 
     // 상품 수정 서비스

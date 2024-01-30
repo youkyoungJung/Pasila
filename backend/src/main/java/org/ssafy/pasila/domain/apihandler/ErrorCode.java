@@ -42,6 +42,8 @@ public enum ErrorCode {
 
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "Resource not exists");
 
+//    MEMBER_NOT_FOND(Http)
+
 
     private final HttpStatus httpStatus;
     private final String message;

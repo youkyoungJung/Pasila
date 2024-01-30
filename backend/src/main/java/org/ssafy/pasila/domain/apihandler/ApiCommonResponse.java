@@ -20,20 +20,20 @@ public class ApiCommonResponse<T>{
     private static final String FAIL_STATUS = "fail";
     private static final String ERROR_STATUS = "error";
 
-    private HttpStatus statusCode;
+    private int statusCode;
     private String status;
     private T data;
     private String message;
 
-    public static <T> ApiCommonResponse<T> successResponse(HttpStatus statusCode, T data) {
+    public static <T> ApiCommonResponse<T> successResponse(int statusCode, T data) {
         return new ApiCommonResponse<>(statusCode, SUCCESS_STATUS, data, null);
     }
 
-    public static ApiCommonResponse<?> successWithNoContent(HttpStatus statusCode) {
+    public static ApiCommonResponse<?> successWithNoContent(int statusCode) {
         return new ApiCommonResponse<>(statusCode, SUCCESS_STATUS, null, null);
     }
 
-    private ApiCommonResponse(HttpStatus statusCode, String status, T data, String message) {
+    private ApiCommonResponse(int statusCode, String status, T data, String message) {
         this.statusCode = statusCode;
         this.status = status;
         this.data = data;

@@ -22,6 +22,7 @@ import org.ssafy.pasila.global.infra.gpt3.GptClient;
 @RestController
 @RequestMapping("/api/live")
 @Tag(name = "Live", description = "Live API")
+
 public class LiveApiController {
 
     private final GptClient gptService;

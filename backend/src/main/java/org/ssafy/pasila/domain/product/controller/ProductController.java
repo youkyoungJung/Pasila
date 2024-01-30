@@ -11,9 +11,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
+import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.product.dto.ProductRequest;
 import org.ssafy.pasila.domain.product.dto.ProductResponse;
 import org.ssafy.pasila.domain.product.entity.Product;
@@ -43,13 +45,13 @@ public class ProductController {
                     @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductResponse.class)))
             })})
     @PostMapping(value = "/product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiCommonResponse<Product> createProduct(@RequestPart(value = "pr") ProductRequest productRequest,
-                                                    @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
+    public ResponseEntity<?> createProduct(@RequestPart(value = "pr") ProductRequest productRequest,
+                                           @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
 
-          Product product = productService.saveProduct(productRequest, image);
+          productService.saveProduct(productRequest, image);
 
 //        log.info("controller: {}", product);
-        return ApiCommonResponse.successResponse(HttpStatus.CREATED, product);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
 
     }
 
@@ -58,8 +60,8 @@ public class ProductController {
     @GetMapping("/product")
     public ApiCommonResponse<List<ProductResponse>> getAllProducts() {
         List<ProductResponse> list = productJoinRepository.findAllWithCategory();
-        return ApiCommonResponse.successResponse(HttpStatus.ACCEPTED, list);
-//        return productJoinRepository.findAllWithCategory();
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), list);
+//        return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
     // id 에 따른 상품 조회 (카테고리 조인)
@@ -67,7 +69,7 @@ public class ProductController {
     @GetMapping("/product/{id}")
     public ApiCommonResponse<ProductResponse> getProduct(@PathVariable("id") String id){
         ProductResponse response = productJoinRepository.findById(id);
-        return ApiCommonResponse.successResponse(HttpStatus.OK, response);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), response);
 
     }
 
@@ -76,11 +78,11 @@ public class ProductController {
     @PutMapping("/product/{id}")
     public  ApiCommonResponse<Product> updateProduct(@PathVariable("id") String id,
                                                  @RequestPart(value = "pr") ProductRequest request,
-                                                 @RequestPart(value = "new_image", required = false) MultipartFile newImageName) throws IOException {
+                                                 @RequestPart(value = "new_image", required = false) MultipartFile newImageName) throws RestApiException, IOException {
 
         log.info("request: {}", request);
         Product product = productService.updateProduct(id, request, newImageName);
-        return ApiCommonResponse.successResponse(HttpStatus.CREATED, product);
+        return ApiCommonResponse.successResponse(HttpStatus.CREATED.value(), product);
 
     }
     //상품 정보 삭제 - isActive
@@ -89,7 +91,7 @@ public class ProductController {
     ApiCommonResponse<Product> deleteProduct(@PathVariable("id") String id){
 
         Product product = productService.deleteProduct(id);
-        return ApiCommonResponse.successResponse(HttpStatus.OK, product);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), product);
     }
 
 }
