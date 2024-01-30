@@ -43,6 +43,9 @@ public class Live {
     @Column(length = 30)
     private String title;
 
+    @Column(name = "live_scheduled_at")
+    private LocalDateTime liveScheduledAt;
+
     @Column(name = "live_on_at")
     private LocalDateTime liveOnAt;
 
