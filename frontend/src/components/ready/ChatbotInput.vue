@@ -1,30 +1,8 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, ssrContextKey, watch } from 'vue'
 
-const question = ref('')
-const answer = ref('')
-const isSaved = ref(false)
-const emit = defineEmits(['data'])
+const emit = defineEmits(['getQuestion', 'getAnswer'])
 const props = defineProps({ q: String, a: String })
-
-watch([() => props.q, () => props.a], ([q, a]) => {
-  if (q !== '' && a != '') {
-    question.value = q
-    answer.value = a
-  } else {
-    question.value = ''
-    answer.value = ''
-    isSaved.value = false
-  }
-})
-
-const saveQuestion = () => {
-  if (question.value == '' || answer.value == '') alert('질문과 답변을 입력해주세요!')
-  else {
-    emit('data', { q: question.value, a: answer.value })
-    isSaved.value = true
-  }
-}
 </script>
 
 <template>
@@ -36,7 +14,8 @@ const saveQuestion = () => {
         type="text"
         placeholder="질문을 입력해주세요."
         class="input-box"
-        v-model="question"
+        :value="props.q"
+        @input="$emit('getQuestion', $event.target.value)"
       />
     </div>
     <div class="text-box">
@@ -46,17 +25,19 @@ const saveQuestion = () => {
         type="text"
         placeholder="답변을 입력해주세요."
         class="input-box"
-        v-model="answer"
+        :value="props.a"
+        @input="$emit('getAnswer', $event.target.value)"
       />
     </div>
-    <button class="saved-btn" v-if="isSaved">저장 완료</button>
-    <button @click="saveQuestion" class="none-save-btn" v-else>질문 저장</button>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .chatbot-box {
-  @include box(100%, 100%, white, 0.3rem, 0.2rem, 0.5rem);
+  width: 100%;
+  height: 8.25rem;
+  flex-shrink: 0;
+  border-radius: 0.625rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -64,28 +45,25 @@ const saveQuestion = () => {
 
   .text-box {
     width: 100%;
-    display: flex;
     padding: 0.5rem;
+    font-weight: bold;
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    line-height: normal;
   }
   label {
     margin: 0 1rem;
   }
   .input-box {
-    @include box(80%, 100%, $light-gray, 0.3rem, 0.1rem, 0.1rem);
+    width: 88%;
+    height: 2.75rem;
+    flex-shrink: 0;
+    padding-left: 0.3rem;
+    background-color: #d9d9d9;
+    border-radius: 0.625rem;
     border: none;
     outline: none;
-  }
-  .none-save-btn {
-    @include box(30%, 10%, white, 0.3rem, 0.1rem, 0.2rem);
-    cursor: pointer;
-    color: $main;
-    border: 1px solid $main;
-  }
-
-  .saved-btn {
-    @include box(30%, 10%, $main, 0.3rem, 0.1rem, 0.2rem);
-    color: white;
-    border: 1px solid $main;
   }
 }
 </style>

@@ -6,6 +6,7 @@ import { ref } from 'vue'
 
 const step = ref('chatbot')
 const nextStep = ref('schedule')
+
 const questions = ref([
   {
     q: '',
@@ -19,7 +20,6 @@ const addQuestion = () => {
 
 const removeQuestion = (i) => {
   questions.value.splice(i, 1)
-  console.log(questions.value)
 }
 </script>
 
@@ -29,18 +29,17 @@ const removeQuestion = (i) => {
     <div class="chatbot-body">
       <div class="faq">FAQ</div>
       <div v-for="(question, index) in questions" :key="index" class="chatbot-input">
-        <chatbot-input
-          @data="
-            (e) => {
-              question.q = e.q
-              question.a = e.a
-              console.log(questions)
-            }
-          "
-          :q="question.q"
-          :a="question.a"
-        />
-        <button class="remove-btn" @click="removeQuestion(index)">질문 삭제</button>
+        <div class="chatbot-part">
+          <chatbot-input
+            @getQuestion="(v) => (question.q = v)"
+            @getAnswer="(v) => (question.a = v)"
+            :q="question.q"
+            :a="question.a"
+          />
+        </div>
+        <div class="remove-part">
+          <button class="remove-btn" @click="removeQuestion(index)">ㅡ</button>
+        </div>
       </div>
       <button @click="addQuestion" class="add-btn">+ 질문 추가하기</button>
     </div>
@@ -63,25 +62,33 @@ const removeQuestion = (i) => {
       margin-bottom: 1rem;
     }
     .add-btn {
-      @include box(50%, 100%, white, 0.3rem, 0.1rem, 0.1rem);
+      @include box(41rem, 2rem, white, 0.625rem, 0.3rem, 0);
       cursor: pointer;
-      border: 1px solid $main;
-      color: $main;
+      border: 1px solid #d9d9d9;
+      color: #ababab;
+      font-weight: 500;
     }
 
     .chatbot-input {
-      @include box(50%, 100%, white, 0.3rem, 0.2rem, 0.5rem);
+      @include box(41rem, 100%, white, 0.625rem, 0.3rem, 0);
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      border: 1px solid $light-dark;
+      justify-content: space-between;
+      border: 1px solid #d9d9d9;
+      .chatbot-part {
+        width: 100%;
+      }
 
-      .remove-btn {
-        @include box(30%, 10%, white, 0.3rem, 0.1rem, 0.2rem);
-        cursor: pointer;
-        color: $main;
-        border: 1px solid $main;
+      .remove-part {
+        width: 8%;
+        margin-top: 0.8rem;
+        display: flex;
+        justify-content: center;
+        .remove-btn {
+          @include box(2rem, 2rem, white, 50%, 0.1rem, 0.2rem);
+          cursor: pointer;
+          color: $main;
+          border: 1px solid $main;
+        }
       }
     }
   }
