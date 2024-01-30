@@ -5,10 +5,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.ssafy.pasila.domain.member.dto.PersonalInfo.PersonalInfoResponse;
+import org.springframework.web.multipart.MultipartFile;
+import org.ssafy.pasila.domain.member.dto.request.PersonalInfoRequest;
+import org.ssafy.pasila.domain.member.dto.response.PersonalInfoResponse;
 import org.ssafy.pasila.domain.member.repository.PersonalInfoRepository;
+import org.ssafy.pasila.domain.member.service.MemberService;
 
 import java.util.Optional;
 
@@ -21,6 +25,7 @@ import java.util.Optional;
 public class MemberController {
 
     private final PersonalInfoRepository personalInfoRepository;
+    private final MemberService memberService;
 
     // 마이페이지(personal-info)
 
@@ -34,5 +39,28 @@ public class MemberController {
         return Optional.ofNullable(personalInfoRepository.findById(id));
     }
 
+    // 회원 정보 수정
+    @Operation(summary = "update member", description = "마이페이지 - 회원 정보 수정")
+    @PutMapping("/member/{id}")
+//    public ResponseEntity<?> updateMember(@PathVariable("id") Long id,
+//                                          @RequestPart(value = "pr") PersonalInfoRequest request,
+//                                          @RequestPart(value = "new_image", required = false) MultipartFile newImageName) {
+//        try {
+//            memberService.updateMember(id, request, newImageName);
+//        } catch (Exception e) {
+//            return response.exceptionHandler(500, e);
+//        }
+//        return response.handleSuccess(200, "success");
+//    }
+    public ResponseEntity<String> updateMember(@PathVariable("id") Long id,
+                                               @RequestPart(value = "pr") PersonalInfoRequest request,
+                                               @RequestPart(value = "new_image", required = false) MultipartFile newImageName) {
+        try {
+            memberService.updateMember(id, request, newImageName);
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("success");
+    }
 
 }
