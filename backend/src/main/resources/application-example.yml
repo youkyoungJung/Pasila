@@ -1,3 +1,4 @@
+<<<<<<< backend/src/main/resources/application-example.yml
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/pasila?serverTimezone=Asia/Seoul&characterEncoding=UTF-8

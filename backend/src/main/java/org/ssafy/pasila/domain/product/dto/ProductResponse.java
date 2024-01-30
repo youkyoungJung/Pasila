@@ -1,4 +1,4 @@
-package org.ssafy.pasila.domain.product.dto.product;
+package org.ssafy.pasila.domain.product.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
