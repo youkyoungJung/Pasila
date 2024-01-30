@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.member.dto.request.PersonalInfoRequest;
+import org.ssafy.pasila.domain.member.dto.response.ChannelResponse;
 import org.ssafy.pasila.domain.member.dto.response.PersonalInfoResponse;
+import org.ssafy.pasila.domain.member.repository.ChannelRepository;
 import org.ssafy.pasila.domain.member.repository.PersonalInfoRepository;
 import org.ssafy.pasila.domain.member.service.MemberService;
 
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class MemberController {
 
     private final PersonalInfoRepository personalInfoRepository;
+    private final ChannelRepository channelRepository;
     private final MemberService memberService;
 
     // 마이페이지(personal-info)
@@ -63,4 +66,14 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body("success");
     }
 
+    // 채널(Channel)
+
+    @Operation(summary = "get channel by id", description = "채널 - id로 채널 정보 조회")
+    @GetMapping("/member/channel/{id}")
+//    public ResponseEntity<?> getChannel(@PathVariable("id") Long id) {
+//        return response.handleSuccess(200, channelRepository.findById(id));
+//    }
+    public Optional<ChannelResponse> getChannel(@PathVariable("id") Long id) {
+        return Optional.ofNullable(channelRepository.findById(id));
+    }
 }
