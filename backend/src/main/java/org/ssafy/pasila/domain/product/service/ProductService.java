@@ -30,34 +30,34 @@ public class ProductService {
 
     // 상품 저장 서비스
     @Transactional
-    public void saveProduct(ProductRequest productRequest, MultipartFile image) throws IOException {
+    public String saveProduct(ProductRequest productRequest, MultipartFile image) throws IOException {
         Product savedProduct = saveProductInfo(productRequest);
         saveProductOptions(savedProduct, productRequest.getProductOptions());
         productRepository.save(savedProduct);
         handleImage(savedProduct, image);
-
+        return savedProduct.getId();
 //        return savedProduct;
     }
 
     // 상품 수정 서비스
     @Transactional
-    public Product updateProduct(String id, ProductRequest productRequest, MultipartFile newImageFile) throws IOException {
+    public String updateProduct(String id, ProductRequest productRequest, MultipartFile newImageFile) throws IOException {
         Product result = getProductById(id);
         Category category = getCategoryById(productRequest.getCategory().getId());
         updateProductOptions(productRequest.getProductOptions());
         result.updateProduct(productRequest.getProduct(), category);
         handleNewImage(result, newImageFile);
         log.info("반영 result : {}", result);
-        return result;
+        return result.getId();
     }
 
     // 상품 삭제 서비스
     @Transactional
-    public Product deleteProduct(String id) {
+    public String deleteProduct(String id) {
         Product product = getProductById(id);
         deleteImageIfExists(product.getThumbnail());
         product.setActive(false);
-        return product;
+        return product.getId();
     }
 
     //== 서비스에 필요한 관련 메서드 작성 ==//

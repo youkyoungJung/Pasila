@@ -45,13 +45,12 @@ public class ProductController {
                     @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductResponse.class)))
             })})
     @PostMapping(value = "/product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createProduct(@RequestPart(value = "pr") ProductRequest productRequest,
+    public ApiCommonResponse<?> createProduct(@RequestPart(value = "pr") ProductRequest productRequest,
                                            @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
 
-          productService.saveProduct(productRequest, image);
+          String savaId = productService.saveProduct(productRequest, image);
 
-//        log.info("controller: {}", product);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), savaId);
 
     }
 
@@ -76,22 +75,23 @@ public class ProductController {
     // 상품 정보 수정
     @Operation(summary = "update product", description = "상품을 수정한다.")
     @PutMapping("/product/{id}")
-    public  ApiCommonResponse<Product> updateProduct(@PathVariable("id") String id,
+    public  ApiCommonResponse<?> updateProduct(@PathVariable("id") String id,
                                                  @RequestPart(value = "pr") ProductRequest request,
                                                  @RequestPart(value = "new_image", required = false) MultipartFile newImageName) throws RestApiException, IOException {
 
         log.info("request: {}", request);
-        Product product = productService.updateProduct(id, request, newImageName);
-        return ApiCommonResponse.successResponse(HttpStatus.CREATED.value(), product);
+        String updateId = productService.updateProduct(id, request, newImageName);
+        return ApiCommonResponse.successResponse(HttpStatus.CREATED.value(), updateId);
 
     }
     //상품 정보 삭제 - isActive
     @Operation(summary = "delete product", description = "상품을 삭제한다.")
     @DeleteMapping("/product/{id}")
-    ApiCommonResponse<Product> deleteProduct(@PathVariable("id") String id){
+    ApiCommonResponse<?> deleteProduct(@PathVariable("id") String id){
 
-        Product product = productService.deleteProduct(id);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), product);
+        String productId = productService.deleteProduct(id);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), productId);
     }
+
 
 }
