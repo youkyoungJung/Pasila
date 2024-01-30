@@ -5,13 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.catalina.User;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import org.sqids.Sqids;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.product.entity.Product;
-import org.ssafy.pasila.domain.shortping.entity.Shortping;
+import org.ssafy.pasila.domain.shortping.entity.Livelog;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -45,6 +43,9 @@ public class Live {
     @Column(length = 30)
     private String title;
 
+    @Column(name = "live_scheduled_at")
+    private LocalDateTime liveScheduledAt;
+
     @Column(name = "live_on_at")
     private LocalDateTime liveOnAt;
 
@@ -54,8 +55,9 @@ public class Live {
     @Lob
     private String script; // 필요하지 않으면 굳이 읽지 않는 것이 좋음
 
-    @Column(name = "full_video_url")
+    @Column(name = "full_video_url", length = 2083)
     private String fullVideoUrl;
+
 
     @Column(name = "like_cnt")
     private Integer likeCnt;
@@ -68,7 +70,7 @@ public class Live {
     private LocalDateTime createdAt;
 
     @Column(name = "is_active")
-    private LocalDateTime isActive;
+    private boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

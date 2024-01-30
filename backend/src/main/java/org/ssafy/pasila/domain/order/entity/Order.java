@@ -32,8 +32,7 @@ public class Order {
     @Column(length = 50)
     private String address;
 
-    @Column(length = 10)
-    private String status;
+
 
     private Integer price;
 
@@ -48,7 +47,7 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_option_id")
     private ProductOption productOption;
 

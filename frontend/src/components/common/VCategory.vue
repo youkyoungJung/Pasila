@@ -1,6 +1,4 @@
 <script setup>
-import BestShortping from '@/components/main/BestShortping.vue'
-import Live from '@/components/main/Live.vue'
 import { ref } from 'vue'
 
 const categories = [
@@ -76,8 +74,6 @@ const selectBigCate = (name) => {
       </div>
     </ul>
   </div>
-  <best-shortping />
-  <live />
 </template>
 
 <style lang="scss" scoped>

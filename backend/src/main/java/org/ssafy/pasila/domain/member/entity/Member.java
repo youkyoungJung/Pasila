@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.member.dto.request.PersonalInfoRequest;
 import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.product.entity.Product;
 
@@ -93,8 +94,29 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Product> products = new ArrayList<>();
 
-    //profile 관련 메서드
+
+    /**
+     * 프로필 이미지 저장/수정
+     */
     public void addProfile(String url){
         this.profile = url;
     }
+
+    /**
+     * 마이페이지 - member 수정
+     */
+    public void updateMember(PersonalInfoRequest personalInfoRequest) {
+        this.name = personalInfoRequest.getName();
+        this.channel = personalInfoRequest.getChannel();
+        this.password = personalInfoRequest.getPassword();
+        this.phone = personalInfoRequest.getPhone();
+        this.address = personalInfoRequest.getAddress();
+        this.addressDetail = personalInfoRequest.getAddressDetail();
+        this.gender = personalInfoRequest.getGender();
+        this.birth = personalInfoRequest.getBirth();
+        this.bank = personalInfoRequest.getBank();
+        this.account = personalInfoRequest.getAccount();
+        this.profile = personalInfoRequest.getProfile();
+    }
+
 }
