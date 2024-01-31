@@ -39,7 +39,7 @@ public class MemberService {
         Member member = memberRepository.findById(id)
                 .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
         member.updateChannel(description);
-        return id;
+        return member.getId();
     }
 
     /** 멤버 조회 메서드 */
