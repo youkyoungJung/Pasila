@@ -111,4 +111,13 @@ public class MemberController {
         ChannelDTO result = channelRepository.findById(id);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
     }
+
+    // 채널 설명 수정 by id
+    @Operation(summary = "update channel desc by id", description = "채널 - id를 기준으로 하여 채널 설명 수정")
+    @PutMapping("/member/channel/{id}")
+    public ApiCommonResponse<?> updateChannel(@PathVariable("id") Long id,
+                                              @RequestBody String description) {
+        Long updatedId = memberService.updateChannel(id, description);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), updatedId);
+    }
 }

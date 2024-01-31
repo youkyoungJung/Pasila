@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.member.dto.ChannelDTO;
 import org.ssafy.pasila.domain.member.dto.request.PersonalInfoRequest;
 import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.product.entity.Product;
@@ -20,9 +21,8 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
 @Builder
-
 @Entity
 @Table(name = "member")
 @ToString(exclude = {"orders", "liveList", "products"})
@@ -119,6 +119,11 @@ public class Member {
         this.bank = personalInfoRequest.getBank();
         this.account = personalInfoRequest.getAccount();
         this.profile = personalInfoRequest.getProfile();
+    }
+
+    // 채널 설명 수정
+    public void updateChannel(String description) {
+        this.description = description;
     }
 
 }
