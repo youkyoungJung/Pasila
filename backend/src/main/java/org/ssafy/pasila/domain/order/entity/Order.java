@@ -32,8 +32,6 @@ public class Order {
     @Column(length = 50)
     private String address;
 
-
-
     private Integer price;
 
     @CreationTimestamp
