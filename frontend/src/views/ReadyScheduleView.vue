@@ -10,8 +10,8 @@ const step = ref('schedule')
 
 const liveTitle = ref('')
 const date = ref(new Date())
-const apm = ref(new Date().getHours >= 12 ? '오후' : '오전')
-const hour = ref(new Date().getHours())
+const apm = ref(new Date().getHours() >= 12 ? '오후' : '오전')
+const hour = ref(date.value.getHours() > 12 ? date.value.getHours() - 12 : date.value.getHours())
 const minute = ref(new Date().getMinutes())
 
 const reserveLive = () => {
@@ -32,6 +32,9 @@ const reserveLive = () => {
           @getAM="(v) => (apm = v)"
           @getHour="(v) => (hour = v)"
           @getMinute="(v) => (minute = v)"
+          :APM="apm"
+          :hour="hour"
+          :minute="minute"
         />
         <div class="show-time">
           <div class="time-title">라이브 방송 예정 시간은</div>
