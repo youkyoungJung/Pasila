@@ -13,6 +13,8 @@ public enum ErrorCode {
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "Invalid request."),
 
+    NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "Not Enough Stock."),
+
     /*
      * 401 UNAUTHORIZED: 인증되지 않은 사용자의 요청
      */

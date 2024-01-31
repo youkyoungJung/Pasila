@@ -1,18 +1,15 @@
 package org.ssafy.pasila.domain.order.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.ssafy.pasila.domain.member.entity.Member;
-import org.ssafy.pasila.domain.product.entity.Product;
+import org.ssafy.pasila.domain.order.dto.OrderFormDto;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -33,7 +30,6 @@ public class Order {
     private String address;
 
 
-
     private Integer price;
 
     @CreationTimestamp
@@ -43,6 +39,10 @@ public class Order {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+
+    @Enumerated(EnumType.STRING)
+    private Status status; // 상태 [CANCLE, ORDER, DEPOSIT, READY, START, COMP]
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
@@ -50,5 +50,25 @@ public class Order {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_option_id")
     private ProductOption productOption;
+
+    //== 생성 메서드 ==//
+    public static Order createOrder(OrderFormDto orderFormDto, Member member, ProductOption productOption){
+        Order saved = Order.builder()
+                .orderCnt(orderFormDto.getQuantity())
+                .name(orderFormDto.getName())
+                .address(orderFormDto.getAddress())
+                .price(orderFormDto.getPrice()) //수량 * 할인가
+                .status(Status.ORDER)
+                .member(member)
+                .productOption(productOption)
+                .build();
+        //재고 수량 감소
+        productOption.removeStock(orderFormDto.getQuantity());
+
+        return saved;
+
+    }
+
+
 
 }

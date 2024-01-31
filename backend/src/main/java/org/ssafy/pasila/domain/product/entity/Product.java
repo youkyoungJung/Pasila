@@ -87,12 +87,6 @@ public class Product {
     private Shortping shortping;
 
 
-    //==연관 메서드 ==//
-    public void addProductOption(ProductOption productOption){
-        productOptions.add(productOption);
-        productOption.setProduct(this);
-    }
-
 
     //== 생성 메서드 ==//
     /**상품 저장 시 카테고리와 seller 정보를 저장할 수 있는 메서드 */
