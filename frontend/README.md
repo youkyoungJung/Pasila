@@ -1,35 +1,16 @@
-# pasila
+# 파는게 쉬워지는 라이브 : 파시라(PASILA)
 
-This template should help get you started developing with Vue 3 in Vite.
+## 프로젝트 기간
 
-## Recommended IDE Setup
+`2024/01/03 ~ 2024/02/16`
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## 팀원 소개
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+| 이름   | 역할             | 비고 |
+| :----- | :--------------- | :--- |
+| 최지우 | 팀장, 프론트엔드 |      |
+| 박지원 | 팀원, 프론트엔드 |      |
+| 유소연 | 팀원, 백엔드     |      |
+| 전경향 | 팀원, 백엔드     |      |
+| 정유경 | 팀원, 백엔드     |      |
+| 최동헌 | 팀원, 백엔드     |      |
