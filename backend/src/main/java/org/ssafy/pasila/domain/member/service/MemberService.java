@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.ssafy.pasila.domain.apihandler.ErrorCode;
+import org.ssafy.pasila.domain.apihandler.RestApiException;
+import org.ssafy.pasila.domain.member.dto.ChannelDTO;
 import org.ssafy.pasila.domain.member.dto.request.PersonalInfoRequest;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
@@ -28,6 +31,15 @@ public class MemberService {
         result.updateMember(personalInfoRequest);
         handleImage(result, newImageFile);
         log.info("update member: {}", result);
+    }
+
+    /** 채널정보 수정 메서드 */
+    @Transactional
+    public Long updateChannel(Long id, String description) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
+        member.updateChannel(description);
+        return id;
     }
 
     /** 멤버 조회 메서드 */
