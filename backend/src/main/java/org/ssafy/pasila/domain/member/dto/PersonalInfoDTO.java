@@ -1,4 +1,4 @@
-package org.ssafy.pasila.domain.member.dto.response;
+package org.ssafy.pasila.domain.member.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -11,15 +11,15 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonalInfoResponse {
-    @Schema(description = "사용자 ID")
-    private Long id;
+public class PersonalInfoDTO {
     @Schema(description = "사용자 메일주소")
     private String email;
     @Schema(description = "사용자 이름")
     private String name;
     @Schema(description = "사용자 채널명")
     private String channel;
+    @Schema(description = "비밀번호")
+    private String password;
     @Schema(description = "사용자 연락처")
     private String phone;
     @Schema(description = "사용자 주소")
@@ -36,4 +36,20 @@ public class PersonalInfoResponse {
     private String account;
     @Schema(description = "사용자 프로필 사진")
     private String profile;
+
+    public PersonalInfoDTO(String email, String name, String channel, String phone, String address,
+                           String addressDetail, Gender gender, LocalDate birth, String bank,
+                           String account, String profile) {
+        this.email = email;
+        this.name = name;
+        this.channel = channel;
+        this.phone = phone;
+        this.address = address;
+        this.addressDetail = addressDetail;
+        this.gender = gender;
+        this.birth = birth;
+        this.bank = bank;
+        this.account = account;
+        this.profile = profile;
+    }
 }

@@ -13,19 +13,6 @@ import java.util.List;
 public class ProductJoinRepository {
     private final EntityManager em;
 
-    public void save(Product product){
-        if(product.getId() == null){
-            em.persist(product);
-        }else{
-            em.merge(product);
-        }
-    }
-
-    public Product findOne(Long id) {
-        return em.find(Product.class, id);
-    }
-
-
     public List<ProductResponse> findAllWithCategory() {
         return em.createQuery(
                         "SELECT new org.ssafy.pasila.domain.product.dto.ProductResponse" +
