@@ -1,3 +1,4 @@
+<<<<<<< backend/src/main/resources/application-example.yml
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/pasila?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -86,3 +87,9 @@ springdoc:
   # 해당 패턴에 매칭되는 controller만 swagger-ui에 노출한다.
   paths-to-match:
     - /api/**
+
+# coolsms
+coolsms:
+  apiKey:
+  apiSecret:
+  fromNumber:

@@ -1,11 +1,11 @@
 package org.ssafy.pasila.domain.member.controller;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +13,7 @@ import org.ssafy.pasila.domain.member.dto.request.PersonalInfoRequest;
 import org.ssafy.pasila.domain.member.dto.response.ChannelResponse;
 import org.ssafy.pasila.domain.member.dto.response.PersonalInfoResponse;
 import org.ssafy.pasila.domain.member.repository.ChannelRepository;
+import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.PersonalInfoRepository;
 import org.ssafy.pasila.domain.member.service.MemberService;
 
@@ -30,11 +31,47 @@ public class MemberController {
     private final ChannelRepository channelRepository;
     private final MemberService memberService;
 
+
+    //유효한 이메일인지 확인하는 부분 추가
+    @GetMapping("/member/email")
+    public ResponseEntity<?> checkEmail(@RequestParam String email){
+
+        if(memberService.checkEmail(email)) {
+            return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
+    @GetMapping("/member/channel")
+    public ResponseEntity<?> checkChannel(@RequestParam String channel){
+        if(memberService.checkChannel(channel)) {
+            return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @PostMapping(value = "/member/join" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> join(@RequestPart(value = "member") Member member ,
+                                  @RequestPart(value = "profileFile" , required = false) MultipartFile profileFile ){
+        try {
+            memberService.join(member, profileFile);
+            return ResponseEntity.status(HttpStatus.CREATED).body("success");
+        }catch (Exception e){
+            String errorMessage = "An error occurred: " + e.getMessage();
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+        }
+    }
     // 마이페이지(personal-info)
 
     // 회원 정보 조회 by id
     @Operation(summary = "get member by id", description = "마이페이지 - id로 회원 정보 조회")
-    @GetMapping("/personal-info/{id}")
+    @GetMapping("/member/{id}")
 //    public ResponseEntity<?> getMember(@PathVariable("id") Long id) {
 //        return response.handleSuccess(200, personalInfoRepository.findById(id));
 //    }

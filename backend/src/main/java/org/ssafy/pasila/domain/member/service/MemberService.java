@@ -11,6 +11,7 @@ import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -43,7 +44,7 @@ public class MemberService {
         if (!image.isEmpty()) {
             log.info("member:{}", member);
             String storedFileName = s3Uploader.upload(member.getId().toString(), image, "images");
-            member.editProfileUrl(storedFileName);
+            member.addProfile(storedFileName);
         }
     }
 
@@ -83,4 +84,46 @@ public class MemberService {
         String splitStr = ".com/";
         return imageUrl.substring(imageUrl.lastIndexOf(splitStr) + splitStr.length());
     }
+
+    public boolean checkEmail(String email) {
+        Optional<Member> member = memberRepository.findByEmail(email);
+        if(member.isPresent()){
+            return false; //이미 존재하는 경우
+        }else {
+            return true; // 생성가능
+        }
+    }
+
+
+    public boolean checkChannel(String channel) {
+        Optional<Member> member = Optional.ofNullable(memberRepository.findByChannel(channel));
+        if(member.isPresent()){
+            return false; // 이미 존재하는 경우
+        }else {
+            return true;  // 생성가능
+        }
+    }
+
+    @Transactional
+    public void join(Member member, MultipartFile profileFile) throws IOException {
+        // profileFile 을 S3에서 받아온 url 주소를 member profile
+        if(!profileFile.isEmpty()) {
+            String url = s3Uploader.upload(member.getId().toString(), profileFile, "member");
+            member.addProfile(url);
+        }
+        memberRepository.save(member);
+    }
+
+    public Member login(String email, String password) {
+
+        Optional<Member> findMember = memberRepository.findByEmail(email);
+        findMember.orElseThrow(()->new IllegalStateException("해당 이메일이 존재하지 않습니다."));
+
+        if( findMember.get().getPassword().equals(password)){
+            throw new IllegalStateException("이메일과 비밀번호가 일치하지 않습니다.");
+        }
+        return findMember.get();
+
+    }
+
 }
