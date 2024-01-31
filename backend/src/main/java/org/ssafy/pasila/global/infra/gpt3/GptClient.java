@@ -1,5 +1,6 @@
 package org.ssafy.pasila.global.infra.gpt3;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,6 +15,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.ssafy.pasila.global.infra.FFmpeg.FFmpegClient;
 import org.ssafy.pasila.global.infra.gpt3.model.ChatRequest;
 import org.ssafy.pasila.global.infra.gpt3.model.ChatResponse;
 import org.ssafy.pasila.global.infra.gpt3.model.TranscriptionResponse;
@@ -23,6 +25,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class GptClient {
 
     @Autowired
@@ -37,6 +40,8 @@ public class GptClient {
 
     @Value("${openai.api.url}")
     private String apiUrl;
+
+    private final FFmpegClient fFmpegClient;
 
     public String generateQsheet(String name, String productName, String productInfo) throws RestClientException {
         double temperature = 0.3;

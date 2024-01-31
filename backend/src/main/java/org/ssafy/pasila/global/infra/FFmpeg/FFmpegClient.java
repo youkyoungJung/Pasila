@@ -1,5 +1,6 @@
 package org.ssafy.pasila.global.infra.FFmpeg;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.global.infra.gpt3.model.TranscriptionResponse;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
+@Slf4j
 @Component
 public class FFmpegClient {
 
@@ -26,21 +30,25 @@ public class FFmpegClient {
     @Value("${ffmpeg.url}")
     private String url;
 
-//    public MultipartFile convertAudio(MultipartFile file) throws RestClientException, IOException {
-//        ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
-//            @Override
-//            public String getFilename() {
-//                return file.getOriginalFilename();
-//            }
-//        };
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-//
-//        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-//        body.add("file", fileResource);
-//
-//        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-//        TranscriptionResponse response = restTemplate.postForObject(url + "/convert/audio/to/mp3", requestEntity, MultipartFile.class);
-//    }
+    public void convertAudio(MultipartFile file) throws RestClientException, IOException {
+        ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
+            @Override
+            public String getFilename() {
+                return file.getOriginalFilename();
+            }
+        };
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", fileResource);
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        byte[] audioBytes = restTemplate.postForObject(url + "/convert/audio/to/mp3", requestEntity, byte[].class);
+        log.info("여기까지 오나요?");
+        log.info("{}", audioBytes);
+
+        Files.write(Paths.get("test.mp3"), audioBytes);
+    }
 }

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,9 +17,11 @@ import org.ssafy.pasila.domain.shortping.entity.Shortping;
 import org.ssafy.pasila.domain.shortping.repository.ShortpingQueryRepository;
 import org.ssafy.pasila.domain.shortping.repository.ShortpingRepository;
 import org.ssafy.pasila.domain.shortping.service.ShortpingService;
+import org.ssafy.pasila.global.infra.FFmpeg.FFmpegClient;
 
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -30,6 +33,8 @@ public class ShortpingApiControlller {
     private final ShortpingService shortpingService;
 
     private final ShortpingQueryRepository shortpingQueryRepository;
+
+    private final FFmpegClient ffmpegClient;
 
     @Operation(summary = "Create Shortping", description = "숏핑을 생성합니다.")
     @ApiResponses(value = {
@@ -55,8 +60,16 @@ public class ShortpingApiControlller {
 
     @PostMapping("/api/shortping/highlight")
     public ResponseEntity<?> getHighlight(@RequestPart(value = "video") MultipartFile video) {
-        String result = shortpingService.getHighlightList(video);
-        return ResponseEntity.ok().body(result);
+        try {
+            //String result = shortpingService.getHighlightList(video);
+
+            ffmpegClient.convertAudio(video);
+            return ResponseEntity.ok().body("success");
+        } catch (Exception e) {
+            log.info("{}", e.getMessage());
+            return ResponseEntity.ok().body("fail");
+        }
+
     }
 
 //    @PostMapping("/api/shortping/highlight")
