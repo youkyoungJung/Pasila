@@ -9,8 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.member.dto.request.PersonalInfoRequest;
-import org.ssafy.pasila.domain.member.dto.response.ChannelResponse;
+import org.ssafy.pasila.domain.member.dto.ChannelDTO;
 import org.ssafy.pasila.domain.member.dto.response.PersonalInfoResponse;
 import org.ssafy.pasila.domain.member.repository.ChannelRepository;
 import org.ssafy.pasila.domain.member.entity.Member;
@@ -105,12 +106,11 @@ public class MemberController {
 
     // 채널(Channel)
 
+    // 채널 정보 조회 by id
     @Operation(summary = "get channel by id", description = "채널 - id로 채널 정보 조회")
     @GetMapping("/member/channel/{id}")
-//    public ResponseEntity<?> getChannel(@PathVariable("id") Long id) {
-//        return response.handleSuccess(200, channelRepository.findById(id));
-//    }
-    public Optional<ChannelResponse> getChannel(@PathVariable("id") Long id) {
-        return Optional.ofNullable(channelRepository.findById(id));
+    public ApiCommonResponse<ChannelDTO> getChannel(@PathVariable("id") Long id) {
+        ChannelDTO result = channelRepository.findById(id);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
     }
 }

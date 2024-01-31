@@ -1,4 +1,4 @@
-package org.ssafy.pasila.domain.member.dto.response;
+package org.ssafy.pasila.domain.member.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChannelResponse {
+public class ChannelDTO {
     @Schema(description = "채널명")
     private String channel;
     @Schema(description = "채널 설명")
