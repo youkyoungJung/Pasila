@@ -12,6 +12,7 @@ import ReadyRegistView from '@/views/ReadyRegistView.vue'
 import ReadyScriptView from '@/views/ReadyScriptView.vue'
 import ReadyChatbotView from '@/views/ReadyChatbotView.vue'
 import ReadyScheduleView from '@/views/ReadyScheduleView.vue'
+import SetPwView from '@/views/SetPwView.vue'
 import MyPageView from '@/views/MyPageView.vue'
 
 const router = createRouter({
@@ -81,6 +82,11 @@ const router = createRouter({
       path: '/ready/schedule',
       name: 'readyschedule',
       component: ReadyScheduleView
+    },
+    {
+      path: '/setpw/:id',
+      name: 'setpw',
+      component: SetPwView
     },
     {
       path: '/my/:id',
