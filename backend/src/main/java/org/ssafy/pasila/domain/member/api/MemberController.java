@@ -1,4 +1,4 @@
-package org.ssafy.pasila.domain.member.controller;
+package org.ssafy.pasila.domain.member.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
