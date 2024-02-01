@@ -39,7 +39,7 @@ dependencies {
 	implementation group: 'net.nurigo', name: 'sdk', version: '4.3.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 }
 

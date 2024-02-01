@@ -13,7 +13,14 @@ public enum ErrorCode {
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "Invalid request."),
 
+    /*
+     * 400 BAD_REQUEST: 재고 부족
+     * */
     NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "Not Enough Stock."),
+    /*
+     * 400 BAD_REQUEST: 취소 불가
+     * */
+    NOT_CANCELLATION(HttpStatus.BAD_REQUEST, "취소 불가 상품입니다."),
 
     /*
      * 401 UNAUTHORIZED: 인증되지 않은 사용자의 요청

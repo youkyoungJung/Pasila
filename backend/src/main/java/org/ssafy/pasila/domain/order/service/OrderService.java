@@ -8,11 +8,17 @@ import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
+import org.ssafy.pasila.domain.order.dto.OrderDto;
 import org.ssafy.pasila.domain.order.dto.OrderFormDto;
 import org.ssafy.pasila.domain.order.entity.Order;
+import org.ssafy.pasila.domain.order.entity.Status;
 import org.ssafy.pasila.domain.order.repository.OrderRepository;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
+
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -40,9 +46,40 @@ public class OrderService {
         return order.getId();
     }
 
+    public List<OrderDto> getOrderList(Long id){
 
+        Member member = memberRepository.findById(id)
+                .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
 
+        List<Order> orders = orderRepository.findAllByMemberId(member.getId());
+        return orders.stream()
+                .map(OrderDto::new)
+                .collect(toList());
+    }
 
+    /**
+     * id : OrderId
+     * */
+    public OrderDto getOrderDetail(Long id){
+        return orderRepository.findOrderDtoById(id)
+                .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+    }
 
+    @Transactional
+    public Long cancelOrder(Long id){
+        Order order = orderRepository.findById(id)
+                .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+        order.cancel();
+        return order.getId();
+    }
+
+    @Transactional
+    public Long changeStatus(Long id, String status){
+        Order order = orderRepository.findById(id)
+                .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        order.changeStatus(Enum.valueOf(Status.class, status));
+        return order.getId();
+    }
 
 }
