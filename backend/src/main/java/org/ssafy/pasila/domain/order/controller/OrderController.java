@@ -77,9 +77,9 @@ public class OrderController {
     @Operation(summary = "getStatusValues", description = "주문 상태 전체 보여주기")
     @GetMapping("/statusValues")
     public ApiCommonResponse<List<Map<String, String>>> getStatusValues() {
-        Map<String, String> statusMap = new HashMap<>();
         List< Map<String, String>> list = new ArrayList<>();
         for (Status status : Status.values()) {
+            Map<String, String> statusMap = new HashMap<>();
             statusMap.put("key", status.name());
             statusMap.put("desc", status.getDescription());
             list.add(statusMap);
