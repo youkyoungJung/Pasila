@@ -2,16 +2,16 @@ package org.ssafy.pasila.domain.member.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.ssafy.pasila.domain.member.entity.Gender;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonalInfoDTO {
+public class PersonalInfoDto {
     @Schema(description = "사용자 메일주소")
     private String email;
     @Schema(description = "사용자 이름")
@@ -37,7 +37,7 @@ public class PersonalInfoDTO {
     @Schema(description = "사용자 프로필 사진")
     private String profile;
 
-    public PersonalInfoDTO(String email, String name, String channel, String phone, String address,
+    public PersonalInfoDto(String email, String name, String channel, String phone, String address,
                            String addressDetail, Gender gender, LocalDate birth, String bank,
                            String account, String profile) {
         this.email = email;

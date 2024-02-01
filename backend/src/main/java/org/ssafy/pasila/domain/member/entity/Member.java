@@ -4,19 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.ssafy.pasila.domain.live.entity.Live;
-import org.ssafy.pasila.domain.member.dto.ChannelDTO;
-import org.ssafy.pasila.domain.member.dto.PersonalInfoDTO;
-import org.ssafy.pasila.domain.member.dto.request.PersonalInfoRequest;
+import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
 import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.product.entity.Product;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -28,6 +23,7 @@ import java.util.List;
 @Table(name = "member")
 @ToString(exclude = {"orders", "liveList", "products"})
 public class Member {
+
     @Id
     @GeneratedValue
     private Long id;
@@ -97,7 +93,6 @@ public class Member {
     @JsonIgnore
     private List<Product> products = new ArrayList<>();
 
-
     /**
      * 프로필 이미지 저장/수정
      */
@@ -108,7 +103,7 @@ public class Member {
     /**
      * 마이페이지 - member 수정
      */
-    public void updateMember(PersonalInfoDTO request) {
+    public void updateMember(PersonalInfoDto request) {
         this.name = request.getName();
         this.channel = request.getChannel();
         this.password = request.getPassword();
