@@ -65,4 +65,12 @@ public class OrderService {
                 .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
+    @Transactional
+    public Long cancelOrder(Long id){
+        Order order = orderRepository.findById(id)
+                .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+        order.cancel();
+        return order.getId();
+    }
+
 }
