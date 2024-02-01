@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.order.entity.Status;
 import java.time.LocalDateTime;
@@ -50,4 +49,5 @@ public class OrderDto {
         this.productName = order.getProductOption().getProduct().getName();
         this.productUrl = order.getProductOption().getProduct().getThumbnail();
     }
+
 }
