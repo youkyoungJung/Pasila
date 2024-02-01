@@ -1,18 +1,15 @@
 package org.ssafy.pasila.domain.product.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Entity
 public class Category {
+
     @Id
     private Long id;
 
@@ -21,4 +18,5 @@ public class Category {
 
     @Column(name = "image_url", length = 2083)
     private String imageUrl;
+
 }

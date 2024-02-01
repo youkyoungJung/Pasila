@@ -9,7 +9,6 @@ import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.order.dto.OrderFormDto;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,6 +18,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "orders")
 public class Order {
+
     @Id
     @GeneratedValue
     private Long id;
@@ -41,7 +41,6 @@ public class Order {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-
     @Enumerated(EnumType.STRING)
     private Status status; // 상태 [CANCLE, ORDER, DEPOSIT, READY, START, COMP]
 
@@ -57,6 +56,7 @@ public class Order {
 
     //== 생성 메서드 ==//
     public static Order createOrder(OrderFormDto orderFormDto, Member member, ProductOption productOption){
+
         Order saved = Order.builder()
                 .orderCnt(orderFormDto.getQuantity())
                 .name(orderFormDto.getName())
@@ -68,22 +68,25 @@ public class Order {
                 .build();
         //재고 수량 감소
         productOption.removeStock(orderFormDto.getQuantity());
-
         return saved;
 
     }
 
     //== 주문 취소 ==//
     public void cancel(){
+
         if(this.status != Status.ORDER){
             throw new RestApiException(ErrorCode.NOT_CANCELLATION);
         }
         this.status = Status.CANCEL;
         this.productOption.addStock(this.orderCnt);
+
     }
 
     public void changeStatus(Status status){
+
         this.status = status;
+
     }
 
 }

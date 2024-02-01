@@ -12,6 +12,7 @@ import lombok.Getter;
  * */
 @Getter
 public enum Status {
+
     CANCEL("주문 취소"),
     ORDER("주문 완료"),
     DEPOSIT("입금 완료"),
@@ -22,8 +23,9 @@ public enum Status {
     private final String description;
 
     Status(String description) {
+
         this.description = description;
+
     }
 
 }
-
