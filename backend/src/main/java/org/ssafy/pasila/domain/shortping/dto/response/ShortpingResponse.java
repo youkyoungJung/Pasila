@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class ShortpingResponse {
+
     @Schema(description = "숏핑 아이디")
     private String id;
 
@@ -46,4 +47,5 @@ public class ShortpingResponse {
 
     @Schema(description = "판매자 채널 이름")
     private String sellerChannelName;
+
 }

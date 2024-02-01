@@ -1,4 +1,4 @@
-package org.ssafy.pasila.domain.product.controller;
+package org.ssafy.pasila.domain.product.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

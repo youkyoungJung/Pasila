@@ -1,4 +1,4 @@
-package org.ssafy.pasila.domain.search.controller;
+package org.ssafy.pasila.domain.search.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

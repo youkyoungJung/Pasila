@@ -5,7 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.sqids.Sqids;
-import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.product.entity.Product;
 
 import java.sql.Timestamp;
@@ -13,17 +12,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-
-@Data
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Shortping {
+
     @Id
     @Column(columnDefinition = "VARCHAR(10)")
     private String id;
 
     @PrePersist
     public void createUniqId() {
+
         Sqids sqids = Sqids.builder()
                 .minLength(10)
                 .build();
@@ -32,6 +32,7 @@ public class Shortping {
         String newId = sqids.encode(List.of(timestampAsLong, 2L));
 
         this.id = newId;
+
     }
 
     @Column(length = 30, nullable = false)
@@ -69,6 +70,5 @@ public class Shortping {
         shortping.setActive(true);
         return shortping;
     }
-
 
 }
