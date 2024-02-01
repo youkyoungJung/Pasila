@@ -9,7 +9,6 @@ import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.order.dto.OrderDto;
 import org.ssafy.pasila.domain.order.dto.OrderFormDto;
 import org.ssafy.pasila.domain.order.service.OrderService;
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,7 +20,7 @@ public class OrderController {
 
     @Operation(summary = "Save order", description = "주문을 등록한다.")
     @PostMapping
-    public ApiCommonResponse<?> createOrder(@RequestBody OrderFormDto orderFormDto) throws IOException {
+    public ApiCommonResponse<?> createOrder(@RequestBody OrderFormDto orderFormDto) {
 
         Long orderId = orderService.saveOrder(orderFormDto);
 
@@ -31,7 +30,7 @@ public class OrderController {
 
     @Operation(summary = "Get Order List", description = "[구매자]주문 내역을 조회")
     @GetMapping("/{id}")
-    public ApiCommonResponse<?> getOrderList(@PathVariable Long id) throws IOException {
+    public ApiCommonResponse<?> getOrderList(@PathVariable Long id) {
 
         List<OrderDto> orderList = orderService.getOrderList(id);
 

@@ -2,14 +2,12 @@ package org.ssafy.pasila.domain.order.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.order.entity.Status;
 import java.time.LocalDateTime;
 
-@Getter
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
