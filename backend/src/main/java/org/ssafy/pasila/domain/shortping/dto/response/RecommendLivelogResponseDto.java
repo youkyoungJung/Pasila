@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class RecommendLivelogResponseDto {
+
     @Schema(description = "하이라이트 시작 시간")
     private String start;
 

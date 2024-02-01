@@ -15,12 +15,14 @@ public class LivelogQueryRepository {
 
     // 영상의 하이라이트 리스트 가져오기
     public List<Livelog> findAllByLive(String liveId) {
+
         return em.createQuery(
                 "select lg from Livelog lg" +
                         " join fetch lg.live l" +
                         " where lg.live.id =: liveId", Livelog.class)
                 .setParameter("liveId", liveId)
                 .getResultList();
+
     }
 
 }

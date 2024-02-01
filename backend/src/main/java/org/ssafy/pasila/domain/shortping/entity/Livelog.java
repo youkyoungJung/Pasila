@@ -1,20 +1,16 @@
 package org.ssafy.pasila.domain.shortping.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.ssafy.pasila.domain.live.entity.Live;
 
 import java.time.LocalTime;
 
 
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 @Entity
 @Table(name = "livelog")
 public class Livelog {

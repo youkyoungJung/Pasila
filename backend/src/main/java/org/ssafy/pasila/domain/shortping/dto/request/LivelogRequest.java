@@ -1,9 +1,7 @@
 package org.ssafy.pasila.domain.shortping.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,13 +30,14 @@ public class LivelogRequest {
     private String subtitle;
 
     public Livelog toEntity(Live live) {
-        Livelog livelog = Livelog.builder()
+
+        return Livelog.builder()
                 .title(title)
                 .start(start)
                 .end(end)
                 .subtitle(subtitle)
+                .live(live)
                 .build();
-        livelog.setLive(live);
-        return livelog;
+
     }
 }

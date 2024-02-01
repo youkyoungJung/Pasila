@@ -2,8 +2,6 @@ package org.ssafy.pasila.domain.shortping.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import org.ssafy.pasila.domain.shortping.dto.request.LivelogRequest;
-import org.ssafy.pasila.domain.shortping.entity.Shortping;
 
 import java.util.List;
 

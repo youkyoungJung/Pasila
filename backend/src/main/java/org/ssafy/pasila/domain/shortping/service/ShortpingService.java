@@ -22,8 +22,6 @@ import org.ssafy.pasila.global.infra.FFmpeg.FFmpegClient;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.gpt3.model.Script;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,6 +73,7 @@ public class ShortpingService {
 
     // 하이라이트 추천
     public List<RecommendLivelogResponseDto> getHighlightList(MultipartFile file) {
+
         try {
             byte[] audioFilebytes = ffmpegClient.convertAudio(file);
             List<Script> segments = gptService.speechToText(audioFilebytes).getSegments();
@@ -97,8 +96,10 @@ public class ShortpingService {
     }
 
     private Product getProductById(String id) {
+
         return productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 상품이 존재하지 않습니다"));
+
     }
 
 }
