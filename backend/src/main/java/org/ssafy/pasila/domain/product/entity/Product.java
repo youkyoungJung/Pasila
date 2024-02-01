@@ -8,29 +8,25 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.ssafy.pasila.domain.member.entity.Member;
-
 import jakarta.persistence.CascadeType;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.sqids.Sqids;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
-
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @ToString(exclude = {"category", "productOptions"})
-//@ToString(exclude = "productOptions")
 @Entity
 public class Product {
+
     @Id
     @Column(columnDefinition = "VARCHAR(12)")
     private String id;
@@ -66,7 +62,6 @@ public class Product {
 
     @Column(name = "is_active")
     @ColumnDefault("true")
-//    @Convert(converter = YesNoConverter.class)
     private boolean isActive;
 
     @ManyToOne
@@ -86,17 +81,17 @@ public class Product {
     @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
     private Shortping shortping;
 
-
-
     //== 생성 메서드 ==//
     /**상품 저장 시 카테고리와 seller 정보를 저장할 수 있는 메서드 */
     public void addProductWithCategoryWithMember(Category category, Member member){
+
         this.category = category;
         this.member = member;
     }
 
     /** product 관련 없데이트 , 카테고리 변경 */
     public void updateProduct(Product product, Category category) {
+
         this.name = product.getName();
         this.description = product.getDescription();
         this.category = category;
@@ -104,8 +99,15 @@ public class Product {
 
     /** 썸네일을 저장하거나 변경할 때 사용하는 메서드*/
     public void addThumbnailUrl(String url){
+
         this.thumbnail = url;
+
     }
 
+    public void setActive(boolean active){
+
+        this.isActive = active;
+
+    }
 
 }

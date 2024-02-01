@@ -15,9 +15,7 @@ import org.ssafy.pasila.domain.order.entity.Status;
 import org.ssafy.pasila.domain.order.repository.OrderRepository;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
-
 import java.util.List;
-
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -27,7 +25,9 @@ import static java.util.stream.Collectors.toList;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+
     private final MemberRepository memberRepository;
+
     private final ProductOptionRepository productOptionRepository;
 
     /** 주문 생성 */
@@ -42,8 +42,8 @@ public class OrderService {
         //주문 생성
         Order order = Order.createOrder(orderformDto, member, productOption);
         orderRepository.save(order);
-
         return order.getId();
+
     }
 
     public List<OrderDto> getOrderList(Long id){
@@ -55,31 +55,38 @@ public class OrderService {
         return orders.stream()
                 .map(OrderDto::new)
                 .collect(toList());
+
     }
 
     /**
      * id : OrderId
      * */
     public OrderDto getOrderDetail(Long id){
+
         return orderRepository.findOrderDtoById(id)
                 .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+
     }
 
     @Transactional
     public Long cancelOrder(Long id){
+
         Order order = orderRepository.findById(id)
                 .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
         order.cancel();
         return order.getId();
+
     }
 
     @Transactional
     public Long changeStatus(Long id, String status){
+
         Order order = orderRepository.findById(id)
                 .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
 
         order.changeStatus(Enum.valueOf(Status.class, status));
         return order.getId();
+
     }
 
 }

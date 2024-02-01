@@ -8,10 +8,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.*;
-import org.ssafy.pasila.domain.live.entity.ChatLog;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.ssafy.pasila.domain.live.dto.ChatLogDto;
 import org.ssafy.pasila.domain.live.service.ChattingService;
-import org.ssafy.pasila.domain.live.service.LiveService;
 
 @Slf4j
 @RestController
@@ -30,7 +32,7 @@ public class ChattingApiController {
             @ApiResponse(responseCode = "200", description = "성공")
     })
     @MessageMapping("/chatting")
-    public void sendChat(@RequestBody ChatLog chatLog) {
+    public void sendChat(@RequestBody ChatLogDto chatLog){
         chatLog.addCreatedAt();
         chattingService.saveChat(chatLog);
         template.convertAndSend("/id/" + chatLog.getLiveId(), chatLog);

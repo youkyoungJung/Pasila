@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
-import org.ssafy.pasila.domain.live.entity.ChatLog;
+import org.ssafy.pasila.domain.live.dto.ChatLogDto;
 
 @Service
 @RequiredArgsConstructor
@@ -14,8 +14,7 @@ public class ChattingService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void saveChat(ChatLog chatLog) {
-
+    public void saveChat(ChatLogDto chatLog) {
         ValueOperations<String , String> valueOperations = redisTemplate.opsForValue();
         valueOperations.append("chatlog : " + chatLog.getLiveId() ,
                 " " + chatLog.getMemberId() +
