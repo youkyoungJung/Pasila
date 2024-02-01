@@ -1,8 +1,7 @@
 <script setup>
-import VCalendar from '@/components/schedule/VCalendar.vue'
+import LineCalendar from '@/components/schedule/LineCalendar.vue'
 import ProductCard from '@/components/live/ProductCard.vue'
 import ChannelCard from '@/components/schedule/ChannelCard.vue'
-
 import { ref } from 'vue'
 
 const Products = ref([
@@ -29,10 +28,10 @@ const Products = ref([
 
 <template>
   <div class="schedule">
-    <v-calendar></v-calendar>
+    <line-calendar />
     <div v-for="(item, index) in Products" :key="index" class="product-channel">
-      <product-card :product="item"></product-card>
-      <channel-card :member="{ member: item.member, profile: item.profile }"></channel-card>
+      <product-card :product="item" />
+      <channel-card :member="{ member: item.member, profile: item.profile }" />
     </div>
   </div>
 </template>

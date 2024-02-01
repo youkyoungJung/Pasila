@@ -1,5 +1,5 @@
 <script setup>
-import steps from '@/components/ready/Steps.vue'
+import ReadySteps from '@/components/ready/ReadySteps.vue'
 import NextButton from '@/components/ready/NextButton.vue'
 import ScriptSelect from '@/components/ready/ScriptSelect.vue'
 import ScriptResult from '@/components/ready/ScriptResult.vue'
@@ -10,18 +10,18 @@ const step = ref('script')
 const nextStep = ref('chatbot')
 const script = ref('')
 
-const update = (message) => {
+const updateScript = (message) => {
   script.value = message
 }
 </script>
 
 <template>
   <div class="container">
-    <steps :data="step" />
+    <ready-steps :data="step" />
 
     <div class="body">
       <div class="select">
-        <script-select @script="update" />
+        <script-select @script="updateScript" />
       </div>
       <div class="result">
         <script-result :script="script" />

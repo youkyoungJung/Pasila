@@ -1,7 +1,6 @@
 <script setup>
 import ChannelProfile from '@/components/channel/ChannelProfile.vue'
 import ToggleButton from '@/components/common/ToggleButton.vue'
-import VideoCard from '@/components/common/VideoCard.vue'
 
 const member = {
   channel: '김가을',
@@ -20,8 +19,8 @@ const member = {
 
 <template>
   <div class="channel">
-    <channel-profile :member="member"></channel-profile>
-    <toggle-button></toggle-button>
+    <channel-profile :member="member" />
+    <toggle-button />
   </div>
 </template>
 

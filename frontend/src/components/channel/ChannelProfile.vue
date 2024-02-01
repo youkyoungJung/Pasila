@@ -1,5 +1,4 @@
 <script setup>
-import { text } from '@fortawesome/fontawesome-svg-core'
 import { ref } from 'vue'
 const props = defineProps({
   member: Object
@@ -20,7 +19,6 @@ const FocusDesc = (e) => {
 
 const BlurDesc = (e) => {
   const next = e.relatedTarget
-  console.log(next)
   if (next instanceof HTMLButtonElement) {
     next.click()
   } else {
@@ -29,7 +27,6 @@ const BlurDesc = (e) => {
 }
 
 const SaveDesc = () => {
-  console.log('저장')
   isFocus.value = false
 }
 

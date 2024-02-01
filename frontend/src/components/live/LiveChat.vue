@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted, watch, nextTick } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 
 const ChatList = reactive([
   {
@@ -29,7 +29,6 @@ const liveChat = ref(null)
 
 onMounted(() => {
   nextTick(() => {
-    console.log('스크롤?')
     liveChat.value.scrollTop = 30 + liveChat.value.scrollHeight
   })
 })

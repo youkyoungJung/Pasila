@@ -18,7 +18,7 @@ import { quillEditor } from 'vue3-quill'
 import App from './App.vue'
 import router from './router'
 import VueDOMPurifyHTML from 'vue-dompurify-html'
-import { setupCalendar, Calendar, DatePicker } from 'v-calendar'
+import { Calendar, DatePicker } from 'v-calendar'
 import 'v-calendar/style.css'
 
 library.add(
@@ -32,7 +32,6 @@ library.add(
 library.add(faCalendarCheck, faUser, fas, far)
 
 const app = createApp(App)
-axios.defaults.baseURL = 'http://i10a402.p.ssafy.io:8080'
 app.config.globalProperties.$axios = axios
 
 app.component('font-awesome-icon', FontAwesomeIcon)

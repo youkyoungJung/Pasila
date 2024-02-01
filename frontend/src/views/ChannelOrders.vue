@@ -1,9 +1,10 @@
 <script setup>
 import ProductTable from '@/components/channel/ProductTable.vue'
+
 const myProductList = [
   {
     name: '겨울에 필수! 앙고라 니트',
-    thumbnail: '/src/assets/img/test/live-thumb.png',
+    thumbnail: new URL('@/assets/img/test/live-thumb.png', import.meta.url).href,
     createdAt: '2022/01/02 11:11:00',
     ProductOptions: [
       {
@@ -97,7 +98,7 @@ const myProductList = [
       <h3 class="subtitle">내 판매 상품의 주문, 배송 상태를 확인하고 관리하세요.</h3>
     </section>
     <section class="bottom">
-      <product-table :products="myProductList"></product-table>
+      <product-table :products="myProductList" />
     </section>
   </div>
 </template>

@@ -5,7 +5,7 @@ import VHeader from '@/components/common/VHeader.vue'
 
 <template>
   <v-header />
-  <RouterView />
+  <router-view />
 </template>
 
 <style lang="scss">
