@@ -8,21 +8,24 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class LiveService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public int joinLive(String liveId , String memberId){
+    public int joinLive(String liveId , String memberId) {
+
         SetOperations<String , String> setOperations = redisTemplate.opsForSet();
         setOperations.add("participant : " + liveId , memberId);
         return  setOperations.size("participant : " + liveId).intValue();
+
     }
 
-    public int exitLive(String liveId ,String memberId){
+    public int exitLive(String liveId ,String memberId) {
+
         SetOperations<String , String> setOperations = redisTemplate.opsForSet();
         setOperations.remove("participant : " + liveId , memberId);
         return  setOperations.size("participant : " + liveId).intValue();
+
     }
 
 }

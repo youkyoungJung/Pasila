@@ -26,7 +26,6 @@ import org.ssafy.pasila.global.infra.gpt3.GptClient;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/live")
 @Tag(name = "Live", description = "Live API")
-
 public class LiveApiController {
 
     private final GptClient gptService;
@@ -39,20 +38,16 @@ public class LiveApiController {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreateQsheetResponse.class))})
     })
     @PostMapping("/sheet")
-    public ResponseEntity<?> createQsheet(@RequestBody CreateQsheetRequest request) {
-        try {
-            String qsheet = gptService.generateQsheet(
-                    "판매자",
-                    request.getProductName(),
-                    request.getDescription()
-            );
-            String qsheetStyle = gptService.chatStyle(request.getStyle(), qsheet);
-            return ResponseEntity.ok().body(qsheetStyle);
+    public ApiCommonResponse<?> createQsheet(@RequestBody CreateQsheetRequest request) {
 
-        } catch (RestClientException e) {
-            log.error("Error occurred while making the API request: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        String qsheet = gptService.generateQsheet(
+                "판매자",
+                request.getProductName(),
+                request.getDescription()
+        );
+        String qsheetStyle = gptService.chatStyle(request.getStyle(), qsheet);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), qsheetStyle);
+
     }
 
     @Operation(summary = "Create Qsheet Sample", description = "큐시트 샘플을 제공합니다.")
@@ -61,8 +56,9 @@ public class LiveApiController {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreateQsheetResponse.class))})
     })
     @GetMapping("/sheet/example")
-    public ResponseEntity<?> createQsheetTest() {
-        return ResponseEntity.ok().body("큐시트:\n" +
+    public ApiCommonResponse<?> createQsheetTest() {
+
+        String result = "큐시트:\n" +
                 "\n" +
                 "1. 오프닝 / 인사\n" +
                 "- 안녕하구먼! 여러분의 쇼호스트 판매자 할아버지가 오늘은 제주 서귀포 노지 하우스 타이벡 감귤 황금향 레드향 가정용 선물세트를 소개해주겠네.\n" +
@@ -89,7 +85,9 @@ public class LiveApiController {
                 "- 이 감귤 선물세트는 꼬마, 골프공, 소과, 로얄과, 중대과로 구성되어 있고, 원래 가격은 500,000원이지만 이벤트 기간 동안만 420,000원에 판매하고 있기 때문에, 이번 기회를 놓치지 마시게.\n" +
                 "\n" +
                 "9. 마무리 / 마지막 안내\n" +
-                "- 이제 많은 분들이 기다리시는 할인된 가격으로 제주 서귀포 노지 하우스 타이벡 감귤 황금향 레드향 가정용 선물세트를 구매하실 수 있고, 이번 기회를 놓치지 마시고, 지금 바로 구매해보시게!");
+                "- 이제 많은 분들이 기다리시는 할인된 가격으로 제주 서귀포 노지 하우스 타이벡 감귤 황금향 레드향 가정용 선물세트를 구매하실 수 있고, 이번 기회를 놓치지 마시고, 지금 바로 구매해보시게!";
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
+
     }
 
     @Operation(summary = "Join Live", description = "라이브에 참여한 참여자를 추가합니다.")
@@ -97,9 +95,11 @@ public class LiveApiController {
             @ApiResponse(responseCode = "200", description = "성공")
     })
     @GetMapping("/join")
-    public ApiCommonResponse<?> joinLive(@RequestParam String roomId , @RequestParam String memberId){
+    public ApiCommonResponse<?> joinLive(@RequestParam String roomId , @RequestParam String memberId) {
+
         int participantNum = liveService.joinLive(roomId , memberId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), participantNum);
+
     }
 
     @Operation(summary = "Exit Live", description = "라이브에 참여한 참여자를 감소시킵니다.")
@@ -108,8 +108,10 @@ public class LiveApiController {
     })
     @DeleteMapping("/exit")
     public ApiCommonResponse<?> exitLive(@RequestParam String roomId , @RequestParam String memberId){
+
         int participantNum = liveService.exitLive(roomId , memberId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), participantNum);
+        
     }
 
 }

@@ -24,8 +24,10 @@ public class ChatLogDto {
     @Schema(description = "채팅 시간")
     private LocalDateTime createdAt;
 
-    public void addCreatedAt(){
+    public void setCreatedAt() {
+
         this.createdAt = LocalDateTime.now();
+
     }
 
 }

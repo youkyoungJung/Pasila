@@ -110,4 +110,10 @@ public class Product {
 
     }
 
+    public void setShortping(Shortping shortping) {
+
+        this.shortping = shortping;
+
+    }
+
 }
