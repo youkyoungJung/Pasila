@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.ssafy.pasila.domain.apihandler.ErrorCode;
+import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.order.dto.OrderFormDto;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
@@ -69,6 +71,15 @@ public class Order {
 
         return saved;
 
+    }
+
+    //== 주문 취소 ==//
+    public void cancel(){
+        if(this.status != Status.ORDER){
+            throw new RestApiException(ErrorCode.NOT_CANCELLATION);
+        }
+        this.status = Status.CANCEL;
+        this.productOption.addStock(this.orderCnt);
     }
 
 }
