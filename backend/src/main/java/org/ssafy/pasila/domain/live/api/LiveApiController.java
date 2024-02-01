@@ -1,27 +1,22 @@
 package org.ssafy.pasila.domain.live.api;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequest;
 import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponse;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 
-@Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/live")

@@ -1,23 +1,35 @@
 package org.ssafy.pasila.global.infra.gpt3;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
+import org.ssafy.pasila.domain.shortping.dto.response.RecommendLivelogResponseDto;
 import org.ssafy.pasila.global.infra.gpt3.model.ChatRequest;
 import org.ssafy.pasila.global.infra.gpt3.model.ChatResponse;
+import org.ssafy.pasila.global.infra.gpt3.model.TranscriptionResponse;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class GptClient {
 
-    @Autowired
     @Qualifier("openaiRestTemplate")
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     @Value("${openai.model}")
     private String model;
@@ -29,6 +41,7 @@ public class GptClient {
     private String apiUrl;
 
     public String generateQsheet(String name, String productName, String productInfo) {
+
         try {
             double temperature = 0.3;
             double top_p = 1;
@@ -63,9 +76,11 @@ public class GptClient {
         } catch (Exception e) {
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+
     }
 
     public String chatStyle(String type, String text) {
+
         try {
             double temperature = 0.5;
             double top_p = 1;
@@ -84,5 +99,59 @@ public class GptClient {
         } catch (Exception e) {
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+
     }
+
+    public TranscriptionResponse speechToText(byte[] file) throws RestClientException {
+        ByteArrayResource fileResource = new ByteArrayResource(file) {
+            @Override
+            public String getFilename() {
+                return "text.mp3";
+            }
+        };
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", fileResource);
+        body.add("model", "whisper-1");
+        body.add("language", "ko");
+        body.add("response_format", "verbose_json");
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        TranscriptionResponse response = restTemplate.postForObject(apiUrl + "/audio/transcriptions", requestEntity, TranscriptionResponse.class);
+
+        return response;
+
+    }
+
+    public List<RecommendLivelogResponseDto> getHighlight(String text) throws JsonProcessingException {
+
+        double temperature = 0.5;
+        double top_p = 0.5;
+
+        String system = "넌 라이브 쇼핑 대본의 하이라이트 추출기야\n" +
+                "데이터는 [id, start, end, text] 형식으로 전달되고\n" +
+                "start는 대본 시작 시간, end는 대본 종료 시간, text는 대본을 의미해.\n" +
+                "start와 end의 단위는 초로 되어있어. \n" +
+                "메세지가 주어지면 상품의 특징, 가격, 후기 등 중요한 내용을 설명하는 구간을 뽑아줘.\n" +
+                "\n" +
+                "형식은 {\"title\": 구간의 주제, \"start\": 구간의 시작 시간, \"end\": 구간의 종료 시간} 으로 출력해주고, 구간은 콤마(,)로 구분해서 리스트에 담아 보내줘. " +
+                "다른 말은 하지 말고 결과만 출력해줘.";
+
+        ChatRequest request = new ChatRequest(model, system, text, temperature, top_p);
+        ChatResponse response = restTemplate.postForObject(apiUrl + "/chat/completions", request, ChatResponse.class);
+
+        if (response.getChoices() == null || response.getChoices().isEmpty()) {
+            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+
+        String result = "[" + response.getChoices().get(0).getMessage().getContent() + "]";
+        ObjectMapper mapper = new ObjectMapper();
+
+        return Arrays.asList(mapper.readValue(result, RecommendLivelogResponseDto[].class));
+
+    }
+
 }
