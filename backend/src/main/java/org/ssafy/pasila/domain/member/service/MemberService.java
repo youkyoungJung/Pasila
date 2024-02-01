@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.member.dto.ChannelDTO;
+import org.ssafy.pasila.domain.member.dto.PersonalInfoDTO;
 import org.ssafy.pasila.domain.member.dto.request.PersonalInfoRequest;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
@@ -24,13 +25,18 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final S3Uploader s3Uploader;
 
+    /** 사용자 정보 수정 메서드 */
     @Transactional
     //TODO 비밀번호 암호화, 계좌번호 암호화
-    public void updateMember(Long id, PersonalInfoRequest personalInfoRequest, MultipartFile newImageFile) throws IOException {
+    public Long updateMember(Long id, PersonalInfoDTO request, MultipartFile newImageFile) throws IOException {
         Member result = getMemberById(id);
-        result.updateMember(personalInfoRequest);
+        /* 비밀번호 암호화 */
+//        request.setPassword(암호화 메서드);
+        /* 계좌번호 암호화 */
+//        request.setAccount(암호화 메서드);
+        result.updateMember(request);
         handleImage(result, newImageFile);
-        log.info("update member: {}", result);
+        return result.getId();
     }
 
     /** 채널정보 수정 메서드 */
@@ -79,7 +85,7 @@ public class MemberService {
      * S3에서의 기존 사진이 삭제되어야함.
      * */
     private void deleteImageIfExists(String imageUrl) {
-        if (!imageUrl.isEmpty()) {
+        if (imageUrl != null && !imageUrl.isEmpty()) {
             String fileName = extractFileName(imageUrl);
             s3Uploader.deleteImage(fileName);
             log.info("success: deleteImage 수행");
