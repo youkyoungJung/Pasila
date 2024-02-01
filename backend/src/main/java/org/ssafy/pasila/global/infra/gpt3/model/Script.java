@@ -1,10 +1,8 @@
 package org.ssafy.pasila.global.infra.gpt3.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Script {
@@ -12,4 +10,9 @@ public class Script {
     private Double start;
     private Double end;
     private String text;
+
+    @Override
+    public String toString() {
+        return "[id: " + id + ", start: " + start + ", end: " + end + ", text: " + text + "]";
+    }
 }

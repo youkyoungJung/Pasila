@@ -94,3 +94,6 @@ coolsms:
   apiKey: ${COOLSMS_APIKEY}
   apiSecret: ${COOLSMS_APISECRET}
   fromNumber: ${COOLSMS_FROMNUMBER}
+
+ffmpeg:
+  url: ${FFMPEG_URL}

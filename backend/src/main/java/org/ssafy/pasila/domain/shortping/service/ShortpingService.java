@@ -5,21 +5,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.ssafy.pasila.domain.apihandler.ErrorCode;
+import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
 import org.ssafy.pasila.domain.shortping.dto.request.LivelogRequest;
 import org.ssafy.pasila.domain.shortping.dto.request.ShortpingRequest;
+import org.ssafy.pasila.domain.shortping.dto.response.RecommendLivelogResponseDto;
 import org.ssafy.pasila.domain.shortping.entity.Livelog;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
 import org.ssafy.pasila.domain.shortping.repository.LivelogRepository;
 import org.ssafy.pasila.domain.shortping.repository.ShortpingRepository;
+import org.ssafy.pasila.global.infra.FFmpeg.FFmpegClient;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.gpt3.model.Script;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +42,8 @@ public class ShortpingService {
     private final LivelogRepository livelogRepository;
 
     private final GptClient gptService;
+
+    private final FFmpegClient ffmpegClient;
 
     @Transactional
     public Shortping saveShortping(ShortpingRequest shortpingRequest) {
@@ -64,20 +70,30 @@ public class ShortpingService {
 
 
     // 하이라이트 추천
-    public String getHighlightList(MultipartFile file) {
+    public List<RecommendLivelogResponseDto> getHighlightList(MultipartFile file) {
         try {
-            List<Script> segments = gptService.speechToText(file).getSegments();
+            byte[] audioFilebytes = ffmpegClient.convertAudio(file, "ABCEDF1234");
+            List<Script> segments = gptService.speechToText(audioFilebytes).getSegments();
 
             if(segments == null || segments.isEmpty()) {
-                return "No response";
+                throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
             }
 
-            return "success";
+            String result = "";
+            FileWriter fw = new FileWriter("c:/SSAFY/text/test.txt");
+            for (Script script: segments) {
+                fw.write(script.toString() + "\n");
+                result += script.toString();
+            }
+            fw.flush();
+            fw.close();
 
-        } catch(Exception e) {
-            log.info("{}", e.getMessage());
-            return "fail";
+            return gptService.getHighlight(result);
+        } catch (Exception e) {
+            log.error("{}", e.getMessage());
+            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+
     }
 
     private Product getProductById(String id) {

@@ -8,10 +8,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.shortping.dto.request.ShortpingRequest;
+import org.ssafy.pasila.domain.shortping.dto.response.RecommendLivelogResponseDto;
 import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponse;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
 import org.ssafy.pasila.domain.shortping.repository.ShortpingQueryRepository;
@@ -19,7 +22,8 @@ import org.ssafy.pasila.domain.shortping.repository.ShortpingRepository;
 import org.ssafy.pasila.domain.shortping.service.ShortpingService;
 import org.ssafy.pasila.global.infra.FFmpeg.FFmpegClient;
 
-import java.util.Optional;
+import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -55,21 +59,13 @@ public class ShortpingApiControlller {
     @GetMapping("/api/shortping/{id}")
     public ResponseEntity<?> shortpingDetail(@PathVariable String id) {
         ShortpingResponse shortpingResponse = shortpingQueryRepository.findWithProductMember(id);
-        return ResponseEntity.badRequest().body(shortpingResponse);
+        return ResponseEntity.ok().body(shortpingResponse);
     }
 
     @PostMapping("/api/shortping/highlight")
-    public ResponseEntity<?> getHighlight(@RequestPart(value = "video") MultipartFile video) {
-        try {
-            //String result = shortpingService.getHighlightList(video);
-
-            ffmpegClient.convertAudio(video);
-            return ResponseEntity.ok().body("success");
-        } catch (Exception e) {
-            log.info("{}", e.getMessage());
-            return ResponseEntity.ok().body("fail");
-        }
-
+    public ApiCommonResponse<?> getHighlight(@RequestPart(value = "video") MultipartFile video) {
+        List<RecommendLivelogResponseDto> result = shortpingService.getHighlightList(video);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
     }
 
 //    @PostMapping("/api/shortping/highlight")

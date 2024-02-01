@@ -93,3 +93,6 @@ coolsms:
   apiKey:
   apiSecret:
   fromNumber:
+
+ffmpeg:
+  url: http://localhost:3000

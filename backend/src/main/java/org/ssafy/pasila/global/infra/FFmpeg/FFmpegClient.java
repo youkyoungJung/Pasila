@@ -1,6 +1,7 @@
 package org.ssafy.pasila.global.infra.FFmpeg;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.ssafy.pasila.global.common.file.FilenameAwareInputStreamResource;
 import org.ssafy.pasila.global.infra.gpt3.model.TranscriptionResponse;
 
 import java.io.IOException;
@@ -30,13 +32,10 @@ public class FFmpegClient {
     @Value("${ffmpeg.url}")
     private String url;
 
-    public void convertAudio(MultipartFile file) throws RestClientException, IOException {
-        ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
-            @Override
-            public String getFilename() {
-                return file.getOriginalFilename();
-            }
-        };
+    public byte[] convertAudio(MultipartFile file, String videoId) throws RestClientException, IOException {
+        FilenameAwareInputStreamResource fileResource = new FilenameAwareInputStreamResource(
+                file.getInputStream(), file.getSize(), videoId
+        );
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -45,10 +44,8 @@ public class FFmpegClient {
         body.add("file", fileResource);
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        byte[] audioBytes = restTemplate.postForObject(url + "/convert/audio/to/mp3", requestEntity, byte[].class);
-        log.info("여기까지 오나요?");
-        log.info("{}", audioBytes);
+        return restTemplate.postForObject(url + "/convert/audio/to/mp3", requestEntity, byte[].class);
 
-        Files.write(Paths.get("test.mp3"), audioBytes);
+        // Files.write(Paths.get("src/main/resources/" + videoId + ".mp3"), audioBytes);
     }
 }
