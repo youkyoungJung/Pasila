@@ -8,10 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.*;
-import org.ssafy.pasila.domain.live.entity.ChatLog;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.ssafy.pasila.domain.live.dto.ChatLogDto;
 import org.ssafy.pasila.domain.live.service.ChattingService;
-import org.ssafy.pasila.domain.live.service.LiveService;
 
 @Slf4j
 @RestController
@@ -21,6 +22,7 @@ import org.ssafy.pasila.domain.live.service.LiveService;
 public class ChattingApiController {
 
     private final SimpMessagingTemplate template;
+
     private final ChattingService chattingService;
 
     @Operation(summary = "Send Chatting", description = "채팅을 구독자에게 보냅니다.")
@@ -28,12 +30,10 @@ public class ChattingApiController {
             @ApiResponse(responseCode = "200", description = "성공")
     })
     @MessageMapping("/chatting")
-    public void sendChat(@RequestBody ChatLog chatLog){
+    public void sendChat(@RequestBody ChatLogDto chatLog){
         chatLog.addCreatedAt();
         chattingService.saveChat(chatLog);
         template.convertAndSend("/id/" + chatLog.getLiveId(), chatLog);
     }
-
-
 
 }
