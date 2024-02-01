@@ -132,15 +132,13 @@ public class MemberService {
     }
 
     public Member login(String email, String password) {
-
         Optional<Member> findMember = memberRepository.findByEmail(email);
-        findMember.orElseThrow(()->new IllegalStateException("해당 이메일이 존재하지 않습니다."));
+        findMember.orElseThrow(()->new IllegalStateException("The email address does not exit."));
 
         if( findMember.get().getPassword().equals(password)){
-            throw new IllegalStateException("이메일과 비밀번호가 일치하지 않습니다.");
+            throw new IllegalStateException("Invalid email or password.");
         }
         return findMember.get();
-
     }
 
 }

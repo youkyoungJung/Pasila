@@ -33,7 +33,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    //유효한 이메일인지 확인하는 부분 추가
+    @Operation(summary = "Check Emmail", description = "중복 이메일 확인")
     @GetMapping("/email")
     public ResponseEntity<?> checkEmail(@RequestParam String email) {
 
@@ -45,6 +45,7 @@ public class MemberController {
 
     }
 
+    @Operation(summary = "Check Channel name", description = "채널명 중복 확인")
     @GetMapping("/channel")
     public ResponseEntity<?> checkChannel(@RequestParam String channel) {
         if (memberService.checkChannel(channel)) {
@@ -54,6 +55,7 @@ public class MemberController {
         }
     }
 
+    @Operation(summary = "Join member", description = "회원 가입")
     @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> join(@RequestPart(value = "member") Member member,
                                   @RequestPart(value = "profileFile", required = false) MultipartFile profileFile) {
