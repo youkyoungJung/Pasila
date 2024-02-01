@@ -71,7 +71,7 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-
+    @JsonIgnore
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
