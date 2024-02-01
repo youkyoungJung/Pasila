@@ -80,13 +80,9 @@ public class ShortpingService {
             }
 
             String result = "";
-            FileWriter fw = new FileWriter("c:/SSAFY/text/test.txt");
             for (Script script: segments) {
-                fw.write(script.toString() + "\n");
                 result += script.toString();
             }
-            fw.flush();
-            fw.close();
 
             return gptService.getHighlight(result);
         } catch (Exception e) {
