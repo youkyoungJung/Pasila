@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.ssafy.pasila.domain.apihandler.ErrorCode;
+import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.member.entity.Member;
-import org.ssafy.pasila.domain.product.dto.ProductRequest;
+import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
 import org.ssafy.pasila.domain.product.entity.*;
 import org.ssafy.pasila.domain.product.repository.CategoryRepository;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
@@ -23,83 +25,98 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+
     private final CategoryRepository categoryRepository;
+
     private final ProductOptionRepository productOptionRepository;
+
     private final MemberRepository memberRepository;
+
     private final S3Uploader s3Uploader;
 
     // 상품 저장 서비스
     @Transactional
-    public String saveProduct(ProductRequest productRequest, MultipartFile image) throws IOException {
-        Product savedProduct = saveProductInfo(productRequest);
-        saveProductOptions(savedProduct, productRequest.getProductOptions());
+    public String saveProduct(ProductRequestDto productRequestDto, MultipartFile image) throws IOException {
+
+        Product savedProduct = saveProductInfo(productRequestDto);
+        saveProductOptions(savedProduct, productRequestDto.getProductOptions());
         productRepository.save(savedProduct);
         handleImage(savedProduct, image);
         return savedProduct.getId();
-//        return savedProduct;
+
     }
 
     // 상품 수정 서비스
     @Transactional
-    public String updateProduct(String id, ProductRequest productRequest, MultipartFile newImageFile) throws IOException {
+    public String updateProduct(String id, ProductRequestDto productRequestDto, MultipartFile newImageFile) throws IOException {
+
         Product result = getProductById(id);
-        Category category = getCategoryById(productRequest.getCategory().getId());
-        updateProductOptions(productRequest.getProductOptions());
-        result.updateProduct(productRequest.getProduct(), category);
+        Category category = getCategoryById(productRequestDto.getCategory().getId());
+        updateProductOptions(productRequestDto.getProductOptions());
+        result.updateProduct(productRequestDto.getProduct(), category);
         handleNewImage(result, newImageFile);
-        log.info("반영 result : {}", result);
         return result.getId();
+
     }
 
     // 상품 삭제 서비스
     @Transactional
     public String deleteProduct(String id) {
+
         Product product = getProductById(id);
         deleteImageIfExists(product.getThumbnail());
         product.setActive(false);
         return product.getId();
+
     }
 
     //== 서비스에 필요한 관련 메서드 작성 ==//
     /**상품 정보를 카테고리와 함께 저장하는 메서드*/
-    private Product saveProductInfo(ProductRequest productRequest) {
-        Product savedProduct = productRequest.getProduct();
-        Category category = getCategoryById(productRequest.getCategory().getId());
-        Member seller = getMemberById(productRequest.getMember().getId());
+    private Product saveProductInfo(ProductRequestDto productRequestDto) {
+
+        Product savedProduct = productRequestDto.getProduct();
+        Category category = getCategoryById(productRequestDto.getCategory().getId());
+        Member seller = getMemberById(productRequestDto.getMember().getId());
         savedProduct.addProductWithCategoryWithMember(category, seller);
         return savedProduct;
+
     }
 
     /**
      * 상품을 찾는 메서드
      */
     private Product getProductById(String id) {
+
         return productRepository.findById(id)
-//                .orElseThrow();
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 상품이 없습니다."));
+                .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+
     }
 
     /** 멤버를 찾는 메서드*/
     private Member getMemberById(Long id){
+
         return memberRepository.findById(id)
-                .orElseThrow();
-//                .orElseThrow(()-> new IllegalArgumentException("해당 아이디에 대한 멤버정보가 없습니다."));
+                .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
+
     }
 
     /**카테고리 정보를 찾는 메서드*/
     private Category getCategoryById(Long categoryId) {
+
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 카테고리가 없습니다."));
+                .orElseThrow(() -> new RestApiException(ErrorCode.BAD_REQUEST));
+
     }
 
     /** 상품 옵션 정보를 저장하는 메서드*/
     private void saveProductOptions(Product savedProduct, List<ProductOption> productOptions) {
+
         productOptions.forEach(option -> {
             option.addProduct(savedProduct);
             productOptionRepository.save(option);
         });
-    }
 
+    }
 
     // 이미지 처리 메서드
     /**
@@ -107,24 +124,26 @@ public class ProductService {
      * 반환된 url을 바탕으로 productThumbnail에 저장
      * */
     private void handleImage(Product product, MultipartFile image) throws IOException {
+
         if (!image.isEmpty()) {
-            log.info("product:{}", product);
             String storedFileName = s3Uploader.upload(product.getId(), image, "images");
             product.addThumbnailUrl(storedFileName);
         }
-    }
 
+    }
 
     //상품 옵션을 수정하는 메서드
     /**
      * 상품 정보를 찾고, 수정된 내용 저장
      * */
     private void updateProductOptions(List<ProductOption> productOptions) {
+
         productOptions.forEach(option -> {
             ProductOption update = productOptionRepository.findById(option.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("option id 가 없습니다"));
+                    .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
             update.updateProductOption(option);
         });
+
     }
 
     /**
@@ -132,12 +151,13 @@ public class ProductService {
      * 이미지를 삭제하고 새로운 이미지를 등록시킴
      * */
     private void handleNewImage(Product product, MultipartFile newImageFile) throws IOException {
+
         String originImageUrl = product.getThumbnail();
-        log.info("originImageUrl: {}", originImageUrl);
         if (!newImageFile.isEmpty()) {
             deleteImageIfExists(originImageUrl);
             handleImage(product, newImageFile);
         }
+
     }
 
     // 이미지가 존재할 경우 삭제하는 경우
@@ -146,11 +166,12 @@ public class ProductService {
      * S3에서의 기존 사진이 삭제되어야함.
      * */
     private void deleteImageIfExists(String imageUrl) {
+
         if (imageUrl != null && !imageUrl.isEmpty()) {
             String fileName = extractFileName(imageUrl);
             s3Uploader.deleteImage(fileName);
-            log.info("success: deleteImage 수행");
         }
+
     }
 
     //imageFile 이름을 추출하는 메서드
@@ -160,7 +181,10 @@ public class ProductService {
      * substring 함수를 이용하여 url을 가공시켜 이미지파일명을 추출함.
      * */
     private String extractFileName(String imageUrl) {
+
         String splitStr = ".com/";
         return imageUrl.substring(imageUrl.lastIndexOf(splitStr) + splitStr.length());
+
     }
+
 }
