@@ -1,4 +1,4 @@
-package org.ssafy.pasila.domain.auth.controller;
+package org.ssafy.pasila.domain.auth.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
