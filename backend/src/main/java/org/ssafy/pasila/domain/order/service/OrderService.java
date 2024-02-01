@@ -8,11 +8,16 @@ import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
+import org.ssafy.pasila.domain.order.dto.OrderDto;
 import org.ssafy.pasila.domain.order.dto.OrderFormDto;
 import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.order.repository.OrderRepository;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
+
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -40,6 +45,17 @@ public class OrderService {
         return order.getId();
     }
 
+    public List<OrderDto> getOrderList(Long id){
+
+        Member member = memberRepository.findById(id)
+                .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
+
+        List<Order> orders = orderRepository.findAllByMemberId(member.getId());
+        log.info("orders:{}", orders.stream().toList());
+        return orders.stream()
+                .map(OrderDto::new)
+                .collect(toList());
+    }
 
 
 
