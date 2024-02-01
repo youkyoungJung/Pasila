@@ -55,16 +55,6 @@ const videos = ref([
     discountPrice: '20,000'
   }
 ])
-
-const isLive = ref(true)
-
-const goLive = () => {
-  if (!isLive.value) isLive.value = !isLive.value
-}
-
-const goShortping = () => {
-  if (isLive.value) isLive.value = !isLive.value
-}
 </script>
 
 <template>
@@ -75,7 +65,7 @@ const goShortping = () => {
         <span class="subtitle">원하는 상품을 찾아보세요!</span>
       </div>
       <div class="order-type">
-        <toggle-button></toggle-button>
+        <toggle-button />
         <div>
           <form action="#">
             <select name="orders" id="order" class="select-type">
@@ -87,7 +77,7 @@ const goShortping = () => {
       </div>
       <div class="video-container">
         <template v-for="(video, i) in videos" :key="i">
-          <video-card :video="video"></video-card>
+          <video-card :video="video" />
         </template>
       </div>
     </div>

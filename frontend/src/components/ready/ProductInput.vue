@@ -1,5 +1,4 @@
 <script setup>
-import editor from '@/components/editor/Editor.vue'
 import { ref } from 'vue'
 
 const product = ref({

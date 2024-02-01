@@ -89,7 +89,8 @@ const shortData = ref({
 
 const certi = ref('')
 
-const uploadImg = () => {
+const uploadImg = (e) => {
+  const file = e.target
   const reader = new FileReader()
   reader.onload = function (e) {
     user.value.profile = e.target.result
@@ -115,7 +116,7 @@ const modify = () => {
           <div v-if="user.profile != ''">
             <img :src="user.profile" id="profileImg" class="profile-img" />
           </div>
-          <div v-else="user.profile === ''">
+          <div v-else>
             <font-awesome-icon icon="fa-regular fa-user" class="profile-img" />
           </div>
         </div>
@@ -162,25 +163,23 @@ const modify = () => {
         <v-long-input :data="longData.bankAccount" @getData="(e) => (user.bankAccount = e)" />
       </section>
       <section class="gender">
-        <form>
-          <label for="gender" class="gender-title">성별</label>
-          <div class="radio" id="gender">
-            <label class="gender-option"
-              ><input type="radio" name="성별" value="남성" v-model="user.gender" />남성</label
-            >
-            <label class="gender-option"
-              ><input type="radio" name="성별" value="여성" v-model="user.gender" />여성</label
-            >
-            <label class="gender-option"
-              ><input
-                type="radio"
-                name="성별"
-                value="선택안함"
-                v-model="user.gender"
-              />선택안함</label
-            >
-          </div>
-        </form>
+        <label for="gender" class="gender-title">성별</label>
+        <div class="radio" id="gender">
+          <label class="gender-option"
+            ><input type="radio" name="성별" value="남성" v-model="user.gender" />남성</label
+          >
+          <label class="gender-option"
+            ><input type="radio" name="성별" value="여성" v-model="user.gender" />여성</label
+          >
+          <label class="gender-option"
+            ><input
+              type="radio"
+              name="성별"
+              value="선택안함"
+              v-model="user.gender"
+            />선택안함</label
+          >
+        </div>
       </section>
       <section class="userInfo">
         <label for="input" class="label">생년월일</label>

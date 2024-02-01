@@ -1,6 +1,6 @@
 <script setup>
-const emit = defineEmits(['getHour', 'getMinute', 'getAM'])
-const props = defineProps(['APM', 'hour', 'minute'])
+defineEmits(['getHour', 'getMinute', 'getAM'])
+defineProps(['APM', 'hour', 'minute'])
 </script>
 
 <template>

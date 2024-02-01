@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 
-const emit = defineEmits(['getDate', 'getHour', 'getMinute'])
+defineEmits(['getDate', 'getHour', 'getMinute'])
 
 const date = ref(new Date())
 </script>

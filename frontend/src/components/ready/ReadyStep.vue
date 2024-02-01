@@ -1,17 +1,8 @@
 <script setup>
 const props = defineProps({
-  data: {
-    type: String,
-    default: 'default type'
-  },
-  numbers: {
-    type: Number,
-    default: 'default type'
-  },
-  names: {
-    type: String,
-    default: 'default type'
-  }
+  data: String,
+  numbers: Number,
+  names: String
 })
 </script>
 

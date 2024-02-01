@@ -1,5 +1,5 @@
 <script setup>
-import steps from '@/components/ready/Steps.vue'
+import ReadySteps from '@/components/ready/ReadySteps.vue'
 import NextButton from '@/components/ready/NextButton.vue'
 import ChatbotInput from '@/components/ready/ChatbotInput.vue'
 import { ref } from 'vue'
@@ -25,7 +25,7 @@ const removeQuestion = (i) => {
 
 <template>
   <div class="container">
-    <steps :data="step" />
+    <ready-steps :data="step" />
     <div class="chatbot-body">
       <div class="faq">FAQ</div>
       <div v-for="(question, index) in questions" :key="index" class="chatbot-input">

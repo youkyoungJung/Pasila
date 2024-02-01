@@ -15,8 +15,6 @@ const inputData = ref({
     value: ''
   }
 })
-const props = defineProps(['data'])
-const emit = defineEmits(['getData'])
 
 const login = () => {
   router.push('/login')

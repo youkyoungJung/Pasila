@@ -69,7 +69,8 @@ const shortData = ref({
 })
 
 const certi = ref('')
-const uploadImg = () => {
+const uploadImg = (e) => {
+  const file = e.target
   const reader = new FileReader()
   reader.onload = function (e) {
     user.value.profile = e.target.result
@@ -95,7 +96,7 @@ const join = () => {
           <div v-if="user.profile != ''">
             <img :src="user.profile" id="profileImg" class="profile-img" />
           </div>
-          <div v-else="user.profile === ''">
+          <div v-else>
             <font-awesome-icon icon="fa-regular fa-user" class="profile-img" />
           </div>
         </div>

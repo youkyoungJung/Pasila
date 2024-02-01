@@ -1,8 +1,9 @@
 <script setup>
-import { RouterLink, useRouter } from 'vue-router'
+// import { RouterLink, useRouter } from 'vue-router'
+import router from '@/router'
 import VSearch from './VSearch.vue'
 
-const router = useRouter()
+// const router = useRouter()
 
 const goHome = () => {
   router.push('/')
@@ -15,18 +16,18 @@ const goHome = () => {
       <img src="@/assets/img/pasila-logo.png" alt="logo" @click="goHome()" class="logo" />
     </router-link>
     <div class="menu">
-      <v-search></v-search>
+      <v-search />
       <nav>
-        <router-link to="/">
+        <router-link to="/schedule">
           <span class="icon-color">
             <font-awesome-icon icon="fa-regular fa-calendar-check" size="2x" />
           </span>
         </router-link>
         <router-link to="/login">
-        <span class="icon-color">
-          <font-awesome-icon icon="fa-regular fa-user" size="2x" />
-        </span>
-      </router-link>
+          <span class="icon-color">
+            <font-awesome-icon icon="fa-regular fa-user" size="2x" />
+          </span>
+        </router-link>
       </nav>
     </div>
   </header>
