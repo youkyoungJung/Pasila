@@ -1,84 +1,78 @@
-<template>
-    <div class="container">
-        <div class="header">비밀번호 찾기</div>
-        <div class="content">
-            <section class="long-type">
-                    <div class="label">이메일</div>
-                    <input type="text" placeholder="이메일을 입력하세요" v-model="email" class="long-input">
-            </section>
-            <button @click="findPw" class="find-pw">이메일로 비밀번호 찾기</button>
-            <button @click="login" class="login">로그인으로 돌아가기</button>
-
-        </div>
-    </div>
-</template>
-
 <script setup>
-import router from '@/router';
-import { ref } from 'vue';
+import router from '@/router'
+import { ref } from 'vue'
+import VLongInput from '@/components/common/VLongInput.vue'
 
-const email = ref('');
+const inputData = ref({
+  email: {
+    title: '이메일',
+    type: 'text'
+  }
+})
+const props = defineProps(['data'])
+const emit = defineEmits(['getData'])
+
 const login = () => {
-    router.push("/login");
+  router.push('/login')
 }
 
 const findPw = () => {
-    //이메일 디비에 존재하면 진행하기 
-    router.push("/findpw/send");
-
+  //이메일 디비에 존재하면 진행하기
+  router.push('/findpw/send')
 }
 </script>
 
+<template>
+  <div class="find-container">
+    <div class="header">비밀번호 찾기</div>
+    <div class="content">
+      <section class="long-type">
+        <v-long-input :data="inputData.email" />
+      </section>
+      <button @click="findPw" class="find-pw">이메일로 비밀번호 찾기</button>
+      <button @click="login" class="login">로그인으로 돌아가기</button>
+    </div>
+  </div>
+</template>
+
 <style lang="scss" scoped>
-.container {
-    @include box(500px, 90%, white, 10px, 5px, 5px);
-    border: 2px solid whitesmoke;
-    @include flex-box($direction: column);
-    @include drop-shadow;
-    vertical-align: middle;
-    margin-left: auto;
-    margin-right: auto;
-    
-    .header {
-        margin-top: 20px;
-        @include font-factory($fs-3, bold);
+.find-container {
+  @include box(500px, 90%, white, 0.625rem, 1rem, 0.1rem);
+  @include font-factory(13px, bold);
+  @include flex-box($direction: column);
+  @include drop-shadow;
+  border: 2px solid #d9d9d9;
+  margin-left: auto;
+  margin-right: auto;
+
+  .header {
+    margin: 2rem 0;
+    @include font-factory($fs-3, bold);
+  }
+  .content {
+    @include box(90%, 90%, none, 0, 0, 0);
+    @include flex-box($direction: column, $justify: center);
+    @include font-factory(13px, bold);
+    margin-bottom: 2rem;
+
+    .long-type {
+      @include box(95%, 10%, null, 0, 0, 0);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
     }
-    .content {
-        @include box(90%, 90%, none, 0, 10px, 10px);
-        @include flex-box($direction: column, $justify: center);
-        @include font-factory(13px, bold);
-        
-        .long-type {
-            @include box(90%, 10%, null, 0, 2px, 5px);
-
-            .label {
-                text-align: flex-start;
-            }
-
-            .long-input {
-                @include box(95%, 50%, whitesmoke, 0, null, 10px);
-                border: none;
-                margin-top: 5px;
-            }
-            
-        }
-        .find-pw {
-            @include box(90%, 43px, $main, 0, 2px, 5px);
-            margin-top: 30px;
-            border: none;
-            color: white;
-            cursor: pointer;
-            }
-
-        }
-        .login {
-            @include box(90%, 43px, white, 0, 2px, 5px);
-            margin-top: 10px;
-            border: 1px solid $dark;
-            cursor: pointer;
-        }
-
+    .find-pw {
+      @include box(85%, 2.5rem, $main, 0, 0.5rem, 0);
+      border: 1px solid $main;
+      color: white;
+      cursor: pointer;
     }
-
-
+    .login {
+      @include box(85%, 2.5rem, white, 0, 0.5rem, 0);
+      cursor: pointer;
+      border: 1px solid $dark;
+    }
+  }
+}
 </style>
