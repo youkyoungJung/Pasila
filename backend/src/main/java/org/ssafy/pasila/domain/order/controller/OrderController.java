@@ -29,8 +29,8 @@ public class OrderController {
     }
 
     @Operation(summary = "Get Order List", description = "[구매자]주문 내역을 조회")
-    @GetMapping("/{id}")
-    public ApiCommonResponse<?> getOrderList(@PathVariable Long id) {
+    @GetMapping //주문자 id
+    public ApiCommonResponse<?> getOrderList(@RequestParam Long id) {
 
         List<OrderDto> orderList = orderService.getOrderList(id);
 
@@ -38,5 +38,14 @@ public class OrderController {
 
     }
 
+    @Operation(summary = "Get Order List", description = "[구매자]주문 내역을 상세 조회")
+    @GetMapping("{id}/detail")
+    public ApiCommonResponse<?> getOrderDetail(@PathVariable Long id) {
+
+        OrderDto order = orderService.getOrderDetail(id);
+
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), order);
+
+    }
 
 }

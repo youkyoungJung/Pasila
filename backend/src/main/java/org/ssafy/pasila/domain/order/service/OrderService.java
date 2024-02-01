@@ -57,8 +57,12 @@ public class OrderService {
                 .collect(toList());
     }
 
-
-
-
+    /**
+     * id : OrderId
+     * */
+    public OrderDto getOrderDetail(Long id){
+        return orderRepository.findOrderDtoById(id)
+                .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+    }
 
 }
