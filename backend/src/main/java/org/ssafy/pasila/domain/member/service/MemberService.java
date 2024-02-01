@@ -7,8 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
-import org.ssafy.pasila.domain.member.dto.ChannelDTO;
-import org.ssafy.pasila.domain.member.dto.PersonalInfoDTO;
+import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
 import org.ssafy.pasila.domain.member.dto.request.PersonalInfoRequest;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
@@ -28,7 +27,7 @@ public class MemberService {
     /** 사용자 정보 수정 메서드 */
     @Transactional
     //TODO 비밀번호 암호화, 계좌번호 암호화
-    public Long updateMember(Long id, PersonalInfoDTO request, MultipartFile newImageFile) throws IOException {
+    public Long updateMember(Long id, PersonalInfoDto request, MultipartFile newImageFile) throws IOException {
         Member result = getMemberById(id);
         /* 비밀번호 암호화 */
 //        request.setPassword(암호화 메서드);
