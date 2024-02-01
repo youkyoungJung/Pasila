@@ -14,6 +14,7 @@ const ph = ref(props.data.title + ' 입력하세요.')
       :type="props.data.type"
       :placeholder="ph"
       @input="$emit('getData', $event.target.value)"
+      :value="props.data.value"
     />
   </div>
 </template>
@@ -39,6 +40,11 @@ const ph = ref(props.data.title + ' 입력하세요.')
     margin-top: 0.2rem;
     padding-left: 0.5rem;
     outline: none;
+  }
+  ::-webkit-outer-spin-button,
+  ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 }
 </style>
