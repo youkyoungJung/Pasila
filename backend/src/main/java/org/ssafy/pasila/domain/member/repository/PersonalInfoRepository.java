@@ -19,4 +19,5 @@ public class PersonalInfoRepository {
                 "WHERE m.id = :memberId", PersonalInfoDto.class)
                 .setParameter("memberId", id).getSingleResult();
     }
+
 }

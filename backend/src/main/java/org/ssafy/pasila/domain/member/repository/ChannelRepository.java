@@ -17,4 +17,5 @@ public class ChannelRepository {
                 "FROM Member m " +
                 "WHERE m.id = :memberId", ChannelDto.class).setParameter("memberId", id).getSingleResult();
     }
+
 }
