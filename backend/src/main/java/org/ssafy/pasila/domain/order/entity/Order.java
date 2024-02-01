@@ -82,4 +82,8 @@ public class Order {
         this.productOption.addStock(this.orderCnt);
     }
 
+    public void changeStatus(Status status){
+        this.status = status;
+    }
+
 }

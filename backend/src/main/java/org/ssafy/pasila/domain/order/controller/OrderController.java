@@ -8,8 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.order.dto.OrderDto;
 import org.ssafy.pasila.domain.order.dto.OrderFormDto;
+import org.ssafy.pasila.domain.order.entity.Status;
 import org.ssafy.pasila.domain.order.service.OrderService;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,6 +62,29 @@ public class OrderController {
 
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), cancelId);
 
+    }
+
+    @Operation(summary = "changeStatus", description = "[판매자] 주문 상태 변경")
+    @PutMapping("{id}/status")
+    public ApiCommonResponse<?> changeStatus(@PathVariable Long id, @RequestBody String status) {
+
+        Long orderId = orderService.changeStatus(id, status);
+
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), orderId);
+
+    }
+
+    @Operation(summary = "getStatusValues", description = "주문 상태 전체 보여주기")
+    @GetMapping("/statusValues")
+    public ApiCommonResponse<List<Map<String, String>>> getStatusValues() {
+        List< Map<String, String>> list = new ArrayList<>();
+        for (Status status : Status.values()) {
+            Map<String, String> statusMap = new HashMap<>();
+            statusMap.put("key", status.name());
+            statusMap.put("desc", status.getDescription());
+            list.add(statusMap);
+        }
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), list);
     }
 
 }

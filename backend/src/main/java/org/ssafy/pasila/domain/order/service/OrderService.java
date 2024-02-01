@@ -11,6 +11,7 @@ import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.domain.order.dto.OrderDto;
 import org.ssafy.pasila.domain.order.dto.OrderFormDto;
 import org.ssafy.pasila.domain.order.entity.Order;
+import org.ssafy.pasila.domain.order.entity.Status;
 import org.ssafy.pasila.domain.order.repository.OrderRepository;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
@@ -51,7 +52,6 @@ public class OrderService {
                 .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
 
         List<Order> orders = orderRepository.findAllByMemberId(member.getId());
-        log.info("orders:{}", orders.stream().toList());
         return orders.stream()
                 .map(OrderDto::new)
                 .collect(toList());
@@ -70,6 +70,15 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
         order.cancel();
+        return order.getId();
+    }
+
+    @Transactional
+    public Long changeStatus(Long id, String status){
+        Order order = orderRepository.findById(id)
+                .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        order.changeStatus(Enum.valueOf(Status.class, status));
         return order.getId();
     }
 
