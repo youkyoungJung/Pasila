@@ -30,6 +30,7 @@ import org.ssafy.pasila.global.infra.gpt3.GptClient;
 public class LiveApiController {
 
     private final GptClient gptService;
+
     private final LiveService liveService;
 
     @Operation(summary = "Create Qsheet", description = "큐시트를 생성합니다.")
