@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
-import org.ssafy.pasila.domain.member.dto.request.PersonalInfoRequest;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
@@ -21,7 +20,9 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
+
     private final MemberRepository memberRepository;
+
     private final S3Uploader s3Uploader;
 
     /** 사용자 정보 수정 메서드 */
@@ -110,7 +111,6 @@ public class MemberService {
             return true; // 생성가능
         }
     }
-
 
     public boolean checkChannel(String channel) {
         Optional<Member> member = Optional.ofNullable(memberRepository.findByChannel(channel));
