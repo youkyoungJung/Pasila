@@ -30,6 +30,7 @@ public class Live {
 
     @PrePersist
     public void createUniqId() {
+
         Sqids sqids = Sqids.builder()
                 .minLength(8)
                 .build();
@@ -38,6 +39,7 @@ public class Live {
         String newId = sqids.encode(Arrays.asList(timestampAsLong, 1L));
 
         this.id = newId;
+
     }
 
     @Column(length = 30)
@@ -53,11 +55,10 @@ public class Live {
     private LocalDateTime liveOffAt;
 
     @Lob
-    private String script; // 필요하지 않으면 굳이 읽지 않는 것이 좋음
+    private String script;
 
     @Column(name = "full_video_url", length = 2083)
     private String fullVideoUrl;
-
 
     @Column(name = "like_cnt")
     private Integer likeCnt;

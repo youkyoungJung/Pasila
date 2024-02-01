@@ -11,8 +11,10 @@ public class LiveQueryRepository {
     private final EntityManager em;
 
     public Live findByProductId(String id) {
+
         return em.createQuery("select l from Live l" +
                 " join fetch l.product p", Live.class)
                 .getSingleResult();
+
     }
 }

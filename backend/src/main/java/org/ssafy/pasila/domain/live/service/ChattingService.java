@@ -9,20 +9,21 @@ import org.ssafy.pasila.domain.live.dto.ChatLogDto;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ChattingService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
     public void saveChat(ChatLogDto chatLog) {
+
         ValueOperations<String , String> valueOperations = redisTemplate.opsForValue();
         valueOperations.append("chatlog : " + chatLog.getLiveId() ,
                 " " + chatLog.getMemberId() +
                 " " + chatLog.getMessage() +
                 " " + chatLog.getCreatedAt());
+
     }
 
-    public void delChat(String LiveId){
+    public void deleteChat(String LiveId){
         redisTemplate.delete("chatlog : " + LiveId);
     }
 
