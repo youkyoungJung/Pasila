@@ -23,8 +23,10 @@ public class ChattingService {
 
     }
 
-    public void deleteChat(String LiveId){
+    public void deleteChat(String LiveId) {
+
         redisTemplate.delete("chatlog : " + LiveId);
+
     }
 
 }

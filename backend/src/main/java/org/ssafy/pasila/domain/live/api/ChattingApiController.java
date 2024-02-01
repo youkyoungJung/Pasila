@@ -34,7 +34,7 @@ public class ChattingApiController {
     @MessageMapping("/chatting")
     public void sendChat(@RequestBody ChatLogDto chatLog){
 
-        chatLog.addCreatedAt();
+        chatLog.setCreatedAt();
         chattingService.saveChat(chatLog);
         template.convertAndSend("/id/" + chatLog.getLiveId(), chatLog);
 
