@@ -5,6 +5,7 @@ import JoinView from '@/views/JoinView.vue'
 import FindPwView from '@/views/FindPwView.vue'
 import FindPwSendView from '@/views/FindPwSendView.vue'
 import LiveView from '@/views/LiveView.vue'
+import OpenviduView from '@/views/OpenviduView.vue'
 import ScheduleView from '@/views/ScheduleView.vue'
 import ChannelView from '@/views/ChannelView.vue'
 import ChannelOrders from '@/views/ChannelOrders.vue'
@@ -45,6 +46,11 @@ const router = createRouter({
       path: '/live/:id',
       name: 'live',
       component: LiveView
+    },
+    {
+      path: '/openvidu',
+      name: 'openvidu',
+      component: OpenviduView
     },
     {
       path: '/schedule',
