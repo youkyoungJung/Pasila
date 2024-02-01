@@ -17,10 +17,12 @@ import org.ssafy.pasila.domain.live.service.LiveService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/live")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @Tag(name = "Chatting", description = "Chatting API")
 public class ChattingApiController {
 
     private final SimpMessagingTemplate template;
+
     private final ChattingService chattingService;
 
     @Operation(summary = "Send Chatting", description = "채팅을 구독자에게 보냅니다.")
@@ -28,12 +30,10 @@ public class ChattingApiController {
             @ApiResponse(responseCode = "200", description = "성공")
     })
     @MessageMapping("/chatting")
-    public void sendChat(@RequestBody ChatLog chatLog){
+    public void sendChat(@RequestBody ChatLog chatLog) {
         chatLog.addCreatedAt();
         chattingService.saveChat(chatLog);
         template.convertAndSend("/id/" + chatLog.getLiveId(), chatLog);
     }
-
-
 
 }
