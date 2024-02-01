@@ -1,5 +1,6 @@
 package org.ssafy.pasila.domain.product.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
@@ -9,7 +10,6 @@ import org.ssafy.pasila.domain.apihandler.NotEnoughStockException;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 @Entity
 @Table(name = "product_option")
 @ToString(exclude = "product")
@@ -29,6 +29,7 @@ public class ProductOption {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
+    @JsonIgnore
     private Product product;
 
     //== 연관메서드==//

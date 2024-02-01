@@ -1,8 +1,11 @@
 package org.ssafy.pasila.domain.order.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.ssafy.pasila.domain.apihandler.ErrorCode;
+import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.order.dto.OrderFormDto;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
@@ -29,7 +32,6 @@ public class Order {
     @Column(length = 50)
     private String address;
 
-
     private Integer price;
 
     @CreationTimestamp
@@ -43,12 +45,14 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private Status status; // 상태 [CANCLE, ORDER, DEPOSIT, READY, START, COMP]
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
+    @JsonIgnore
     private Member member;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_option_id")
+    @JsonIgnore
     private ProductOption productOption;
 
     //== 생성 메서드 ==//
@@ -69,6 +73,13 @@ public class Order {
 
     }
 
-
+    //== 주문 취소 ==//
+    public void cancel(){
+        if(this.status != Status.ORDER){
+            throw new RestApiException(ErrorCode.NOT_CANCELLATION);
+        }
+        this.status = Status.CANCEL;
+        this.productOption.addStock(this.orderCnt);
+    }
 
 }

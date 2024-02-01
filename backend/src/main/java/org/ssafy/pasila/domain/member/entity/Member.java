@@ -6,6 +6,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.member.dto.ChannelDTO;
+import org.ssafy.pasila.domain.member.dto.PersonalInfoDTO;
 import org.ssafy.pasila.domain.member.dto.request.PersonalInfoRequest;
 import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.product.entity.Product;
@@ -20,9 +22,8 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
 @Builder
-
 @Entity
 @Table(name = "member")
 @ToString(exclude = {"orders", "liveList", "products"})
@@ -107,18 +108,23 @@ public class Member {
     /**
      * 마이페이지 - member 수정
      */
-    public void updateMember(PersonalInfoRequest personalInfoRequest) {
-        this.name = personalInfoRequest.getName();
-        this.channel = personalInfoRequest.getChannel();
-        this.password = personalInfoRequest.getPassword();
-        this.phone = personalInfoRequest.getPhone();
-        this.address = personalInfoRequest.getAddress();
-        this.addressDetail = personalInfoRequest.getAddressDetail();
-        this.gender = personalInfoRequest.getGender();
-        this.birth = personalInfoRequest.getBirth();
-        this.bank = personalInfoRequest.getBank();
-        this.account = personalInfoRequest.getAccount();
-        this.profile = personalInfoRequest.getProfile();
+    public void updateMember(PersonalInfoDTO request) {
+        this.name = request.getName();
+        this.channel = request.getChannel();
+        this.password = request.getPassword();
+        this.phone = request.getPhone();
+        this.address = request.getAddress();
+        this.addressDetail = request.getAddressDetail();
+        this.gender = request.getGender();
+        this.birth = request.getBirth();
+        this.bank = request.getBank();
+        this.account = request.getAccount();
+        this.profile = request.getProfile();
+    }
+
+    // 채널 설명 수정
+    public void updateChannel(String description) {
+        this.description = description;
     }
 
 }
