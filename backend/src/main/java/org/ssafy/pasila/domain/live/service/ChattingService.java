@@ -17,11 +17,16 @@ public class ChattingService {
     public void saveChat(ChatLog chatLog) {
 
         ValueOperations<String , String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.append(chatLog.getLiveId() ,
+        valueOperations.append("chatlog : " + chatLog.getLiveId() ,
                 " " + chatLog.getMemberId() +
                 " " + chatLog.getMessage() +
                 " " + chatLog.getCreatedAt());
     }
+
+    public void delChat(String LiveId){
+        redisTemplate.delete("chatlog : " + LiveId);
+    }
+
 }
 
 
