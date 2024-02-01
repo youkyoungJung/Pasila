@@ -4,7 +4,28 @@ import { ref, onMounted } from 'vue'
 const vi = ref(null)
 const currentTime = ref(0)
 
-onMounted(() => {})
+const props = defineProps(['data'])
+
+const times = ref([])
+
+onMounted(() => {
+  for (let i = 0; i < props.data.length; i++) {
+    let start = 0
+    let startTimeArr = props.data[i].highlightStartTime.split(':')
+    if (startTimeArr[0] != '00') start += (startTimeArr[0] - '0') * 3600
+    if (startTimeArr[1] != '00') start += (startTimeArr[1] - '0') * 60
+    start += startTimeArr[2] - '0'
+    let end = 0
+    let endTimeArr = props.data[i].highlightEndTime.split(':')
+    if (endTimeArr[0] != '00') end += (endTimeArr[0] - '0') * 3600
+    if (endTimeArr[1] != '00') end += (endTimeArr[1] - '0') * 60
+    end += endTimeArr[2] - '0'
+    for (let j = start; j <= end; j++) {
+      times.value.push(j)
+    }
+  }
+  console.log(times.value)
+})
 
 //샘플 비디오와 샘플 이미지들
 const videos = ref([
@@ -94,6 +115,7 @@ const ControlMove = (e) => {
           :key="idx"
           @click="() => (vi.currentTime = idx)"
           :class="currentTime >= idx && currentTime < idx + 1 ? 'selectImg' : ''"
+          :style="[times.includes(idx) ? 'background-color: #ffd5d9' : '']"
         >
           <div class="thumbnail" :style="{ 'background-image': `url(${video.src})` }"></div>
           <div class="seconds">

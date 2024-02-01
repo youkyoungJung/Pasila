@@ -3,46 +3,18 @@ import { ref } from 'vue'
 import NewHighlight from '@/components/shortping/NewHighlight.vue'
 import Highlight from '@/components/shortping/Highlight.vue'
 
-const highlights = ref([
-  {
-    isEnroll: true,
-    highlightTitle: '첫 인사',
-    highlightStartTime: '00:00:02',
-    highlightEndTime: '00:00:05',
-    highlightSubtitle: '안녕하세요! 오늘은 신상 니트를 소개해 드릴게요.'
-  },
-  {
-    isEnroll: true,
-    highlightTitle: '앙고라 니트 - 핑크 컬러',
-    highlightStartTime: '00:01:05',
-    highlightEndTime: '00:01:25',
-    highlightSubtitle: '뽀용한 색감의 핑크컬러! 청바지에 찰떡'
-  },
-  {
-    isEnroll: true,
-    highlightTitle: '앙고라 니트 - 블랙 컬러',
-    highlightStartTime: '00:01:35',
-    highlightEndTime: '00:01:58',
-    highlightSubtitle: '어디에나 입기 좋은 블랙 컬러! 하나쯤 가지고 있으면 활용성 갑'
-  },
-  {
-    isEnroll: true,
-    highlightTitle: '할인 정보',
-    highlightStartTime: '00:13:02',
-    highlightEndTime: '00:13:25',
-    highlightSubtitle: '오늘 단 하루 15% 할인! 놓치지 마세요!'
-  },
-  {
+const props = defineProps(['data'])
+const emit = defineEmits(['getData', 'deleteData'])
+
+const addHighlight = () => {
+  //하이라이트추가
+  props.data.push({
     isEnroll: false,
     highlightTitle: '',
     highlightStartTime: '',
     highlightEndTime: '',
     highlightSubtitle: ''
-  }
-])
-
-const addHighlight = () => {
-  //하이라이트추가
+  })
 }
 </script>
 
@@ -53,12 +25,12 @@ const addHighlight = () => {
       <button @click="addHighlight">추가</button>
     </div>
     <div class="highlight-body">
-      <div v-for="(highlight, index) in highlights" key="index" class="highlights">
+      <div v-for="(highlight, index) in props.data" key="index" class="highlights">
         <div v-if="highlight.isEnroll">
-          <Highlight :data="highlight" />
+          <Highlight :data="highlight" @deleteData="$emit('deleteData', index)" />
         </div>
         <div v-else>
-          <new-highlight />
+          <new-highlight :data="highlight" @getData="$emit('getData', $event)" />
         </div>
       </div>
     </div>

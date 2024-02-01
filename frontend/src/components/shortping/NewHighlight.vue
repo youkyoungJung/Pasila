@@ -1,6 +1,25 @@
 <script setup>
+import { ref } from 'vue'
+const emit = defineEmits(['getData'])
+
+const newHigh = ref({
+  isEnroll: false,
+  highlightTitle: '',
+  highlightStartTime: '',
+  highlightEndTime: '',
+  highlightSubtitle: ''
+})
 const newHighlight = () => {
   //하이라이트 추가하기
+  newHigh.value.isEnroll = true
+  emit('getData', newHigh.value)
+}
+const resetHigh = () => {
+  newHigh.value.isEnroll = false
+  newHigh.value.highlightTitle = ''
+  newHigh.value.highlightStartTime = ''
+  newHigh.value.highlightEndTime = ''
+  newHigh.value.highlightSubtitle = ''
 }
 </script>
 
@@ -8,18 +27,28 @@ const newHighlight = () => {
   <div class="highlight">
     <div class="highlight-top">
       <div class="highlight-time">
-        <input type="number" />~
-        <input type="number" />
+        <input type="number" v-model="newHigh.highlightStartTime" />~
+        <input type="number" v-model="newHigh.highlightEndTime" />
       </div>
       <button @click="newHighlight" class="delete-btn">등록</button>
     </div>
     <div class="highlight-title">
       <label for="title">제목</label>
-      <input id="title" type="text" placeholder="제목을 입력해주세요." />
+      <input
+        id="title"
+        type="text"
+        placeholder="제목을 입력해주세요."
+        v-model="newHigh.highlightTitle"
+      />
     </div>
     <div class="highlight-subtitle">
       <label for="subtitle">자막</label>
-      <textarea id="subtitle" type="text" placeholder="자막을 입력해주세요."></textarea>
+      <textarea
+        id="subtitle"
+        type="text"
+        placeholder="자막을 입력해주세요."
+        v-model="newHigh.highlightSubtitle"
+      ></textarea>
     </div>
   </div>
 </template>
@@ -47,6 +76,13 @@ const newHighlight = () => {
         background-color: transparent;
         outline: none;
         font-weight: bold;
+        text-align: center;
+      }
+
+      ::-webkit-outer-spin-button,
+      ::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
       }
     }
     .delete-btn {

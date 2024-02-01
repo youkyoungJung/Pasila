@@ -1,10 +1,12 @@
 <script setup>
 import { ref } from 'vue'
 
-const props = defineProps({ data: Object })
+const props = defineProps(['data'])
+const emit = defineEmits(['deleteData'])
 
 const deleteHighlight = () => {
   //하이라이트 삭제하기
+  emit('deleteData', props.data)
 }
 </script>
 

@@ -7,7 +7,29 @@ import ShortpingHighlight from '@/components/shortping/ShortpingHighlight.vue'
 const shortping = ref({
   title: ''
 })
-
+const highlights = ref([
+  {
+    isEnroll: true,
+    highlightTitle: '첫 인사',
+    highlightStartTime: '00:00:01',
+    highlightEndTime: '00:00:02',
+    highlightSubtitle: '안녕하세요! 오늘은 신상 니트를 소개해 드릴게요.'
+  },
+  {
+    isEnroll: true,
+    highlightTitle: '앙고라 니트 - 핑크 컬러',
+    highlightStartTime: '00:00:04',
+    highlightEndTime: '00:00:05',
+    highlightSubtitle: '뽀용한 색감의 핑크컬러! 청바지에 찰떡'
+  },
+  {
+    isEnroll: true,
+    highlightTitle: '앙고라 니트 - 블랙 컬러',
+    highlightStartTime: '00:00:07',
+    highlightEndTime: '00:00:08',
+    highlightSubtitle: '어디에나 입기 좋은 블랙 컬러! 하나쯤 가지고 있으면 활용성 갑'
+  }
+])
 const complete = () => {
   //제작 완료버튼
 }
@@ -29,10 +51,18 @@ const complete = () => {
           id="shortpingTitle"
           v-model="shortping.title"
         />
-        <shortping-video />
+        <shortping-video :data="highlights" />
       </div>
       <div class="show-highlight">
-        <shortping-highlight />
+        <shortping-highlight
+          :data="highlights"
+          @getData="
+            (e) => {
+              highlights.push(e)
+            }
+          "
+          @deleteData="(e) => highlights.splice(e, 1)"
+        />
         <button @click="complete" class="complete-btn">제작 완료</button>
       </div>
     </div>
