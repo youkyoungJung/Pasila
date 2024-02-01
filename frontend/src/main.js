@@ -18,6 +18,8 @@ import { quillEditor } from 'vue3-quill'
 import App from './App.vue'
 import router from './router'
 import VueDOMPurifyHTML from 'vue-dompurify-html'
+import { setupCalendar, Calendar, DatePicker } from 'v-calendar'
+import 'v-calendar/style.css'
 
 library.add(
   faMagnifyingGlass,
@@ -34,6 +36,8 @@ axios.defaults.baseURL = 'http://i10a402.p.ssafy.io:8080'
 app.config.globalProperties.$axios = axios
 
 app.component('font-awesome-icon', FontAwesomeIcon)
+app.component('VCalendar', Calendar)
+app.component('VDatePicker', DatePicker)
 
 app.use(VueDOMPurifyHTML)
 app.use(quillEditor)
