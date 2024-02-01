@@ -11,6 +11,7 @@ import org.ssafy.pasila.domain.order.dto.OrderFormDto;
 import org.ssafy.pasila.domain.order.entity.Status;
 import org.ssafy.pasila.domain.order.service.OrderService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,12 +76,15 @@ public class OrderController {
 
     @Operation(summary = "getStatusValues", description = "주문 상태 전체 보여주기")
     @GetMapping("/statusValues")
-    public ApiCommonResponse<Map<String, String>> getStatusValues() {
+    public ApiCommonResponse<List<Map<String, String>>> getStatusValues() {
         Map<String, String> statusMap = new HashMap<>();
+        List< Map<String, String>> list = new ArrayList<>();
         for (Status status : Status.values()) {
-            statusMap.put(status.name(), status.getDescription());
+            statusMap.put("key", status.name());
+            statusMap.put("desc", status.getDescription());
+            list.add(statusMap);
         }
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), statusMap);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), list);
     }
 
 }
