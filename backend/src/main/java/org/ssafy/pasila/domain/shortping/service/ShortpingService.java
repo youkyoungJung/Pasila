@@ -72,7 +72,7 @@ public class ShortpingService {
     // 하이라이트 추천
     public List<RecommendLivelogResponseDto> getHighlightList(MultipartFile file) {
         try {
-            byte[] audioFilebytes = ffmpegClient.convertAudio(file, "ABCEDF1234");
+            byte[] audioFilebytes = ffmpegClient.convertAudio(file);
             List<Script> segments = gptService.speechToText(audioFilebytes).getSegments();
 
             if(segments == null || segments.isEmpty()) {

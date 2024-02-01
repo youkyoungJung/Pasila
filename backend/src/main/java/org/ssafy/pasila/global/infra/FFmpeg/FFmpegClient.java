@@ -32,9 +32,9 @@ public class FFmpegClient {
     @Value("${ffmpeg.url}")
     private String url;
 
-    public byte[] convertAudio(MultipartFile file, String videoId) throws RestClientException, IOException {
+    public byte[] convertAudio(MultipartFile file) throws RestClientException, IOException {
         FilenameAwareInputStreamResource fileResource = new FilenameAwareInputStreamResource(
-                file.getInputStream(), file.getSize(), videoId
+                file.getInputStream(), file.getSize(), "test"
         );
 
         HttpHeaders headers = new HttpHeaders();
