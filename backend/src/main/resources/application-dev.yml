@@ -95,5 +95,11 @@ coolsms:
   apiSecret: ${COOLSMS_APISECRET}
   fromNumber: ${COOLSMS_FROMNUMBER}
 
+# redis
+redis:
+  host: ${REDIS_URL}
+  port: ${REDIS_PORT}
+
+# ffmpeg
 ffmpeg:
   url: ${FFMPEG_URL}

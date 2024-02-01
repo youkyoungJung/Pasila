@@ -10,11 +10,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
+import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequest;
 import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponse;
+import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 
 @Slf4j
@@ -27,6 +30,7 @@ import org.ssafy.pasila.global.infra.gpt3.GptClient;
 public class LiveApiController {
 
     private final GptClient gptService;
+    private final LiveService liveService;
 
     @Operation(summary = "Create Qsheet", description = "큐시트를 생성합니다.")
     @ApiResponses(value = {
@@ -86,4 +90,25 @@ public class LiveApiController {
                 "9. 마무리 / 마지막 안내\n" +
                 "- 이제 많은 분들이 기다리시는 할인된 가격으로 제주 서귀포 노지 하우스 타이벡 감귤 황금향 레드향 가정용 선물세트를 구매하실 수 있고, 이번 기회를 놓치지 마시고, 지금 바로 구매해보시게!");
     }
+
+    @Operation(summary = "Join Live", description = "라이브에 참여한 참여자를 추가합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공")
+    })
+    @GetMapping("/join")
+    public ApiCommonResponse<?> joinLive(@RequestParam String roomId , @RequestParam String memberId){
+        int participantNum = liveService.joinLive(roomId , memberId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), participantNum);
+    }
+
+    @Operation(summary = "Exit Live", description = "라이브에 참여한 참여자를 감소시킵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공")
+    })
+    @DeleteMapping("/exit")
+    public ApiCommonResponse<?> exitLive(@RequestParam String roomId , @RequestParam String memberId){
+        int participantNum = liveService.exitLive(roomId , memberId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), participantNum);
+    }
+
 }

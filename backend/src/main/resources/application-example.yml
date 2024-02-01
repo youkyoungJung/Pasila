@@ -1,4 +1,3 @@
-<<<<<<< backend/src/main/resources/application-example.yml
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/pasila?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -94,5 +93,11 @@ coolsms:
   apiSecret:
   fromNumber:
 
+# redis
+redis:
+  host: localhost
+  port: 6379
+
+#ffmpeg
 ffmpeg:
   url: http://localhost:3000
