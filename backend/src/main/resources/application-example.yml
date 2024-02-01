@@ -93,3 +93,8 @@ coolsms:
   apiKey:
   apiSecret:
   fromNumber:
+
+# redis
+redis:
+  host: localhost
+  port: 6379
