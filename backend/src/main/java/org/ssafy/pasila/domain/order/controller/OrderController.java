@@ -1,6 +1,5 @@
 package org.ssafy.pasila.domain.order.controller;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,7 +9,6 @@ import org.ssafy.pasila.domain.order.dto.OrderDto;
 import org.ssafy.pasila.domain.order.dto.OrderFormDto;
 import org.ssafy.pasila.domain.order.entity.Status;
 import org.ssafy.pasila.domain.order.service.OrderService;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +26,6 @@ public class OrderController {
     public ApiCommonResponse<?> createOrder(@RequestBody OrderFormDto orderFormDto) {
 
         Long orderId = orderService.saveOrder(orderFormDto);
-
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), orderId);
 
     }
@@ -38,7 +35,6 @@ public class OrderController {
     public ApiCommonResponse<?> getOrderList(@RequestParam Long id) {
 
         List<OrderDto> orderList = orderService.getOrderList(id);
-
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), orderList);
 
     }
@@ -48,18 +44,15 @@ public class OrderController {
     public ApiCommonResponse<?> getOrderDetail(@PathVariable Long id) {
 
         OrderDto order = orderService.getOrderDetail(id);
-
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), order);
 
     }
 
-    //주문 취소
     @Operation(summary = "cancelOrder", description = "[구매자] 주문 취소 버튼 클릭 시")
     @PutMapping("{id}/cancel")
     public ApiCommonResponse<?> cancelOrder(@PathVariable Long id) {
 
         Long cancelId = orderService.cancelOrder(id);
-
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), cancelId);
 
     }
@@ -69,7 +62,6 @@ public class OrderController {
     public ApiCommonResponse<?> changeStatus(@PathVariable Long id, @RequestBody String status) {
 
         Long orderId = orderService.changeStatus(id, status);
-
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), orderId);
 
     }
@@ -77,6 +69,7 @@ public class OrderController {
     @Operation(summary = "getStatusValues", description = "주문 상태 전체 보여주기")
     @GetMapping("/statusValues")
     public ApiCommonResponse<List<Map<String, String>>> getStatusValues() {
+
         List< Map<String, String>> list = new ArrayList<>();
         for (Status status : Status.values()) {
             Map<String, String> statusMap = new HashMap<>();
@@ -85,6 +78,7 @@ public class OrderController {
             list.add(statusMap);
         }
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), list);
+
     }
 
 }

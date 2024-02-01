@@ -1,11 +1,8 @@
 package org.ssafy.pasila.global.infra.FFmpeg;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,23 +13,20 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.global.common.file.FilenameAwareInputStreamResource;
-import org.ssafy.pasila.global.infra.gpt3.model.TranscriptionResponse;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
-@Slf4j
+@RequiredArgsConstructor
 @Component
 public class FFmpegClient {
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     @Value("${ffmpeg.url}")
     private String url;
 
     public byte[] convertAudio(MultipartFile file) throws RestClientException, IOException {
+
         FilenameAwareInputStreamResource fileResource = new FilenameAwareInputStreamResource(
                 file.getInputStream(), file.getSize(), "test"
         );
@@ -46,6 +40,5 @@ public class FFmpegClient {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
         return restTemplate.postForObject(url + "/convert/audio/to/mp3", requestEntity, byte[].class);
 
-        // Files.write(Paths.get("src/main/resources/" + videoId + ".mp3"), audioBytes);
     }
 }

@@ -2,9 +2,12 @@ package org.ssafy.pasila.domain.live.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
 public class CreateQsheetRequest {
+
     @Schema(description = "말투 스타일")
     private String style;
 
@@ -16,4 +19,5 @@ public class CreateQsheetRequest {
 
     @Schema(description = "제품설명")
     private String description;
+
 }

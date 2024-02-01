@@ -6,7 +6,7 @@ import lombok.*;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.NotEnoughStockException;
 
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -14,6 +14,7 @@ import org.ssafy.pasila.domain.apihandler.NotEnoughStockException;
 @Table(name = "product_option")
 @ToString(exclude = "product")
 public class ProductOption {
+
     @Id @GeneratedValue
     private Long id;
 
@@ -34,27 +35,36 @@ public class ProductOption {
 
     //== 연관메서드==//
     public void addProduct(Product product){
+
         this.product = product;
+
     }
 
     public void updateProductOption(ProductOption productOption){
+
         this.id = productOption.getId();
         this.name = productOption.getName();
         this.stock = productOption.getStock();
         this.price = productOption.getPrice();
         this.discountPrice = productOption.getDiscountPrice();
+
     }
 
     //== 재고 관련 메서드 ==//
     public void removeStock(int quantity){
+
         int restStock = this.stock - quantity;
         if (restStock < 0) {
             throw new NotEnoughStockException(ErrorCode.NOT_ENOUGH_STOCK);
         }
         this.stock = restStock;
+
     }
 
     public void addStock(int quantity){
+
         this.stock += quantity;
+
     }
+
 }

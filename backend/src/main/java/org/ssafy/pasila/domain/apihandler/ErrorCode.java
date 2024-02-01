@@ -17,10 +17,11 @@ public enum ErrorCode {
      * 400 BAD_REQUEST: 재고 부족
      * */
     NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "Not Enough Stock."),
+
     /*
      * 400 BAD_REQUEST: 취소 불가
      * */
-    NOT_CANCELLATION(HttpStatus.BAD_REQUEST, "취소 불가 상품입니다."),
+    NOT_CANCELLATION(HttpStatus.BAD_REQUEST, "Non-cancellable product."),
 
     /*
      * 401 UNAUTHORIZED: 인증되지 않은 사용자의 요청
@@ -51,9 +52,8 @@ public enum ErrorCode {
 
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "Resource not exists");
 
-//    MEMBER_NOT_FOND(Http)
-
-
     private final HttpStatus httpStatus;
+
     private final String message;
+
 }

@@ -6,13 +6,20 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Script {
+
     private Long id;
+
     private Double start;
+
     private Double end;
+
     private String text;
 
     @Override
     public String toString() {
+
         return "[id: " + id + ", start: " + start + ", end: " + end + ", text: " + text + "]";
+
     }
+
 }
