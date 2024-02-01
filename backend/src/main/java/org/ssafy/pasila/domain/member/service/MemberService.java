@@ -85,7 +85,7 @@ public class MemberService {
      * S3에서의 기존 사진이 삭제되어야함.
      * */
     private void deleteImageIfExists(String imageUrl) {
-        if (!imageUrl.isEmpty()) {
+        if (imageUrl != null && !imageUrl.isEmpty()) {
             String fileName = extractFileName(imageUrl);
             s3Uploader.deleteImage(fileName);
             log.info("success: deleteImage 수행");
