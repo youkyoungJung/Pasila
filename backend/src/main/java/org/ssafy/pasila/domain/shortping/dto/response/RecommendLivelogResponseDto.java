@@ -3,8 +3,6 @@ package org.ssafy.pasila.domain.shortping.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.time.LocalTime;
-
 @Data
 public class RecommendLivelogResponseDto {
     @Schema(description = "하이라이트 시작 시간")
@@ -15,4 +13,5 @@ public class RecommendLivelogResponseDto {
 
     @Schema(description = "하이라이트 제목")
     private String title;
+
 }

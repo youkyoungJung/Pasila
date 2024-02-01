@@ -47,25 +47,29 @@ public class ShortpingService {
 
     @Transactional
     public Shortping saveShortping(ShortpingRequest shortpingRequest) {
+
         Product product = getProductById(shortpingRequest.getProductId());
         Live live = liveQueryRepository.findByProductId(product.getId());
         List<Livelog> livelogs = saveLivelog(shortpingRequest.getLivelogs(), live);
 
-        // 영상 생성
+        // TODO: 영상 생성
 
 
         // 숏핑 생성
-        Shortping shortping = Shortping.createShortping(shortpingRequest.getTitle(), "아무경로", product);
+        Shortping shortping = Shortping.createShortping(shortpingRequest.getTitle(), "testurl", product);
         return shortpingRepository.save(shortping);
+
     }
 
     // 하이라이트 리스트 저장
     public List<Livelog> saveLivelog(List<LivelogRequest> livelogRequests, Live live) {
+
         List<Livelog> livelogs = livelogRequests.stream()
                 .map(livelogRequest -> livelogRequest.toEntity(live))
                 .collect(Collectors.toList());
         livelogRepository.saveAll(livelogs);
         return livelogs;
+
     }
 
 
