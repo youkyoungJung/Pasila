@@ -1,3 +1,4 @@
+///*
 //package org.ssafy.pasila;
 //
 //import jakarta.annotation.PostConstruct;
@@ -7,6 +8,7 @@
 //import org.springframework.transaction.annotation.Transactional;
 //import org.ssafy.pasila.domain.member.entity.Gender;
 //import org.ssafy.pasila.domain.member.entity.Member;
+//import org.ssafy.pasila.domain.product.entity.Category;
 //import org.ssafy.pasila.domain.product.entity.Product;
 //
 //@Component
@@ -31,7 +33,10 @@
 //            Member member = createMember("test@test.com", "test", "테스트채널", "01012345678");
 //            em.persist(member);
 //
-//            Product product = createProduct("띠용");
+//            Category category = createCategory("패션");
+//            em.persist(category);
+//
+//            Product product = createProduct("테스트제품", category);
 //            em.persist(product);
 //        }
 //
@@ -46,12 +51,23 @@
 //            return member;
 //        }
 //
-//        private Product createProduct(String name) {
+//        private Category createCategory(String name) {
+//            Category category = new Category().builder()
+//                    .id(1L)
+//                    .name(name)
+//                    .build();
+//            return category;
+//        }
+//
+//        private Product createProduct(String name, Category category) {
 //            Product product = new Product().builder()
 //                    .name(name)
+//                    .isActive(true)
+//                    .category(category)
 //                    .build();
 //            return product;
 //        }
 //
 //    }
 //}
+//*/

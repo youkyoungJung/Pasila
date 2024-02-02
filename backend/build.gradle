@@ -34,6 +34,13 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.sqids:sqids:0.1.0'
+
+	// https://mvnrepository.com/artifact/net.nurigo/sdk
+	implementation group: 'net.nurigo', name: 'sdk', version: '4.3.0'
+
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 tasks.named('test') {

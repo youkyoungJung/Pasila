@@ -1,32 +1,29 @@
 package org.ssafy.pasila.domain.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
 import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.product.entity.Product;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
 @Builder
-
 @Entity
 @Table(name = "member")
+@ToString(exclude = {"orders", "liveList", "products"})
 public class Member {
+
     @Id
     @GeneratedValue
     private Long id;
@@ -85,11 +82,44 @@ public class Member {
     private String token;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Live> liveList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Product> products = new ArrayList<>();
+
+    /**
+     * 프로필 이미지 저장/수정
+     */
+    public void addProfile(String url){
+        this.profile = url;
+    }
+
+    /**
+     * 마이페이지 - member 수정
+     */
+    public void updateMember(PersonalInfoDto request) {
+        this.name = request.getName();
+        this.channel = request.getChannel();
+        this.password = request.getPassword();
+        this.phone = request.getPhone();
+        this.address = request.getAddress();
+        this.addressDetail = request.getAddressDetail();
+        this.gender = request.getGender();
+        this.birth = request.getBirth();
+        this.bank = request.getBank();
+        this.account = request.getAccount();
+        this.profile = request.getProfile();
+    }
+
+    // 채널 설명 수정
+    public void updateChannel(String description) {
+        this.description = description;
+    }
+
 }
