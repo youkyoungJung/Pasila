@@ -14,7 +14,7 @@ public class ShortpingQueryRepository {
     public ShortpingResponseDto findWithProductMember(String id) {
 
         return em.createQuery(
-                "select new org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponse" +
+                "select new org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponseDto" +
                         "(s.id, s.title, s.videoUrl, s.likeCnt, s.createdAt, p.id, p.name, p.thumbnail, p.description, c.id, m.id, m.channel)" +
                         " from Shortping s" +
                         " join s.product p" +
