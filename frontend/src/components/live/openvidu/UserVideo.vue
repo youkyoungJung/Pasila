@@ -1,29 +1,13 @@
 <script setup>
 import OvVideo from '@/components/live/openvidu/OvVideo.vue'
-import { computed } from 'vue'
 
-const props = defineProps({
+defineProps({
   streamManager: Object
 })
-
-const clientData = computed(() => {
-  const { clientData } = getConnectionData()
-  return clientData
-})
-
-const getConnectionData = () => {
-  const { connection } = props.streamManager.stream
-  return JSON.parse(connection.data)
-}
 </script>
 
 <template>
-  <div v-if="streamManager">
-    <ov-video :stream-manager="streamManager" />
-    <div>
-      <p>{{ clientData }}</p>
-    </div>
-  </div>
+  <ov-video v-if="streamManager" :stream-manager="streamManager" />
 </template>
 
 <style lang="scss" scoped></style>

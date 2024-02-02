@@ -1,8 +1,13 @@
 <script setup>
+import { onMounted, ref } from 'vue'
 import axios from 'axios'
+import router from '@/router'
 import { OpenVidu } from 'openvidu-browser'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
-import { onMounted, ref } from 'vue'
+import LiveScript from '@/components/live/LiveScript.vue'
+import LiveStock from '@/components/live/LiveStock.vue'
+import LiveChat from '@/components/live/LiveChat.vue'
+import LiveQuestion from '@/components/live/LiveQuestion.vue'
 
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
@@ -47,7 +52,8 @@ const joinSession = () => {
 
   // On every asynchronous exception...
   session.value.on('exception', ({ exception }) => {
-    console.warn(exception)
+    alert('서버에 문제가 발생했습니다. 잠시후 다시 시도해주세요.')
+    router.push('/')
   })
 
   // --- 4) Connect to the session with a valid user token ---
@@ -68,7 +74,7 @@ const joinSession = () => {
           videoSource: undefined, // The source of video. If undefined default webcam
           publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
           publishVideo: true, // Whether you want to start publishing with your video enabled or not
-          resolution: '640x480', // The resolution of your video
+          // resolution: '640x480', // The resolution of your video
           frameRate: 30, // The frame rate of your video
           insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
           mirror: false // Whether to mirror your local video or not
@@ -151,29 +157,52 @@ const createToken = async (sessionId) => {
 </script>
 
 <template>
-  <div id="session" v-if="session">
-    <div id="session-header">
-      <h1 id="session-title">{{ mySessionId }}</h1>
-      <input
-        class="btn btn-large btn-danger"
-        type="button"
-        id="buttonLeaveSession"
-        @click="leaveSession"
-        value="Leave session"
-      />
-    </div>
-    <div id="main-video" class="col-md-6">
+  <div class="session" v-if="session">
+    <section class="col-1">
       <user-video :stream-manager="mainStreamManager" />
-    </div>
-    <div id="video-container" class="col-md-6">
-      <user-video :stream-manager="publisher" />
-      <user-video
-        v-for="sub in subscribers"
-        :key="sub.stream.connection.connectionId"
-        :stream-manager="sub"
-      />
-    </div>
+      <live-script />
+    </section>
+    <section class="col-2">
+      <live-chat />
+    </section>
+    <section class="col-3">
+      <live-stock />
+      <live-question />
+    </section>
+  </div>
+  <div class="tool-bar">
+    <button>대본</button>
+    <button>판매현황</button>
+    <button>채팅</button>
+    <button>질문 리스트</button>
+    <button>방송 종료</button>
   </div>
 </template>
 
-<style lang="css" scoped></style>
+<style lang="scss" scoped>
+.session {
+  @include flex-box(flex-start, space-between);
+  height: 80vh;
+  overflow-y: auto;
+  padding: 0rem 2rem;
+  .col-1 {
+    // @include flex-box(center, flex-start, column);
+    width: 50%;
+    padding: 0 1rem 0 0;
+  }
+  .col-2 {
+    width: 25%;
+    padding: 0 1rem 0 0;
+  }
+  .col-3 {
+    width: 25%;
+    padding: 0;
+  }
+}
+.tool-bar {
+  position: fixed;
+  bottom: 0;
+  @include box(100%, 10vh, white, 0, 0, 0);
+  @include flex-box();
+}
+</style>

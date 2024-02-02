@@ -21,8 +21,9 @@ const ProductOptions = [
 
 <style lang="scss" scoped>
 .stock-box {
-  @include box(null, null, none, 20px, 1rem 0 1rem 0, 0.5rem 1rem);
+  @include box(null, 26vh, none, 20px, 0, 0.5rem 1rem);
   border: 3px solid $main;
+  overflow-y: auto;
   .row {
     @include flex-box(center, space-between);
     @include box(100%, fit-content, none, none, none, 0.8rem 0);

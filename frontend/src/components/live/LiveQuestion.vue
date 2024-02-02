@@ -14,10 +14,10 @@ const QList = ['제품 기능', '제품 설명', '사이즈 정보']
 
 <style lang="scss" scoped>
 .live-question {
-  @include box(null, 100%, none, 20px, 1rem 0 1rem 0, 1rem);
+  @include box(null, calc(52vh - 4rem - 4px), none, 20px, 1rem 0 1rem 0, 1rem);
   border: 3px solid $main;
   h1 {
-    @include font-factory($fs-5, bold);
+    @include font-factory($fs-2, bold);
     margin: 0;
   }
   h2 {
@@ -25,11 +25,12 @@ const QList = ['제품 기능', '제품 설명', '사이즈 정보']
     margin: 0;
   }
   .question-list {
-    @include box(100%, 38rem, null, 0, 1rem 0 0 0, 0);
+    @include box(null, 80%, null, 0, 1rem 0 0 0, 0);
     @include flex-box(center, flex-start, column);
+    overflow-y: auto;
     .question {
-      @include box(80%, fit-content, null, 30px, 0.2rem 1rem, 1rem);
-      @include font-factory($fs-4, bold);
+      @include box(70%, fit-content, null, 30px, 0.2rem 1rem, 1rem);
+      @include font-factory($fs-3, bold);
       text-align: center;
     }
     :nth-child(even) {
