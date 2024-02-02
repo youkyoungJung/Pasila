@@ -40,7 +40,7 @@ const myProductList = [
   },
   {
     name: '겨울에 필수! 앙고라 니트2',
-    thumbnail: '/src/assets/img/test/live-thumb.png',
+    thumbnail: new URL('@/assets/img/test/live-thumb.png', import.meta.url).href,
     createdAt: '2022/01/02 11:11:00',
     ProductOptions: [
       {
@@ -65,7 +65,7 @@ const myProductList = [
   },
   {
     name: '겨울에 필수! 앙고라 니트3',
-    thumbnail: '/src/assets/img/test/live-thumb.png',
+    thumbnail: new URL('@/assets/img/test/live-thumb.png', import.meta.url).href,
     createdAt: '2022/01/02 11:11:00',
     ProductOptions: [
       {

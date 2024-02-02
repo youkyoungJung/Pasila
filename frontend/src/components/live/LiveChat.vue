@@ -6,22 +6,22 @@ const ChatList = reactive([
     type: 'user',
     user: '김빨강',
     content: '그래서 기능이 먼데;',
-    profile: '/src/assets/img/test/rose.jpg'
+    profile: new URL('@/assets/img/test/rose.jpg', import.meta.url).href
   },
-  { type: 'user', user: '김빨강', content: '!기능', profile: '/src/assets/img/test/rose.jpg' },
+  { type: 'user', user: '김빨강', content: '!기능', profile: new URL('@/assets/img/test/rose.jpg', import.meta.url).href },
   {
     type: 'user',
     user: '이제니',
     content: '기대됩니다ㅏ',
-    profile: '/src/assets/img/test/jenny.jpg'
+    profile: new URL('@/assets/img/test/jenny.jpg', import.meta.url).href
   },
-  { type: 'user', user: '한보라', content: '!구성', profile: '/src/assets/img/test/karina.jpg' },
+  { type: 'user', user: '한보라', content: '!구성', profile: new URL('@/assets/img/test/karina.jpg', import.meta.url).href },
   {
     type: 'chatbot',
     user: '챗봇',
     content:
       '안녕하세요 고객님. 해당 제품의 기능은 수분 충전, 피부 열감 완화, 노화 방지 등이 있습니다. 더 다양한 설명은 상품 상세 페이지를 참고해주시기 바랍니다.',
-    profile: '/src/assets/img/test/robot-solid 2.png'
+    profile: new URL('@/assets/img/test/robot-solid 2.png', import.meta.url).href
   }
 ])
 

@@ -5,33 +5,34 @@ const props = defineProps({
 })
 const textArea = ref(null)
 const isFocus = ref(false)
+const channelDesc = ref(props.member.description)
 let originValue = ''
 
-const ControlSize = (e) => {
+const controlSize = (e) => {
   textArea.value.style.height = 'fit-content'
   textArea.value.style.height = textArea.value.scrollHeight + 'px'
 }
 
-const FocusDesc = (e) => {
+const focusDesc = (e) => {
   isFocus.value = true
   originValue = e.target.value
 }
 
-const BlurDesc = (e) => {
+const blurDesc = (e) => {
   const next = e.relatedTarget
   if (next instanceof HTMLButtonElement) {
     next.click()
   } else {
-    UndoDesc()
+    undoDesc()
   }
 }
 
-const SaveDesc = () => {
+const saveDesc = () => {
   isFocus.value = false
 }
 
-const UndoDesc = () => {
-  props.member.description = originValue
+const undoDesc = () => {
+  channelDesc.value = originValue
   isFocus.value = false
 }
 </script>
@@ -47,15 +48,15 @@ const UndoDesc = () => {
       </div>
       <textarea
         class="desc"
-        @input="ControlSize"
-        @focus="FocusDesc"
-        @blur="BlurDesc"
+        @input="controlSize"
+        @focus="focusDesc"
+        @blur="blurDesc"
         ref="textArea"
-        v-model="member.description"
+        v-model="channelDesc"
       ></textarea>
       <template v-if="isFocus">
-        <button @click="SaveDesc">확인</button>
-        <button @click="UndoDesc">취소</button>
+        <button @click="saveDesc">확인</button>
+        <button @click="undoDesc">취소</button>
       </template>
     </div>
   </div>
