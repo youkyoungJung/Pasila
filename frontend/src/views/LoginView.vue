@@ -8,7 +8,7 @@ const user = ref({
   userPassword: ''
 })
 
-const findPassword = function () {
+const findPassword = () => {
   router.push('/findpw')
 }
 

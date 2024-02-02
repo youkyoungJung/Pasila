@@ -7,7 +7,7 @@ const props = defineProps({
 const isSelected = ref(false)
 
 const selectBtn = () => {
-  isSelected.value = !isSelected
+  isSelected.value = !isSelected.value
 }
 </script>
 

@@ -1,9 +1,7 @@
 <script setup>
-import steps from '@/components/ready/Steps.vue'
+import ReadySteps from '@/components/ready/ReadySteps.vue'
 import ScheduleCalendar from '@/components/ready/ScheduleCalendar.vue'
 import ScheduleTime from '@/components/ready/ScheduleTime.vue'
-import 'v-calendar/style.css'
-
 import { ref } from 'vue'
 
 const step = ref('schedule')
@@ -14,14 +12,16 @@ const apm = ref(new Date().getHours() >= 12 ? '오후' : '오전')
 const hour = ref(date.value.getHours() > 12 ? date.value.getHours() - 12 : date.value.getHours())
 const minute = ref(new Date().getMinutes())
 
-const reserveLive = () => {
-  //라이브 예약완료 버튼 기능 추가하기
-}
+/**
+ * 라이브 예약 완료 버튼 추가하기
+ *
+ */
+const reserveLive = () => {}
 </script>
 
 <template>
   <div class="container">
-    <steps :data="step" />
+    <ready-steps :data="step" />
     <input class="title-input" placeholder="라이브 제목을 입력해주세요!" v-model="liveTitle" />
     <div class="body">
       <div class="body-left">

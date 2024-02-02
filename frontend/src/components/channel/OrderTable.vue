@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps({
+defineProps({
   orders: Array
 })
 </script>
@@ -19,7 +19,7 @@ const props = defineProps({
           </tr>
         </thead>
         <tbody>
-          <template v-for="order in orders">
+          <template v-for="(order, index) in orders" :key="index">
             <tr>
               <td>{{ order.name }}</td>
               <td>{{ order.address }}</td>

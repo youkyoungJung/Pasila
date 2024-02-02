@@ -17,8 +17,7 @@ const getMediaStream = () => {
 }
 
 const playVideo = () => {
-  console.log('play video!!')
-  if (!streaming) {
+  if (!streaming.value) {
     streaming.value = true
   }
 }
