@@ -45,14 +45,10 @@ const categories = [
   }
 ]
 
-const selectedBigCate = ref('')
+const selectedBigCate = ref('전체')
 
 const selectBigCate = (name) => {
   selectedBigCate.value = name
-
-  if (selectedBigCate.value == '전체') {
-    selectedBigCate.value = ''
-  }
 }
 </script>
 

@@ -6,7 +6,7 @@ const props = defineProps(['preview'])
 let editorText = computed({
   get: () => props.preview,
   set: (val) => {
-    editorText = val
+    editorText.value = val
   }
 })
 </script>

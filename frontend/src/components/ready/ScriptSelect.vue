@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import ScriptSelectButton from '@/components/ready/ScriptSelectButton.vue'
-import { getScript, getScriptExample } from '@/components/api/ScriptAPI.js'
+import { getScript } from '@/components/api/ScriptAPI.js'
 
 const emits = defineEmits(['script'])
 const data = ref({
@@ -112,8 +112,8 @@ const failLog = () => {
       width: 0.3rem;
     }
     .input-area::-webkit-scrollbar-thumb {
-      height: 30%; /* 스크롤바의 길이 */
-      background: $main; /* 스크롤바의 색상 */
+      height: 30%;
+      background: $main;
       border-radius: 10px;
     }
   }

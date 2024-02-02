@@ -1,17 +1,17 @@
 <script setup>
-import steps from '@/components/ready/Steps.vue'
+import ReadySteps from '@/components/ready/ReadySteps.vue'
 import ProductInput from '@/components/ready/ProductInput.vue'
 import NextButton from '@/components/ready/NextButton.vue'
-import Preview from '@/components/editor/Preview.vue'
-import Editor from '@/components/editor/Editor.vue'
+import DescPreview from '@/components/editor/DescPreview.vue'
+import DescEditor from '@/components/editor/DescEditor.vue'
 
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 const step = ref('register')
 const nextStep = ref('script')
 const preview = ref('')
 
-const update = (message) => {
+const updateDesc = (message) => {
   preview.value = message
 }
 
@@ -25,7 +25,7 @@ const tabs = ref(['작성하기', '미리보기'])
 
 <template>
   <div class="container">
-    <steps :data="step" />
+    <ready-steps :data="step" />
     <div class="body">
       <div class="input-body">
         <product-input />
@@ -35,17 +35,18 @@ const tabs = ref(['작성하기', '미리보기'])
           <ul class="tab-menu">
             <li
               v-for="(tab, index) in tabs"
-              v-bind:class="[currentTab == index ? 'active-tab' : 'none-tab']"
+              :class="[currentTab == index ? 'active-tab' : 'none-tab']"
+              :key="index"
             >
               <a href="#" @click="currentTab = index">{{ tab }}</a>
             </li>
           </ul>
         </div>
         <div v-show="currentTab == 0" class="show-body">
-          <editor :message="preview" @preview-content="update" />
+          <desc-editor :message="preview" @preview-content="updateDesc" />
         </div>
         <div v-show="currentTab == 1" class="show-body">
-          <preview :preview="preview" />
+          <desc-preview :preview="preview" />
         </div>
       </div>
     </div>

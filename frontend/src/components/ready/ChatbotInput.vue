@@ -1,7 +1,5 @@
 <script setup>
-import { ref, ssrContextKey, watch } from 'vue'
-
-const emit = defineEmits(['getQuestion', 'getAnswer'])
+defineEmits(['getQuestion', 'getAnswer'])
 const props = defineProps({ q: String, a: String })
 </script>
 

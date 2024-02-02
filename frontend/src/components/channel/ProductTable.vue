@@ -27,7 +27,7 @@ const tableHeader = ['상품 정보', '등록일', '재고', '주문 리스트']
       </tr>
     </thead>
     <tbody>
-      <template v-for="(item, index) in props.products">
+      <template v-for="(item, index) in props.products" :key="index">
         <tr>
           <td class="product">
             <div class="thumbnail" :style="{ backgroundImage: `url(${item.thumbnail})` }"></div>
@@ -45,7 +45,7 @@ const tableHeader = ['상품 정보', '등록일', '재고', '주문 리스트']
           </td>
           <td class="date">{{ item.createdAt.substring(0, 10) }}</td>
           <td class="option-stock">
-            <template v-for="option in item.ProductOptions">
+            <template v-for="(option, index) in item.ProductOptions" :key="index">
               <div>
                 <span class="name">{{ option.name }} : </span>
                 <span class="stock">{{ option.stock === 0 ? '품절' : option.stock }}</span>
@@ -60,7 +60,7 @@ const tableHeader = ['상품 정보', '등록일', '재고', '주문 리스트']
             </span>
           </td>
         </tr>
-        <order-table v-if="showIndex === index" :orders="item.Orders"></order-table>
+        <order-table v-if="showIndex === index" :orders="item.Orders" />
       </template>
     </tbody>
   </table>
@@ -68,7 +68,6 @@ const tableHeader = ['상품 정보', '등록일', '재고', '주문 리스트']
 
 <style lang="scss" scoped>
 table {
-  // table-layout: fixed;
   border-collapse: collapse;
   text-align: center;
   width: 100%;

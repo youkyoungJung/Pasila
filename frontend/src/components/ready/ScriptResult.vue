@@ -1,5 +1,6 @@
 <script setup>
 const props = defineProps(['script'])
+defineEmits(['getData'])
 
 const saveScript = () => {
   //스크립트 저장하기
@@ -10,8 +11,11 @@ const saveScript = () => {
 <template>
   <div class="result-body">
     <div id="script" class="script">
-      <textarea class="script-text">
-        {{ props.script }}
+      <textarea
+        class="script-text"
+        @change="$emit('getData', $event.target.value)"
+        :value="props.script"
+      >
       </textarea>
     </div>
     <div class="button-box">
