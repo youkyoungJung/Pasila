@@ -24,7 +24,7 @@ const updateScript = (message) => {
         <script-select @script="updateScript" />
       </div>
       <div class="result">
-        <script-result :script="script" />
+        <script-result :script="script" @getData="(e) => (script = e)" />
       </div>
     </div>
     <div class="next-btn">
