@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.sqids.Sqids;
 import org.ssafy.pasila.domain.product.entity.Product;
 
@@ -15,6 +17,8 @@ import java.util.List;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE shortping SET is_active = false WHERE id=?")
+@Where(clause = "is_active=true")
 public class Shortping {
 
     @Id

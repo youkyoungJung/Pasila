@@ -31,18 +31,18 @@ public class ShortpingApiControlller {
 
     private final ShortpingQueryRepository shortpingQueryRepository;
 
-    @Operation(summary = "Create Shortping", description = "숏핑을 생성합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = String.class))})
-    })
-    @PostMapping("/api/shortping")
-    public ApiCommonResponse<?> shortpingList(@RequestBody ShortpingRequestDto shortpingRequest) {
-
-        Shortping shortping = shortpingService.saveShortping(shortpingRequest);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), shortping.getId());
-
-    }
+//    @Operation(summary = "Create Shortping", description = "숏핑을 생성합니다.")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "성공",
+//                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = String.class))})
+//    })
+//    @PostMapping("/api/shortping")
+//    public ApiCommonResponse<?> shortpingList(@RequestBody ShortpingRequestDto shortpingRequest) {
+//
+//        Shortping shortping = shortpingService.saveShortping(shortpingRequest);
+//        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), shortping.getId());
+//
+//    }
 
     @Operation(summary = "Get Shortping Detail", description = "Id에 해당하는 숏핑 상세 정보를 가져옵니다.")
     @ApiResponses(value = {
@@ -57,17 +57,27 @@ public class ShortpingApiControlller {
 
     }
 
-    @Operation(summary = "Get Recommandation Highlight", description = "추천 하이라이트 구간 리스트를 가져옵니다.")
+//    @Operation(summary = "Get Recommandation Highlight", description = "추천 하이라이트 구간 리스트를 가져옵니다.")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "성공",
+//                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = RecommendLivelogResponseDto.class)))})
+//    })
+//    @PostMapping("/api/shortping/highlight")
+//    public ApiCommonResponse<?> getHighlight(@RequestPart(value = "video") MultipartFile video) {
+//
+//        List<RecommendLivelogResponseDto> result = shortpingService.getHighlightList(video);
+//        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
+//
+//    }
+
+    @Operation(summary = "Get Highlight", description = "Live ID에 해당하는 하이라이트 리스트를 가져옵니다")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
                     content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = RecommendLivelogResponseDto.class)))})
     })
-    @PostMapping("/api/shortping/highlight")
-    public ApiCommonResponse<?> getHighlight(@RequestPart(value = "video") MultipartFile video) {
-
-        List<RecommendLivelogResponseDto> result = shortpingService.getHighlightList(video);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
-
+    @GetMapping("/api/shortping/highlight")
+    public ApiCommonResponse<?> getLivelogList(@RequestParam(value = "live_id") String liveId) {
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), "");
     }
 
 }
