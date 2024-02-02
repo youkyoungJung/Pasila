@@ -9,15 +9,15 @@ import LiveQuestion from '@/components/live/LiveQuestion.vue'
 <template>
   <div class="content">
     <section class="col-1">
-      <live-camera></live-camera>
-      <live-script></live-script>
+      <live-camera />
+      <live-script />
     </section>
     <section class="col-2">
-      <live-stock></live-stock>
-      <live-chat></live-chat>
+      <live-stock />
+      <live-chat />
     </section>
     <section class="col-3">
-      <live-question></live-question>
+      <live-question />
     </section>
   </div>
 </template>

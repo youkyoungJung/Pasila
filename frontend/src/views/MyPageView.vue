@@ -5,22 +5,25 @@ import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
 
 const user = ref({
-  profile: '',
-  email: '',
-  name: '',
-  channelName: '',
+  profile: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
+  email: 'pasila@ssafy.com',
+  name: '파시라',
+  channelName: '라시파',
   password: '',
-  phone: '',
-  address: '',
-  detailAddress: '',
-  gender: '',
-  birth: ''
+  phone: '01012345678',
+  address: '서울시 행복구',
+  detailAddress: '사랑동',
+  bankName: '돈줘은행',
+  bankAccount: '3333333333',
+  gender: '선택안함',
+  birth: '2020-05-05'
 })
 
 const longData = ref({
   name: {
     title: '이름',
-    type: 'text'
+    type: 'text',
+    value: user.value.name
   },
   password: {
     title: '비밀번호',
@@ -32,11 +35,23 @@ const longData = ref({
   },
   detailAddress: {
     title: '상세주소',
-    type: 'password'
+    type: 'text',
+    value: user.value.detailAddress
   },
   birth: {
     title: '생년월일',
-    type: 'date'
+    type: 'date',
+    value: user.value.birth
+  },
+  bankName: {
+    title: '은행명',
+    type: 'text',
+    value: user.value.bankName
+  },
+  bankAccount: {
+    title: '계좌번호',
+    type: 'number',
+    value: user.value.bankAccount
   }
 })
 
@@ -44,17 +59,20 @@ const shortData = ref({
   email: {
     title: '이메일',
     type: 'email',
-    text: '중복확인'
+    text: '중복확인',
+    value: user.value.email
   },
   channel: {
     title: '채널명',
     type: 'text',
-    text: '중복확인'
+    text: '중복확인',
+    value: user.value.channelName
   },
   phone: {
     title: '휴대폰번호',
     type: 'number',
-    text: '번호받기'
+    text: '번호받기',
+    value: user.value.phone
   },
   phoneCheck: {
     title: '인증번호 확인',
@@ -64,11 +82,13 @@ const shortData = ref({
   address: {
     title: '주소',
     type: 'text',
-    text: '주소검색'
+    text: '주소검색',
+    value: user.value.address
   }
 })
 
 const certi = ref('')
+
 const uploadImg = (e) => {
   const file = e.target
   const reader = new FileReader()
@@ -78,7 +98,7 @@ const uploadImg = (e) => {
   reader.readAsDataURL(file.files[0])
 }
 
-const join = () => {
+const modify = () => {
   //user.value 백에 넘겨주기
   if (user.value.birth != '') {
     user.value.birth += ' 00:00:00'
@@ -89,7 +109,7 @@ const join = () => {
 
 <template>
   <div class="container">
-    <div class="header">회원가입</div>
+    <div class="header">마이페이지</div>
     <div class="content">
       <section class="profile">
         <div>
@@ -100,7 +120,7 @@ const join = () => {
             <font-awesome-icon icon="fa-regular fa-user" class="profile-img" />
           </div>
         </div>
-        <label for="file">프로필 사진 등록</label>
+        <label for="file">프로필 사진 변경</label>
         <input type="file" id="file" @change="uploadImg" accept="image/*" class="profile-choose" />
       </section>
       <section class="userInfo">
@@ -136,33 +156,37 @@ const join = () => {
       <section class="userInfo">
         <v-long-input :data="longData.detailAddress" @getData="(e) => (user.detailAddress = e)" />
       </section>
+      <section class="userInfo">
+        <v-long-input :data="longData.bankName" @getData="(e) => (user.bankName = e)" />
+      </section>
+      <section class="userInfo">
+        <v-long-input :data="longData.bankAccount" @getData="(e) => (user.bankAccount = e)" />
+      </section>
       <section class="gender">
-        <form>
-          <label for="gender" class="gender-title">성별</label>
-          <div class="radio" id="gender">
-            <label class="gender-option"
-              ><input type="radio" name="성별" value="남성" v-model="user.gender" />남성</label
-            >
-            <label class="gender-option"
-              ><input type="radio" name="성별" value="여성" v-model="user.gender" />여성</label
-            >
-            <label class="gender-option"
-              ><input
-                type="radio"
-                name="성별"
-                value="선택안함"
-                v-model="user.gender"
-              />선택안함</label
-            >
-          </div>
-        </form>
+        <label for="gender" class="gender-title">성별</label>
+        <div class="radio" id="gender">
+          <label class="gender-option"
+            ><input type="radio" name="성별" value="남성" v-model="user.gender" />남성</label
+          >
+          <label class="gender-option"
+            ><input type="radio" name="성별" value="여성" v-model="user.gender" />여성</label
+          >
+          <label class="gender-option"
+            ><input
+              type="radio"
+              name="성별"
+              value="선택안함"
+              v-model="user.gender"
+            />선택안함</label
+          >
+        </div>
       </section>
       <section class="userInfo">
         <label for="input" class="label">생년월일</label>
         <input type="date" v-model="user.birth" class="birth" />
       </section>
-      <div class="join-btn">
-        <button @click="join" class="join">회원가입</button>
+      <div class="modify-btn">
+        <button @click="modify" class="modify">수정</button>
       </div>
     </div>
   </div>
@@ -291,7 +315,7 @@ const join = () => {
         }
       }
     }
-    .join-btn {
+    .modify-btn {
       width: 88%;
       height: 100%;
       display: flex;
@@ -299,7 +323,7 @@ const join = () => {
       border-top: 1px solid $dark;
       margin: 2rem;
       padding-top: 1rem;
-      .join {
+      .modify {
         @include box(100%, 3rem, $main, 0, 1rem, 0);
         @include font-factory($fs-1, null, white);
         border: none;

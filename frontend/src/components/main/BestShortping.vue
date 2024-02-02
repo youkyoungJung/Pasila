@@ -51,7 +51,7 @@ const videos = ref([
         <div v-for="(video, i) in videos" :key="i">
           <div class="numbering">
             <div>{{ i + 1 }}</div>
-            <video-card :video="video"></video-card>
+            <video-card :video="video" />
           </div>
         </div>
       </div>

@@ -5,11 +5,19 @@ import VHeader from '@/components/common/VHeader.vue'
 
 <template>
   <v-header />
-  <RouterView />
+  <router-view />
 </template>
 
-<style>
+<style lang="scss">
 body {
   margin: 0;
+
+  .vc-day {
+    height: 5rem;
+  }
+
+  .vc-title {
+    background-color: #d9d9d9;
+  }
 }
 </style>

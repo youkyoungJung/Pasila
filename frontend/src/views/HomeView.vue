@@ -1,13 +1,13 @@
 <script setup>
 import VCategory from '@/components/common/VCategory.vue'
 import BestShortping from '@/components/main/BestShortping.vue'
-import Live from '@/components/main/Live.vue'
+import LiveList from '@/components/main/LiveList.vue'
 </script>
 
 <template>
   <v-category />
   <best-shortping />
-  <live />
+  <live-list />
 </template>
 
 <style lang="scss">
