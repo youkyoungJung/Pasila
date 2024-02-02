@@ -3,7 +3,7 @@ package org.ssafy.pasila.domain.shortping.repository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponse;
+import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponseDto;
 
 @Repository
 @RequiredArgsConstructor
@@ -11,7 +11,7 @@ public class ShortpingQueryRepository {
 
     private final EntityManager em;
 
-    public ShortpingResponse findWithProductMember(String id) {
+    public ShortpingResponseDto findWithProductMember(String id) {
 
         return em.createQuery(
                 "select new org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponse" +
@@ -20,7 +20,7 @@ public class ShortpingQueryRepository {
                         " join s.product p" +
                         " join p.category c" +
                         " join p.member m" +
-                        " where s.id=:shortpingId", ShortpingResponse.class)
+                        " where s.id=:shortpingId", ShortpingResponseDto.class)
                 .setParameter("shortpingId", id)
                 .getSingleResult();
 

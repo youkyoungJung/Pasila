@@ -11,8 +11,8 @@ import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
-import org.ssafy.pasila.domain.shortping.dto.request.LivelogRequest;
-import org.ssafy.pasila.domain.shortping.dto.request.ShortpingRequest;
+import org.ssafy.pasila.domain.shortping.dto.request.LivelogRequestDto;
+import org.ssafy.pasila.domain.shortping.dto.request.ShortpingRequestDto;
 import org.ssafy.pasila.domain.shortping.dto.response.RecommendLivelogResponseDto;
 import org.ssafy.pasila.domain.shortping.entity.Livelog;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
@@ -44,7 +44,7 @@ public class ShortpingService {
     private final FFmpegClient ffmpegClient;
 
     @Transactional
-    public Shortping saveShortping(ShortpingRequest shortpingRequest) {
+    public Shortping saveShortping(ShortpingRequestDto shortpingRequest) {
 
         Product product = getProductById(shortpingRequest.getProductId());
         Live live = liveQueryRepository.findByProductId(product.getId());
@@ -60,7 +60,7 @@ public class ShortpingService {
     }
 
     // 하이라이트 리스트 저장
-    public List<Livelog> saveLivelog(List<LivelogRequest> livelogRequests, Live live) {
+    public List<Livelog> saveLivelog(List<LivelogRequestDto> livelogRequests, Live live) {
 
         List<Livelog> livelogs = livelogRequests.stream()
                 .map(livelogRequest -> livelogRequest.toEntity(live))

@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShortpingRequest {
+public class ShortpingRequestDto {
     @Schema(description = "제품 아이디")
     private String productId;
     
@@ -16,6 +16,6 @@ public class ShortpingRequest {
     private String title;
 
     @Schema(description = "하이라이트 목록")
-    private List<LivelogRequest> livelogs;
+    private List<LivelogRequestDto> livelogs;
 
 }
