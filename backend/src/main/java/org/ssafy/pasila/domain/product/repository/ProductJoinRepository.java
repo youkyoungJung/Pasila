@@ -15,19 +15,20 @@ public class ProductJoinRepository {
     public List<ProductResponseDto> findAllWithCategory() {
 
         return em.createQuery(
-                        "SELECT new org.ssafy.pasila.domain.product.dto.ProductResponse" +
-                                "Dto(p.id, m.id, p.name, p.description, p.createdAt, p.thumbnail, c.id) " +
-                                "FROM Product p Join p.category c Join p.member m " ,  ProductResponseDto.class)
+                        "SELECT new org.ssafy.pasila.domain.product.dto.ProductResponseDto" +
+                                "(p.id, m.id, p.name, p.description, p.createdAt, p.thumbnail, c.id) " +
+                                "FROM Product p Join p.category c Join p.member m " +
+                                "WHERE p.isActive = true " ,  ProductResponseDto.class)
                 .getResultList();
 
     }
 
     public ProductResponseDto findById(String productId){
 
-        return em.createQuery("Select new org.ssafy.pasila.domain.product.dto.ProductResponse" +
-                        "Dto(p.id, m.id, p.name, p.description, p.createdAt, p.thumbnail, c.id) " +
+        return em.createQuery("Select new org.ssafy.pasila.domain.product.dto.ProductResponseDto" +
+                        "(p.id, m.id, p.name, p.description, p.createdAt, p.thumbnail, c.id) " +
                         "FROM Product p Join p.category c Join p.member m " +
-                        "where p.id = :productId " , ProductResponseDto.class)
+                        "WHERE p.id = :productId AND p.isActive = true " , ProductResponseDto.class)
                 .setParameter("productId", productId).getSingleResult();
 
     }

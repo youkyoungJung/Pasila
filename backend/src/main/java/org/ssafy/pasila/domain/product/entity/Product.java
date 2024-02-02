@@ -2,7 +2,6 @@ package org.ssafy.pasila.domain.product.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.sqids.Sqids;
+import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -60,7 +60,7 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     @ColumnDefault("true")
     private boolean isActive;
 
@@ -82,15 +82,9 @@ public class Product {
     private Shortping shortping;
 
     //== 생성 메서드 ==//
-    /**상품 저장 시 카테고리와 seller 정보를 저장할 수 있는 메서드 */
-    public void addProductWithCategoryWithMember(Category category, Member member){
-
-        this.category = category;
-        this.member = member;
-    }
 
     /** product 관련 없데이트 , 카테고리 변경 */
-    public void updateProduct(Product product, Category category) {
+    public void updateProduct(ProductRequestDto product, Category category) {
 
         this.name = product.getName();
         this.description = product.getDescription();
@@ -113,6 +107,20 @@ public class Product {
     public void setShortping(Shortping shortping) {
 
         this.shortping = shortping;
+
+    }
+
+    //== 생성 메서드 ==//
+    public static Product createProduct(ProductRequestDto productRequestDto, Member member, Category category){
+
+        return Product.builder()
+                .name(productRequestDto.getName())
+                .description(productRequestDto.getDescription())
+                .thumbnail(productRequestDto.getThumbnail())
+                .isActive(true)
+                .member(member)
+                .category(category)
+                .build();
 
     }
 
