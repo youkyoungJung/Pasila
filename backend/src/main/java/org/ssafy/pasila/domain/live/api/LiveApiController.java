@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
-import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequest;
-import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponse;
+import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequestDto;
+import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 
@@ -30,10 +30,10 @@ public class LiveApiController {
     @Operation(summary = "Create Qsheet", description = "큐시트를 생성합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreateQsheetResponse.class))})
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreateQsheetResponseDto.class))})
     })
     @PostMapping("/sheet")
-    public ApiCommonResponse<?> createQsheet(@RequestBody CreateQsheetRequest request) {
+    public ApiCommonResponse<?> createQsheet(@RequestBody CreateQsheetRequestDto request) {
 
         String qsheet = gptService.generateQsheet(
                 "판매자",
@@ -48,7 +48,7 @@ public class LiveApiController {
     @Operation(summary = "Create Qsheet Sample", description = "큐시트 샘플을 제공합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreateQsheetResponse.class))})
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreateQsheetResponseDto.class))})
     })
     @GetMapping("/sheet/example")
     public ApiCommonResponse<?> createQsheetTest() {

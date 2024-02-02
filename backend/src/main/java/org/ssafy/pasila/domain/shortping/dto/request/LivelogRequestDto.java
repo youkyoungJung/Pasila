@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LivelogRequest {
+public class LivelogRequestDto {
 
     @Schema(description = "하이라이트 제목")
     private String title;

@@ -12,9 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
-import org.ssafy.pasila.domain.shortping.dto.request.ShortpingRequest;
+import org.ssafy.pasila.domain.shortping.dto.request.ShortpingRequestDto;
 import org.ssafy.pasila.domain.shortping.dto.response.RecommendLivelogResponseDto;
-import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponse;
+import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponseDto;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
 import org.ssafy.pasila.domain.shortping.repository.ShortpingQueryRepository;
 import org.ssafy.pasila.domain.shortping.service.ShortpingService;
@@ -37,7 +37,7 @@ public class ShortpingApiControlller {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = String.class))})
     })
     @PostMapping("/api/shortping")
-    public ApiCommonResponse<?> shortpingList(@RequestBody ShortpingRequest shortpingRequest) {
+    public ApiCommonResponse<?> shortpingList(@RequestBody ShortpingRequestDto shortpingRequest) {
 
         Shortping shortping = shortpingService.saveShortping(shortpingRequest);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), shortping.getId());
@@ -47,12 +47,12 @@ public class ShortpingApiControlller {
     @Operation(summary = "Get Shortping Detail", description = "Id에 해당하는 숏핑 상세 정보를 가져옵니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ShortpingResponse.class))})
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ShortpingResponseDto.class))})
     })
     @GetMapping("/api/shortping/{id}")
     public ApiCommonResponse<?> shortpingDetail(@PathVariable String id) {
 
-        ShortpingResponse shortpingResponse = shortpingQueryRepository.findWithProductMember(id);
+        ShortpingResponseDto shortpingResponse = shortpingQueryRepository.findWithProductMember(id);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), shortpingResponse);
 
     }

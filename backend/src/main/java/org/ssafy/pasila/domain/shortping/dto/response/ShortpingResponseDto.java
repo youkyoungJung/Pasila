@@ -1,16 +1,14 @@
 package org.ssafy.pasila.domain.shortping.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class ShortpingResponse {
+public class ShortpingResponseDto {
 
     @Schema(description = "숏핑 아이디")
     private String id;
