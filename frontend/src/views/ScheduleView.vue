@@ -10,18 +10,18 @@ const Products = ref([
     title: '따끈따끈 붕어빵>.<',
     price: 20000,
     discountPrice: 12000,
-    thumbnail: '/src/assets/img/test/fishbread.png',
+    thumbnail: new URL('@/assets/img/test/fishbread.png', import.meta.url).href,
     member: 'JEENIE',
-    profile: '/src/assets/img/test/jenny.jpg'
+    profile: new URL('@/assets/img/test/jenny.jpg', import.meta.url).href
   },
   {
     on: '2024-01-19 11:10:00',
     title: '베트남으로 떠나는 3박 5일 여행!',
     price: 2000000,
     discountPrice: 1560000,
-    thumbnail: '/src/assets/img/test/vietnam.jpg',
+    thumbnail: new URL('@/assets/img/test/vietnam.jpg', import.meta.url).href,
     member: 'ROSE',
-    profile: '/src/assets/img/test/rose.jpg'
+    profile: new URL('@/assets/img/test/rose.jpg', import.meta.url).href
   }
 ])
 </script>
