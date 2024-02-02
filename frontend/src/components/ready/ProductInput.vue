@@ -11,7 +11,7 @@ const product = ref({
     option2: null,
     option3: null
   },
-  explain: '',
+  description: '',
   formatRegular: '',
   formatDiscPrice: '',
   formatOption1: '',
@@ -25,38 +25,23 @@ const discount = (per) => {
   product.value.formatDiscPrice = product.value.discountPrice.toLocaleString('en-US')
 }
 
-//아래 겹치는 함수는 싹다 합침필요 && 최대 개수 제한하기(int)
-const changeInput = () => {
-  const parsedAmount = parseFloat(product.value.formatRegular.replace(/,/g, '')) || 0
-  product.value.formatRegular = parsedAmount.toLocaleString('en-US')
-  const temp = product.value.formatRegular.replace(/,/g, '')
-  product.value.regularPrice = parseFloat(temp)
+const changeNumber = (field) => {
+  const parsedAmount = parseFloat(product.value[field].replace(/,/g, '')) || 0
+  product.value[field] = parsedAmount.toLocaleString('en-US')
+  const temp = product.value[field].replace(/,/g, '')
+  return temp
+}
+const changeInput = (field) => {
+  product.value.regularPrice = parseFloat(changeNumber(field))
 }
 
-const changePrice = () => {
-  const parsedAmount = parseFloat(product.value.formatDiscPrice.replace(/,/g, '')) || 0
-  product.value.formatDiscPrice = parsedAmount.toLocaleString('en-US')
-  const temp = product.value.formatDiscPrice.replace(/,/g, '')
-  product.value.discountPrice = parseFloat(temp)
+const changeDiscount = (field) => {
+  product.value.discountPrice = parseFloat(changeNumber(field))
 }
 
-const changeCnt1 = () => {
-  const parsedAmount = parseFloat(product.value.formatOption1.replace(/,/g, '')) || 0
-  product.value.formatOption1 = parsedAmount.toLocaleString('en-US')
-  const temp = product.value.formatOption1.replace(/,/g, '')
-  product.value.stock.option1 = parseFloat(temp)
-}
-const changeCnt2 = () => {
-  const parsedAmount = parseFloat(product.value.formatOption2.replace(/,/g, '')) || 0
-  product.value.formatOption2 = parsedAmount.toLocaleString('en-US')
-  const temp = product.value.formatOption2.replace(/,/g, '')
-  product.value.stock.option2 = parseFloat(temp)
-}
-const changeCnt3 = () => {
-  const parsedAmount = parseFloat(product.value.formatOption3.replace(/,/g, '')) || 0
-  product.value.formatOption3 = parsedAmount.toLocaleString('en-US')
-  const temp = product.value.formatOption3.replace(/,/g, '')
-  product.value.stock.option3 = parseFloat(temp)
+const changeStock = (field) => {
+  let cnt = 'option' + field.charAt(field.length - 1)
+  product.value.stock[cnt] = parseFloat(changeNumber(field))
 }
 </script>
 
@@ -85,9 +70,14 @@ const changeCnt3 = () => {
                 type="text"
                 id="regularPrice"
                 placeholder="정가를 입력하세요"
-                v-model="product.formatRegular"
                 class="product-price-input"
-                @input="changeInput()"
+                :value="product.formatRegular"
+                @input="
+                  (e) => {
+                    product.formatRegular = e.target.value
+                    changeInput('formatRegular')
+                  }
+                "
               />
               <span>원</span>
             </div>
@@ -95,15 +85,23 @@ const changeCnt3 = () => {
 
           <div class="price">
             <label for="discountPrice">할인가</label>
-            <input type="number" class="product-percent-input" v-model="product.discountPercent" />%
-            <button @click="discount(product.discountPercent)" class="price-btn">적용</button>
+            <input
+              type="number"
+              class="product-percent-input"
+              @input="(e) => discount(e.target.value)"
+            />%
             <input
               type="text"
               id="discountPrice"
               placeholder="할인가를 입력하세요"
-              v-model="product.formatDiscPrice"
               class="product-price-input"
-              @input="changePrice()"
+              :value="product.formatDiscPrice"
+              @input="
+                (e) => {
+                  product.formatDiscPrice = e.target.value
+                  changeDiscount('formatDiscPrice')
+                }
+              "
             />원
           </div>
           <div class="discount-btn">
@@ -123,8 +121,13 @@ const changeCnt3 = () => {
               id="option1"
               placeholder="개수 입력"
               class="product-price-input"
-              v-model="product.formatOption1"
-              @input="changeCnt1()"
+              :value="product.formatOption1"
+              @input="
+                (e) => {
+                  product.formatOption1 = e.target.value
+                  changeStock('formatOption1')
+                }
+              "
             />개
           </div>
           <div class="stock-option">
@@ -134,8 +137,13 @@ const changeCnt3 = () => {
               id="option2"
               placeholder="개수 입력"
               class="product-price-input"
-              v-model="product.formatOption2"
-              @input="changeCnt2()"
+              :value="product.formatOption2"
+              @input="
+                (e) => {
+                  product.formatOption2 = e.target.value
+                  changeStock('formatOption2')
+                }
+              "
             />개
           </div>
           <div class="stock-option">
@@ -145,8 +153,13 @@ const changeCnt3 = () => {
               id="option3"
               placeholder="개수 입력"
               class="product-price-input"
-              v-model="product.formatOption3"
-              @input="changeCnt3()"
+              :value="product.formatOption3"
+              @input="
+                (e) => {
+                  product.formatOption3 = e.target.value
+                  changeStock('formatOption3')
+                }
+              "
             />개
           </div>
         </div>

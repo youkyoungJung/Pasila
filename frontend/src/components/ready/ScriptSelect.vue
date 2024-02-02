@@ -112,8 +112,8 @@ const failLog = () => {
       width: 0.3rem;
     }
     .input-area::-webkit-scrollbar-thumb {
-      height: 30%; /* 스크롤바의 길이 */
-      background: $main; /* 스크롤바의 색상 */
+      height: 30%;
+      background: $main;
       border-radius: 10px;
     }
   }
