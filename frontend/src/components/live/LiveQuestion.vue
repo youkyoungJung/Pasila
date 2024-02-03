@@ -14,7 +14,9 @@ const QList = ['제품 기능', '제품 설명', '사이즈 정보']
 
 <style lang="scss" scoped>
 .live-question {
-  @include box(null, calc(52vh - 4rem - 4px), none, 20px, 1rem 0 1rem 0, 1rem);
+  flex: 1;
+
+  @include box(null, calc(52vh - 4rem - 4px), none, 20px, 0, 1rem);
   border: 3px solid $main;
   h1 {
     @include font-factory($fs-2, bold);

@@ -4,6 +4,7 @@ import axios from 'axios'
 import router from '@/router'
 import { OpenVidu } from 'openvidu-browser'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
+import OvVideo from '@/components/live/openvidu/OvVideo.vue'
 import LiveScript from '@/components/live/LiveScript.vue'
 import LiveStock from '@/components/live/LiveStock.vue'
 import LiveChat from '@/components/live/LiveChat.vue'
@@ -22,6 +23,8 @@ let subscribers = ref([])
 // Join form
 const mySessionId = 'SessionA'
 const myUserName = 'Participant' + Math.floor(Math.random() * 100)
+
+const controlToolBar = ref([true, true, true, true, true])
 
 onMounted(() => {
   joinSession()
@@ -160,43 +163,83 @@ const createToken = async (sessionId) => {
   <div class="session" v-if="session">
     <section class="col-1">
       <user-video :stream-manager="mainStreamManager" />
-      <live-script />
+      <transition>
+        <live-script v-if="controlToolBar[0]" />
+      </transition>
     </section>
-    <section class="col-2">
-      <live-chat />
-    </section>
-    <section class="col-3">
-      <live-stock />
-      <live-question />
-    </section>
+    <transition>
+      <section class="col-2" v-if="controlToolBar[1]">
+        <live-chat />
+      </section>
+    </transition>
+    <transition>
+      <section class="col-3" v-if="controlToolBar[2] || controlToolBar[3]">
+        <transition>
+          <live-stock v-if="controlToolBar[2]" />
+        </transition>
+        <transition>
+          <live-question v-if="controlToolBar[3]" />
+        </transition>
+      </section>
+    </transition>
   </div>
   <div class="tool-bar">
-    <button>대본</button>
-    <button>판매현황</button>
-    <button>채팅</button>
-    <button>질문 리스트</button>
+    <button
+      @click="() => (controlToolBar[0] = !controlToolBar[0])"
+      :class="{ active: controlToolBar[0] }"
+    >
+      <font-awesome-icon icon="fa-regular fa-file-lines" />
+    </button>
+    <button
+      @click="() => (controlToolBar[1] = !controlToolBar[1])"
+      :class="{ active: controlToolBar[1] }"
+    >
+      <font-awesome-icon icon="fa-regular fa-comments" />
+    </button>
+    <button
+      @click="() => (controlToolBar[2] = !controlToolBar[2])"
+      :class="{ active: controlToolBar[2] }"
+    >
+      <font-awesome-icon icon="fa-regular fa-rectangle-list" />
+    </button>
+    <button
+      @click="() => (controlToolBar[3] = !controlToolBar[3])"
+      :class="{ active: controlToolBar[3] }"
+    >
+      <font-awesome-icon icon="fa-regular fa-circle-question" />
+    </button>
     <button>방송 종료</button>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .session {
-  @include flex-box(flex-start, space-between);
-  height: 80vh;
+  @include flex-box(flex-start, center);
+  height: 78vh;
   overflow-y: auto;
   padding: 0rem 2rem;
   .col-1 {
-    // @include flex-box(center, flex-start, column);
-    width: 50%;
+    flex: 2;
     padding: 0 1rem 0 0;
+
+    display: flex;
+    flex-direction: column;
   }
   .col-2 {
-    width: 25%;
+    flex: 1;
     padding: 0 1rem 0 0;
+
+    display: flex;
+    flex-direction: column;
   }
   .col-3 {
-    width: 25%;
+    flex: 1;
     padding: 0;
+
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+    justify-content: space-between;
   }
 }
 .tool-bar {
@@ -204,5 +247,41 @@ const createToken = async (sessionId) => {
   bottom: 0;
   @include box(100%, 10vh, white, 0, 0, 0);
   @include flex-box();
+
+  button {
+    @include box(3rem, 3rem, $dark, 50%, 1rem, 0);
+    @include flex-box();
+    outline: none;
+    border: none;
+    cursor: pointer;
+
+    svg {
+      width: 1.3rem;
+      height: 1.3rem;
+      color: white;
+    }
+
+    &.active {
+      background-color: $main;
+    }
+  }
+}
+
+.v-leave-active {
+  // transform: scale(0);
+  // transition: 0.5s;
+}
+
+.v-enter-active {
+  // transform: scale(0);
+  // transition: 0.5s;
+}
+
+.v-enter-from {
+  // transform: scale(1);
+  // transition: 0.5s;
+}
+.v-leave-to {
+  // transform: scale(0);
 }
 </style>

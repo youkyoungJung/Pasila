@@ -21,6 +21,7 @@ const ProductOptions = [
 
 <style lang="scss" scoped>
 .stock-box {
+  flex: 1;
   @include box(null, 26vh, none, 20px, 0, 0.5rem 1rem);
   border: 3px solid $main;
   overflow-y: auto;

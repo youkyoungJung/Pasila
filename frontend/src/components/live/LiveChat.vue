@@ -66,7 +66,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .live-chat-box {
-  @include box(null, 78vh, none, 20px, 0 0 1rem 0, 0);
+  @include box(null, calc(78vh - 5px), none, 20px, 0, 0);
   border: 3px solid $main;
   position: relative;
 
