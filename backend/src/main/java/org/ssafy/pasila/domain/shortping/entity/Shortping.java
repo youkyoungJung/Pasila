@@ -43,6 +43,7 @@ public class Shortping {
     private String title;
 
     @Column(name = "like_cnt")
+    @ColumnDefault("0")
     private Integer likeCnt;
 
     @Column(name = "video_url", length = 2083)
@@ -52,8 +53,8 @@ public class Shortping {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "is_active")
-    @ColumnDefault("true")
+    @Column(name = "is_active", columnDefinition = "TINYINT")
+    @ColumnDefault("1")
     private boolean isActive;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -65,14 +66,12 @@ public class Shortping {
         product.setShortping(this);
     }
 
-    public static Shortping createShortping(String title, String videoUrl, Product product) {
-        Shortping shortping = new Shortping();
-        shortping.setTitle(title);
-        shortping.setVideoUrl(videoUrl);
-        shortping.setProduct(product);
-        shortping.setLikeCnt(0);
-        shortping.setActive(true);
-        return shortping;
+    public Shortping(String title, String videoUrl, Product product) {
+        this.title = title;
+        this.videoUrl = videoUrl;
+        this.likeCnt = 0;
+        this.isActive = true;
+        setProduct(product);
     }
 
 }

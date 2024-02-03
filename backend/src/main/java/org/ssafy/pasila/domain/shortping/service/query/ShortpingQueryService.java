@@ -2,6 +2,7 @@ package org.ssafy.pasila.domain.shortping.service.query;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponseDto;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
 import org.ssafy.pasila.domain.shortping.repository.ShortpingQueryRepository;
 import org.ssafy.pasila.domain.shortping.repository.ShortpingRepository;
@@ -14,18 +15,19 @@ public class ShortpingQueryService {
     private final ShortpingRepository shortpingRepository;
     private final ShortpingQueryRepository shortpingQueryRepository;
 
-    // 숏핑 아이디로 잦기
     public Shortping findById(String id) {
         return shortpingRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 숏핑이 존재하지 않습니다"));
     }
 
-    // 숏핑 product 아이디로 찾기
-    public Shortping findWithProductById() {
-        return null;
+    public Shortping findByProductId(String id) {
+        return shortpingQueryRepository.findByProductId(id);
     }
 
-    // 숏핑 저장
+    public Boolean existByProductId(String id) {
+        return shortpingQueryRepository.existByProductId(id);
+    }
+
     public Shortping save(Shortping shortping) {
         return shortpingRepository.save(shortping);
     }
@@ -40,6 +42,10 @@ public class ShortpingQueryService {
 
     public void deleteAll(List<Shortping> shortpingList) {
         shortpingRepository.deleteAll(shortpingList);
+    }
+
+    public ShortpingResponseDto findWithProductMember(String id) {
+        return shortpingQueryRepository.findWithProductMember(id);
     }
 
 }

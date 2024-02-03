@@ -85,7 +85,7 @@ public class ProductService {
     /**
      * 상품을 찾는 메서드
      */
-    private Product getProductById(String id) {
+    public Product getProductById(String id) {
 
         return productRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
