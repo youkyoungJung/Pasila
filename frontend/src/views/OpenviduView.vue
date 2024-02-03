@@ -29,7 +29,6 @@ onMounted(() => {
 })
 
 const clickToolBarBtn = (n) => {
-  console.log(n)
   controlToolBar[n].isActive = !controlToolBar[n].isActive
 }
 
