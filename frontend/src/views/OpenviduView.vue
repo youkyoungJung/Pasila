@@ -223,6 +223,7 @@ const createToken = async (sessionId) => {
     padding: 0 1rem 0 0;
 
     display: flex;
+    gap: 1rem;
     flex-direction: column;
   }
   .col-2 {
