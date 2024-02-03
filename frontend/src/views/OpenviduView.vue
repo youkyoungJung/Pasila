@@ -98,7 +98,13 @@ const joinSession = () => {
 }
 
 const leaveSession = () => {
-  if (session.value) session.value.disconnect()
+  if (session.value) {
+    if (confirm('라이브를 정말 종료하시겠습니까?')) {
+      session.value.disconnect()
+    } else {
+      return
+    }
+  }
 
   session.value = undefined
   mainStreamManager.value = undefined
