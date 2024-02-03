@@ -1,5 +1,6 @@
 package org.ssafy.pasila.domain.shortping.service.query;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponseDto;
@@ -17,7 +18,7 @@ public class ShortpingQueryService {
 
     public Shortping findById(String id) {
         return shortpingRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 숏핑이 존재하지 않습니다"));
+                .orElseThrow(() -> new NotFoundException("해당 아이디에 대한 숏핑이 존재하지 않습니다"));
     }
 
     public Shortping findByProductId(String id) {
@@ -32,16 +33,8 @@ public class ShortpingQueryService {
         return shortpingRepository.save(shortping);
     }
 
-    public List<Shortping> saveAll(List<Shortping> shortpingList) {
-        return shortpingRepository.saveAll(shortpingList);
-    }
-
     public void deleteById(String id) {
         shortpingRepository.deleteById(id);
-    }
-
-    public void deleteAll(List<Shortping> shortpingList) {
-        shortpingRepository.deleteAll(shortpingList);
     }
 
     public ShortpingResponseDto findWithProductMember(String id) {
