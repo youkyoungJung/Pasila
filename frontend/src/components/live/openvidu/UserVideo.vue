@@ -1,18 +1,42 @@
 <script setup>
+import { ref } from 'vue'
 import OvVideo from '@/components/live/openvidu/OvVideo.vue'
 
 defineProps({
   streamManager: Object
 })
+
+const liveCount = ref(1000)
 </script>
 
 <template>
+  <div class="camera-header">
+    <img src="@/assets/img/live-badge.png" alt="live" />
+    <div class="live-count">
+      <font-awesome-icon icon="fa-solid fa-user-group" />
+      <span>{{ liveCount.toLocaleString('kr-KR') }}명이 시청중입니다.</span>
+    </div>
+  </div>
   <div class="camera-box">
     <ov-video v-if="streamManager" :stream-manager="streamManager" />
   </div>
 </template>
 
 <style lang="scss" scoped>
+.camera-header {
+  @include flex-box(flex-end, space-between);
+  width: 100%;
+
+  .live-count {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    span {
+      @include font-factory($fs-1, 500);
+    }
+  }
+}
 .camera-box {
   flex: 3;
 
