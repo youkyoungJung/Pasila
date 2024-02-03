@@ -11,6 +11,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.ssafy.pasila.domain.apihandler.ErrorCode;
+import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.global.common.file.FilenameAwareInputStreamResource;
 
 import java.io.IOException;
@@ -24,20 +26,24 @@ public class FFmpegClient {
     @Value("${ffmpeg.url}")
     private String url;
 
-    public byte[] convertAudio(MultipartFile file) throws RestClientException, IOException {
+    public byte[] convertAudio(MultipartFile file) {
 
-        FilenameAwareInputStreamResource fileResource = new FilenameAwareInputStreamResource(
-                file.getInputStream(), file.getSize(), "test"
-        );
+        try {
+            FilenameAwareInputStreamResource fileResource = new FilenameAwareInputStreamResource(
+                    file.getInputStream(), file.getSize(), "test"
+            );
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", fileResource);
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", fileResource);
 
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        return restTemplate.postForObject(url + "/convert/audio/to/mp3", requestEntity, byte[].class);
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            return restTemplate.postForObject(url + "/convert/audio/to/mp3", requestEntity, byte[].class);
+        } catch (IOException e) {
+            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
 
     }
 }

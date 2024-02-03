@@ -1,5 +1,6 @@
 package org.ssafy.pasila.domain.shortping.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.gpt3.model.Script;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -75,7 +77,7 @@ public class ShortpingService {
 
 
     // 추천 하이라이트 저장
-    public void saveRecommandHighlight(String productId) {
+    public void saveRecommandHighlight(String productId) throws IOException {
         // TODO: 영상 가져오기
         MultipartFile file = null;
 
@@ -92,24 +94,19 @@ public class ShortpingService {
     // 영상에서 하이라이트 뽑기
     public List<RecommendLivelogResponseDto> getHighlightList(MultipartFile file) {
 
-        try {
-            byte[] audioFilebytes = ffmpegClient.convertAudio(file);
-            List<Script> segments = gptService.speechToText(audioFilebytes).getSegments();
+        byte[] audioFilebytes = ffmpegClient.convertAudio(file);
+        List<Script> segments = gptService.speechToText(audioFilebytes).getSegments();
 
-            if(segments == null || segments.isEmpty()) {
-                throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
-            }
-
-            String result = "";
-            for (Script script: segments) {
-                result += script.toString();
-            }
-
-            return gptService.getHighlight(result);
-        } catch (Exception e) {
-            log.error("{}", e.getMessage());
+        if(segments == null || segments.isEmpty()) {
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+
+        String result = "";
+        for (Script script: segments) {
+            result += script.toString();
+        }
+
+        return gptService.getHighlight(result);
 
     }
 

@@ -82,4 +82,8 @@ public class ShortpingApiControlller {
 
     }
 
+
+    public ApiCommonResponse<?> getThumbnailList(@PathVariable String id) {
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), "");
+    }
 }
