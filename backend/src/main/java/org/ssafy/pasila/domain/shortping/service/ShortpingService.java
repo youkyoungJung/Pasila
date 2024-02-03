@@ -113,4 +113,10 @@ public class ShortpingService {
 
     }
 
+    @Transactional
+    public void deleteShortping(String id) {
+        Shortping shortping = shortpingQueryService.findById(id);
+        shortpingQueryService.delete(shortping);
+    }
+
 }

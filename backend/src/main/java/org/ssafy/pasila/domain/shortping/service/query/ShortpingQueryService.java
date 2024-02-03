@@ -1,6 +1,7 @@
 package org.ssafy.pasila.domain.shortping.service.query;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponseDto;
@@ -11,6 +12,7 @@ import org.ssafy.pasila.domain.shortping.repository.ShortpingRepository;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ShortpingQueryService {
     private final ShortpingRepository shortpingRepository;
@@ -33,8 +35,8 @@ public class ShortpingQueryService {
         return shortpingRepository.save(shortping);
     }
 
-    public void deleteById(String id) {
-        shortpingRepository.deleteById(id);
+    public void delete(Shortping shortping) {
+        shortpingRepository.delete(shortping);
     }
 
     public ShortpingResponseDto findWithProductMember(String id) {

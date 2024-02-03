@@ -14,11 +14,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Table(name = "shortping")
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE shortping SET is_active = false WHERE id=?")
-@Where(clause = "is_active=true")
+@SQLDelete(sql = "UPDATE shortping SET is_active = false WHERE id = ?")
+@Where(clause = "is_active = true")
 public class Shortping {
 
     @Id

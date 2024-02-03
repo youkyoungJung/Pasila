@@ -22,7 +22,6 @@ public class ShortpingQueryRepository {
                         " join p.category c" +
                         " join p.member m" +
                         " where s.id=:shortpingId" +
-                        " and s.isActive=true" +
                         " and p.isActive=true", ShortpingResponseDto.class)
                 .setParameter("shortpingId", id)
                 .getSingleResult();

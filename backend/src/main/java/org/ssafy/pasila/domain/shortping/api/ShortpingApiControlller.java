@@ -75,9 +75,10 @@ public class ShortpingApiControlller {
                     content = {@Content(mediaType = "application/json")})
     })
     @DeleteMapping("/api/shortping/{id}")
-    public ApiCommonResponse<?> getHighlight(@PathVariable String id) {
+    public ApiCommonResponse<?> deleteShortping(@PathVariable String id) {
 
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), "success");
+        shortpingService.deleteShortping(id);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), "delete success");
 
     }
 
