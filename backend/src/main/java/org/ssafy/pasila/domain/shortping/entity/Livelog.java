@@ -2,6 +2,8 @@ package org.ssafy.pasila.domain.shortping.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.ssafy.pasila.domain.live.entity.Live;
 
 import java.time.LocalTime;
@@ -10,7 +12,6 @@ import java.time.LocalTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
 @Table(name = "livelog")
 public class Livelog {
@@ -36,4 +37,11 @@ public class Livelog {
         live.getLivelogs().add(this);
     }
 
+    public Livelog(LocalTime start, LocalTime end, String title, String subtitle, Live live) {
+        this.start = start;
+        this.end = end;
+        this.title = title;
+        this.subtitle = subtitle;
+        setLive(live);
+    }
 }

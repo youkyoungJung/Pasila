@@ -30,14 +30,6 @@ public class LivelogRequestDto {
     private String subtitle;
 
     public Livelog toEntity(Live live) {
-
-        return Livelog.builder()
-                .title(title)
-                .start(start)
-                .end(end)
-                .subtitle(subtitle)
-                .live(live)
-                .build();
-
+        return new Livelog(start, end, title, subtitle, live);
     }
 }

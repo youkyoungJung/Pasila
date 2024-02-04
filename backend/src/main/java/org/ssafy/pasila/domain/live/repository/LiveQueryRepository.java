@@ -13,7 +13,8 @@ public class LiveQueryRepository {
     public Live findByProductId(String id) {
 
         return em.createQuery("select l from Live l" +
-                " join fetch l.product p", Live.class)
+                " where l.product.id =: productId", Live.class)
+                .setParameter("productId", id)
                 .getSingleResult();
 
     }
