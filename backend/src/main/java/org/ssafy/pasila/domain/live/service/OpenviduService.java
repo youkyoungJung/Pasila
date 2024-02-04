@@ -28,7 +28,7 @@ public class OpenviduService {
             throws OpenViduJavaClientException, OpenViduHttpException {
         SessionProperties properties = SessionProperties.fromJson(params).build();
         Session session = openvidu.createSession(properties);
-        session.fetch();
+//        session.fetch();
         return session;
     }
 
