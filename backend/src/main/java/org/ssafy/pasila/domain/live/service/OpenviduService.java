@@ -40,4 +40,16 @@ public class OpenviduService {
         return connection.getToken();
     }
 
+    /** RECORDING **/
+    
+    // 녹화 시작
+    public Recording startRecording(String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {
+        return openvidu.startRecording(sessionId);
+    }
+
+    // 녹화 종료
+    public Recording stopRecording(String recordingId) throws OpenViduJavaClientException, OpenViduHttpException {
+        return openvidu.stopRecording(recordingId);
+    }
+
 }
