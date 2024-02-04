@@ -163,8 +163,7 @@ const controlMove = (e) => {
   flex-direction: column;
   align-items: center;
   .shortping-video {
-    margin: 0 1rem;
-    padding: 1rem 2rem;
+    margin: 0.5rem;
   }
 
   .timeline {

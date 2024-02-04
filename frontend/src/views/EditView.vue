@@ -98,6 +98,7 @@ const complete = () => {
         padding-left: 1rem;
         border: none;
         outline: none;
+        margin-top: 1rem;
       }
     }
 
