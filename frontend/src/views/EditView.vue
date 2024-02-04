@@ -56,12 +56,9 @@ const complete = () => {
       <div class="show-highlight">
         <shortping-highlight
           :data="highlights"
-          @getData="
-            (e) => {
-              highlights.push(e)
-            }
-          "
+          @addEmptyData="(e) => highlights.push(e)"
           @deleteData="(e) => highlights.splice(e, 1)"
+          @getData="(e) => (highlights[e].isEnroll = true)"
         />
         <button @click="complete" class="complete-btn">제작 완료</button>
       </div>

@@ -1,14 +1,22 @@
 <script setup>
 import { ref } from 'vue'
 import NewHighlight from '@/components/shortping/NewHighlight.vue'
-import Highlight from '@/components/shortping/Highlight.vue'
+import SavedHighlight from '@/components/shortping/SavedHighlight.vue'
 
 const props = defineProps(['data'])
-const emit = defineEmits(['getData', 'deleteData'])
+const emit = defineEmits(['getData', 'deleteData', 'addEmptyData'])
+
+let emptyData = ref({
+  isEnroll: false,
+  highlightTitle: '',
+  highlightStartTime: '',
+  highlightEndTime: '',
+  highlightSubtitle: ''
+})
 
 const addHighlight = () => {
-  //하이라이트추가
-  props.data.push({
+  emit('addEmptyData', emptyData.value)
+  emptyData = ref({
     isEnroll: false,
     highlightTitle: '',
     highlightStartTime: '',
@@ -25,12 +33,32 @@ const addHighlight = () => {
       <button @click="addHighlight">추가</button>
     </div>
     <div class="highlight-body">
-      <div v-for="(highlight, index) in props.data" key="index" class="highlights">
+      <div v-for="(highlight, index) in props.data" :key="index" class="highlights">
         <div v-if="highlight.isEnroll">
-          <Highlight :data="highlight" @deleteData="$emit('deleteData', index)" />
+          <saved-highlight
+            :data="highlight"
+            :index="index"
+            @deleteData="
+              (e) => {
+                $emit('deleteData', e.index)
+              }
+            "
+          />
         </div>
         <div v-else>
-          <new-highlight :data="highlight" @getData="$emit('getData', $event)" />
+          <new-highlight
+            :data="highlight"
+            :index="index"
+            @getTitle="(e) => (highlight.highlightTitle = e)"
+            @getSubtitle="(e) => (highlight.highlightSubtitle = e)"
+            @getStartTime="(e) => (highlight.highlightStartTime = e)"
+            @getEndTime="(e) => (highlight.highlightEndTime = e)"
+            @getData="
+              (e) => {
+                $emit('getData', e.index)
+              }
+            "
+          />
         </div>
       </div>
     </div>

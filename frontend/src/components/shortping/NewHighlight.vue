@@ -1,25 +1,48 @@
 <script setup>
-import { ref } from 'vue'
-const emit = defineEmits(['getData'])
+const props = defineProps(['data', 'index'])
+const emit = defineEmits(['getData', 'getTitle', 'getSubtitle', 'getStartTime', 'getEndTime'])
 
-const newHigh = ref({
-  isEnroll: false,
-  highlightTitle: '',
-  highlightStartTime: '',
-  highlightEndTime: '',
-  highlightSubtitle: ''
-})
-const newHighlight = () => {
-  //하이라이트 추가하기
-  newHigh.value.isEnroll = true
-  emit('getData', newHigh.value)
+const changeTime = (e) => {
+  const parsedTime = e.replace(/:/g, '') || 0
+  const hour = parsedTime.substring(0, 2)
+  const minute = parsedTime.substring(2, 4)
+  const second = parsedTime.substring(4, 6)
+  if (isFinite(hour + minute + second) == false) {
+    alert('문자는 입력하실 수 없습니다.')
+    e = '00:00:00'
+    return e
+  }
+  if (parsedTime.length >= 6) {
+    if (minute >= 60) {
+      alert('분은 59분을 넘길 수 없습니다.')
+      e = hour + ':00:00'
+      return e
+    } else if (second >= 60) {
+      alert('초는 59초를 넘길 수 없습니다.')
+      e = hour + ':' + minute + ':00'
+      return e
+    } else {
+      e = hour + ':' + minute + ':' + second
+      return e
+    }
+  }
+  return e
 }
-const resetHigh = () => {
-  newHigh.value.isEnroll = false
-  newHigh.value.highlightTitle = ''
-  newHigh.value.highlightStartTime = ''
-  newHigh.value.highlightEndTime = ''
-  newHigh.value.highlightSubtitle = ''
+
+const newHighlight = () => {
+  const start = props.data.highlightStartTime
+  const end = props.data.highlightEndTime
+  if (start.length < 6 || end.length < 6) {
+    alert('시작시간, 끝시간을 확인해주세요.')
+  } else {
+    const startTime = parseInt(props.data.highlightStartTime.replaceAll(':', ''))
+    const endTime = parseInt(props.data.highlightEndTime.replaceAll(':', ''))
+    if (endTime - startTime < 0) {
+      alert('시작시간이 끝시간보다 늦을 수 없습니다.')
+    } else {
+      emit('getData', props)
+    }
+  }
 }
 </script>
 
@@ -27,10 +50,20 @@ const resetHigh = () => {
   <div class="highlight">
     <div class="highlight-top">
       <div class="highlight-time">
-        <input type="number" v-model="newHigh.highlightStartTime" />~
-        <input type="number" v-model="newHigh.highlightEndTime" />
+        <input
+          type="text"
+          :value="props.data.highlightStartTime"
+          @input="$emit('getStartTime', changeTime($event.target.value))"
+          placeholder="hhmmss"
+        />~
+        <input
+          type="text"
+          :value="props.data.highlightEndTime"
+          @input="$emit('getEndTime', changeTime($event.target.value))"
+          placeholder="hhmmss"
+        />
       </div>
-      <button @click="newHighlight" class="delete-btn">등록</button>
+      <button @click="newHighlight()" class="delete-btn">등록</button>
     </div>
     <div class="highlight-title">
       <label for="title">제목</label>
@@ -38,7 +71,8 @@ const resetHigh = () => {
         id="title"
         type="text"
         placeholder="제목을 입력해주세요."
-        v-model="newHigh.highlightTitle"
+        :value="props.data.highlightTitle"
+        @input="$emit('getTitle', $event.target.value)"
       />
     </div>
     <div class="highlight-subtitle">
@@ -47,7 +81,8 @@ const resetHigh = () => {
         id="subtitle"
         type="text"
         placeholder="자막을 입력해주세요."
-        v-model="newHigh.highlightSubtitle"
+        :value="props.data.highlightSubtitle"
+        @input="$emit('getSubtitle', $event.target.value)"
       ></textarea>
     </div>
   </div>

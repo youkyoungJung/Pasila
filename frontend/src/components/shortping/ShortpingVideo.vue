@@ -1,14 +1,31 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 const vi = ref(null)
 const currentTime = ref(0)
-
 const props = defineProps(['data'])
 
-const times = ref([])
-
 onMounted(() => {
+  colorList()
+})
+
+watch(currentTime, (newTime) => {
+  // currentTime이 바뀔 때마다 스크롤 위치 업데이트
+  const index = Math.floor(newTime)
+  const targetElement = verticalScrollWrap.value.querySelector(`li:nth-child(${index + 1})`)
+  if (targetElement) {
+    targetElement.scrollIntoView({ behavior: 'smooth', inline: 'center' })
+  }
+})
+
+watch(props, () => {
+  colorList()
+})
+
+const times = ref([])
+const colorList = () => {
+  let newTimes = ref([])
+  //숏핑 시간 list에 css 추가
   for (let i = 0; i < props.data.length; i++) {
     let start = 0
     let startTimeArr = props.data[i].highlightStartTime.split(':')
@@ -21,13 +38,12 @@ onMounted(() => {
     if (endTimeArr[1] != '00') end += (endTimeArr[1] - '0') * 60
     end += endTimeArr[2] - '0'
     for (let j = start; j <= end; j++) {
-      times.value.push(j)
+      newTimes.value.push(j)
     }
   }
-  console.log(times.value)
-})
+  times.value = newTimes.value
+}
 
-//샘플 비디오와 샘플 이미지들
 const videos = ref([
   {
     src: new URL('@/assets/video/test/0second.png', import.meta.url).href
@@ -64,27 +80,28 @@ let startX = ref(0)
 let scrollLeft = ref(0)
 
 const verticalScrollWrap = ref(null)
-const ControlDown = (e) => {
-  isMouseDown = true
-  startX = e.pageX - verticalScrollWrap.value.offsetLeft
-  scrollLeft = verticalScrollWrap.value.scrollLeft
+const controlDown = (e) => {
+  isMouseDown.value = true
+  startX.value = e.pageX - verticalScrollWrap.value.offsetLeft
+  scrollLeft.value = verticalScrollWrap.value.scrollLeft
 }
 
-const ControlLeave = () => {
-  isMouseDown = false
+const controlLeave = () => {
+  isMouseDown.value = false
 }
 
-const ControlUp = () => {
-  isMouseDown = false
+const controlUp = () => {
+  isMouseDown.value = false
 }
 
-const ControlMove = (e) => {
-  if (!isMouseDown) return
+const controlMove = (e) => {
+  if (!isMouseDown.value) return
 
   e.preventDefault()
+
   const x = e.pageX - verticalScrollWrap.value.offsetLeft
-  const beforeScrollLeft = (x - startX) * 1
-  verticalScrollWrap.value.scrollLeft = scrollLeft - beforeScrollLeft
+  const beforeScrollLeft = (x - startX.value) * 1
+  verticalScrollWrap.value.scrollLeft = scrollLeft.value - beforeScrollLeft
 }
 </script>
 <template>
@@ -95,7 +112,7 @@ const ControlMove = (e) => {
         width="400"
         height="300"
         ref="vi"
-        @play="(e) => console.log(e.target.currentTime)"
+        @play="(e) => (currentTime = e.target.currentTime)"
         @timeupdate="(e) => (currentTime = e.target.currentTime)"
       >
         <source src="@/assets/video/test/sample-video.mp4" id="test" />
@@ -104,22 +121,34 @@ const ControlMove = (e) => {
     <div class="timeline">
       <ul
         ref="verticalScrollWrap"
-        @wheel="ControlWheel"
-        @mousedown="ControlDown"
-        @mouseleave="ControlLeave"
-        @mouseup="ControlUp"
-        @mousemove="ControlMove"
+        @wheel="controlWheel"
+        @mousedown="controlDown"
+        @mouseleave="controlLeave"
+        @mouseup="controlUp"
+        @mousemove="controlMove"
       >
         <li
           v-for="(video, idx) in videos"
           :key="idx"
           @click="() => (vi.currentTime = idx)"
           :class="currentTime >= idx && currentTime < idx + 1 ? 'selectImg' : ''"
-          :style="[times.includes(idx) ? 'background-color: #ffd5d9' : '']"
+          :style="[times.includes(idx) ? 'background-color: #f4ff19' : 'background-color: white']"
         >
           <div class="thumbnail" :style="{ 'background-image': `url(${video.src})` }"></div>
           <div class="seconds">
-            {{ Math.floor(idx / 3600) }}:{{ Math.floor(idx / 60) }}:{{ idx % 60 }}
+            {{
+              Math.floor(idx / 3600)
+                .toString()
+                .padStart(2, '0')
+            }}:{{
+              Math.floor(idx / 60)
+                .toString()
+                .padStart(2, '0')
+            }}:{{
+              Math.floor(idx % 60)
+                .toString()
+                .padStart(2, '0')
+            }}
           </div>
         </li>
       </ul>

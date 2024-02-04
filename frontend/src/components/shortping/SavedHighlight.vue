@@ -1,12 +1,9 @@
 <script setup>
-import { ref } from 'vue'
-
-const props = defineProps(['data'])
+const props = defineProps(['data', 'index'])
 const emit = defineEmits(['deleteData'])
 
 const deleteHighlight = () => {
-  //하이라이트 삭제하기
-  emit('deleteData', props.data)
+  emit('deleteData', props)
 }
 </script>
 
@@ -43,8 +40,8 @@ const deleteHighlight = () => {
     justify-content: space-between;
     align-items: center;
     .highlight-time {
-      @include box(40%, 60%, $soft-pink, 0.3rem, 0.4rem, 0.2rem);
-      border: 1px solid $soft-pink;
+      @include box(40%, 60%, $light-gray, 0.3rem, 0.4rem, 0.2rem);
+      border: 1px solid $light-gray;
       display: flex;
       justify-content: space-evenly;
 
