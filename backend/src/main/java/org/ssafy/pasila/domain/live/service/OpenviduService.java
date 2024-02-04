@@ -28,7 +28,7 @@ public class OpenviduService {
             throws OpenViduJavaClientException, OpenViduHttpException {
         SessionProperties properties = SessionProperties.fromJson(params).build();
         Session session = openvidu.createSession(properties);
-        session.fetch();
+//        session.fetch();
         return session;
     }
 
@@ -38,6 +38,18 @@ public class OpenviduService {
         ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
         Connection connection = session.createConnection(properties);
         return connection.getToken();
+    }
+
+    /** RECORDING **/
+    
+    // 녹화 시작
+    public Recording startRecording(String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {
+        return openvidu.startRecording(sessionId);
+    }
+
+    // 녹화 종료
+    public Recording stopRecording(String recordingId) throws OpenViduJavaClientException, OpenViduHttpException {
+        return openvidu.stopRecording(recordingId);
     }
 
 }
