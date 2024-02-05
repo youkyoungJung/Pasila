@@ -4,27 +4,27 @@ import FormInput from '@/components/login/FormInput.vue'
 import router from '@/router'
 
 const inputData = ref({
-  title: '비밀번호 찾기',
+  title: '비밀번호 확인',
   data: {
-    title: '이메일',
-    type: 'email'
+    title: '비밀번호',
+    type: 'password'
   },
-  button1: '이메일로 비밀번호 찾기',
-  button2: '로그인으로 돌아가기'
+  button1: '정보 수정하기',
+  button2: '홈으로 돌아가기'
 })
 
-const goEmail = (e) => {
-  //이메일 확인 후 이메일 보내주기
-  router.push('/findpw/send')
+const goMypage = (e) => {
+  //비밀번호 확인 후 정보수정페이지 가기
+  router.push('/my')
 }
 
-const goLogin = () => {
-  router.push('/login')
+const goHome = () => {
+  router.push('/')
 }
 </script>
 
 <template>
-  <form-input :info="inputData" @btn1="(e) => goEmail(e)" @btn2="goLogin()" />
+  <form-input :info="inputData" @btn1="(e) => goMypage(e)" @btn2="goHome()" />
 </template>
 
 <style lang="scss" scoped>

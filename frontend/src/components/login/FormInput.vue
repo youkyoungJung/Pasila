@@ -1,30 +1,32 @@
 <script setup>
+import VLongInput from '@/components/common/VLongInput.vue'
+
 import { ref } from 'vue'
-import FormInput from '@/components/login/FormInput.vue'
-import router from '@/router'
 
-const inputData = ref({
-  title: '비밀번호 찾기',
-  data: {
-    title: '이메일',
-    type: 'email'
-  },
-  button1: '이메일로 비밀번호 찾기',
-  button2: '로그인으로 돌아가기'
-})
+const props = defineProps(['info'])
+const emit = defineEmits(['btn1', 'btn2'])
+const inputData = ref('')
 
-const goEmail = (e) => {
-  //이메일 확인 후 이메일 보내주기
-  router.push('/findpw/send')
+const button1 = () => {
+  emit('btn1', inputData.value)
 }
 
-const goLogin = () => {
-  router.push('/login')
+const button2 = () => {
+  emit('btn2')
 }
 </script>
 
 <template>
-  <form-input :info="inputData" @btn1="(e) => goEmail(e)" @btn2="goLogin()" />
+  <div class="find-container">
+    <div class="header">{{ props.info.title }}</div>
+    <div class="content">
+      <section class="long-type">
+        <v-long-input :data="props.info.data" @getData="(e) => (inputData = e)" />
+      </section>
+      <button @click="button1" class="btn1">{{ props.info.button1 }}</button>
+      <button @click="button2" class="btn2">{{ props.info.button2 }}</button>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -54,13 +56,13 @@ const goLogin = () => {
       align-items: center;
       margin-bottom: 2rem;
     }
-    .check-pw {
+    .btn1 {
       @include box(85%, 2.5rem, $main, 0, 0.5rem, 0);
       border: 1px solid $main;
       color: white;
       cursor: pointer;
     }
-    .home {
+    .btn2 {
       @include box(85%, 2.5rem, white, 0, 0.5rem, 0);
       cursor: pointer;
       border: 1px solid $dark;
