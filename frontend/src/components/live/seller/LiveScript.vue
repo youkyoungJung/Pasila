@@ -20,7 +20,8 @@
 
 <style lang="scss" scoped>
 .script-box {
-  @include box(calc(100% - 2rem), 11rem, $gray, 20px, 1rem 0, 1rem);
+  flex: 1;
+  @include box(calc(100% - 2rem), calc(28vh - 3rem), $gray, 20px, 0, 1rem);
   .script {
     @include flex-box();
     height: 75%;
