@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 
 const selectedDate = ref(0)
 const today = reactive(new Date())
@@ -11,7 +11,10 @@ let isMouseDown = false
 let startX = 0
 let scrollLeft = 0
 
-//2주 날짜 DateList에 저장
+onMounted(() => {
+  makeDateList()
+})
+
 const makeDateList = () => {
   for (let index = 0; index < 14; index++) {
     DateList.push({
@@ -22,30 +25,26 @@ const makeDateList = () => {
   }
 }
 
-onMounted(() => {
-  makeDateList()
-})
-
-const ControlWheel = (e) => {
+const controlWheel = (e) => {
   e.preventDefault()
   calendar.value.scrollLeft += e.deltaY
 }
 
-const ControlDown = (e) => {
+const controlDown = (e) => {
   isMouseDown = true
   startX = e.pageX - calendar.value.offsetLeft
   scrollLeft = calendar.value.scrollLeft
 }
 
-const ControlLeave = () => {
+const controlLeave = () => {
   isMouseDown = false
 }
 
-const ControlUp = () => {
+const controlUp = () => {
   isMouseDown = false
 }
 
-const ControlMove = (e) => {
+const controlMove = (e) => {
   if (!isMouseDown) return
 
   e.preventDefault()
@@ -59,11 +58,11 @@ const ControlMove = (e) => {
   <div
     class="calendar"
     ref="calendar"
-    @wheel="ControlWheel"
-    @mousedown="ControlDown"
-    @mouseleave="ControlLeave"
-    @mouseup="ControlUp"
-    @mousemove="ControlMove"
+    @wheel="controlWheel"
+    @mousedown="controlDown"
+    @mouseleave="controlLeave"
+    @mouseup="controlUp"
+    @mousemove="controlMove"
   >
     <div
       v-for="(item, index) in DateList"
@@ -86,13 +85,6 @@ const ControlMove = (e) => {
 .calendar {
   @include flex-box(center, flex-start, row);
   overflow-x: scroll;
-  // ::-webkit-scrollbar {
-  //   height: 1rem;
-  // }
-  // ::-webkit-scrollbar-thumb {
-  // }
-  // ::-webkit-scrollbar-track {
-  // }
   .calendar-card {
     @include flex-box(center, center, column);
     @include box(3.5rem, 3.5rem, $light-gray, 15px, 0.8rem, 20px);
@@ -111,22 +103,15 @@ const ControlMove = (e) => {
       color: $main !important;
     }
   }
+  &::-webkit-scrollbar {
+    background: none;
+    height: 9px;
+  }
+  &::-webkit-scrollbar-thumb {
+    @include box(null, 8px, $light-dark, 30px, 0, 0);
+  }
 }
 .selected {
   background-color: $yellow !important;
 }
-
-.calendar::-webkit-scrollbar {
-  background: none;
-  height: 9px;
-}
-
-/* 스크롤바 막대 꾸미기 */
-.calendar::-webkit-scrollbar-thumb {
-  @include box(null, 8px, $light-dark, 30px, 0, 0);
-}
-
-/* 스크롤바 트랙 꾸미기 */
-// .calendar::-webkit-scrollbar-track {
-// }
 </style>

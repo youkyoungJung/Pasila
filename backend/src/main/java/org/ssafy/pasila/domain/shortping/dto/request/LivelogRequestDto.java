@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LivelogRequest {
+public class LivelogRequestDto {
 
     @Schema(description = "하이라이트 제목")
     private String title;
@@ -30,14 +30,6 @@ public class LivelogRequest {
     private String subtitle;
 
     public Livelog toEntity(Live live) {
-
-        return Livelog.builder()
-                .title(title)
-                .start(start)
-                .end(end)
-                .subtitle(subtitle)
-                .live(live)
-                .build();
-
+        return new Livelog(start, end, title, subtitle, live);
     }
 }

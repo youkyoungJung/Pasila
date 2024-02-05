@@ -29,7 +29,6 @@ defineProps({
   }
   .right {
     margin-left: 1rem;
-    // @include flex-box(flex-start, center, column);
     .title {
       @include font-factory($fs-4, bold);
       margin: 1rem 0;

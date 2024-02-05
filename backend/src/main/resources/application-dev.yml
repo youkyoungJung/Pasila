@@ -103,3 +103,9 @@ redis:
 # ffmpeg
 ffmpeg:
   url: ${FFMPEG_URL}
+
+# openvidu
+openvidu:
+  openvidu_url: ${OPENVIDU_URL}
+  openvidu_secret: ${OPENVIDU_SECRET}
+
