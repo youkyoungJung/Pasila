@@ -33,7 +33,7 @@ const makeScript = () => {
 }
 
 const sendData = (e) => {
-  emits('script', e)
+  emits('script', e.data)
 }
 
 const failLog = () => {

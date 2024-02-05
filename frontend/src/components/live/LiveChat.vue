@@ -8,14 +8,24 @@ const ChatList = reactive([
     content: '그래서 기능이 먼데;',
     profile: new URL('@/assets/img/test/rose.jpg', import.meta.url).href
   },
-  { type: 'user', user: '김빨강', content: '!기능', profile: new URL('@/assets/img/test/rose.jpg', import.meta.url).href },
+  {
+    type: 'user',
+    user: '김빨강',
+    content: '!기능',
+    profile: new URL('@/assets/img/test/rose.jpg', import.meta.url).href
+  },
   {
     type: 'user',
     user: '이제니',
     content: '기대됩니다ㅏ',
     profile: new URL('@/assets/img/test/jenny.jpg', import.meta.url).href
   },
-  { type: 'user', user: '한보라', content: '!구성', profile: new URL('@/assets/img/test/karina.jpg', import.meta.url).href },
+  {
+    type: 'user',
+    user: '한보라',
+    content: '!구성',
+    profile: new URL('@/assets/img/test/karina.jpg', import.meta.url).href
+  },
   {
     type: 'chatbot',
     user: '챗봇',
@@ -47,19 +57,22 @@ onMounted(() => {
     </div>
     <div class="chat-input">
       <input type="text" />
-      <font-awesome-icon icon="fa-solid fa-paper-plane" size="2x" />
+      <span>
+        <font-awesome-icon icon="fa-solid fa-paper-plane" class="send-icon" />
+      </span>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .live-chat-box {
-  @include box(null, 100%, none, 20px, 1rem 0 1rem 0, 0);
+  @include box(null, calc(78vh - 5px), none, 20px, 0, 0);
   border: 3px solid $main;
+  position: relative;
 
   .live-chat {
     padding: 1rem;
-    max-height: 26rem;
+    height: 63vh;
     overflow-y: scroll;
 
     -ms-overflow-style: none;
@@ -78,7 +91,7 @@ onMounted(() => {
         }
         .content {
           @include box(fit-content, fit-content, $gray, 30px, 0, 0.5rem 1rem);
-          @include font-factory($fs-2, 600);
+          @include font-factory($fs-1, 600);
         }
       }
     }
@@ -90,13 +103,20 @@ onMounted(() => {
 
 .chat-input {
   @include flex-box(center, space-between, row);
-  padding: 1rem;
+  @include box(calc(100% - 2rem), 10vh, white, 0 0 20px 20px, 0, 0 1rem);
+  position: absolute;
+  bottom: 0;
+
   input {
-    @include box(70%, null, $gray, 30px, 0, 1rem);
+    @include box(75%, null, $gray, 30px, 0, 0.5rem 1rem);
     @include font-factory($fs-1, 500);
     outline: none;
     border: none;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25) inset;
+  }
+  .send-icon {
+    height: 1.3rem;
+    width: 2rem;
   }
 }
 </style>
