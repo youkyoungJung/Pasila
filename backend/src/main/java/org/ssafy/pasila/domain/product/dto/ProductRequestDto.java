@@ -1,29 +1,45 @@
 package org.ssafy.pasila.domain.product.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import org.ssafy.pasila.domain.member.entity.Member;
-import org.ssafy.pasila.domain.product.entity.Category;
-import org.ssafy.pasila.domain.product.entity.Product;
-import org.ssafy.pasila.domain.product.entity.ProductOption;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
 public class ProductRequestDto {
 
-    @Schema(description = "제품 정보")
-    private Product product;
+    @Schema(description = "제품 id")
+    private String id;
 
-    @Schema(description = "카테고리")
-    private Category category;
+    @Schema(description = "제품 이름")
+    private String name;
 
-    @Schema(description = "판매자 정보")
-    private Member member;
+    @Schema(description = "제품 설명")
+    private String description;
 
-    @Schema(description = "제품옵션 정보")
-    private List<ProductOption> productOptions;
+    @Schema(description = "제품 썸네일")
+    private String thumbnail;
+
+    @Schema(description = "제품 생성일자")
+    private LocalDateTime createdAt;
+
+    @Schema(description = "제품 수정일자")
+    private LocalDateTime updatedAt;
+
+    @Schema(description = "제품 활성화 여부")
+    private boolean isActive;
+
+    @Schema(description = "판매자 id")
+    private Long memberId;
+
+    @Schema(description = "제품 카테고리 id")
+    private Long categoryId;
+
+    @Schema(description = "옵션 리스트")
+    private List<ProductOptionDto> options;
 
 }

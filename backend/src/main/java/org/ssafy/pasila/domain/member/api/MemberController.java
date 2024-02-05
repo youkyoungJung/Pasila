@@ -12,8 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.member.dto.ChannelDto;
 import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
-import org.ssafy.pasila.domain.member.repository.ChannelRepository;
 import org.ssafy.pasila.domain.member.entity.Member;
+import org.ssafy.pasila.domain.member.repository.ChannelRepository;
 import org.ssafy.pasila.domain.member.repository.PersonalInfoRepository;
 import org.ssafy.pasila.domain.member.service.MemberService;
 
@@ -77,6 +77,15 @@ public class MemberController {
     public ApiCommonResponse<PersonalInfoDto> getMember(@PathVariable("id") Long id) {
         PersonalInfoDto result = personalInfoRepository.findById(id);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
+    }
+
+    // 비밀번호 확인
+    @Operation(summary = "Check password", description = "마이페이지 정보 수정을 위한 비밀번호 확인")
+    @GetMapping("/{id}/pw")
+    public ApiCommonResponse<Boolean> checkPw(@PathVariable("id") Long id,
+                                              @RequestBody String password) {
+        Boolean isEqual = memberService.checkPW(id, password);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), isEqual);
     }
 
     // 회원 정보 수정

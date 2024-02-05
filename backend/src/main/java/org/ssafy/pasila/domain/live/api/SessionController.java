@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.live.service.OpenviduService;
+import org.ssafy.pasila.domain.live.utils.RetryException;
 
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class SessionController {
 
     @PostMapping("/sessions")
     public ApiCommonResponse<?> initializeSession(@RequestBody(required = false) Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
+            throws OpenViduJavaClientException, OpenViduHttpException, RetryException, InterruptedException {
         Session session = openviduService.createSession(params);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), session.getSessionId());
     }
