@@ -83,7 +83,7 @@ public class ProductController {
     }
     //상품 정보 삭제 - isActive
     @Operation(summary = "delete product", description = "상품을 삭제한다.")
-    @PutMapping("/product/{id}/delete")
+    @DeleteMapping("/product/{id}/delete")
     ApiCommonResponse<?> deleteProduct(@PathVariable("id") String id){
 
         String productId = productService.deleteProduct(id);

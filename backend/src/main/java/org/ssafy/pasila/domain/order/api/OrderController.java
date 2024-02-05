@@ -49,7 +49,7 @@ public class OrderController {
     }
 
     @Operation(summary = "cancelOrder", description = "[구매자] 주문 취소 버튼 클릭 시")
-    @PutMapping("{id}/cancel")
+    @DeleteMapping("{id}/cancel")
     public ApiCommonResponse<?> cancelOrder(@PathVariable Long id) {
 
         Long cancelId = orderService.cancelOrder(id);
