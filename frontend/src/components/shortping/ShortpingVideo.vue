@@ -3,7 +3,9 @@ import { ref, onMounted, watch } from 'vue'
 
 const vi = ref(null)
 const currentTime = ref(0)
-const props = defineProps(['data'])
+const props = defineProps(['data', 'video'])
+const videoURL =
+  props.video == '' ? 'http://localhost:5173/src/assets/video/test/test.mp4' : props.video
 
 onMounted(() => {
   colorList()
@@ -44,7 +46,7 @@ const colorList = () => {
   times.value = newTimes.value
 }
 
-const videos = ref([
+const videoImages = ref([
   {
     src: new URL('@/assets/video/test/0second.png', import.meta.url).href
   },
@@ -71,6 +73,27 @@ const videos = ref([
   },
   {
     src: new URL('@/assets/video/test/8second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/9second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/10second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/11second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/12second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/13second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/14second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/15second.png', import.meta.url).href
   }
 ])
 
@@ -115,7 +138,7 @@ const controlMove = (e) => {
         @play="(e) => (currentTime = e.target.currentTime)"
         @timeupdate="(e) => (currentTime = e.target.currentTime)"
       >
-        <source src="@/assets/video/test/sample-video.mp4" id="test" />
+        <source :src="videoURL" type="video/mp4" id="test" />
       </video>
     </div>
     <div class="timeline">
@@ -128,7 +151,7 @@ const controlMove = (e) => {
         @mousemove="controlMove"
       >
         <li
-          v-for="(video, idx) in videos"
+          v-for="(video, idx) in videoImages"
           :key="idx"
           @click="() => (vi.currentTime = idx)"
           :class="currentTime >= idx && currentTime < idx + 1 ? 'selectImg' : ''"
@@ -180,7 +203,7 @@ const controlMove = (e) => {
       }
 
       li {
-        @include box(98%, 100%, white, 0.1rem, 0, 0);
+        @include box(98%, 100%, white, 0, 0, 0);
         list-style: none;
         display: flex;
         flex-direction: column;
@@ -190,12 +213,12 @@ const controlMove = (e) => {
           background-position: center;
           width: 100px;
           height: 150px;
-          margin: 0.1rem;
+          margin: 0.2rem;
           border-radius: 0.5rem;
         }
 
         .seconds {
-          @include font-factory($fs-1, bold);
+          @include font-factory(0.8rem, bold);
         }
       }
     }

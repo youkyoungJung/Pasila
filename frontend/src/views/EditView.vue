@@ -51,17 +51,25 @@ const complete = () => {
           id="shortpingTitle"
           v-model="shortping.title"
         />
-        <shortping-video :data="highlights" />
+        <shortping-video :data="highlights" :video="video" />
       </div>
-      <div class="show-highlight">
-        <shortping-highlight
-          :data="highlights"
-          @addEmptyData="(e) => highlights.push(e)"
-          @deleteData="(e) => highlights.splice(e, 1)"
-          @getData="(e) => (highlights[e].isEnroll = true)"
-        />
-        <button @click="complete" class="complete-btn">제작 완료</button>
-      </div>
+      <suspense timeout="0">
+        <div class="show-highlight">
+          <shortping-highlight
+            :data="highlights"
+            @addEmptyData="(e) => highlights.push(e)"
+            @deleteData="(e) => highlights.splice(e, 1)"
+            @getData="(e) => (highlights[e].isEnroll = true)"
+            @video="
+              (e) => {
+                console.log(video)
+                video = e
+              }
+            "
+          />
+          <button @click="complete" class="complete-btn">제작 완료</button>
+        </div>
+      </suspense>
     </div>
   </div>
 </template>
