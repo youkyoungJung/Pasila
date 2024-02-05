@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.NotEnoughStockException;
+import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 
 @Getter
 @AllArgsConstructor
@@ -34,13 +35,7 @@ public class ProductOption {
     private Product product;
 
     //== 연관메서드==//
-    public void addProduct(Product product){
-
-        this.product = product;
-
-    }
-
-    public void updateProductOption(ProductOption productOption){
+    public void updateProductOption(ProductOptionDto productOption){
 
         this.id = productOption.getId();
         this.name = productOption.getName();
@@ -64,6 +59,19 @@ public class ProductOption {
     public void addStock(int quantity){
 
         this.stock += quantity;
+
+    }
+
+    //== 생성 메서드 ==//
+    public static void createProductOption(Product product, ProductOptionDto productOptionDto){
+
+        ProductOption.builder()
+                .name(productOptionDto.getName())
+                .stock(productOptionDto.getStock())
+                .price(productOptionDto.getPrice())
+                .discountPrice(productOptionDto.getDiscountPrice())
+                .product(product)
+                .build();
 
     }
 

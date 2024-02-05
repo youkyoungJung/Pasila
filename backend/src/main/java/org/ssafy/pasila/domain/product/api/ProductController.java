@@ -40,7 +40,7 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
                     content = {
-                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductResponseDto.class)))
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductRequestDto.class)))
             })})
     @PostMapping(value = "/product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiCommonResponse<?> createProduct(@RequestPart(value = "pr") ProductRequestDto productRequestDto,
@@ -52,9 +52,9 @@ public class ProductController {
     }
 
     // 모든 상품 조회 (카테고리 조인)
-    @Operation(summary = "get all product with category", description = "모든 상품을 조회한다.(카테고리까지 나옴)")
+    @Operation(summary = "Get all product with category", description = "모든 상품을 조회한다.(카테고리까지 나옴)")
     @GetMapping("/product")
-    public ApiCommonResponse<List<ProductResponseDto>> getAllProducts() {
+    public ApiCommonResponse<?> getAllProducts() {
 
         List<ProductResponseDto> list = productJoinRepository.findAllWithCategory();
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), list);
@@ -62,16 +62,16 @@ public class ProductController {
     }
 
     // id 에 따른 상품 조회 (카테고리 조인)
-    @Operation(summary = "get product", description = "상품을 조회한다(id)")
+    @Operation(summary = "Get product", description = "상품을 조회한다(id)")
     @GetMapping("/product/{id}")
-    public ApiCommonResponse<ProductResponseDto> getProduct(@PathVariable("id") String id){
+    public ApiCommonResponse<?> getProduct(@PathVariable("id") String id){
         ProductResponseDto response = productJoinRepository.findById(id);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), response);
 
     }
 
     // 상품 정보 수정
-    @Operation(summary = "update product", description = "상품을 수정한다.")
+    @Operation(summary = "Update product", description = "상품을 수정한다.")
     @PutMapping("/product/{id}")
     public  ApiCommonResponse<?> updateProduct(@PathVariable("id") String id,
                                                  @RequestPart(value = "pr") ProductRequestDto request,
@@ -82,8 +82,8 @@ public class ProductController {
 
     }
     //상품 정보 삭제 - isActive
-    @Operation(summary = "delete product", description = "상품을 삭제한다.")
-    @DeleteMapping("/product/{id}")
+    @Operation(summary = "Delete product", description = "상품을 삭제한다.")
+    @DeleteMapping("/product/{id}/delete")
     ApiCommonResponse<?> deleteProduct(@PathVariable("id") String id){
 
         String productId = productService.deleteProduct(id);
