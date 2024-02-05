@@ -18,7 +18,7 @@ public class SearchRepository {
         String likeParam = createLikeParam(keyword);
 
         return em.createQuery(
-                        "SELECT new org.ssafy.pasila.domain.search.dto.SearchLiveResponse" +
+                        "SELECT new org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto" +
                                 "(l.id, l.title, m.name, m.channel, p.name) " +
                                 "FROM Live l LEFT JOIN l.product p LEFT JOIN l.member m " +
                                 "WHERE (l.title LIKE :keyword " +
@@ -39,7 +39,7 @@ public class SearchRepository {
         String likeParam = createLikeParam(keyword);
 
         return em.createQuery(
-                        "SELECT new org.ssafy.pasila.domain.search.dto.SearchShortpingResponse" +
+                        "SELECT new org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto" +
                                 "(s.id, s.title) " +
                                 "FROM Shortping s LEFT JOIN s.product p LEFT JOIN p.member m " +
                                 "WHERE s.title LIKE :keyword " +

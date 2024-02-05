@@ -1,6 +1,7 @@
 package org.ssafy.pasila.global.infra.gpt3.model;
 
 import lombok.*;
+import org.ssafy.pasila.global.util.TimeUtil;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -17,8 +18,8 @@ public class Script {
 
     @Override
     public String toString() {
-
-        return "[id: " + id + ", start: " + start + ", end: " + end + ", text: " + text + "]";
+        TimeUtil timeUtil = TimeUtil.getInstance();
+        return "[id: " + id + ", start: " + timeUtil.convertTime(start) + ", end: " + timeUtil.convertTime(start) + ", text: " + text + "]";
 
     }
 
