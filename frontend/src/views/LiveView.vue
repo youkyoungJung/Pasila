@@ -1,9 +1,9 @@
 <script setup>
 import LiveCamera from '@/components/live/LiveCamera.vue'
-import LiveScript from '@/components/live/LiveScript.vue'
-import LiveStock from '@/components/live/LiveStock.vue'
+import LiveScript from '@/components/live/seller/LiveScript.vue'
+import LiveStock from '@/components/live/seller/LiveStock.vue'
 import LiveChat from '@/components/live/LiveChat.vue'
-import LiveQuestion from '@/components/live/LiveQuestion.vue'
+import LiveQuestion from '@/components/live/seller/LiveQuestion.vue'
 </script>
 
 <template>
