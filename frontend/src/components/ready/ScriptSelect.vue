@@ -29,11 +29,12 @@ const selectAccent = (i) => {
 const script = ref('')
 const makeScript = () => {
   data.value.description = script.value.replaceAll('\n', '')
+  console.log(data.value)
   getScript(data.value, sendData, failLog)
 }
 
 const sendData = (e) => {
-  emits('script', e)
+  emits('script', e.data)
 }
 
 const failLog = () => {
