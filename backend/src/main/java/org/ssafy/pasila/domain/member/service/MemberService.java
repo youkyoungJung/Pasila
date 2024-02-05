@@ -57,6 +57,14 @@ public class MemberService {
     }
 
     /**
+     * 비밀번호 확인 메서드
+     */
+    public Boolean checkPW(Long id, String pw) {
+        return getMemberById(id).getPassword().equals(pw);
+//        return getMemberById(id).getPassword().equals(암호화메서드(pw));
+    }
+
+    /**
      * 멤버 조회 메서드
      */
     private Member getMemberById(Long id) {

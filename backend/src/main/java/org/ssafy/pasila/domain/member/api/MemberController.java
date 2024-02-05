@@ -79,6 +79,15 @@ public class MemberController {
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
     }
 
+    // 비밀번호 확인
+    @Operation(summary = "Check password", description = "마이페이지 정보 수정을 위한 비밀번호 확인")
+    @GetMapping("/{id}/pw")
+    public ApiCommonResponse<Boolean> checkPw(@PathVariable("id") Long id,
+                                              @RequestBody String password) {
+        Boolean isEqual = memberService.checkPW(id, password);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), isEqual);
+    }
+
     // 회원 정보 수정
     @Operation(summary = "Update member", description = "회원 정보 수정")
     @PutMapping("/{id}")
