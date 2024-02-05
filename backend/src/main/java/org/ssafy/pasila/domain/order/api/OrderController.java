@@ -48,7 +48,7 @@ public class OrderController {
 
     }
 
-    @Operation(summary = "cancelOrder", description = "[구매자] 주문 취소 버튼 클릭 시")
+    @Operation(summary = "CancelOrder", description = "[구매자] 주문 취소 버튼 클릭 시")
     @DeleteMapping("{id}/cancel")
     public ApiCommonResponse<?> cancelOrder(@PathVariable Long id) {
 
@@ -57,7 +57,7 @@ public class OrderController {
 
     }
 
-    @Operation(summary = "changeStatus", description = "[판매자] 주문 상태 변경")
+    @Operation(summary = "ChangeStatus", description = "[판매자] 주문 상태 변경")
     @PutMapping("{id}/status")
     public ApiCommonResponse<?> changeStatus(@PathVariable Long id, @RequestBody String status) {
 
@@ -66,7 +66,7 @@ public class OrderController {
 
     }
 
-    @Operation(summary = "getStatusValues", description = "주문 상태 전체 보여주기")
+    @Operation(summary = "GetStatusValues", description = "주문 상태 전체 보여주기")
     @GetMapping("/statusValues")
     public ApiCommonResponse<List<Map<String, String>>> getStatusValues() {
 

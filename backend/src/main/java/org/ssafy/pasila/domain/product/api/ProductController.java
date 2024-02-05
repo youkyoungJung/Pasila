@@ -52,7 +52,7 @@ public class ProductController {
     }
 
     // 모든 상품 조회 (카테고리 조인)
-    @Operation(summary = "get all product with category", description = "모든 상품을 조회한다.(카테고리까지 나옴)")
+    @Operation(summary = "Get all product with category", description = "모든 상품을 조회한다.(카테고리까지 나옴)")
     @GetMapping("/product")
     public ApiCommonResponse<?> getAllProducts() {
 
@@ -62,7 +62,7 @@ public class ProductController {
     }
 
     // id 에 따른 상품 조회 (카테고리 조인)
-    @Operation(summary = "get product", description = "상품을 조회한다(id)")
+    @Operation(summary = "Get product", description = "상품을 조회한다(id)")
     @GetMapping("/product/{id}")
     public ApiCommonResponse<?> getProduct(@PathVariable("id") String id){
         ProductResponseDto response = productJoinRepository.findById(id);
@@ -71,7 +71,7 @@ public class ProductController {
     }
 
     // 상품 정보 수정
-    @Operation(summary = "update product", description = "상품을 수정한다.")
+    @Operation(summary = "Update product", description = "상품을 수정한다.")
     @PutMapping("/product/{id}")
     public  ApiCommonResponse<?> updateProduct(@PathVariable("id") String id,
                                                  @RequestPart(value = "pr") ProductRequestDto request,
@@ -82,7 +82,7 @@ public class ProductController {
 
     }
     //상품 정보 삭제 - isActive
-    @Operation(summary = "delete product", description = "상품을 삭제한다.")
+    @Operation(summary = "Delete product", description = "상품을 삭제한다.")
     @DeleteMapping("/product/{id}/delete")
     ApiCommonResponse<?> deleteProduct(@PathVariable("id") String id){
 
