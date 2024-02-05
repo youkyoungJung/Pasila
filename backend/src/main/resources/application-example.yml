@@ -101,3 +101,16 @@ redis:
 #ffmpeg
 ffmpeg:
   url: http://localhost:3000
+
+mail:
+  host: smtp.gmail.com
+  port: 465
+  username: 'example@gmail.com'
+  password: 'abcd efgh ijkl aaaa'
+  properties:
+    mail:
+      smtp:
+        auth: true
+        timeout: 5000
+        starttls:
+          enable: true
