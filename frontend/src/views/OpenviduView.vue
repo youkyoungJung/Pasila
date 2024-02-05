@@ -9,10 +9,11 @@ import LiveStock from '@/components/live/seller/LiveStock.vue'
 import LiveQuestion from '@/components/live/seller/LiveQuestion.vue'
 import LiveChat from '@/components/live/LiveChat.vue'
 import ToolBarBtn from '@/components/live/ToolBarBtn.vue'
+const { VITE_VUE_API_URL } = import.meta.env
 
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
-const APPLICATION_SERVER_URL = 'http://localhost:5000/'
+const APPLICATION_SERVER_URL = VITE_VUE_API_URL + '/api/live/'
 
 let OV = ref(undefined)
 let session = ref(undefined)
@@ -49,6 +50,7 @@ const joinSession = () => {
   })
 
   session.value.on('exception', ({ exception }) => {
+    console.warn('exception=', exception)
     alert('서버에 문제가 발생했습니다. 잠시후 다시 시도해주세요.')
     router.push('/')
   })
@@ -122,24 +124,25 @@ const getToken = async (mySessionId) => {
 
 const createSession = async (sessionId) => {
   const response = await axios.post(
-    APPLICATION_SERVER_URL + 'api/sessions',
+    APPLICATION_SERVER_URL + 'sessions',
     { customSessionId: sessionId },
     {
       headers: { 'Content-Type': 'application/json' }
     }
   )
-  return response.data // The sessionId
+  return response.data.data // The sessionId
+  // return response.data
 }
 
 const createToken = async (sessionId) => {
   const response = await axios.post(
-    APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections',
+    APPLICATION_SERVER_URL + 'sessions/' + sessionId + '/connections',
     {},
     {
       headers: { 'Content-Type': 'application/json' }
     }
   )
-  return response.data // The token
+  return response.data.data // The token
 }
 
 const controlToolBar = reactive([

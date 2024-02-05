@@ -45,13 +45,13 @@ const router = createRouter({
       name: 'findpwsend',
       component: FindPwSendView
     },
+    // {
+    //   path: '/live/:id',
+    //   name: 'live',
+    //   component: LiveView
+    // },
     {
       path: '/live/:id',
-      name: 'live',
-      component: LiveView
-    },
-    {
-      path: '/openvidu',
       name: 'openvidu',
       component: OpenviduView
     },
