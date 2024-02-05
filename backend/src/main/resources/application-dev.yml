@@ -109,3 +109,16 @@ openvidu:
   openvidu_url: ${OPENVIDU_URL}
   openvidu_secret: ${OPENVIDU_SECRET}
 
+# google SMTP
+mail:
+  host: ${MAIL_URL}
+  port: ${MAIL_PORT}
+  username: ${USER_EMAIL}
+  password: ${USER_PASSWORD}
+  properties:
+    mail:
+      smtp:
+        auth: true
+        timeout: 5000
+        starttls:
+          enable: true
