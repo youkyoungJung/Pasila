@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.shortping.dto.request.ShortpingRequestDto;
+import org.ssafy.pasila.domain.shortping.dto.response.LiveThumbnailResponse;
 import org.ssafy.pasila.domain.shortping.dto.response.LivelogResponseDto;
 import org.ssafy.pasila.domain.shortping.dto.response.RecommendLivelogResponseDto;
 import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponseDto;
@@ -83,7 +84,14 @@ public class ShortpingApiControlller {
     }
 
 
-    public ApiCommonResponse<?> getThumbnailList(@PathVariable String id) {
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), "");
+    @Operation(summary = "Get Live and thumbnail List", description = "라이브 영상 및 썸네일 리스트 url을 가져옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {@Content(mediaType = "application/json")})
+    })
+    @PostMapping("/api/shortping/thumbnail")
+    public ApiCommonResponse<?> getThumbnailList(@RequestPart(value = "productId") String productId, @RequestPart(value = "video") MultipartFile video) {
+        LiveThumbnailResponse liveThumbnailResponse = shortpingService.getThumbnailList(productId, video);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveThumbnailResponse);
     }
 }

@@ -14,6 +14,7 @@ import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.domain.shortping.dto.request.LivelogRequestDto;
 import org.ssafy.pasila.domain.shortping.dto.request.ShortpingRequestDto;
+import org.ssafy.pasila.domain.shortping.dto.response.LiveThumbnailResponse;
 import org.ssafy.pasila.domain.shortping.dto.response.RecommendLivelogResponseDto;
 import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponseDto;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
@@ -116,4 +117,18 @@ public class ShortpingService {
         shortpingQueryService.delete(shortping);
     }
 
+
+    // 라이브 영상 & 썸네일
+    public LiveThumbnailResponse getThumbnailList(String id, MultipartFile video) {
+        try {
+            Live live = liveQueryRepository.findByProductId(id);
+            // String url = "https://pasila-test.s3.ap-northeast-2.amazonaws.com/video/3.mp4";
+            // s3Uploader.getS3File("video/3.mp4");
+            return null;
+        } catch (Exception e) {
+            log.error("{}", e.getMessage());
+            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 }
