@@ -12,8 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.member.dto.ChannelDto;
 import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
-import org.ssafy.pasila.domain.member.repository.ChannelRepository;
 import org.ssafy.pasila.domain.member.entity.Member;
+import org.ssafy.pasila.domain.member.repository.ChannelRepository;
 import org.ssafy.pasila.domain.member.repository.PersonalInfoRepository;
 import org.ssafy.pasila.domain.member.service.MemberService;
 
