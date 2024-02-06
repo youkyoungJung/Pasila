@@ -2,6 +2,7 @@ package org.ssafy.pasila.domain.live.api;
 
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
+import io.openvidu.java.client.Recording;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,6 +22,9 @@ import org.ssafy.pasila.domain.live.service.OpenviduService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -38,6 +42,9 @@ public class LiveApiController {
 
     private final LiveRedisService liveRedisService;
 
+    // Pair - SessionId, RecordingId
+    private final Map<String, String> mapRecordings = new ConcurrentHashMap<>();
+
     @Operation(summary = "Live On", description = "라이브 방송 시작")
     @PutMapping("{liveId}/on")
     public ApiCommonResponse<?> liveOn(@PathVariable("liveId") String liveId)
@@ -45,7 +52,8 @@ public class LiveApiController {
         // 1. Live 정보 업데이트
         liveService.updateLiveOn(liveId);
         // 2. 화면 녹화 시작
-        openviduService.startRecording(liveId);
+        Recording recording = openviduService.startRecording(liveId);
+        mapRecordings.put(liveId, recording.getId());
         // 3. Redis
         liveRedisService.addLive(liveId, liveService.getLiveById(liveId).getTitle());
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
@@ -53,9 +61,12 @@ public class LiveApiController {
 
     @Operation(summary = "Live Off", description = "라이브 방송 종료")
     @PutMapping("{liveId}/off")
-    public ApiCommonResponse<?> liveOff(@PathVariable("liveId") String liveId) {
+    public ApiCommonResponse<?> liveOff(@PathVariable("liveId") String liveId)
+            throws OpenViduJavaClientException, OpenViduHttpException {
         // 1. Live 정보 업데이트
         liveService.updateLiveOff(liveId);
+        // 2. 화면 녹화 중단
+        openviduService.stopRecording(mapRecordings.get(liveId));
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
     }
 
