@@ -1,6 +1,5 @@
 package org.ssafy.pasila.global.infra.gpt3;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,6 +18,7 @@ import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.shortping.dto.response.RecommendLivelogResponseDto;
 import org.ssafy.pasila.global.infra.gpt3.model.ChatRequest;
 import org.ssafy.pasila.global.infra.gpt3.model.ChatResponse;
+import org.ssafy.pasila.global.infra.gpt3.model.Message;
 import org.ssafy.pasila.global.infra.gpt3.model.TranscriptionResponse;
 
 import java.util.Arrays;
@@ -146,6 +146,85 @@ public class GptClient {
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+    // TODO: assistant 생성
+    // return으로 assistant 아이디 생성 -> chatService에서 저장
+    public String createAssistance(String description) {
+//        String instruction = createInstruction(description);
+//
+//        CreateAssistantRequest request = new CreateAssistantRequest("", instruction, model);
+//        CreateAssistanceResponse response = restTemplate.postForObject(apiUrl + "/assistants", request, CreateAssistanceResponse.class);
+//
+//        if (response.getId() == null || response.getId().isEmpty()) {
+//            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+//        }
+//
+//        String assistantId = response.getId();
+//
+//        return assistantId;
+    }
+
+    // TODO: assistant 삭제 -> 라이브 종료시 같이
+    public void deleteAssistant(String assistantId) {
+        String uri = "/assistants/" + assistantId;
+        restTemplate.delete(apiUrl + uri);
+    }
+
+    // TODO: thread 생성  -> 쓰레드 내에 메세지로 예상 질문과 답변이 들어가야할 것 같음
+    // 예상 질문과 답변 db에 저장한거 불러오기?
+    public String createThread(List<Message> messages) {
+        // TODO: messages가 포함된 thread 생성
+//        CreateThreadRequest request = new CreateThreadRequest();
+//        CreateThreadResponse response = restTemplate.postForObject(apiUrl + "/threads", request, CreateThreadResponse.class);
+
+//        if (response.getId() == null || response.getId().isEmpty()) {
+//            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+//        }
+
+//        return response.getId();
+    }
+
+    // TODO: thread 삭제
+    public void deleteThread() {
+
+    }
+
+
+    // TODO: thread 내 하나의 message 추가 -> message id 반환
+    public String createMessage(String threadId, String role, String content) {
+        Message request = new Message(role, content);
+
+        return null;
+    }
+
+    // TODO: get message list
+    public
+
+
+    // TODO: thread run
+    // param으로 asssistant 모델 id 넣기
+    public String runAssistant(String threadId, String assistantId, String message) {
+        return null;
+    }
+
+    // TODO: retrieve run => status 인지 확인하고 message list 조회해야함...
+    public String retrieveRun(String threadId, String runId) {
+        return null;
+    }
+
+    // TODO: assistant? thread? 수정? -> FAQ 수정할 때 사용
+    public String createInstruction(String description) {
+        String instruction = "";
+        // 페르소나 주입
+
+        // 상품 정보 가져오기
+
+        // 가격 정보 할인 정보
+
+        // 강제할 내용
+
+        return instruction;
     }
 
 }
