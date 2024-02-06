@@ -40,11 +40,17 @@ public class OrderDto {
     @Schema(description = "주문 옵션 이름")
     private String productOptionName;
 
+    @Schema(description = "제품 id")
+    private String productId;
+
     @Schema(description = "제품 명")
     private String productName;
 
     @Schema(description = "대표 사진")
     private String productUrl;
+
+    @Schema(description = "판매자")
+    private Long sellerId;
 
     public OrderDto(Order order) {
 
@@ -57,8 +63,10 @@ public class OrderDto {
         this.status = order.getStatus();
         this.productOptionId = order.getProductOption().getId();
         this.productOptionName = order.getProductOption().getName();
+        this.productId = order.getProductOption().getProduct().getId();
         this.productName = order.getProductOption().getProduct().getName();
         this.productUrl = order.getProductOption().getProduct().getThumbnail();
+        this.sellerId = order.getProductOption().getProduct().getMember().getId();
 
     }
 

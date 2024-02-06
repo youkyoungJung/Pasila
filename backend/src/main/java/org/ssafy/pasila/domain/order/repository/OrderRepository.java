@@ -13,7 +13,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("Select new org.ssafy.pasila.domain.order.dto.OrderDto" +
             "(o.id, o.orderCnt, o.name, o.address, o.price, o.createdAt, o.status," +
-            " o.productOption.id, o.productOption.name, o.productOption.product.name, o.productOption.product.thumbnail) " +
+            " o.productOption.id, o.productOption.name, o.productOption.product.id, o.productOption.product.name, o.productOption.product.thumbnail, o.productOption.product.member.id) " +
             "from Order o " +
             "where o.id = :id")
     Optional<OrderDto> findOrderDtoById(Long id);
