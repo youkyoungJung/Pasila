@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import ShortpingVideo from '@/components/shortping/ShortpingVideo.vue'
 import ShortpingHighlight from '@/components/shortping/ShortpingHighlight.vue'
 
+const video = ref('')
 const shortping = ref({
   title: ''
 })
@@ -12,24 +13,45 @@ const highlights = ref([
     isEnroll: true,
     highlightTitle: '첫 인사',
     highlightStartTime: '00:00:01',
-    highlightEndTime: '00:00:02',
+    highlightEndTime: '00:00:03',
     highlightSubtitle: '안녕하세요! 오늘은 신상 니트를 소개해 드릴게요.'
   },
   {
     isEnroll: true,
     highlightTitle: '앙고라 니트 - 핑크 컬러',
     highlightStartTime: '00:00:04',
-    highlightEndTime: '00:00:05',
+    highlightEndTime: '00:00:06',
     highlightSubtitle: '뽀용한 색감의 핑크컬러! 청바지에 찰떡'
   },
   {
     isEnroll: true,
-    highlightTitle: '앙고라 니트 - 블랙 컬러',
+    highlightTitle: '앙고라 니트 - 블루 컬러',
     highlightStartTime: '00:00:07',
-    highlightEndTime: '00:00:08',
+    highlightEndTime: '00:00:09',
+    highlightSubtitle: '어디에나 입기 좋은 블루 컬러! 하나쯤 가지고 있으면 활용성 갑'
+  },
+  {
+    isEnroll: true,
+    highlightTitle: '앙고라 니트 - 블랙 컬러',
+    highlightStartTime: '00:00:10',
+    highlightEndTime: '00:00:12',
     highlightSubtitle: '어디에나 입기 좋은 블랙 컬러! 하나쯤 가지고 있으면 활용성 갑'
   }
 ])
+
+const sortHighlight = (e) => {
+  highlights.value[e].isEnroll = true
+  highlights.value.sort((o1, o2) => {
+    if (o1.isEnroll && o2.isEnroll) {
+      const startTimeComparison = o1.highlightStartTime.localeCompare(o2.highlightStartTime)
+      if (startTimeComparison === 0) {
+        return o1.highlightEndTime.localeCompare(o2.highlightEndTime)
+      }
+      return startTimeComparison
+    }
+    return 0
+  })
+}
 const complete = () => {
   //제작 완료버튼
 }
@@ -53,23 +75,22 @@ const complete = () => {
         />
         <shortping-video :data="highlights" :video="video" />
       </div>
-      <suspense timeout="0">
-        <div class="show-highlight">
-          <shortping-highlight
-            :data="highlights"
-            @addEmptyData="(e) => highlights.push(e)"
-            @deleteData="(e) => highlights.splice(e, 1)"
-            @getData="(e) => (highlights[e].isEnroll = true)"
-            @video="
-              (e) => {
-                console.log(video)
-                video = e
-              }
-            "
-          />
-          <button @click="complete" class="complete-btn">제작 완료</button>
-        </div>
-      </suspense>
+
+      <div class="show-highlight">
+        <shortping-highlight
+          :data="highlights"
+          @addEmptyData="(e) => highlights.push(e)"
+          @deleteData="(e) => highlights.splice(e, 1)"
+          @getData="(e) => sortHighlight(e)"
+          @video="
+            (e) => {
+              console.log(video)
+              video = e
+            }
+          "
+        />
+        <button @click="complete" class="complete-btn">제작 완료</button>
+      </div>
     </div>
   </div>
 </template>

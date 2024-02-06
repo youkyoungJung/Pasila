@@ -4,8 +4,7 @@ import { ref, onMounted, watch } from 'vue'
 const vi = ref(null)
 const currentTime = ref(0)
 const props = defineProps(['data', 'video'])
-const videoURL =
-  props.video == '' ? 'http://localhost:5173/src/assets/video/test/test.mp4' : props.video
+const videoURL = 'http://localhost:5173/src/assets/video/test/test.mp4'
 
 onMounted(() => {
   colorList()
@@ -27,7 +26,6 @@ watch(props, () => {
 const times = ref([])
 const colorList = () => {
   let newTimes = ref([])
-  //숏핑 시간 list에 css 추가
   for (let i = 0; i < props.data.length; i++) {
     let start = 0
     let startTimeArr = props.data[i].highlightStartTime.split(':')

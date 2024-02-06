@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile, toBlobURL } from '@ffmpeg/util'
 import NewHighlight from '@/components/shortping/NewHighlight.vue'
@@ -7,18 +7,6 @@ import SavedHighlight from '@/components/shortping/SavedHighlight.vue'
 
 const props = defineProps(['data'])
 const emit = defineEmits(['getData', 'deleteData', 'addEmptyData', 'video'])
-const ffmpeg = new FFmpeg({ log: true })
-const baseURL = 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm'
-onMounted(() => {
-  getFfmpeg()
-})
-const getFfmpeg = async () => {
-  await ffmpeg.load({
-    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-    workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript')
-  })
-}
 let emptyData = ref({
   isEnroll: false,
   highlightTitle: '',
@@ -27,70 +15,54 @@ let emptyData = ref({
   highlightSubtitle: ''
 })
 
+const ffmpeg = new FFmpeg()
+const baseURL = 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm'
 const videoURL = 'http://localhost:5173/src/assets/video/test/test.mp4'
-const video1 = ref('')
-let datas = ''
+
+let video1 = ref('')
 
 const preview = async () => {
-  console.log(props.data)
-  await ffmpeg.writeFile('test.mp4', await fetchFile(videoURL))
-  console.log('2')
-  datas = await ffmpeg.readFile('test.mp4')
-  console.log('1')
-  video1.value = URL.createObjectURL(new Blob([datas.buffer], { type: 'video/mp4' }))
-  console.log(datas)
-  // let start = props.data[0].highlightStartTime
-  // let end = props.data[0].highlightEndTime
-  // const args = ['-i', 'test.mp4', '-ss', `${start}`, '-to', `${end}`, '-c', 'copy', 'output.mp4']
-  // console.log('2-0')
-  // ffmpeg.writeFile('test.mp4', await fetchFile(videoURL))
-  // console.log('2-1')
-  // ffmpeg.exec(['-i', 'test.mp4', '-ss', `${start}`, '-to', `${end}`, '-c', 'copy', 'output.mp4'])
-  // console.log('2-2')
-  // for (let index = 1; index < props.data.length; index++) {
-  //   const args = [
-  //     '-i',
-  //     'test.mp4',
-  //     '-ss',
-  //     `${props.data[index].highlightStartTime}`,
-  //     '-to',
-  //     `${props.data[index].highlightEndTime}`,
-  //     '-c',
-  //     'copy',
-  //     'output1.mp4'
-  //   ]
-  //   await ffmpeg.writeFile('test.mp4', fetchFile(videoURL))
-  //   await ffmpeg.exec([
-  //     '-i',
-  //     'test.mp4',
-  //     '-ss',
-  //     `${props.data[index].highlightStartTime}`,
-  //     '-to',
-  //     `${props.data[index].highlightEndTime}`,
-  //     '-c',
-  //     'copy',
-  //     'output1.mp4'
-  //   ])
-  //   datas = ffmpeg.readFile('output1.mp4')
-  //   console.log(datas)
-  //   await combineVideos()
-  // }
-  // video1.value = URL.createObjectURL(new Blob([datas.buffer], { type: 'video/mp4' }))
-  // console.log(video1.value)
+  await ffmpeg.load({
+    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+    workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript')
+  })
+
+  const outputs = []
+  const inputFileName = 'test.mp4'
+  await ffmpeg.writeFile(inputFileName, await fetchFile(videoURL))
+  for (let i = 0; i < props.data.length; i++) {
+    const start = props.data[i].highlightStartTime
+    const end = props.data[i].highlightEndTime
+
+    const args = [
+      '-i',
+      inputFileName,
+      '-ss',
+      `${start}`,
+      '-to',
+      `${end}`,
+      '-c',
+      'copy',
+      `output${i}.mp4`
+    ]
+    await ffmpeg.exec([...args])
+    const convertArgs = ['-i', `output${i}.mp4`, '-c', 'copy', `output${i}.ts`]
+    await ffmpeg.exec([...convertArgs])
+    outputs.push(`output${i}.ts`)
+  }
+  console.log(outputs.join('|'))
+  const concatArgs = ['-i', `concat:${outputs.join('|')}`, '-c', 'copy', 'output.mp4']
+  const result = await ffmpeg.exec([...concatArgs])
+  if (result.error) {
+    console.error('FFmpeg execution error:', result.error)
+    return
+  }
+
+  const finalOutput = await ffmpeg.readFile('output.mp4')
+  video1.value = URL.createObjectURL(new Blob([finalOutput.buffer], { type: 'video/mp4' }))
 }
 
-const combineVideos = async () => {
-  const args1 = ['-i', 'output.mp4', '-c', 'copy', 'output.ts']
-  const args2 = ['-i', 'output1.mp4', '-c', 'copy', 'output1.ts']
-
-  await ffmpeg.exec([...args1])
-  await ffmpeg.exec([...args2])
-
-  const args3 = ['-i', 'concat:output.ts|output1.ts', '-c', 'copy', 'output.mp4']
-  await ffmpeg.exec([...args3])
-  datas = ffmpeg.readFile('output.mp4')
-  console.log(datas)
-}
 const addHighlight = () => {
   emit('addEmptyData', emptyData.value)
   emptyData = ref({
@@ -108,7 +80,7 @@ const addHighlight = () => {
     <div class="highlight-top">
       <span>하이라이트</span>
       <div class="highlight-btn">
-        <button @click="preview" class="preview-btn">미리보기</button>
+        <button @click="preview()" class="preview-btn">미리보기</button>
         <button @click="addHighlight" class="add-btn">추가</button>
       </div>
     </div>

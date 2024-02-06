@@ -39,6 +39,8 @@ const newHighlight = () => {
     const endTime = parseInt(props.data.highlightEndTime.replaceAll(':', ''))
     if (endTime - startTime < 0) {
       alert('시작시간이 끝시간보다 늦을 수 없습니다.')
+    } else if (endTime == startTime) {
+      alert('시작시간과 끝시간이 같을 수 없습니다.')
     } else {
       emit('getData', props)
     }
