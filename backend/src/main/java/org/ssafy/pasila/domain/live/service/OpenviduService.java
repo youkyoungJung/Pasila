@@ -5,7 +5,6 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.ssafy.pasila.domain.apihandler.ApiExceptionHandler;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.live.utils.RetryException;
 import org.ssafy.pasila.domain.live.utils.RetryOptions;
@@ -30,39 +29,76 @@ public class OpenviduService {
 
     public Session createSession(@RequestBody(required = false) Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException, InterruptedException, RetryException {
-        RetryOptions retryOptions = new RetryOptions();
-        return createSession(params, retryOptions);
+        SessionProperties properties = SessionProperties.fromJson(params).build();
+        Session session = openvidu.createSession(properties);
+        return session;
     }
 
-    public Session createSession(Map<String, Object> params, RetryOptions retryOptions)
-            throws OpenViduJavaClientException, OpenViduHttpException, InterruptedException, RetryException {
-
-        while (retryOptions.canRetry()) {
-            try {
-                SessionProperties properties = SessionProperties.fromJson(params).build();
-                Session session = openvidu.createSession(properties);
-                session.fetch();
-                return session;
-            } catch (OpenViduHttpException e) {
-                if (e.getStatus() == 404 || (e.getStatus() >= 500 && e.getStatus() <= 504)) {
-                    // 404: session does not exist
-                    // 502 ~ 504: OpenVidu Server is not available
-                    retryOptions.retrySleep();
-                }else {
-                    throw e;
-                }
-            }
-        }
-        throw new RetryException(ErrorCode.MAX_RETRIES_EXCEEDED);
-    }
+//    public Session createSession(@RequestBody(required = false) Map<String, Object> params)
+//            throws OpenViduJavaClientException, OpenViduHttpException, InterruptedException, RetryException {
+//        return createSession(params, new RetryOptions());
+//    }
+//
+//    private Session createSession(Map<String, Object> params, RetryOptions retryOptions)
+//            throws OpenViduJavaClientException, OpenViduHttpException, InterruptedException, RetryException {
+//
+//        while (retryOptions.canRetry()) {
+//            try {
+//                SessionProperties properties = SessionProperties.fromJson(params).build();
+//                Session session = openvidu.createSession(properties);
+//                session.fetch();
+//                return session;
+//            } catch (OpenViduHttpException e) {
+//                if (e.getStatus() == 404 || (e.getStatus() >= 500 && e.getStatus() <= 504)) {
+//                    // 404: session does not exist
+//                    // 502 ~ 504: OpenVidu Server is not available
+//                    retryOptions.retrySleep();
+//                } else {
+//                    throw e;
+//                }
+//            }
+//        }
+//        throw new RetryException(ErrorCode.MAX_RETRIES_EXCEEDED);
+//    }
 
     public String createConnection(String sessionId, Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
+            throws OpenViduHttpException, InterruptedException, OpenViduJavaClientException {
         Session session = openvidu.getActiveSession(sessionId);
         ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
         Connection connection = session.createConnection(properties);
         return connection.getToken();
     }
+
+//    public String createConnection(String sessionId, Map<String, Object> params)
+//            throws OpenViduHttpException, InterruptedException, OpenViduJavaClientException {
+//        Session session = openvidu.getActiveSession(sessionId);
+//        return createConnection(session, params, new RetryOptions()).getToken();
+//    }
+//
+//    private Connection createConnection(Session session, Map<String, Object> params, RetryOptions retryOptions)
+//            throws OpenViduJavaClientException, OpenViduHttpException, InterruptedException {
+//        ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
+//        Connection connection = null;
+//
+//        while (retryOptions.canRetry()) {
+//            try {
+//                connection = session.createConnection(properties);
+//                break;
+//            } catch (OpenViduHttpException e) {
+//                if (e.getStatus() >= 500 && e.getStatus() <= 504) {
+//                    retryOptions.retrySleep();
+//                } else {
+//                    throw e;
+//                }
+//            }
+//        }
+//
+//        if (connection == null) {
+//            throw new RetryException(ErrorCode.MAX_RETRIES_EXCEEDED);
+//        }
+//
+//        return connection;
+//    }
 
     /**
      * RECORDING
