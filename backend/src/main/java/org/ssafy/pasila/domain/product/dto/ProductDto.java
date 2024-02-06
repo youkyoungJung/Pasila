@@ -2,8 +2,10 @@ package org.ssafy.pasila.domain.product.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ssafy.pasila.domain.product.entity.Product;
 import java.time.LocalDateTime;
 
 @Getter
@@ -33,9 +35,21 @@ public class ProductDto {
     private boolean isActive;
 
     @Schema(description = "판매자 id")
-    private String memberId;
+    private Long memberId;
 
     @Schema(description = "제품 카테고리 id")
     private Long categoryId;
 
+    @Builder
+    public ProductDto(Product product) {
+        this.id = product.getId();
+        this.name = product.getName();
+        this.description = product.getDescription();
+        this.thumbnail = product.getThumbnail();
+        this.createdAt = product.getCreatedAt();
+        this.updatedAt = product.getUpdatedAt();
+        this.isActive = product.isActive();
+        this.memberId = product.getMember().getId();
+        this.categoryId = product.getCategory().getId();
+    }
 }

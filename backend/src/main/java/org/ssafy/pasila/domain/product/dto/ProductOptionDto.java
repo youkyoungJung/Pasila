@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ssafy.pasila.domain.product.entity.ProductOption;
 
 @Getter
 @NoArgsConstructor
@@ -26,6 +27,15 @@ public class ProductOptionDto {
     private int discountPrice;
 
     @Schema(description = "제품 id")
-    private Long productId;
+    private String productId;
+
+    public ProductOptionDto(ProductOption productOption) {
+        this.id = productOption.getId();
+        this.name = productOption.getName();
+        this.stock = productOption.getStock();
+        this.price = productOption.getPrice();
+        this.discountPrice = productOption.getDiscountPrice();
+        this.productId = productOption.getProduct().getId();
+    }
 
 }
