@@ -51,6 +51,14 @@ public class LiveApiController {
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
     }
 
+    @Operation(summary = "Live Off", description = "라이브 방송 종료")
+    @PutMapping("{liveId}/off")
+    public ApiCommonResponse<?> liveOff(@PathVariable("liveId") String liveId) {
+        // 1. Live 정보 업데이트
+        liveService.updateLiveOff(liveId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+    }
+
     @Operation(summary = "Create Qsheet", description = "큐시트를 생성합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",

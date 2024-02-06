@@ -44,6 +44,14 @@ public class LiveService {
         live.setOn(true);
     }
 
+    @Transactional
+    public void updateLiveOff(String liveId) {
+        Live live = getLiveById(liveId);
+        live.setLiveOffAt(now());
+        live.setOn(false);
+        live.setFullVideoUrl(null);
+    }
+
     public Live getLiveById(String id) {
         return liveRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
