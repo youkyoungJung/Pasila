@@ -52,6 +52,12 @@ public class LiveService {
         live.setFullVideoUrl(null);
     }
 
+    @Transactional
+    public void updateLikeCnt(String liveId, int likeCnt){
+        Live live = getLiveById(liveId);
+        live.setLikeCnt(likeCnt);
+    }
+
     public Live getLiveById(String id) {
         return liveRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));

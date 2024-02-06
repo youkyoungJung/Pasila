@@ -67,6 +67,8 @@ public class LiveApiController {
         liveService.updateLiveOff(liveId);
         // 2. 화면 녹화 중단
         openviduService.stopRecording(mapRecordings.get(liveId));
+        // 3. 좋아요수 반영
+        liveService.updateLikeCnt(liveId, liveRedisService.getLikeCnt(liveId));
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
     }
 
