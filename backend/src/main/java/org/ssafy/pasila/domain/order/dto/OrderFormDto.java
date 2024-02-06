@@ -20,7 +20,7 @@ public class OrderFormDto {
     @Schema(description = "수량")
     int quantity;
 
-    @Schema(description = "수량인")
+    @Schema(description = "수령자 이름")
     String name;
 
     @Schema(description = "배송지")
