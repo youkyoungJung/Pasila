@@ -1,6 +1,5 @@
 <script setup>
 import { onMounted, ref, reactive } from 'vue'
-import axios from 'axios'
 import router from '@/router'
 import { OpenVidu } from 'openvidu-browser'
 import { createSession, createToken } from '@/components/api/OpenviduAPI.js'
