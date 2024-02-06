@@ -19,8 +19,8 @@ import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.domain.live.service.OpenviduService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
+import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
 
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -36,6 +36,8 @@ public class LiveApiController {
 
     private final LiveService liveService;
 
+    private final LiveRedisService liveRedisService;
+
     @Operation(summary = "Live On", description = "라이브 방송 시작")
     @PutMapping("{liveId}/on")
     public ApiCommonResponse<?> liveOn(@PathVariable("liveId") String liveId)
@@ -44,7 +46,9 @@ public class LiveApiController {
         liveService.updateLiveOn(liveId);
         // 2. 화면 녹화 시작
         openviduService.startRecording(liveId);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), null);
+        // 3. Redis
+        liveRedisService.addLive(liveId, liveService.getLiveById(liveId).getTitle());
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
     }
 
     @Operation(summary = "Create Qsheet", description = "큐시트를 생성합니다.")
