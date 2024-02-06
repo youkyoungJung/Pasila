@@ -1,6 +1,7 @@
 package org.ssafy.pasila.global.infra.FFmpeg;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
@@ -9,19 +10,18 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.global.common.file.FilenameAwareInputStreamResource;
-import org.ssafy.pasila.global.infra.FFmpeg.model.ImageFile;
 import org.ssafy.pasila.global.infra.FFmpeg.model.ThumbnailResponse;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class FFmpegClient {
@@ -47,6 +47,7 @@ public class FFmpegClient {
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             return restTemplate.postForObject(url + "/convert/audio/to/mp3", requestEntity, byte[].class);
         } catch (IOException e) {
+            log.error("FFmpeg - {}", e.getMessage());
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
@@ -80,6 +81,7 @@ public class FFmpegClient {
 
             return result;
         } catch (Exception e) {
+            log.error("FFmpeg - {}", e.getMessage());
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }

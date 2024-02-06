@@ -1,6 +1,5 @@
 package org.ssafy.pasila.domain.shortping.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -119,12 +118,24 @@ public class ShortpingService {
 
 
     // 라이브 영상 & 썸네일
-    public LiveThumbnailResponse getThumbnailList(String id, MultipartFile video) {
+    public LiveThumbnailResponse getThumbnailList(String id) {
         try {
             Live live = liveQueryRepository.findByProductId(id);
-            // String url = "https://pasila-test.s3.ap-northeast-2.amazonaws.com/video/3.mp4";
-            // s3Uploader.getS3File("video/3.mp4");
-            return null;
+
+            // 라이브 영상 파일 이름 가져오기
+            String liveUrl = live.getFullVideoUrl();
+
+            // TODO: 라이브 영상 가져오기
+            byte[] liveVideo = null;
+
+            // 라이브 영상 썸네일 뽑기
+            List<String> thumbnails = ffmpegClient.convertImages(liveVideo);
+
+            return LiveThumbnailResponse.builder()
+                    .liveUrl(liveUrl)
+                    .thumbnails(thumbnails)
+                    .build();
+
         } catch (Exception e) {
             log.error("{}", e.getMessage());
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);

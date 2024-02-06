@@ -83,15 +83,17 @@ public class ShortpingApiControlller {
 
     }
 
-
     @Operation(summary = "Get Live and thumbnail List", description = "라이브 영상 및 썸네일 리스트 url을 가져옵니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = {@Content(mediaType = "application/json")})
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LiveThumbnailResponse.class))})
     })
-    @PostMapping("/api/shortping/thumbnail")
-    public ApiCommonResponse<?> getThumbnailList(@RequestPart(value = "productId") String productId, @RequestPart(value = "video") MultipartFile video) {
-        LiveThumbnailResponse liveThumbnailResponse = shortpingService.getThumbnailList(productId, video);
+    @GetMapping("/api/shortping/thumbnail")
+    public ApiCommonResponse<?> getThumbnailList(@RequestParam String productId) {
+
+        LiveThumbnailResponse liveThumbnailResponse = shortpingService.getThumbnailList(productId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveThumbnailResponse);
+
     }
+
 }
