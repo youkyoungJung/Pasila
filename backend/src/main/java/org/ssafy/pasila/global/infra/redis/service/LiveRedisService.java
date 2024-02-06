@@ -89,7 +89,6 @@ public class LiveRedisService {
                         .liveId(liveRedis.getId())
                         .title(liveRedis.getTitle())
                         .sellerId(live.getMember().getId())
-                        .name(live.getMember().getName())
                         .channel(live.getMember().getChannel())
                         .profile(live.getMember().getProfile())
                         .productId(live.getProduct().getId())

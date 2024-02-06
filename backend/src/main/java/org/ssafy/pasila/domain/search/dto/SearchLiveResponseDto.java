@@ -16,9 +16,6 @@ public class SearchLiveResponseDto {
     @Schema(description = "판매자 id")
     private Long sellerId;
 
-    @Schema(description = "판매자 이름")
-    private String name;
-
     @Schema(description = "판매자 채널명")
     private String channel;
 

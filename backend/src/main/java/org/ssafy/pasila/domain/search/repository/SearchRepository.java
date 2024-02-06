@@ -19,7 +19,7 @@ public class SearchRepository {
 
         return em.createQuery(
                        "SELECT new org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto" +
-                        "(l.id, l.title, m.id, m.name, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
+                        "(l.id, l.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
                                 "FROM Live l " +
                                 "LEFT JOIN l.product p " +
                                 "LEFT JOIN p.productOptions po " +
@@ -30,7 +30,7 @@ public class SearchRepository {
                                 "AND l.isActive = true " +
                                 "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) " +
                                 "AND l.liveOffAt IS NOT NULL " +
-                                "GROUP BY l.id, l.title, m.id, m.name, m.channel, m.profile, p.id, p.thumbnail, p.name " +
+                                "GROUP BY l.id, l.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
                                orderByClause
                         , SearchLiveResponseDto.class)
                 .setParameter("keyword", likeParam)
@@ -45,7 +45,7 @@ public class SearchRepository {
 
         return em.createQuery(
                         "SELECT new org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto" +
-                                "(s.id, s.title, m.id, m.name, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
+                                "(s.id, s.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
                                 "FROM Shortping s " +
                                 "LEFT JOIN s.product p " +
                                 "LEFT JOIN p.productOptions po " +
@@ -55,7 +55,7 @@ public class SearchRepository {
                                 "OR m.channel LIKE :keyword) " +
                                 "AND s.isActive = true " +
                                 "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) " +
-                                "GROUP BY s.id, s.title, m.id, m.name, m.channel, m.profile, p.id, p.thumbnail, p.name " +
+                                "GROUP BY s.id, s.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
                                 orderByClause
                         , SearchShortpingResponseDto.class)
                 .setParameter("keyword", likeParam)
