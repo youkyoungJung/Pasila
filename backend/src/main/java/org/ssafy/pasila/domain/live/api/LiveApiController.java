@@ -69,6 +69,8 @@ public class LiveApiController {
         liveService.updateLiveOff(liveId, recording.getUrl());
         // 3. 좋아요수 반영
         liveService.updateLikeCnt(liveId, liveRedisService.getLikeCnt(liveId));
+        // 4. Redis
+        liveRedisService.deleteLiveInRedis(liveId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
     }
 

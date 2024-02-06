@@ -104,4 +104,9 @@ public class LiveRedisService {
 
     }
 
+    // 방송 종료시 Redis에서 삭제
+    public void deleteLiveInRedis(String liveId) {
+        liveRedisRepository.deleteById(liveId);
+    }
+
 }
