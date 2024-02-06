@@ -22,4 +22,13 @@ const createToken = async (sessionId) => {
   }
 }
 
-export { createSession, createToken }
+const offLive = async (sessionId) => {
+  try {
+    const res = await local.put(`${url}/${sessionId}/off`, {})
+    return res.data
+  } catch (err) {
+    console.err('localAxios error', err)
+  }
+}
+
+export { createSession, createToken, offLive }

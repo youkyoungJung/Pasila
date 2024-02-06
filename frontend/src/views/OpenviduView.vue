@@ -2,7 +2,7 @@
 import { onMounted, ref, reactive } from 'vue'
 import router from '@/router'
 import { OpenVidu } from 'openvidu-browser'
-import { createSession, createToken } from '@/components/api/OpenviduAPI.js'
+import { createSession, createToken, offLive } from '@/components/api/OpenviduAPI.js'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
 import LiveScript from '@/components/live/seller/LiveScript.vue'
 import LiveStock from '@/components/live/seller/LiveStock.vue'
@@ -77,9 +77,10 @@ const joinSession = async () => {
   window.addEventListener('beforeunload', leaveSession)
 }
 
-const leaveSession = () => {
+const leaveSession = async () => {
   if (session.value) {
     if (confirm('라이브를 정말 종료하시겠습니까?')) {
+      await offLive(mySessionId)
       session.value.disconnect()
     } else {
       return
