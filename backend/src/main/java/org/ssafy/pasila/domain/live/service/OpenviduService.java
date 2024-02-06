@@ -80,7 +80,7 @@ public class OpenviduService {
 
         if (connection == null) {
             throw new RetryException(ErrorCode.MAX_RETRIES_EXCEEDED);
-        }git
+        }
 
         return connection;
     }
