@@ -15,9 +15,15 @@ const inputData = ref({
 })
 
 const goMypage = (e) => {
-  //비밀번호 확인 후 정보수정페이지 가기
-  console.log(checkPassword(e))
-  // router.push('/my')
+  const user = {
+    id: 1,
+    password: e
+  }
+  console.log(checkPassword(user))
+  // if () {
+  //   const user = getMyPage()
+  //   console.log(user)
+  // }
 }
 
 const goHome = () => {
