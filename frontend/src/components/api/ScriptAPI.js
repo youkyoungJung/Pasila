@@ -2,7 +2,7 @@ import { localAxios } from '@/components/api/APIModule.js'
 
 const local = localAxios()
 
-const url = '/api/live'
+const url = '/live'
 
 const getScriptExample = async (deal, success, fail) => {
   const res = await local.get(`${url}/sheet/example`, JSON.stringify(deal))

@@ -3,17 +3,13 @@ import { onMounted, ref, reactive } from 'vue'
 import axios from 'axios'
 import router from '@/router'
 import { OpenVidu } from 'openvidu-browser'
+import { createSession, createToken } from '@/components/api/OpenviduAPI.js'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
 import LiveScript from '@/components/live/seller/LiveScript.vue'
 import LiveStock from '@/components/live/seller/LiveStock.vue'
 import LiveQuestion from '@/components/live/seller/LiveQuestion.vue'
 import LiveChat from '@/components/live/LiveChat.vue'
 import ToolBarBtn from '@/components/live/ToolBarBtn.vue'
-const { VITE_VUE_API_URL } = import.meta.env
-
-axios.defaults.headers.post['Content-Type'] = 'application/json'
-
-const APPLICATION_SERVER_URL = VITE_VUE_API_URL + '/api/live/'
 
 let OV = ref(undefined)
 let session = ref(undefined)
@@ -33,7 +29,7 @@ const clickToolBarBtn = (n) => {
   controlToolBar[n].isActive = !controlToolBar[n].isActive
 }
 
-const joinSession = () => {
+const joinSession = async () => {
   OV.value = new OpenVidu()
   session.value = OV.value.initSession()
 
@@ -55,47 +51,30 @@ const joinSession = () => {
     router.push('/')
   })
 
-  getToken(mySessionId).then((token) => {
-    session.value
-      .connect(token, { clientData: myUserName })
-      .then(() => {
-        let publisherT = OV.value.initPublisher(undefined, {
-          audioSource: undefined,
-          videoSource: undefined,
-          publishAudio: true,
-          publishVideo: true,
-          frameRate: 30,
-          insertMode: 'APPEND',
-          mirror: false
-        })
+  const res = await getToken(mySessionId)
+  const token = res.data
 
-        // this.videoSessionService.generateToken(this.lesson.id).subscribe(
-        //   (response) => {
-        //     // {0: token}
-        //     this.token = response[0]
-        //     console.warn('Token: ' + this.token)
-        //     this.OPEN_VIDU_CONNECTION()
-        //   },
-        //   (error) => {
-        //     console.log(error)
-        //     if (error.status === 409) {
-        //       this.snackBar.open('The teacher has not opened the lesson yet!', 'Undo', {
-        //         duration: 3000
-        //       })
-        //       this.location.back()
-        //     }
-        //   }
-        // )
+  try {
+    await session.value.connect(token, { clientData: myUserName })
 
-        mainStreamManager.value = publisherT
-        publisher.value = publisherT
+    const publisherInfo = OV.value.initPublisher(undefined, {
+      audioSource: undefined,
+      videoSource: undefined,
+      publishAudio: true,
+      publishVideo: true,
+      frameRate: 30,
+      insertMode: 'APPEND',
+      mirror: false
+    })
 
-        session.value.publish(publisher.value)
-      })
-      .catch((error) => {
-        console.log('There was an error connecting to the session:', error.code, error.message)
-      })
-  })
+    mainStreamManager.value = publisherInfo
+    publisher.value = publisherInfo
+
+    session.value.publish(publisher.value)
+  } catch (error) {
+    console.log('There was an error connecting to the session:', error.code, error.message)
+  }
+
   window.addEventListener('beforeunload', leaveSession)
 }
 
@@ -118,31 +97,8 @@ const leaveSession = () => {
 }
 
 const getToken = async (mySessionId) => {
-  const sessionId = await createSession(mySessionId)
-  return await createToken(sessionId)
-}
-
-const createSession = async (sessionId) => {
-  const response = await axios.post(
-    APPLICATION_SERVER_URL + 'sessions',
-    { customSessionId: sessionId },
-    {
-      headers: { 'Content-Type': 'application/json' }
-    }
-  )
-  return response.data.data // The sessionId
-  // return response.data
-}
-
-const createToken = async (sessionId) => {
-  const response = await axios.post(
-    APPLICATION_SERVER_URL + 'sessions/' + sessionId + '/connections',
-    {},
-    {
-      headers: { 'Content-Type': 'application/json' }
-    }
-  )
-  return response.data.data // The token
+  const res = await createSession(mySessionId)
+  return await createToken(res.data)
 }
 
 const controlToolBar = reactive([
