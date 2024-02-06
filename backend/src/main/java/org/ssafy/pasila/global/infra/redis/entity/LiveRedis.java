@@ -1,6 +1,5 @@
 package org.ssafy.pasila.global.infra.redis.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +11,7 @@ import org.springframework.data.redis.core.RedisHash;
 @RedisHash(value = "live")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Live {
+public class LiveRedis {
 
     @Id
     private String id;
@@ -24,4 +23,5 @@ public class Live {
     public void addLike(){
         this.likeCnt++;
     }
+
 }

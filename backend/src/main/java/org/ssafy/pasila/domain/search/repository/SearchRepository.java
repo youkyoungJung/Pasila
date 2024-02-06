@@ -13,39 +13,49 @@ public class SearchRepository {
 
     private final EntityManager em;
 
-    public List<SearchLiveResponseDto> findAllByNameForLive(String keyword, String sort) {
+    public List<SearchLiveResponseDto> findAllForLive(String keyword, String sort) {
         String orderByClause = getOrderByClause(sort, "live");
         String likeParam = createLikeParam(keyword);
 
         return em.createQuery(
-                        "SELECT new org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto" +
-                                "(l.id, l.title, m.name, m.channel, p.name) " +
-                                "FROM Live l LEFT JOIN l.product p LEFT JOIN l.member m " +
+                       "SELECT new org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto" +
+                        "(l.id, l.title, m.id, m.name, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
+                                "FROM Live l " +
+                                "LEFT JOIN l.product p " +
+                                "LEFT JOIN p.productOptions po " +
+                                "LEFT JOIN l.member m " +
                                 "WHERE (l.title LIKE :keyword " +
                                 "OR p.name LIKE :keyword " +
                                 "OR m.channel LIKE :keyword) " +
                                 "AND l.isActive = true " +
-                                "AND l.liveOnAt IS NOT NULL " +
-                                orderByClause
+                                "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) " +
+                                "AND l.liveOffAt IS NOT NULL " +
+                                "GROUP BY l.id, l.title, m.id, m.name, m.channel, m.profile, p.id, p.thumbnail, p.name " +
+                               orderByClause
                         , SearchLiveResponseDto.class)
                 .setParameter("keyword", likeParam)
                 .getResultList();
 
     }
 
-    public List<SearchShortpingResponseDto> findAllByNameForShortping(String keyword, String sort) {
+    public List<SearchShortpingResponseDto> findAllForShortping(String keyword, String sort) {
 
         String orderByClause = getOrderByClause(sort, "shortping");
         String likeParam = createLikeParam(keyword);
 
         return em.createQuery(
                         "SELECT new org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto" +
-                                "(s.id, s.title) " +
-                                "FROM Shortping s LEFT JOIN s.product p LEFT JOIN p.member m " +
-                                "WHERE s.title LIKE :keyword " +
+                                "(s.id, s.title, m.id, m.name, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
+                                "FROM Shortping s " +
+                                "LEFT JOIN s.product p " +
+                                "LEFT JOIN p.productOptions po " +
+                                "LEFT JOIN p.member m " +
+                                "WHERE (s.title LIKE :keyword " +
                                 "OR p.name LIKE :keyword " +
-                                "OR m.channel LIKE :keyword " +
+                                "OR m.channel LIKE :keyword) " +
                                 "AND s.isActive = true " +
+                                "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) " +
+                                "GROUP BY s.id, s.title, m.id, m.name, m.channel, m.profile, p.id, p.thumbnail, p.name " +
                                 orderByClause
                         , SearchShortpingResponseDto.class)
                 .setParameter("keyword", likeParam)
