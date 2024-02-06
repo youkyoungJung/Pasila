@@ -1,5 +1,7 @@
 package org.ssafy.pasila.domain.live.api;
 
+import io.openvidu.java.client.OpenViduHttpException;
+import io.openvidu.java.client.OpenViduJavaClientException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,13 +10,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequestDto;
 import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
 import org.ssafy.pasila.domain.live.service.LiveService;
+import org.ssafy.pasila.domain.live.service.OpenviduService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
+
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,16 +29,21 @@ import org.ssafy.pasila.global.infra.gpt3.GptClient;
 @Tag(name = "Live", description = "Live API")
 public class LiveApiController {
 
+    @Autowired
+    private OpenviduService openviduService;
+
     private final GptClient gptService;
 
     private final LiveService liveService;
 
     @Operation(summary = "Live On", description = "라이브 방송 시작")
     @PutMapping("{liveId}/on")
-    public ApiCommonResponse<?> liveOn(@PathVariable("liveId") String liveId) {
+    public ApiCommonResponse<?> liveOn(@PathVariable("liveId") String liveId)
+            throws OpenViduJavaClientException, OpenViduHttpException {
         // 1. Live 정보 업데이트
         liveService.updateLiveOn(liveId);
-
+        // 2. 화면 녹화 시작
+        openviduService.startRecording(liveId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), null);
     }
 
