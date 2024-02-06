@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.sqids.Sqids;
 import org.ssafy.pasila.domain.member.entity.Member;
@@ -63,14 +64,16 @@ public class Live {
     @Column(name = "like_cnt")
     private Integer likeCnt;
 
-    @Column(name = "is_on")
+    @Column(name = "is_on", columnDefinition = "TINYINT(1)")
+    @ColumnDefault("false")
     private boolean isOn;
 
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
+    @ColumnDefault("true")
     private boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)
