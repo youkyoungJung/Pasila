@@ -63,10 +63,10 @@ public class LiveApiController {
     @PutMapping("{liveId}/off")
     public ApiCommonResponse<?> liveOff(@PathVariable("liveId") String liveId)
             throws OpenViduJavaClientException, OpenViduHttpException {
-        // 1. Live 정보 업데이트
-        liveService.updateLiveOff(liveId);
-        // 2. 화면 녹화 중단
-        openviduService.stopRecording(mapRecordings.get(liveId));
+        // 1. 화면 녹화 중단
+        Recording recording = openviduService.stopRecording(mapRecordings.get(liveId));
+        // 2. Live 정보 업데이트
+        liveService.updateLiveOff(liveId, recording.getUrl());
         // 3. 좋아요수 반영
         liveService.updateLikeCnt(liveId, liveRedisService.getLikeCnt(liveId));
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);

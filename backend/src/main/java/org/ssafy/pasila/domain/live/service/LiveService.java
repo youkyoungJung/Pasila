@@ -45,11 +45,11 @@ public class LiveService {
     }
 
     @Transactional
-    public void updateLiveOff(String liveId) {
+    public void updateLiveOff(String liveId, String fullVideoUrl) {
         Live live = getLiveById(liveId);
         live.setLiveOffAt(now());
         live.setOn(false);
-        live.setFullVideoUrl(null);
+        live.setFullVideoUrl(fullVideoUrl);
     }
 
     @Transactional
