@@ -14,6 +14,8 @@ import org.ssafy.pasila.domain.order.dto.OrderDto;
 import org.ssafy.pasila.domain.order.repository.OrderRepository;
 import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
+import org.ssafy.pasila.domain.product.repository.ProductRepository;
+import org.ssafy.pasila.domain.sell.dto.OrderManagementDetailDto;
 import org.ssafy.pasila.domain.sell.dto.OrderManagementDto;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +29,8 @@ public class SellService {
     private final OrderRepository orderRepository;
 
     private final MemberRepository memberRepository;
+
+    private final ProductRepository productRepository;
 
     private final ProductOptionRepository productOptionRepository;
 
@@ -63,6 +67,23 @@ public class SellService {
                             .build();
                 })
                 .collect(Collectors.toList());
+
+    }
+
+    public List<OrderManagementDetailDto> getSellProductDetail(String productId) {
+
+        return orderRepository.findAllByProductOption_Product_Id(productId)
+                .stream()
+                .map(order -> OrderManagementDetailDto.builder()
+                        .id(order.getId())
+                        .buyerName(order.getMember().getName())
+                        .address(order.getAddress())
+                        .productOptionName(order.getProductOption().getName())
+                        .orderCnt(order.getOrderCnt())
+                        .status(order.getStatus())
+                        .price(order.getPrice())
+                        .build())
+                .toList();
 
     }
 
