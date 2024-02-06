@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import FormInput from '@/components/login/FormInput.vue'
 import router from '@/router'
+import { checkPassword } from '@/components/api/MyPageAPI.js'
 
 const inputData = ref({
   title: '비밀번호 확인',
@@ -15,7 +16,8 @@ const inputData = ref({
 
 const goMypage = (e) => {
   //비밀번호 확인 후 정보수정페이지 가기
-  router.push('/my')
+  console.log(checkPassword(e))
+  // router.push('/my')
 }
 
 const goHome = () => {
