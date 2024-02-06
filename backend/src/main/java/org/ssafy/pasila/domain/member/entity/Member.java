@@ -106,6 +106,19 @@ public class Member {
     public void updateMember(PersonalInfoDto request) {
         this.name = request.getName();
         this.channel = request.getChannel();
+        this.phone = request.getPhone();
+        this.address = request.getAddress();
+        this.addressDetail = request.getAddressDetail();
+        this.gender = request.getGender();
+        this.birth = request.getBirth();
+        this.bank = request.getBank();
+        this.account = request.getAccount();
+        this.profile = request.getProfile();
+    }
+
+    public void updateMemberWithPw(PersonalInfoDto request) {
+        this.name = request.getName();
+        this.channel = request.getChannel();
         this.password = request.getPassword();
         this.phone = request.getPhone();
         this.address = request.getAddress();
