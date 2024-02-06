@@ -19,7 +19,7 @@ public class OrderDto {
     @Schema(description = "주문 수량")
     private Integer orderCnt;
 
-    @Schema(description = "수령자")
+    @Schema(description = "수령자 이름")
     private String name;
 
     @Schema(description = "구매자 이름")
