@@ -2,6 +2,7 @@ package org.ssafy.pasila.domain.order.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.ssafy.pasila.domain.order.entity.Order;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class OrderDto {
 
     @Schema(description = "주문 id")
