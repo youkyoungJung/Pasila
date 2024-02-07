@@ -37,7 +37,7 @@ public class SseEmitters {
     }
 
     public void count() {
-        int count = counter.incrementAndGet();
+        int count = counter.decrementAndGet();
         emitters.forEach(emitter -> {
             try {
                 emitter.send(SseEmitter.event()
