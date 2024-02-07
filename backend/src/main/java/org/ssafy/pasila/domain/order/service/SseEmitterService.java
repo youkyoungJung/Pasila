@@ -2,6 +2,7 @@ package org.ssafy.pasila.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,7 +120,7 @@ public class SseEmitterService {
             emitter.send(SseEmitter.event()
                     .id(id)
                     .name("sse")
-                    .data(data));
+                    .data(data, MediaType.APPLICATION_JSON));
         } catch (IOException e) {
             deadEmitter.add(emitter);
             emitterRepository.deleteAllEmitterStartWithId(id);
