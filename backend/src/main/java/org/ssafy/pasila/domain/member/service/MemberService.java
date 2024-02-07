@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
+import org.ssafy.pasila.domain.auth.dto.request.LoginRequestDto;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
@@ -149,16 +150,6 @@ public class MemberService {
             member.addProfile(url);
         }
         memberRepository.save(member);
-    }
-
-    public Member login(String email, String password) {
-        Optional<Member> findMember = memberRepository.findByEmail(email);
-        findMember.orElseThrow(() -> new IllegalStateException("The email address does not exit."));
-
-        if (findMember.get().getPassword().equals(password)) {
-            throw new IllegalStateException("Invalid email or password.");
-        }
-        return findMember.get();
     }
 
 }

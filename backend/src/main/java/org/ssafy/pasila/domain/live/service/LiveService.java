@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -12,6 +13,7 @@ public class LiveService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
+    @Transactional
     public int joinLive(String liveId , String memberId) {
 
         SetOperations<String , String> setOperations = redisTemplate.opsForSet();
@@ -20,6 +22,7 @@ public class LiveService {
 
     }
 
+    @Transactional
     public int exitLive(String liveId ,String memberId) {
 
         SetOperations<String , String> setOperations = redisTemplate.opsForSet();
