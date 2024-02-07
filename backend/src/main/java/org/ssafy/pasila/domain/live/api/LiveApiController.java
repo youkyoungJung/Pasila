@@ -69,6 +69,8 @@ public class LiveApiController {
         liveService.updateLiveOff(liveId, recording.getUrl(), liveRedisService.getLikeCnt(liveId));
         // 3. Redis
         liveRedisService.deleteLiveInRedis(liveId);
+        // 4. mapRecording 삭제
+        mapRecordings.remove(liveId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
     }
 
