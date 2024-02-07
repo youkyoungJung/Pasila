@@ -18,7 +18,6 @@ import java.util.*;
 @RequestMapping("/api/real-time")
 public class SseController {
 
-    private final List<SseEmitter> emitters = new ArrayList<>();
     private final SseEmitterService sseEmitterService;
 
     /*
@@ -31,15 +30,4 @@ public class SseController {
         return sseEmitterService.subscribe(liveId, lastEventId);
     }
 
-    public void sendStockUpdates(StockChangeEvent event){
-
-        for(SseEmitter emitter : new ArrayList<>(emitters)) {
-            try {
-                emitter.send(SseEmitter.event().data(event));
-            } catch (IOException e) {
-                emitters.remove(emitter);
-                throw new RestApiException(ErrorCode.FORBIDDEN_ACCESS);
-            }
-        }
-    }
 }

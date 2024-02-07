@@ -2,7 +2,6 @@ package org.ssafy.pasila.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,10 +14,7 @@ import org.ssafy.pasila.domain.order.event.StockChangeEvent;
 import org.ssafy.pasila.domain.order.repository.EmitterRepository;
 import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
-import org.ssafy.pasila.domain.product.repository.ProductRepository;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -31,7 +27,6 @@ public class SseEmitterService {
     private static final Long DEFAULT_TIMEOUT = 10L * 1000 * 60; //10분
     private List<SseEmitter> deadEmitter = new CopyOnWriteArrayList<>();
     private final EmitterRepository emitterRepository;
-    private final ProductRepository productRepository;
     private final ProductOptionRepository productOptionRepository;
     private final LiveRepository liveRepository;
 
@@ -78,10 +73,9 @@ public class SseEmitterService {
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 Event 유실을 예방
         if (!lastEventId.isEmpty()) { // 클라이언트가 미수신한 Event 유실 예방, 연결이 끊켰거나 미수신된 데이터를 다 찾아서 보내준다.
             Map<String, SseEmitter> events = emitterRepository.findAllEmitterStartWithByLiveId(liveId);
-            SseEmitter finalEmitter = emitter;
             events.entrySet().stream()
                     .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
-                    .forEach(entry -> sendToClient(finalEmitter, entry.getKey(), entry.getValue()));
+                    .forEach(entry -> sendToClient(emitter, entry.getKey(), entry.getValue()));
         }
 
         return emitter;
