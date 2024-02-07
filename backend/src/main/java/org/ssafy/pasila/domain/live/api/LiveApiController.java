@@ -46,7 +46,7 @@ public class LiveApiController {
     private final Map<String, String> mapRecordings = new ConcurrentHashMap<>();
 
     @Operation(summary = "Live On", description = "라이브 방송 시작")
-    @PutMapping("{liveId}/on")
+    @PutMapping("/{liveId}/on")
     public ApiCommonResponse<?> liveOn(@PathVariable("liveId") String liveId)
             throws OpenViduJavaClientException, OpenViduHttpException {
         // 1. Live 정보 업데이트
@@ -60,7 +60,7 @@ public class LiveApiController {
     }
 
     @Operation(summary = "Live Off", description = "라이브 방송 종료")
-    @PutMapping("{liveId}/off")
+    @PutMapping("/{liveId}/off")
     public ApiCommonResponse<?> liveOff(@PathVariable("liveId") String liveId)
             throws OpenViduJavaClientException, OpenViduHttpException {
         // 1. 화면 녹화 중단
