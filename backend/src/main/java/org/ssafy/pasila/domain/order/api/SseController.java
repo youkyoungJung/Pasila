@@ -37,9 +37,9 @@ public class SseController {
     @Operation(summary = "Subscribe live", description = "라이브 정보를 구독")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = StockChangeEvent.class)))
+                    content = @Content(mediaType = "text/event-stream", schema = @Schema(implementation = StockChangeEvent.class)))
     })
-    @GetMapping("/subscribe/{liveId}")
+    @GetMapping(value = "/subscribe/{liveId}", produces = "text/event-stream")
     public SseEmitter getStockUpdates(@PathVariable String liveId, @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId){
         return sseEmitterService.subscribe(liveId, lastEventId);
     }
