@@ -83,4 +83,7 @@ public class Live {
     @OneToMany(mappedBy = "live", cascade = CascadeType.ALL)
     private List<Livelog> livelogs = new ArrayList<>();
 
+    @OneToMany(mappedBy = "live", cascade = CascadeType.ALL)
+    private List<Chatbot> chatbots = new ArrayList<>();
+
 }

@@ -15,12 +15,14 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
+import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.shortping.dto.response.RecommendLivelogResponseDto;
 import org.ssafy.pasila.global.infra.gpt3.model.ChatRequest;
 import org.ssafy.pasila.global.infra.gpt3.model.ChatResponse;
 import org.ssafy.pasila.global.infra.gpt3.model.Message;
 import org.ssafy.pasila.global.infra.gpt3.model.TranscriptionResponse;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,6 +42,7 @@ public class GptClient {
     @Value("${openai.api.url}")
     private String apiUrl;
 
+    // TODO: 상품 정보 불러오기
     public String generateQsheet(String name, String productName, String productInfo) {
 
         double temperature = 0.3;
@@ -63,33 +66,17 @@ public class GptClient {
                 "7. 타사와의 차별점 설명\n" +
                 "8. 다시한번 제품 구성과 가격 강조";
 
-        ChatRequest request = new ChatRequest(model, system, user, temperature, top_p);
-        ChatResponse response = restTemplate.postForObject(apiUrl + "/chat/completions", request, ChatResponse.class);
-
-        if (response.getChoices() == null || response.getChoices().isEmpty()) {
-            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
-
-        return response.getChoices().get(0).getMessage().getContent();
+        return chatCompletions(model, system, user, temperature, top_p);
 
     }
 
     public String chatStyle(String type, String text) {
-
         double temperature = 0.5;
         double top_p = 1;
 
         String system = "너는 " + type + "이야. 내가 말하는 말을 " + type + " 말투로 말해줘.";
 
-        ChatRequest request = new ChatRequest(styleModel, system, text, temperature, top_p);
-        ChatResponse response = restTemplate.postForObject(apiUrl + "/chat/completions", request, ChatResponse.class);
-
-        if (response.getChoices() == null || response.getChoices().isEmpty()) {
-            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
-
-        return response.getChoices().get(0).getMessage().getContent();
-
+        return chatCompletions(styleModel, system, text, temperature, top_p);
     }
 
     public TranscriptionResponse speechToText(byte[] file) throws RestClientException {
@@ -131,14 +118,7 @@ public class GptClient {
                     "형식은 {\"title\": 구간의 주제, \"start\": 구간의 시작 시간, \"end\": 구간의 종료 시간} 으로 출력해주고, 구간은 콤마(,)로 구분해서 리스트에 담아 보내줘. " +
                     "다른 말은 하지 말고 결과만 출력해줘.";
 
-            ChatRequest request = new ChatRequest(model, system, text, temperature, top_p);
-            ChatResponse response = restTemplate.postForObject(apiUrl + "/chat/completions", request, ChatResponse.class);
-
-            if (response.getChoices() == null || response.getChoices().isEmpty()) {
-                throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
-            }
-
-            String result = "[" + response.getChoices().get(0).getMessage().getContent() + "]";
+            String result = "[" + chatCompletions(model, system, text, temperature, top_p) + "]";
             ObjectMapper mapper = new ObjectMapper();
 
             return Arrays.asList(mapper.readValue(result, RecommendLivelogResponseDto[].class));
@@ -148,83 +128,43 @@ public class GptClient {
 
     }
 
-    // TODO: assistant 생성
-    // return으로 assistant 아이디 생성 -> chatService에서 저장
-    public String createAssistance(String description) {
-//        String instruction = createInstruction(description);
-//
-//        CreateAssistantRequest request = new CreateAssistantRequest("", instruction, model);
-//        CreateAssistanceResponse response = restTemplate.postForObject(apiUrl + "/assistants", request, CreateAssistanceResponse.class);
-//
-//        if (response.getId() == null || response.getId().isEmpty()) {
-//            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
-//        }
-//
-//        String assistantId = response.getId();
-//
-//        return assistantId;
+
+    public String chatbotMessage(Product product, String message, List<Message> chatbotMessages) {
+        try {
+            double temperature = 0.5;
+            double top_p = 0.5;
+
+            String system = "넌 " + product.getName() + "를 판매하는 상담사야." +
+                    "제품의 정보는 다음과 같아.\n" +
+                    product.getDescription() +
+                    "\n상품에 대한 질문에만 답변해주고 상품 이외의 다른 정보는 말하지마.";
+
+            ChatRequest request = new ChatRequest(model, system, message, chatbotMessages, temperature, top_p);
+            ChatResponse response = restTemplate.postForObject(apiUrl + "/chat/completions", request, ChatResponse.class);
+
+            if (response.getChoices() == null || response.getChoices().isEmpty()) {
+                throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+            }
+
+            return response.getChoices().get(0).getMessage().getContent();
+        } catch (Exception e) {
+            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    // TODO: assistant 삭제 -> 라이브 종료시 같이
-    public void deleteAssistant(String assistantId) {
-        String uri = "/assistants/" + assistantId;
-        restTemplate.delete(apiUrl + uri);
-    }
+    public String chatCompletions(String model, String system, String message, double temperature, double top_p) {
+        try {
+            ChatRequest request = new ChatRequest(model, system, message, temperature, top_p);
+            ChatResponse response = restTemplate.postForObject(apiUrl + "/chat/completions", request, ChatResponse.class);
 
-    // TODO: thread 생성  -> 쓰레드 내에 메세지로 예상 질문과 답변이 들어가야할 것 같음
-    // 예상 질문과 답변 db에 저장한거 불러오기?
-    public String createThread(List<Message> messages) {
-        // TODO: messages가 포함된 thread 생성
-//        CreateThreadRequest request = new CreateThreadRequest();
-//        CreateThreadResponse response = restTemplate.postForObject(apiUrl + "/threads", request, CreateThreadResponse.class);
+            if (response.getChoices() == null || response.getChoices().isEmpty()) {
+                throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+            }
 
-//        if (response.getId() == null || response.getId().isEmpty()) {
-//            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
-//        }
-
-//        return response.getId();
-    }
-
-    // TODO: thread 삭제
-    public void deleteThread() {
-
-    }
-
-
-    // TODO: thread 내 하나의 message 추가 -> message id 반환
-    public String createMessage(String threadId, String role, String content) {
-        Message request = new Message(role, content);
-
-        return null;
-    }
-
-    // TODO: get message list
-    public
-
-
-    // TODO: thread run
-    // param으로 asssistant 모델 id 넣기
-    public String runAssistant(String threadId, String assistantId, String message) {
-        return null;
-    }
-
-    // TODO: retrieve run => status 인지 확인하고 message list 조회해야함...
-    public String retrieveRun(String threadId, String runId) {
-        return null;
-    }
-
-    // TODO: assistant? thread? 수정? -> FAQ 수정할 때 사용
-    public String createInstruction(String description) {
-        String instruction = "";
-        // 페르소나 주입
-
-        // 상품 정보 가져오기
-
-        // 가격 정보 할인 정보
-
-        // 강제할 내용
-
-        return instruction;
+            return response.getChoices().get(0).getMessage().getContent();
+        } catch (Exception e) {
+            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
