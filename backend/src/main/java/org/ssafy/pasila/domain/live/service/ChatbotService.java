@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
+import org.ssafy.pasila.domain.live.dto.request.ChatbotRequestDto;
 import org.ssafy.pasila.domain.live.entity.Chatbot;
 import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.live.repository.ChatbotQueryRepository;
 import org.ssafy.pasila.domain.live.repository.ChatbotRepository;
 import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
@@ -28,6 +30,8 @@ public class ChatbotService {
 
     private final LiveRepository liveRepository;
 
+    private final ChatbotQueryRepository chatbotQueryRepository;
+
     public List<Chatbot> save(List<Chatbot> chatbotList) {
         return chatbotRepository.saveAll(chatbotList);
     }
@@ -36,7 +40,10 @@ public class ChatbotService {
         return chatbotRepository.findAllByLive_id(liveId);
     }
 
-    public String chatbotMessage(String liveId, String message) {
+    public String chatbotMessage(ChatbotRequestDto chatbotRequestDto) {
+        String liveId = chatbotRequestDto.getLiveId();
+        String message = chatbotRequestDto.getMessage();
+
         Live live = liveRepository.findById(liveId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
         List<Chatbot> chatbots = findByLiveId(liveId);
@@ -47,5 +54,10 @@ public class ChatbotService {
         }
 
         return gptClient.chatbotMessage(live.getProduct(), message, chatbotMessages);
+    }
+
+    public void updateChatbot(String liveId, List<Chatbot> chatbotList) {
+        chatbotQueryRepository.deleteAllByLiveId(liveId);
+        save(chatbotList);
     }
 }
