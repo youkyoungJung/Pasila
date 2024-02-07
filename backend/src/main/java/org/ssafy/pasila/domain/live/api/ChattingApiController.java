@@ -33,10 +33,6 @@ public class ChattingApiController {
 
     private final ChattingService chattingService;
 
-    private final ChatbotService chatbotService;
-
-    private final LiveQueryRepository liveQueryRepository;
-
     @Operation(summary = "Send Chatting", description = "채팅을 구독자에게 보냅니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공")
