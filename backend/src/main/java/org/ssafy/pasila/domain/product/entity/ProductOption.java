@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Entity
 @Table(name = "product_option")
@@ -24,9 +25,6 @@ public class ProductOption {
     private String name;
 
     private Integer stock;
-
-    @Transient // JPA에서는 이 필드를 무시
-    private AtomicInteger quantity;
 
     private Integer price;
 
@@ -49,28 +47,9 @@ public class ProductOption {
 
     }
 
-    //== 실시간 처리(동시성)==//
-    public ProductOption(int stock){
-        this.quantity = new AtomicInteger(stock);
-    }
-
     //== 재고 관련 메서드 ==//
 
     //재고 증가 메서드
-    public void increaseQuantity(int amount){
-        this.quantity.addAndGet(amount);
-    }
-
-    //재고 감소 메서드
-    public void decreaseQuantity(int amount){
-        this.quantity.addAndGet(-amount);
-    }
-
-    //JPA 엔티티에 저장된 재고 값을 가져오는 메소드
-    public void setStoredStock(){
-        this.stock = this.quantity.get();
-    }
-
     public void removeStock(int quantity){
 
         int restStock = this.stock - quantity;

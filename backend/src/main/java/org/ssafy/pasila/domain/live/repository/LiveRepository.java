@@ -13,4 +13,6 @@ public interface LiveRepository extends JpaRepository<Live, String> {
 
     Optional<Live> findByProduct_Id(String id);
 
+    Optional<Live> findByProduct_IdAndIsOnTrue(String id);
+
 }
