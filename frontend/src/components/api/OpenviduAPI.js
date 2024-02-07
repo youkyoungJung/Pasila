@@ -4,22 +4,22 @@ const local = localAxios()
 
 const url = '/live'
 
-const createSession = async (sessionId) => {
+const createSessionApi = async (sessionId) => {
   try {
     const res = await local.post(`${url}/sessions`, { customSessionId: sessionId })
-    return res.data
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }
 }
 
-const createToken = async (sessionId) => {
+const createTokenApi = async (sessionId) => {
   try {
     const res = await local.post(`${url}/sessions/${sessionId}/connections`, {})
-    return res.data
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }
 }
 
-export { createSession, createToken }
+export { createSessionApi, createTokenApi }
