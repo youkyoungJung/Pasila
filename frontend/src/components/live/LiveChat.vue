@@ -80,6 +80,8 @@ onMounted(() => {
     padding: 1rem;
     height: 63vh;
     overflow-y: scroll;
+    box-shadow: 0px -4px 10px 0px rgba(0, 0, 0, 0.25) inset;
+    border-radius: 20px 20px 0 0;
 
     -ms-overflow-style: none;
     .chat-line {
