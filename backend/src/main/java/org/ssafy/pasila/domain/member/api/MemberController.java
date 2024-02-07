@@ -18,6 +18,7 @@ import org.ssafy.pasila.domain.member.repository.PersonalInfoRepository;
 import org.ssafy.pasila.domain.member.service.MemberService;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -83,8 +84,8 @@ public class MemberController {
     @Operation(summary = "Check password", description = "마이페이지 정보 수정을 위한 비밀번호 확인")
     @PostMapping("/{id}/pw")
     public ApiCommonResponse<Boolean> checkPw(@PathVariable("id") Long id,
-                                              @RequestBody String password) {
-        Boolean isEqual = memberService.checkPW(id, password);
+                                              @RequestBody Map<String, String> passwordMap) {
+        Boolean isEqual = memberService.checkPW(id, passwordMap.get("password"));
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), isEqual);
     }
 
