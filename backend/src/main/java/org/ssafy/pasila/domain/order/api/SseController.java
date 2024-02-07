@@ -39,7 +39,7 @@ public class SseController {
             @ApiResponse(responseCode = "200", description = "성공",
                     content = @Content(mediaType = "text/event-stream", schema = @Schema(implementation = StockChangeEvent.class)))
     })
-    @GetMapping(value = "/subscribe/{liveId}", produces = "text/event-stream")
+    @GetMapping(value = "/subscribe/{liveId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter getStockUpdates(@PathVariable String liveId, @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId){
         return sseEmitterService.subscribe(liveId, lastEventId);
     }
