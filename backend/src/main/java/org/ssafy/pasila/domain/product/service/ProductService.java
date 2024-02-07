@@ -10,6 +10,7 @@ import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
+import org.ssafy.pasila.domain.product.dto.ProductResponseDto;
 import org.ssafy.pasila.domain.product.entity.*;
 import org.ssafy.pasila.domain.product.repository.CategoryRepository;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
@@ -74,6 +75,28 @@ public class ProductService {
         deleteImageIfExists(product.getThumbnail());
         product.setActive(false);
         return product.getId();
+
+    }
+
+    public ProductResponseDto getProduct(String id){
+        Product product = getProductById(id);
+        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(id)
+                .stream()
+                .map(ProductOptionDto::new)
+                .toList();
+
+        ProductResponseDto result = ProductResponseDto.builder()
+                .id(product.getId())
+                .sellerId(product.getMember().getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .createdAt(product.getCreatedAt())
+                .thumbnail(product.getThumbnail())
+                .categoryId(product.getCategory().getId())
+                .options(options)
+                .build();
+
+        return result;
 
     }
 
