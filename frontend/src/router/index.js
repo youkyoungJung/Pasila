@@ -54,7 +54,8 @@ const router = createRouter({
     {
       path: '/live/:id',
       name: 'openvidu',
-      component: OpenviduView
+      component: OpenviduView,
+      props: true
     },
     {
       path: '/schedule',

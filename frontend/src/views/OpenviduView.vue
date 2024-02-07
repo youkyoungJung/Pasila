@@ -17,7 +17,9 @@ let mainStreamManager = ref(undefined)
 let publisher = ref(undefined)
 let subscribers = ref([])
 
-let userRole = ref('SUB')
+let userRole = ref('PUB')
+
+const props = defineProps(['id'])
 
 // Join form
 const mySessionId = 'SessionA'
@@ -146,7 +148,7 @@ const product = reactive({
       </section>
 
       <section class="col-3" v-if="controlToolBar[2].isActive || controlToolBar[3].isActive">
-        <live-stock v-if="controlToolBar[2].isActive" />
+        <live-stock v-if="controlToolBar[2].isActive" :live-id="props.id" />
         <live-question v-if="controlToolBar[3].isActive" />
       </section>
     </div>
