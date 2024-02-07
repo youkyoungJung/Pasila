@@ -37,7 +37,7 @@ public class OrderController {
     @PostMapping
     public ApiCommonResponse<?> createOrder(@RequestBody OrderFormDto orderFormDto) {
 
-        Long orderId = orderService.saveOrder(orderFormDto);
+        List<Long> orderId = orderService.saveOrder(orderFormDto);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), orderId);
 
     }

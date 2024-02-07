@@ -2,9 +2,13 @@ package org.ssafy.pasila.domain.product.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ssafy.pasila.domain.product.entity.ProductOption;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -35,6 +39,9 @@ public class ProductResponseDto {
     @Schema(description = "제품 카테고리 id")
     private Long categoryId;
 
+    @Schema(description = "제품 옵션")
+    private List<ProductOptionDto> options;
+
     public ProductResponseDto(String id, String name){
         this.id = id;
         this.name = name;
@@ -56,6 +63,21 @@ public class ProductResponseDto {
         this.createdAt = createdAt;
         this.thumbnail = thumbnail;
         this.categoryId = categoryId;
+
+    }
+
+    @Builder
+    public ProductResponseDto(String id, Long sellerId, String name, String description,
+                              LocalDateTime createdAt, String thumbnail, Long categoryId, List<ProductOptionDto> options){
+
+        this.id = id;
+        this.sellerId = sellerId;
+        this.name = name;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.thumbnail = thumbnail;
+        this.categoryId = categoryId;
+        this.options = options;
 
     }
 
