@@ -2,7 +2,8 @@
 import { onMounted, ref, reactive } from 'vue'
 import router from '@/router'
 import { OpenVidu } from 'openvidu-browser'
-import { createSession, createToken } from '@/components/api/OpenviduAPI.js'
+import { createSessionApi, createTokenApi } from '@/components/api/OpenviduAPI.js'
+import { getProductApi } from '@/components/api/ProductAPI'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
 import LiveScript from '@/components/live/seller/LiveScript.vue'
 import LiveStock from '@/components/live/seller/LiveStock.vue'
@@ -17,7 +18,9 @@ let mainStreamManager = ref(undefined)
 let publisher = ref(undefined)
 let subscribers = ref([])
 
-let userRole = ref('PUB')
+let userRole = ref('SUB')
+
+let product = reactive(null)
 
 const props = defineProps(['id'])
 
@@ -25,9 +28,14 @@ const props = defineProps(['id'])
 const mySessionId = 'SessionA'
 const myUserName = 'Participant' + Math.floor(Math.random() * 100)
 
-onMounted(() => {
+onMounted(async () => {
+  await getProduct()
   joinSession()
 })
+
+const getProduct = async () => {
+  product = await getProductApi(props.id)
+}
 
 const clickToolBarBtn = (n) => {
   controlToolBar[n].isActive = !controlToolBar[n].isActive
@@ -56,7 +64,7 @@ const joinSession = async () => {
   })
 
   const res = await getToken(mySessionId)
-  const token = res.data
+  const token = res
 
   try {
     await session.value.connect(token, { clientData: myUserName })
@@ -86,6 +94,7 @@ const leaveSession = () => {
   if (session.value) {
     if (confirm('라이브를 정말 종료하시겠습니까?')) {
       session.value.disconnect()
+      router.push(`/live/${props.id}/end`)
     } else {
       return
     }
@@ -101,8 +110,8 @@ const leaveSession = () => {
 }
 
 const getToken = async (mySessionId) => {
-  const res = await createSession(mySessionId)
-  return await createToken(res.data)
+  const res = await createSessionApi(mySessionId)
+  return await createTokenApi(res)
 }
 
 const controlToolBar = reactive(
@@ -122,17 +131,6 @@ const controlToolBar = reactive(
         { isActive: true, iconName: 'fa-solid fa-phone-slash', click: leaveSession }
       ]
 )
-
-const product = reactive({
-  id: 1,
-  description:
-    '<h2 class="ql-align-center">[aespa 카리나 착용] <strong>big heart necklace (3color)</strong></h2><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p><br></p><p class="ql-align-center"><strong>big heart necklace (3color)</strong></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center">사랑스러운의 하트 펜던트로 룩의 포인트가 되어 줄 네크리스입니다 :)</p><p class="ql-align-center">적당한 크기로 과하지 않고 은은한 포인트를 더해 줄 아이템이에요</p><p class="ql-align-center">일반 네크리스보다 조금 더 롱하게 내려오는</p><p class="ql-align-center">기장감으로 더욱 유니크하게 착용가능하구요,</p><p class="ql-align-center">여유줄이 있어 간편하게 길이 조절이 가능하답니다</p><p class="ql-align-center">가벼운 무게감으로 부담없이 데일리로 착용하실 수 있으실거에요!</p><p class="ql-align-center">썸머시즌에도 편안하게 착용 가능하여 추천드릴게요♡</p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong style="color: rgb(37, 37, 37);">COLOR</strong><span style="color: rgb(37, 37, 37);">&nbsp;실버, 골드, 블랙</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong style="color: rgb(37, 37, 37);">FABRIC</strong><span style="color: rgb(37, 37, 37);">&nbsp;신주</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong style="color: rgb(37, 37, 37);">비침&nbsp;</strong>X<strong style="color: rgb(37, 37, 37);">&nbsp;/&nbsp;안감&nbsp;</strong>X</p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong style="color: rgb(37, 37, 37);">SIZE</strong><span style="color: rgb(37, 37, 37);">&nbsp;free</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center">(상세사이즈)</p><p class="ql-align-center"><span style="color: rgb(117, 117, 117);">&nbsp;&nbsp;</span></p><p class="ql-align-center"><span style="color: rgb(117, 117, 117);">가로 2 세로 2 끈길이 60 (+5cm)</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong style="color: rgb(37, 37, 37);">MODEL</strong><span style="color: rgb(37, 37, 37);">&nbsp;&nbsp;JUYOUNG&nbsp;(</span><span style="color: rgb(0, 0, 0);">162cm /&nbsp;44,5size / 26inch / 235mm / pants_ s)</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong>NOTICE</strong></p><p class="ql-align-center"><br></p><p class="ql-align-center">모든 의류제품은 드라이 클리닝을 권장합니다</p><p class="ql-align-center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p><p class="ql-align-center"><br></p><p class="ql-align-center"><span style="color: rgb(125, 125, 125);">모든 실측은 단면(cm)으로 측정 되었습니다.</span></p><p class="ql-align-center"><span style="color: rgb(125, 125, 125);">제품 측정법에 따라 1-3cm정도의 오차가 발생 할 수 있습니다.</span></p><p class="ql-align-center"><span style="color: rgb(125, 125, 125);">제품 컬러는 사용자의 모니터 환경에 따라 다소 차이가 있을 수 있으며</span></p><p class="ql-align-center"><span style="color: rgb(125, 125, 125);">모델컷 보다는 상품컷 컬러를 참고 해주세요.</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><span style="color: rgb(125, 125, 125);">어리틀빗에 게시된 모든 컨텐츠들은 저작권법에 의거하여 보호받고</span></p><p class="ql-align-center"><span style="color: rgb(125, 125, 125);">있으며 무단 도용시 저작권법에 의해 법적조치를 받을 수 있습니다.</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong>ALWAYS ALITTLEBEAT!</strong></p><p><br></p>',
-  productOption: [
-    { optionId: 1, name: 'silver', price: 120000, discountPrice: 65000, stock: 12 },
-    { optionId: 2, name: 'gold', price: 120000, discountPrice: 65000, stock: 12 },
-    { optionId: 3, name: 'black', price: 120000, discountPrice: 65000, stock: 12 }
-  ]
-})
 </script>
 
 <template>
@@ -164,7 +162,11 @@ const product = reactive({
       </section>
 
       <section class="col-3">
-        <live-description :description="product.description" :options="product.productOption" />
+        <live-description
+          :description="product.description"
+          :options="product.options"
+          :live-id="props.id"
+        />
       </section>
     </div>
   </template>

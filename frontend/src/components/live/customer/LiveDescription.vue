@@ -1,9 +1,14 @@
 <script setup>
 import { ref } from 'vue'
+import router from '@/router'
+import { useOrderListStore } from '@/stores/orderList'
+
 const props = defineProps({
+  liveId: String,
   description: String,
   options: Array
 })
+const orderListStore = useOrderListStore()
 
 let myOrderList = ref([])
 
@@ -29,7 +34,15 @@ const setQuantity = (index, num) => {
   }
 }
 
-const goPay = () => {}
+const goPay = () => {
+  if (myOrderList.value.length > 0) {
+    orderListStore.orderList = myOrderList
+    //TODO: 나갈 때 session 제거 필요!
+    router.push(`/live/${props.liveId}/order`)
+  } else {
+    alert('상품 옵션을 하나 이상 선택해주세요.')
+  }
+}
 </script>
 
 <template>
@@ -93,6 +106,7 @@ const goPay = () => {}
 
         svg {
           height: 1.3rem;
+          cursor: pointer;
         }
       }
     }
@@ -110,6 +124,7 @@ const goPay = () => {}
       @include font-factory($fs-1, bold, white);
       border: none;
       outline: none;
+      cursor: pointer;
     }
   }
 }
