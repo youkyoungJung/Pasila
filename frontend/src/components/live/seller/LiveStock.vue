@@ -1,19 +1,25 @@
 <script setup>
-const ProductOptions = [
-  { name: '구성1', stock: 13, total: 40 },
-  { name: '구성2', stock: 14, total: 40 },
-  { name: '구성1', stock: 40, total: 40 }
-]
+import { onMounted } from 'vue'
+import { getLiveStockApi } from '@/components/api/RealTimeAPI'
+
+const props = defineProps({
+  liveId: String
+})
+
+let productOptions
+
+onMounted(async () => {
+  const res = await getLiveStockApi(props.liveId)
+  productOptions = res.options
+})
 </script>
 
 <template>
   <div class="stock-box">
-    <div class="row" v-for="(item, index) in ProductOptions" :key="index">
+    <div class="row" v-for="(item, index) in productOptions" :key="index">
       <span class="name">{{ item.name }}</span>
       <div class="stock-total">
         <span class="badge stock">{{ item.stock }}</span>
-        /
-        <span class="badge total">{{ item.total }}</span>
       </div>
     </div>
   </div>
