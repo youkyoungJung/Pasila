@@ -13,8 +13,11 @@ import org.ssafy.pasila.domain.order.dto.OrderFormDto;
 import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.order.entity.Status;
 import org.ssafy.pasila.domain.order.repository.OrderRepository;
+import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
+
+import java.util.ArrayList;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 
@@ -32,17 +35,26 @@ public class OrderService {
 
     /** 주문 생성 */
     @Transactional
-    public Long saveOrder(OrderFormDto orderformDto){
+    public List<Long> saveOrder(OrderFormDto orderformDto){
 
-        ProductOption productOption = productOptionRepository.findById(orderformDto.getOptionId())
-                .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+        List<Long> list = new ArrayList<>();
+        List<Long> optionsId = orderformDto.getOptions();
         Member member = memberRepository.findById(orderformDto.getMemberId())
-                .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
+                    .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
 
-        //주문 생성
-        Order order = Order.createOrder(orderformDto, member, productOption);
-        orderRepository.save(order);
-        return order.getId();
+        for(Long optionId : optionsId){
+
+            ProductOption productOption = productOptionRepository.findById(optionId)
+                    .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+
+            //주문 생성
+            Order order = Order.createOrder(orderformDto, member, productOption);
+            orderRepository.save(order);
+            list.add(order.getId());
+
+        }
+
+        return list;
 
     }
 

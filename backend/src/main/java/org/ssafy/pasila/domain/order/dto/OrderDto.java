@@ -19,8 +19,11 @@ public class OrderDto {
     @Schema(description = "주문 수량")
     private Integer orderCnt;
 
-    @Schema(description = "수량자")
+    @Schema(description = "수령자 이름")
     private String name;
+
+    @Schema(description = "구매자 이름")
+    private String buyerName;
 
     @Schema(description = "주문지")
     private String address;
@@ -57,6 +60,7 @@ public class OrderDto {
         this.id = order.getId();
         this.orderCnt = order.getOrderCnt();
         this.name = order.getName();
+        this.buyerName = order.getMember().getName();
         this.address = order.getAddress();
         this.price = order.getPrice();
         this.createdAt = order.getCreatedAt();
