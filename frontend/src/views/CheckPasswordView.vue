@@ -14,16 +14,19 @@ const inputData = ref({
   button2: '홈으로 돌아가기'
 })
 
-const goMypage = (e) => {
+const goMypage = async (e) => {
   const user = {
     id: 1,
     password: e
   }
-  console.log(checkPassword(user))
-  // if () {
-  //   const user = getMyPage()
-  //   console.log(user)
-  // }
+
+  const res = await checkPassword(user)
+
+  if (res) {
+    router.push(`/my`)
+  } else {
+    alert('비밀번호가 틀렸습니다. 다시 입력해주세요.')
+  }
 }
 
 const goHome = () => {

@@ -1,8 +1,17 @@
 <script setup>
 import router from '@/router'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
+import { getMyPage } from '@/components/api/MyPageAPI'
+
+onMounted(async () => {
+  const loginUser = {
+    id: 1
+  }
+  const userDetail = await getMyPage(loginUser)
+  console.log(userDetail)
+})
 
 const user = ref({
   profile: new URL('@/assets/img/jenny.jpg', import.meta.url).href,

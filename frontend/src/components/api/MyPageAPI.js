@@ -5,17 +5,25 @@ const local = localAxios()
 const url = '/member'
 
 const checkPassword = async (user) => {
-  console.log(user)
   try {
-    const res = await local.get(`${url}/${user.id}/pw`, {
-      params: {
-        password: user.password
-      }
-    })
-    return res.data
+    const res = await local.post(`${url}/${user.id}/pw`, { password: user.password })
+    if (res.data.data) {
+      return res.data
+    } else {
+      return false
+    }
   } catch (err) {
     console.error('localAxios error', err)
   }
 }
 
-export { checkPassword }
+const getMyPage = async (user) => {
+  try {
+    const res = await local.get(`${url}/${user.id}`)
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+  }
+}
+
+export { checkPassword, getMyPage }
