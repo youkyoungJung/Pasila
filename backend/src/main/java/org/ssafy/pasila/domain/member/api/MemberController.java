@@ -81,7 +81,7 @@ public class MemberController {
 
     // 비밀번호 확인
     @Operation(summary = "Check password", description = "마이페이지 정보 수정을 위한 비밀번호 확인")
-    @GetMapping("/{id}/pw")
+    @PostMapping("/{id}/pw")
     public ApiCommonResponse<Boolean> checkPw(@PathVariable("id") Long id,
                                               @RequestBody String password) {
         Boolean isEqual = memberService.checkPW(id, password);
