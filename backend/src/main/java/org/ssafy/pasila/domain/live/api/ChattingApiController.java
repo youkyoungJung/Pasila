@@ -8,12 +8,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.live.dto.ChatLogDto;
+import org.ssafy.pasila.domain.live.entity.Chatbot;
+import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
+import org.ssafy.pasila.domain.live.repository.LiveRepository;
+import org.ssafy.pasila.domain.live.service.ChatbotService;
 import org.ssafy.pasila.domain.live.service.ChattingService;
+import org.ssafy.pasila.global.infra.gpt3.model.Message;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RestController

@@ -18,6 +18,8 @@ import org.ssafy.pasila.domain.order.repository.OrderRepository;
 import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,32 +43,43 @@ public class OrderService {
 
     /** 주문 생성 */
     @Transactional
-    public Long saveOrder(OrderFormDto orderformDto){
+    public List<Long> saveOrder(OrderFormDto orderformDto){
 
-        ProductOption productOption = productOptionRepository.findById(orderformDto.getOptionId())
-                .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+        List<Long> list = new ArrayList<>();
+        List<Long> optionsId = orderformDto.getOptions();
+
         Member member = memberRepository.findById(orderformDto.getMemberId())
-                .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
+                    .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
 
-        //주문 생성
-        Order order = Order.createOrder(orderformDto, member, productOption);
-        orderRepository.save(order);
+        String productId = null;
 
-        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(order.getProductOption().getProduct().getId())
-                .stream()
-                .map(option -> ProductOptionDto.builder()
-                        .id(option.getId())
-                        .name(option.getName())
-                        .stock(option.getStock())
-                        .price(option.getPrice())
-                        .discountPrice(option.getDiscountPrice())
-                        .build()).toList();
+        for(Long optionId : optionsId){
 
-        Optional<Live> live = liveRepository.findByProduct_IdAndIsOnTrue(order.getProductOption().getProduct().getId());
+            ProductOption productOption = productOptionRepository.findById(optionId)
+                    .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+
+            productId = productOption.getProduct().getId();
+            //주문 생성
+            Order order = Order.createOrder(orderformDto, member, productOption);
+            orderRepository.save(order);
+            list.add(order.getId());
+        }
+
+
+        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(productId)
+        .stream()
+        .map(option -> ProductOptionDto.builder()
+                .id(option.getId())
+                .name(option.getName())
+                .stock(option.getStock())
+                .price(option.getPrice())
+                .discountPrice(option.getDiscountPrice())
+                .build()).toList();
+
+        Optional<Live> live = liveRepository.findByProduct_IdAndIsOnTrue(productId);
         live.ifPresent(l -> sseEmitterService.send(l.getId(), options));
 
-
-        return order.getId();
+        return list;
 
     }
 

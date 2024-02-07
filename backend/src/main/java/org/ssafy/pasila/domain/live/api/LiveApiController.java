@@ -1,5 +1,8 @@
 package org.ssafy.pasila.domain.live.api;
 
+import io.openvidu.java.client.OpenViduHttpException;
+import io.openvidu.java.client.OpenViduJavaClientException;
+import io.openvidu.java.client.Recording;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,13 +11,20 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequestDto;
 import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
 import org.ssafy.pasila.domain.live.service.LiveService;
+import org.ssafy.pasila.domain.live.service.OpenviduService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
+import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -23,9 +33,46 @@ import org.ssafy.pasila.global.infra.gpt3.GptClient;
 @Tag(name = "Live", description = "Live API")
 public class LiveApiController {
 
+    @Autowired
+    private OpenviduService openviduService;
+
     private final GptClient gptService;
 
     private final LiveService liveService;
+
+    private final LiveRedisService liveRedisService;
+
+    // Pair - SessionId, RecordingId
+    private final Map<String, String> mapRecordings = new ConcurrentHashMap<>();
+
+    @Operation(summary = "Live On", description = "라이브 방송 시작")
+    @PutMapping("/{liveId}/on")
+    public ApiCommonResponse<?> liveOn(@PathVariable("liveId") String liveId)
+            throws OpenViduJavaClientException, OpenViduHttpException {
+        // 1. Live 정보 업데이트
+        liveService.updateLiveOn(liveId);
+        // 2. 화면 녹화 시작
+        Recording recording = openviduService.startRecording(liveId);
+        mapRecordings.put(liveId, recording.getId());
+        // 3. Redis
+        liveRedisService.addLive(liveId, liveService.getLiveById(liveId).getTitle());
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+    }
+
+    @Operation(summary = "Live Off", description = "라이브 방송 종료")
+    @PutMapping("/{liveId}/off")
+    public ApiCommonResponse<?> liveOff(@PathVariable("liveId") String liveId)
+            throws OpenViduJavaClientException, OpenViduHttpException {
+        // 1. 화면 녹화 중단
+        Recording recording = openviduService.stopRecording(mapRecordings.get(liveId));
+        // 2. Live 정보 업데이트
+        liveService.updateLiveOff(liveId, recording.getUrl(), liveRedisService.getLikeCnt(liveId));
+        // 3. Redis
+        liveRedisService.deleteLiveInRedis(liveId);
+        // 4. mapRecording 삭제
+        mapRecordings.remove(liveId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+    }
 
     @Operation(summary = "Create Qsheet", description = "큐시트를 생성합니다.")
     @ApiResponses(value = {

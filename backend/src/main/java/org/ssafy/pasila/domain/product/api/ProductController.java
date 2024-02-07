@@ -73,7 +73,7 @@ public class ProductController {
     })
     @GetMapping("/product/{id}")
     public ApiCommonResponse<?> getProduct(@PathVariable("id") String id){
-        ProductResponseDto response = productJoinRepository.findById(id);
+        ProductResponseDto response = productService.getProduct(id);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), response);
 
     }
