@@ -56,6 +56,7 @@ public class LiveApiController {
         mapRecordings.put(liveId, recording.getId());
         // 3. Redis
         liveRedisService.addLive(liveId, liveService.getLiveById(liveId).getTitle());
+
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
     }
 
@@ -72,6 +73,13 @@ public class LiveApiController {
         // 4. mapRecording 삭제
         mapRecordings.remove(liveId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+    }
+
+    @Operation(summary = "Get ProductId", description = "라이브 방송시 판매하는 제품아이디를 반환합니다.")
+    @GetMapping("/{liveId}/productId")
+    public ApiCommonResponse<?> findSellProduct(@PathVariable("liveId") String liveId) {
+        String productId = liveService.getProductId(liveId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), productId);
     }
 
     @Operation(summary = "Create Qsheet", description = "큐시트를 생성합니다.")
