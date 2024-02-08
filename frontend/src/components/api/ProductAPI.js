@@ -10,6 +10,7 @@ const getProductApi = async (productId) => {
     return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
+    return null
   }
 }
 

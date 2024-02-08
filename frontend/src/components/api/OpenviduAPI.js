@@ -10,6 +10,7 @@ const createSessionApi = async (sessionId) => {
     return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
+    return null
   }
 }
 
@@ -19,6 +20,7 @@ const createTokenApi = async (sessionId) => {
     return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
+    return null
   }
 }
 

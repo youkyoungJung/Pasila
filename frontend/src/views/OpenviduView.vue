@@ -20,7 +20,7 @@ let subscribers = ref([])
 
 let userRole = ref('SUB')
 
-let product = reactive(null)
+let product = reactive({})
 
 const props = defineProps(['id'])
 
@@ -43,6 +43,7 @@ const clickToolBarBtn = (n) => {
 
 const joinSession = async () => {
   OV.value = new OpenVidu()
+  OV.value.enableProdMode()
   session.value = OV.value.initSession()
 
   session.value.on('streamCreated', ({ stream }) => {
