@@ -9,6 +9,7 @@ import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
+import org.ssafy.pasila.domain.product.repository.ProductRepository;
 
 
 import static java.time.LocalDateTime.*;
@@ -20,6 +21,8 @@ public class LiveService {
     private final RedisTemplate<String, String> redisTemplate;
 
     private final LiveRepository liveRepository;
+
+    private final ProductRepository productRepository;
 
     public int joinLive(String liveId, String memberId) {
 
@@ -58,4 +61,8 @@ public class LiveService {
                 .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
+    public String getProductId(String liveId) {
+        Live live = liveRepository.findById(liveId).orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+        return live.getProduct().getId();
+    }
 }
