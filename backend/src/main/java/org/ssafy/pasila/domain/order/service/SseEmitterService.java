@@ -32,6 +32,7 @@ public class SseEmitterService {
     private final LiveRepository liveRepository;
 
     /**SSE통신*/
+    @Transactional
     public SseEmitter subscribe(String liveId, String lastEventId){
 
         String emitterId = makeTimeIncludedId(liveId);
@@ -51,21 +52,7 @@ public class SseEmitterService {
         emitter.onTimeout(() -> emitterRepository.deleteAllEmitterStartWithId(liveId));
         emitter.onError((e) -> emitterRepository.deleteAllEmitterStartWithId(liveId));
 
-        Live live = liveRepository.findById(liveId)
-                .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
-
-        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(live.getProduct().getId())
-                .stream()
-                .map(option -> ProductOptionDto.builder()
-                        .id(option.getId())
-                        .name(option.getName())
-                        .stock(option.getStock())
-                        .price(option.getPrice())
-                        .discountPrice(option.getDiscountPrice())
-                        .productId(option.getProduct().getId())
-                        .build()
-                )
-                .toList();
+        List<ProductOptionDto> options = getProductOptions(liveId);
 
         // 연결 직후, 데이터 전송이 없을 시 503 에러 발생. 에러 방지 위한 더미데이터 전송
         StockChangeEvent notification = createNotification(liveId, options);
@@ -82,6 +69,24 @@ public class SseEmitterService {
         return emitter;
     }
 
+    public  List<ProductOptionDto> getProductOptions(String liveId){
+
+        Live live = liveRepository.findById(liveId)
+                .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
+
+       return productOptionRepository.findAllByProduct_Id(live.getProduct().getId())
+                .stream()
+                .map(option -> ProductOptionDto.builder()
+                        .id(option.getId())
+                        .name(option.getName())
+                        .stock(option.getStock())
+                        .price(option.getPrice())
+                        .discountPrice(option.getDiscountPrice())
+                        .productId(option.getProduct().getId())
+                        .build()
+                )
+                .toList();
+    }
 
     @Transactional
     // 알림 보낼 로직에 send 메서드 호출하면 됨
