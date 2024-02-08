@@ -10,16 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import org.ssafy.pasila.domain.apihandler.ErrorCode;
-import org.ssafy.pasila.domain.apihandler.RestApiException;
-import org.ssafy.pasila.domain.order.dto.OrderDto;
 import org.ssafy.pasila.domain.order.event.StockChangeEvent;
 import org.ssafy.pasila.domain.order.service.SseEmitterService;
-import retrofit2.http.Path;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.*;
 
 @RestController
 @RequiredArgsConstructor

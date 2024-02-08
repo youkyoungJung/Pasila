@@ -33,7 +33,7 @@ public class SseEmitterService {
     private final LiveRepository liveRepository;
 
     /**SSE통신*/
-    @Transactional
+//    @Transactional
     public SseEmitter subscribe(String liveId, String lastEventId){
 
         String emitterId = makeTimeIncludedId(liveId);
@@ -53,11 +53,11 @@ public class SseEmitterService {
         emitter.onTimeout(() -> emitterRepository.deleteAllEmitterStartWithId(liveId));
         emitter.onError((e) -> emitterRepository.deleteAllEmitterStartWithId(liveId));
 
-        List<ProductOptionDto> options = getProductOptions(liveId);
+//        List<ProductOptionDto> options = getProductOptions(liveId);
 
         // 연결 직후, 데이터 전송이 없을 시 503 에러 발생. 에러 방지 위한 더미데이터 전송
-        StockChangeEvent notification = createNotification(liveId, options);
-        sendToClient(emitter, liveId, notification);
+//        StockChangeEvent notification = createNotification(liveId, options);
+        sendToClient(emitter, liveId, "connected!!");
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 Event 유실을 예방
         if (!lastEventId.isEmpty()) { // 클라이언트가 미수신한 Event 유실 예방, 연결이 끊켰거나 미수신된 데이터를 다 찾아서 보내준다.
