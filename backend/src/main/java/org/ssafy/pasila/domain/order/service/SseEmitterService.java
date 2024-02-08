@@ -26,6 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class SseEmitterService {
 
     private static final Long DEFAULT_TIMEOUT = 10L * 1000 * 60; //10분
+    private static final long RECONNECTION_TIMEOUT = 1000 * 60;
     private List<SseEmitter> deadEmitter = new CopyOnWriteArrayList<>();
     private final EmitterRepository emitterRepository;
     private final ProductOptionRepository productOptionRepository;
@@ -125,7 +126,9 @@ public class SseEmitterService {
             emitter.send(SseEmitter.event()
                     .id(id)
                     .name("sse")
-                    .data(data, MediaType.APPLICATION_JSON));
+                    .data(data, MediaType.APPLICATION_JSON)
+                    //SSE 연결이 끊어진 경우 재접속 하기까지 대기 시간 (retry: <RECONNECTION_TIMEOUT>)
+                    .reconnectTime(RECONNECTION_TIMEOUT));
         } catch (IOException e) {
             deadEmitter.add(emitter);
             emitterRepository.deleteAllEmitterStartWithId(id);
