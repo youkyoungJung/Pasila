@@ -3,32 +3,43 @@ import router from '@/router'
 import { ref, onMounted, reactive } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
-import { getMyPage } from '@/components/api/MyPageAPI'
+import { getMyPage, changeMyInfo } from '@/components/api/MyPageAPI'
 
 const user = ref({
-  profile: new URL('', import.meta.url).href,
+  profile: '',
   email: '',
   name: '',
   channel: '',
   password: '',
   phone: '',
   address: '',
-  detailAddress: '',
+  addressDetail: '',
   bank: '',
   account: '',
   gender: '',
   birth: ''
 })
-
+const imageURL = ref('')
 onMounted(() => {
   getUser()
 })
 
 const getUser = async () => {
-  const loginUser = {
-    id: 1
-  }
-  const userDetail = await getMyPage(loginUser)
+  const userDetail = await getMyPage()
+  // const userDetail = ref({
+  //   profile: '',
+  //   email: '',
+  //   name: '',
+  //   channel: '',
+  //   password: '',
+  //   phone: '',
+  //   address: '',
+  //   addressDetail: '',
+  //   bank: '',
+  //   account: '',
+  //   gender: '',
+  //   birth: ''
+  // })
   await Object.assign(user.value, userDetail)
   if (userDetail.gender == 'F') {
     user.value.gender = '여성'
@@ -37,6 +48,7 @@ const getUser = async () => {
   } else {
     user.value.gender = '선택안함'
   }
+  imageURL.value = userDetail.profile
 }
 
 const longData = reactive({
@@ -53,10 +65,10 @@ const longData = reactive({
     title: '비밀번호 확인',
     type: 'password'
   },
-  detailAddress: {
+  addressDetail: {
     title: '상세주소',
     type: 'text',
-    value: user.value.detailAddress
+    value: user.value.addressDetail
   },
   birth: {
     title: '생년월일',
@@ -110,20 +122,29 @@ const shortData = reactive({
 const certi = ref('')
 
 const uploadImg = (e) => {
-  const file = e.target
-  const reader = new FileReader()
-  reader.onload = function (e) {
-    user.value.profile = e.target.result
-  }
-  reader.readAsDataURL(file.files[0])
+  // const fileInput = e.target
+  // if (fileInput && fileInput.files && fileInput.files.length > 0) {
+  //   const file = fileInput.files[0]
+  //   const reader = new FileReader()
+
+  //   reader.onload = function (event) {
+  //     user.value.profile = file.name
+  //     imageURL.value = event.target.result
+  //   }
+
+  //   reader.readAsDataURL(file)
+  // }
+  const fileInput = new FormData()
+  const imageFile = e.target
+  console.log(imageFile.files)
+  fileInput.append('name', 'new_image')
+  fileInput.append('key', imageFile.files[0])
+  console.log(fileInput)
 }
 
-const modify = () => {
-  //user.value 백에 넘겨주기
-  if (user.value.birth != '') {
-    user.value.birth += ' 00:00:00'
-  }
-  router.push('/')
+const modify = async () => {
+  await changeMyInfo(user.value, imageURL.value)
+  alert('수정 되었습니다.')
 }
 </script>
 
@@ -133,8 +154,8 @@ const modify = () => {
     <div class="content">
       <section class="profile">
         <div>
-          <div v-if="user.profile != ''">
-            <img :src="user.profile" id="profileImg" class="profile-img" />
+          <div v-if="imageURL != ''">
+            <img :src="imageURL" id="profileImg" class="profile-img" />
           </div>
           <div v-else>
             <font-awesome-icon icon="fa-regular fa-user" class="profile-img" />
@@ -195,9 +216,9 @@ const modify = () => {
       </section>
       <section class="userInfo">
         <v-long-input
-          :data="longData.detailAddress"
+          :data="longData.addressDetail"
           :inputData="user.addressDetail"
-          @getData="(e) => (user.detailAddress = e)"
+          @getData="(e) => (user.addressDetail = e)"
         />
       </section>
       <section class="userInfo">
