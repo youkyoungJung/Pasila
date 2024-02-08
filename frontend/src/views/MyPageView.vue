@@ -1,34 +1,45 @@
 <script setup>
 import router from '@/router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
 import { getMyPage } from '@/components/api/MyPageAPI'
 
-onMounted(async () => {
+const user = ref({
+  profile: new URL('', import.meta.url).href,
+  email: '',
+  name: '',
+  channel: '',
+  password: '',
+  phone: '',
+  address: '',
+  detailAddress: '',
+  bank: '',
+  account: '',
+  gender: '',
+  birth: ''
+})
+
+onMounted(() => {
+  getUser()
+})
+
+const getUser = async () => {
   const loginUser = {
     id: 1
   }
   const userDetail = await getMyPage(loginUser)
-  console.log(userDetail)
-})
+  await Object.assign(user.value, userDetail)
+  if (userDetail.gender == 'F') {
+    user.value.gender = '여성'
+  } else if (userDetail.gender == 'M') {
+    user.value.gender = '남성'
+  } else {
+    user.value.gender = '선택안함'
+  }
+}
 
-const user = ref({
-  profile: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-  email: 'pasila@ssafy.com',
-  name: '파시라',
-  channelName: '라시파',
-  password: '',
-  phone: '01012345678',
-  address: '서울시 행복구',
-  detailAddress: '사랑동',
-  bankName: '돈줘은행',
-  bankAccount: '3333333333',
-  gender: '선택안함',
-  birth: '2020-05-05'
-})
-
-const longData = ref({
+const longData = reactive({
   name: {
     title: '이름',
     type: 'text',
@@ -52,19 +63,19 @@ const longData = ref({
     type: 'date',
     value: user.value.birth
   },
-  bankName: {
+  bank: {
     title: '은행명',
     type: 'text',
-    value: user.value.bankName
+    value: user.value.bank
   },
-  bankAccount: {
+  account: {
     title: '계좌번호',
-    type: 'number',
-    value: user.value.bankAccount
+    type: 'text',
+    value: user.value.account
   }
 })
 
-const shortData = ref({
+const shortData = reactive({
   email: {
     title: '이메일',
     type: 'email',
@@ -75,7 +86,7 @@ const shortData = ref({
     title: '채널명',
     type: 'text',
     text: '중복확인',
-    value: user.value.channelName
+    value: user.value.channel
   },
   phone: {
     title: '휴대폰번호',
@@ -133,13 +144,25 @@ const modify = () => {
         <input type="file" id="file" @change="uploadImg" accept="image/*" class="profile-choose" />
       </section>
       <section class="userInfo">
-        <v-short-input :data="shortData.email" @getData="(e) => (user.email = e)" />
+        <v-short-input
+          :data="shortData.email"
+          :inputData="user.email"
+          @getData="(e) => (user.email = e)"
+        />
       </section>
       <section class="userInfo">
-        <v-long-input :data="longData.name" @getData="(e) => (user.name = e)" />
+        <v-long-input
+          :data="longData.name"
+          :inputData="user.name"
+          @getData="(e) => (user.name = e)"
+        />
       </section>
       <section class="userInfo">
-        <v-short-input :data="shortData.channel" @getData="(e) => (user.channelName = e)" />
+        <v-short-input
+          :data="shortData.channel"
+          :inputData="user.channel"
+          @getData="(e) => (user.channel = e)"
+        />
       </section>
       <section class="userInfo">
         <v-long-input :data="longData.password" @getData="(e) => (user.password = e)" />
@@ -152,7 +175,11 @@ const modify = () => {
         <div v-else class="wrong-text">비밀번호가 일치하지 않습니다. 다시 입력해주세요.</div>
       </section>
       <section class="userInfo">
-        <v-short-input :data="shortData.phone" @getData="(e) => (user.phone = e)" />
+        <v-short-input
+          :data="shortData.phone"
+          :inputData="user.phone"
+          @getData="(e) => (user.phone = e)"
+        />
       </section>
       <section class="userInfo">
         <v-short-input :data="shortData.phoneCheck" @getData="(e) => (certi = e)" />
@@ -160,34 +187,52 @@ const modify = () => {
         <div v-else class="wrong-text">인증번호가 다릅니다. 다시 입력해주세요.</div>
       </section>
       <section class="userInfo">
-        <v-short-input :data="shortData.address" @getData="(e) => (user.address = e)" />
+        <v-short-input
+          :data="shortData.address"
+          :inputData="user.address"
+          @getData="(e) => (user.address = e)"
+        />
       </section>
       <section class="userInfo">
-        <v-long-input :data="longData.detailAddress" @getData="(e) => (user.detailAddress = e)" />
+        <v-long-input
+          :data="longData.detailAddress"
+          :inputData="user.addressDetail"
+          @getData="(e) => (user.detailAddress = e)"
+        />
       </section>
       <section class="userInfo">
-        <v-long-input :data="longData.bankName" @getData="(e) => (user.bankName = e)" />
+        <v-long-input
+          :data="longData.bank"
+          :inputData="user.bank"
+          @getData="(e) => (user.bank = e)"
+        />
       </section>
       <section class="userInfo">
-        <v-long-input :data="longData.bankAccount" @getData="(e) => (user.bankAccount = e)" />
+        <v-long-input
+          :data="longData.account"
+          :inputData="user.account"
+          @getData="(e) => (user.account = e)"
+        />
       </section>
-      <section class="gender">
-        <label for="gender" class="gender-title">성별</label>
-        <div class="radio" id="gender">
-          <label class="gender-option"
-            ><input type="radio" name="성별" value="남성" v-model="user.gender" />남성</label
-          >
-          <label class="gender-option"
-            ><input type="radio" name="성별" value="여성" v-model="user.gender" />여성</label
-          >
-          <label class="gender-option"
-            ><input
-              type="radio"
-              name="성별"
-              value="선택안함"
-              v-model="user.gender"
-            />선택안함</label
-          >
+      <section class="userInfo">
+        <div class="gender">
+          <label for="gender" class="gender-title">성별</label>
+          <div class="radio" id="gender">
+            <label class="gender-option"
+              ><input type="radio" name="성별" value="남성" v-model="user.gender" />남성</label
+            >
+            <label class="gender-option"
+              ><input type="radio" name="성별" value="여성" v-model="user.gender" />여성</label
+            >
+            <label class="gender-option"
+              ><input
+                type="radio"
+                name="성별"
+                value="선택안함"
+                v-model="user.gender"
+              />선택안함</label
+            >
+          </div>
         </div>
       </section>
       <section class="userInfo">
@@ -291,37 +336,30 @@ const modify = () => {
     }
 
     .gender {
-      width: 95%;
+      width: 100%;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
+      align-items: center;
       margin-bottom: 0.2rem;
 
-      form {
+      .gender-title {
+        width: 90%;
+        display: flex;
+        justify-content: flex-start;
+      }
+      .radio {
+        @include font-factory(0.7rem, null);
         width: 100%;
         display: flex;
-        flex-direction: column;
+        justify-content: space-evenly;
+      }
+
+      .gender-option {
+        display: flex;
+        justify-content: flex-start;
         align-items: center;
-
-        .gender-title {
-          width: 90%;
-          display: flex;
-          justify-content: flex-start;
-        }
-        .radio {
-          @include font-factory(0.7rem, null);
-          width: 100%;
-          display: flex;
-          justify-content: space-evenly;
-        }
-
-        .gender-option {
-          display: flex;
-          justify-content: flex-start;
-          align-items: center;
-          margin-right: 0.3rem;
-          cursor: pointer;
-        }
+        margin-right: 0.3rem;
+        cursor: pointer;
       }
     }
     .modify-btn {

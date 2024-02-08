@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 
-const props = defineProps(['data'])
+const props = defineProps(['data', 'inputData'])
 defineEmits(['getData'])
 
 const ph = ref(props.data.title + ' 입력하세요.')
@@ -16,7 +16,7 @@ const ph = ref(props.data.title + ' 입력하세요.')
         :placeholder="ph"
         class="short-input"
         @input="$emit('getData', $event.target.value)"
-        :value="props.data.value"
+        :value="props.inputData"
       />
       <input type="submit" :value="props.data.text" class="input-btn" />
     </div>

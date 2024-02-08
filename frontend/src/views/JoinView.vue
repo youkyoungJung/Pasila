@@ -136,8 +136,8 @@ const join = () => {
       <section class="userInfo">
         <v-long-input :data="longData.detailAddress" @getData="(e) => (user.detailAddress = e)" />
       </section>
-      <section class="gender">
-        <form>
+      <section class="userInfo">
+        <div class="gender">
           <label for="gender" class="gender-title">성별</label>
           <div class="radio" id="gender">
             <label class="gender-option"
@@ -155,7 +155,7 @@ const join = () => {
               />선택안함</label
             >
           </div>
-        </form>
+        </div>
       </section>
       <section class="userInfo">
         <label for="input" class="label">생년월일</label>
@@ -258,37 +258,30 @@ const join = () => {
     }
 
     .gender {
-      width: 95%;
+      width: 100%;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
+      align-items: center;
       margin-bottom: 0.2rem;
 
-      form {
+      .gender-title {
+        width: 90%;
+        display: flex;
+        justify-content: flex-start;
+      }
+      .radio {
+        @include font-factory(0.7rem, null);
         width: 100%;
         display: flex;
-        flex-direction: column;
+        justify-content: space-evenly;
+      }
+
+      .gender-option {
+        display: flex;
+        justify-content: flex-start;
         align-items: center;
-
-        .gender-title {
-          width: 90%;
-          display: flex;
-          justify-content: flex-start;
-        }
-        .radio {
-          @include font-factory(0.7rem, null);
-          width: 100%;
-          display: flex;
-          justify-content: space-evenly;
-        }
-
-        .gender-option {
-          display: flex;
-          justify-content: flex-start;
-          align-items: center;
-          margin-right: 0.3rem;
-          cursor: pointer;
-        }
+        margin-right: 0.3rem;
+        cursor: pointer;
       }
     }
     .join-btn {

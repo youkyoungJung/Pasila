@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 
-const props = defineProps(['data'])
+const props = defineProps(['data', 'inputData'])
 defineEmits(['getData'])
 
 const ph = ref(props.data.title + ' 입력하세요.')
@@ -15,7 +15,7 @@ const ph = ref(props.data.title + ' 입력하세요.')
       :type="props.data.type"
       :placeholder="ph"
       @input="$emit('getData', $event.target.value)"
-      :value="props.data.value"
+      :value="props.inputData"
     />
   </div>
 </template>
