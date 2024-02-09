@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.sqids.Sqids;
+import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.shortping.entity.Livelog;
@@ -88,5 +89,17 @@ public class Live {
 
     @OneToMany(mappedBy = "live", cascade = CascadeType.ALL)
     private List<Chatbot> chatbots = new ArrayList<>();
+
+    public static Live createLive(CreateLiveRequestDto createLiveRequestDto, Member member, Product product) {
+        Live live = Live.builder()
+                .title(createLiveRequestDto.getTitle())
+                .liveScheduledAt(createLiveRequestDto.getLiveScheduledAt())
+                .script(createLiveRequestDto.getScript())
+                .member(member)
+                .product(product)
+                .build();
+        live.setChatbots(new ArrayList<>());
+        return live;
+    }
 
 }

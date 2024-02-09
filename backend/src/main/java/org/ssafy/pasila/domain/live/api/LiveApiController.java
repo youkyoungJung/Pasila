@@ -13,17 +13,26 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
+import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
 import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequestDto;
 import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
+import org.ssafy.pasila.domain.live.entity.Chatbot;
+import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.live.service.ChatbotService;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.domain.live.service.OpenviduService;
+import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
 import org.ssafy.pasila.domain.product.dto.ProductResponseDto;
 import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -46,8 +55,28 @@ public class LiveApiController {
 
     private final ProductService productService;
 
+    private final ChatbotService chatbotService;
+
     // Pair - SessionId, RecordingId
     private final Map<String, String> mapRecordings = new ConcurrentHashMap<>();
+
+    @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브")
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiCommonResponse<?> reserveLive(@RequestPart(value = "live")CreateLiveRequestDto createLiveRequestDto,
+                                            @RequestPart(value = "product") ProductRequestDto productRequestDto,
+                                            @RequestPart(value = "image") MultipartFile image,
+                                            @RequestPart(value = "chatbot") List<Chatbot> chatbotList,
+                                            // 로그인 완료후 @RequestHeader로 변경 예정
+                                            @RequestPart(value = "member")Long memberId) throws IOException {
+        // 1. Product
+        String productId = productService.saveProduct(productRequestDto, image);
+        // 2. Live
+        String liveId = liveService.saveLive(createLiveRequestDto, memberId, productId);
+        // 3. Chatbot
+        chatbotService.save(chatbotList, liveId);
+
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+    }
 
     @Operation(summary = "Live On", description = "라이브 방송 시작")
     @PutMapping("/{liveId}/on")

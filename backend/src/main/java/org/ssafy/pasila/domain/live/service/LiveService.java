@@ -7,8 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
+import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
+import org.ssafy.pasila.domain.member.entity.Member;
+import org.ssafy.pasila.domain.member.repository.MemberRepository;
+import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
 
 
@@ -21,6 +25,8 @@ public class LiveService {
     private final RedisTemplate<String, String> redisTemplate;
 
     private final LiveRepository liveRepository;
+
+    private final MemberRepository memberRepository;
 
     private final ProductRepository productRepository;
 
@@ -64,5 +70,18 @@ public class LiveService {
     public String getProductId(String liveId) {
         Live live = liveRepository.findById(liveId).orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
         return live.getProduct().getId();
+    }
+
+    @Transactional
+    public String saveLive(CreateLiveRequestDto createLiveRequestDto, Long memberId, String productId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        Live live = Live.createLive(createLiveRequestDto, member, product);
+        liveRepository.save(live);
+        return live.getId();
     }
 }
