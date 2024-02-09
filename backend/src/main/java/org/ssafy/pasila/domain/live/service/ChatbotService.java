@@ -63,8 +63,9 @@ public class ChatbotService {
         return gptClient.chatbotMessage(live.getProduct(), message, chatbotMessages);
     }
 
-//    public void updateChatbot(String liveId, List<Chatbot> chatbotList) {
-//        chatbotQueryRepository.deleteAllByLiveId(liveId);
-//        save(chatbotList);
-//    }
+    @Transactional
+    public void updateChatbot(String liveId, List<Chatbot> chatbotList) {
+        chatbotQueryRepository.deleteAllByLiveId(liveId);
+        save(chatbotList, liveId);
+    }
 }

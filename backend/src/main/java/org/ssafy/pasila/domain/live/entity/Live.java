@@ -102,4 +102,10 @@ public class Live {
         return live;
     }
 
+    public void updateLive(CreateLiveRequestDto createLiveRequestDto) {
+        this.title = createLiveRequestDto.getTitle();
+        this.liveScheduledAt = createLiveRequestDto.getLiveScheduledAt();
+        this.script = createLiveRequestDto.getScript();
+    }
+
 }

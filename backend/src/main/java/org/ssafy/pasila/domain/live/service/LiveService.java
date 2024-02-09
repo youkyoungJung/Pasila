@@ -84,4 +84,10 @@ public class LiveService {
         liveRepository.save(live);
         return live.getId();
     }
+
+    public Live updateLive(String liveId, CreateLiveRequestDto createLiveRequestDto) {
+        Live live = getLiveById(liveId);
+        live.updateLive(createLiveRequestDto);
+        return live;
+    }
 }

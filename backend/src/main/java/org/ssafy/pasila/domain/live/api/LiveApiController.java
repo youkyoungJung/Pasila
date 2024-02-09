@@ -62,12 +62,12 @@ public class LiveApiController {
 
     @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브")
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiCommonResponse<?> reserveLive(@RequestPart(value = "live")CreateLiveRequestDto createLiveRequestDto,
+    public ApiCommonResponse<?> reserveLive(@RequestPart(value = "live") CreateLiveRequestDto createLiveRequestDto,
                                             @RequestPart(value = "product") ProductRequestDto productRequestDto,
                                             @RequestPart(value = "image") MultipartFile image,
                                             @RequestPart(value = "chatbot") List<Chatbot> chatbotList,
                                             // 로그인 완료후 @RequestHeader로 변경 예정
-                                            @RequestPart(value = "member")Long memberId) throws IOException {
+                                            @RequestPart(value = "member") Long memberId) throws IOException {
         // 1. Product
         String productId = productService.saveProduct(productRequestDto, image);
         // 2. Live
@@ -76,6 +76,23 @@ public class LiveApiController {
         chatbotService.save(chatbotList, liveId);
 
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+    }
+
+    @Operation(summary = "Update Reserved Live", description = "예약된 라이브 정보 업데이트(제품, 챗봇, 라이브)")
+    @PutMapping(value = "/{liveId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiCommonResponse<?> updateLive(@PathVariable("liveId") String liveId,
+                                           @RequestPart(value = "live") CreateLiveRequestDto createLiveRequestDto,
+                                           @RequestPart(value = "product") ProductRequestDto productRequestDto,
+                                           @RequestPart(value = "image", required = false) MultipartFile image,
+                                           @RequestPart(value = "chatbot") List<Chatbot> chatbotList) throws IOException {
+        // 1. Live
+        Live live = liveService.updateLive(liveId, createLiveRequestDto);
+        // 2. Product
+        String productId = productService.updateProduct(live.getProduct().getId(), productRequestDto, image);
+        // 3. Chatbot
+        chatbotService.updateChatbot(liveId, chatbotList);
+
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), live.getId());
     }
 
     @Operation(summary = "Live On", description = "라이브 방송 시작")
