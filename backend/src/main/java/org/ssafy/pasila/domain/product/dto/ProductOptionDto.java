@@ -2,6 +2,7 @@ package org.ssafy.pasila.domain.product.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
@@ -9,6 +10,7 @@ import org.ssafy.pasila.domain.product.entity.ProductOption;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProductOptionDto {
 
     @Schema(description = "옵션 id")
