@@ -1,7 +1,13 @@
 package org.ssafy.pasila.domain.member.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
+import lombok.Getter;
 
+import java.time.LocalDateTime;
+
+@Builder
+@Getter
 public class ChannelShortpingDto {
 
     /* SHORTPING */
@@ -11,6 +17,9 @@ public class ChannelShortpingDto {
 
     @Schema(description = "숏핑 타이틀")
     private String title;
+
+    @Schema(description = "숏핑 제작일")
+    private LocalDateTime createdAt;
 
     /* MEMBER */
     @Schema(description = "회원 Id")
@@ -32,17 +41,10 @@ public class ChannelShortpingDto {
 
     /* PRODUCTOPTION */
 
-    @Schema(description = "옵션 Id")
-    private  Long optionId;
-
     @Schema(description = "정가")
     private Integer price;
 
     @Schema(description = "할인가")
     private Integer discountPrice;
 
-    /* LIVE */
-
-    @Schema(description = "라이브 Id")
-    private String liveId;
 }

@@ -7,12 +7,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
+import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
 import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
 import org.ssafy.pasila.domain.member.entity.Member;
+import org.ssafy.pasila.domain.member.repository.ChannelRepository;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,6 +25,8 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+
+    private final ChannelRepository channelRepository;
 
     private final S3Uploader s3Uploader;
 
@@ -54,6 +59,14 @@ public class MemberService {
                 .orElseThrow(() -> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
         member.updateChannel(description);
         return member.getId();
+    }
+
+
+    /**
+     * 채널별 라이브 조회 메서드
+     */
+    public List<ChannelShortpingDto> getChannelShortpingById(Long id) {
+        return channelRepository.findShortpingById(id);
     }
 
     /**
