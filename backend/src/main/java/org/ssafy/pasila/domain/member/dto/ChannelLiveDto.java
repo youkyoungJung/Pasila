@@ -42,9 +42,6 @@ public class ChannelLiveDto {
 
     /* PRODUCTOPTION */
 
-    @Schema(description = "옵션 Id")
-    private  Long id;
-
     @Schema(description = "정가")
     private Integer price;
 
