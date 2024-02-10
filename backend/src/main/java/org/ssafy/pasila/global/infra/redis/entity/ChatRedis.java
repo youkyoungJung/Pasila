@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
-@RedisHash("chat")
+@RedisHash(value = "chat", timeToLive = 600)
 @AllArgsConstructor
 public class ChatRedis implements Serializable {
     @Id

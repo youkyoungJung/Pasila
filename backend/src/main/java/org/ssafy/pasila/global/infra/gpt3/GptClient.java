@@ -146,10 +146,28 @@ public class GptClient {
                 throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
             }
 
-            return response.getChoices().get(0).getMessage().getContent();
+            String result = response.getChoices().get(0).getMessage().getContent();
+            return splitMessage(result);
         } catch (Exception e) {
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // TODO: 채팅 질문 리스트업
+    public String questionSummary(String liveId) {
+        double temperature = 0.5;
+        double top_p = 0.3;
+
+        // 최근 채팅 리스트 가져오기
+        String system = "너는 채팅 요약 봇이야." +
+                "라이브 방송 채팅 기록은 '[년-월-일 시:분:초] 닉네임: 채팅 메세지' 형식의 리스트로 제공될거야." +
+                "\n 채팅 기록은 아래와 같아.\n" +
+                "";
+        String message = "최근 채팅 기록 중 상품과 관련된 질문이 있었던 채팅들을 뽑고 가장 많이 나온 질문들을 요약해서 5개 뽑아줘.\n" +
+                "\n" +
+                "요약 결과만 출력해줘.";
+        return chatCompletions(model, system, message, temperature, top_p);
+
     }
 
     public String chatCompletions(String model, String system, String message, double temperature, double top_p) {
@@ -165,6 +183,18 @@ public class GptClient {
         } catch (Exception e) {
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public String splitMessage(String message) {
+        String[] tempArr = message.split("[.]");
+        String[] resultArr = new String[tempArr.length];
+        for (int i = 0; i < 2; i++) {
+            resultArr[i] = tempArr[i];
+        }
+        String res = String.join(".", resultArr);
+        String splitResult = res.replace(String.valueOf("null"), "");
+        String realSplitResult = splitResult.substring(0, splitResult.length() - 1);
+        return realSplitResult;
     }
 
 }

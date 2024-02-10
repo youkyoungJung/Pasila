@@ -9,7 +9,11 @@ import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
+import org.ssafy.pasila.global.infra.redis.entity.ChatRedis;
+import org.ssafy.pasila.global.infra.redis.service.ChatRedisService;
 
+
+import java.util.List;
 
 import static java.time.LocalDateTime.*;
 
@@ -20,6 +24,8 @@ public class LiveService {
     private final RedisTemplate<String, String> redisTemplate;
 
     private final LiveRepository liveRepository;
+
+    private final ChatRedisService chatRedisService;
 
     public int joinLive(String liveId, String memberId) {
 
@@ -56,6 +62,11 @@ public class LiveService {
     public Live getLiveById(String id) {
         return liveRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+    }
+
+    public List<ChatRedis> getTop5Question(String liveId) {
+        List<ChatRedis> chatList = chatRedisService.getChatList(liveId);
+        return null;
     }
 
 }

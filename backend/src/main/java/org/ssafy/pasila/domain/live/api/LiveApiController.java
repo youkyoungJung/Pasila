@@ -20,8 +20,10 @@ import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.domain.live.service.OpenviduService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
+import org.ssafy.pasila.global.infra.redis.entity.ChatRedis;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -154,6 +156,12 @@ public class LiveApiController {
         int participantNum = liveService.exitLive(roomId , memberId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), participantNum);
         
+    }
+
+    @GetMapping("/question")
+    public ApiCommonResponse<?> getTop5Question(@RequestParam String liveId) {
+        List<ChatRedis> result = liveService.getTop5Question(liveId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
     }
 
 }
