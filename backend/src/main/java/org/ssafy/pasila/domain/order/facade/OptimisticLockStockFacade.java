@@ -21,16 +21,17 @@ public class OptimisticLockStockFacade {
     private int retries = 0;
 
     public List<Long> saveTrade(final OrderFormDto orderFormDto) throws InterruptedException {
-        int maxRetries = 3; // 최대 재시도 횟수
+        int maxRetries = 6; // 최대 재시도 횟수
         int initialBackoff = 10; // 밀리초 단위의 초기 재시도 간격
 
         int retries = 0;
         while (retries < maxRetries) {
             try {
                 return orderService.saveOrder(orderFormDto);
+
             } catch (Exception e) {
                 log.error("Error occurred while saving order. Retrying...", e);
-                Thread.sleep(initialBackoff * (int) Math.pow(2, retries)); // Backoff 전략에 따라 재시도 간격 증가
+                Thread.sleep((long) initialBackoff * (int) Math.pow(2, retries)); // Backoff 전략에 따라 재시도 간격 증가
                 retries++; // 재시도 횟수 증가
             }
         }

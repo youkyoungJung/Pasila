@@ -11,13 +11,17 @@ import org.ssafy.pasila.domain.order.dto.OrderFormDto;
 import org.ssafy.pasila.domain.order.repository.OrderRepository;
 import org.ssafy.pasila.domain.order.facade.OptimisticLockStockFacade;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.ssafy.pasila.domain.product.dto.ProductOptionFormDto;
 import org.ssafy.pasila.domain.product.entity.Category;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
 import org.ssafy.pasila.domain.product.repository.CategoryRepository;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
+
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -105,13 +109,18 @@ class OptimisticLockStockFacadeTest {
         CountDownLatch latch = new CountDownLatch(threadCount);
 
 
-        OrderFormDto orderFormDto = OrderFormDto.builder()
-                .options(Collections.singletonList(1L))
-                .memberId(1L)
+        List<ProductOptionFormDto> options = new ArrayList<>();
+        options.add(ProductOptionFormDto.builder()
+                .id(1L)
                 .quantity(1)
+                .price(500)
+                .build());
+
+        OrderFormDto orderFormDto = OrderFormDto.builder()
+                .options(options)
+                .memberId(1L)
                 .name("test_name")
                 .address("test_addr")
-                .price(500)
                 .build();
 
         for (int i = 0; i < threadCount; i++) {

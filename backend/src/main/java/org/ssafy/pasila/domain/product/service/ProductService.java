@@ -122,7 +122,8 @@ public class ProductService {
         Product product = getProductById(productId);
 
         productOptions.forEach(option -> {
-            ProductOption.createProductOption(product, option);
+            ProductOption productOption = ProductOption.createProductOption(product, option);
+            productOptionRepository.save(productOption);
         });
 
     }

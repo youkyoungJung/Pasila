@@ -16,6 +16,7 @@ import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.order.entity.Status;
 import org.ssafy.pasila.domain.order.repository.OrderRepository;
 import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
+import org.ssafy.pasila.domain.product.dto.ProductOptionFormDto;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
 import java.util.ArrayList;
@@ -38,28 +39,27 @@ public class OrderService {
 
     private final SseEmitterService sseEmitterService;
 
-//    /** 주문 생0성 */
+//    /** 주문 생성 */
     @Transactional
     public synchronized List<Long> saveOrder(OrderFormDto orderformDto){
 
         List<Long> list = new ArrayList<>();
-        List<Long> optionsId = orderformDto.getOptions();
+        List<ProductOptionFormDto> options = orderformDto.getOptions();
 
         Member member = memberRepository.findById(orderformDto.getMemberId())
                     .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
 
         String productId = null;
 
-        for(Long optionId : optionsId){
+        for(ProductOptionFormDto option : options){
 
-            ProductOption productOption = productOptionRepository.findById(optionId)
+            ProductOption productOption = productOptionRepository.findById(option.getId())
                     .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
 
             productId = productOption.getProduct().getId();
             //주문 생성
-            Order order = Order.createOrder(orderformDto, member, productOption);
-//            orderRepository.save(order);
-            orderRepository.saveAndFlush(order);
+            Order order = Order.createOrder(orderformDto, member, option, productOption);
+            orderRepository.save(order);
 
             list.add(order.getId());
         }
@@ -116,7 +116,7 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
         order.cancel();
-        orderRepository.saveAndFlush(order);
+        orderRepository.save(order);
 
         getEventStock(order.getProductOption().getProduct().getId());
         return order.getId();

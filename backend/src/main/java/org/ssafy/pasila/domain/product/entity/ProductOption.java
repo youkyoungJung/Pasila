@@ -36,6 +36,7 @@ public class ProductOption {
 
     //버전 컬럼 추가
     @Version
+    @Column(name = "version", nullable = false)
     private Long version;
 
     //== 연관메서드==//
@@ -70,9 +71,9 @@ public class ProductOption {
     }
 
     //== 생성 메서드 ==//
-    public static void createProductOption(Product product, ProductOptionDto productOptionDto){
+    public static ProductOption createProductOption(Product product, ProductOptionDto productOptionDto){
 
-        ProductOption.builder()
+        return ProductOption.builder()
                 .name(productOptionDto.getName())
                 .stock(productOptionDto.getStock())
                 .price(productOptionDto.getPrice())
