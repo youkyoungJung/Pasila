@@ -10,14 +10,14 @@ import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
-import org.ssafy.pasila.global.infra.redis.entity.ChatRedis;
 import org.ssafy.pasila.global.infra.redis.service.ChatRedisService;
-
+import org.ssafy.pasila.domain.product.repository.ProductRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.time.LocalDateTime.*;
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +30,9 @@ public class LiveService {
     private final ChatRedisService chatRedisService;
 
     private final GptClient gptClient;
+
+    private final ProductRepository productRepository;
+
 
     public int joinLive(String liveId, String memberId) {
 
@@ -50,22 +53,23 @@ public class LiveService {
     @Transactional
     public void updateLiveOn(String liveId) {
         Live live = getLiveById(liveId);
-        live.setLiveOnAt(now());
-        live.setOn(true);
+        live.setLiveOn();
     }
 
     @Transactional
     public void updateLiveOff(String liveId, String fullVideoUrl, int likeCnt) {
         Live live = getLiveById(liveId);
-        live.setLiveOffAt(now());
-        live.setOn(false);
-        live.setFullVideoUrl(fullVideoUrl);
-        live.setLikeCnt(likeCnt);
+        live.setLiveOff(fullVideoUrl, likeCnt);
     }
 
     public Live getLiveById(String id) {
         return liveRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+    }
+
+    public String getProductId(String liveId) {
+        Live live = liveRepository.findById(liveId).orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+        return live.getProduct().getId();
     }
 
     public List<String> getTop5Question(String liveId) {

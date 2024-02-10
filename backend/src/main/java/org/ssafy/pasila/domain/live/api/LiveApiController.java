@@ -19,6 +19,8 @@ import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequestDto;
 import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.domain.live.service.OpenviduService;
+import org.ssafy.pasila.domain.product.dto.ProductResponseDto;
+import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.redis.entity.ChatRedis;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
@@ -44,6 +46,8 @@ public class LiveApiController {
 
     private final LiveRedisService liveRedisService;
 
+    private final ProductService productService;
+
     // Pair - SessionId, RecordingId
     private final Map<String, String> mapRecordings = new ConcurrentHashMap<>();
 
@@ -58,6 +62,7 @@ public class LiveApiController {
         mapRecordings.put(liveId, recording.getId());
         // 3. Redis
         liveRedisService.addLive(liveId, liveService.getLiveById(liveId).getTitle());
+
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
     }
 
@@ -74,6 +79,14 @@ public class LiveApiController {
         // 4. mapRecording 삭제
         mapRecordings.remove(liveId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+    }
+
+    @Operation(summary = "Get ProductInfo", description = "라이브 방송시 판매하는 제품정보를 반환합니다.")
+    @GetMapping("/{liveId}/product")
+    public ApiCommonResponse<?> findSellProduct(@PathVariable("liveId") String liveId) {
+        String productId = liveService.getProductId(liveId);
+        ProductResponseDto product = productService.getProduct(productId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), product);
     }
 
     @Operation(summary = "Create Qsheet", description = "큐시트를 생성합니다.")
