@@ -2,6 +2,7 @@ package org.ssafy.pasila.domain.live.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.live.dto.request.ChatbotRequestDto;
@@ -9,10 +10,7 @@ import org.ssafy.pasila.domain.live.entity.Chatbot;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.ChatbotQueryRepository;
 import org.ssafy.pasila.domain.live.repository.ChatbotRepository;
-import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
-import org.ssafy.pasila.domain.product.entity.Product;
-import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.gpt3.model.Message;
 
@@ -26,13 +24,22 @@ public class ChatbotService {
 
     private final GptClient gptClient;
 
-    private final ProductService productService;
-
     private final LiveRepository liveRepository;
 
     private final ChatbotQueryRepository chatbotQueryRepository;
 
-    public List<Chatbot> save(List<Chatbot> chatbotList) {
+    @Transactional
+    public List<Chatbot> save(List<Chatbot> chatbotList, String liveId) {
+        if (liveId == null) {
+            throw new RestApiException(ErrorCode.RESOURCE_NOT_FOUND);
+        }
+
+        Live live = liveRepository.findById(liveId)
+                .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        for(Chatbot bot : chatbotList){
+            bot.setLive(live);
+        }
         return chatbotRepository.saveAll(chatbotList);
     }
 
@@ -56,8 +63,9 @@ public class ChatbotService {
         return gptClient.chatbotMessage(live.getProduct(), message, chatbotMessages);
     }
 
+    @Transactional
     public void updateChatbot(String liveId, List<Chatbot> chatbotList) {
         chatbotQueryRepository.deleteAllByLiveId(liveId);
-        save(chatbotList);
+        save(chatbotList, liveId);
     }
 }
