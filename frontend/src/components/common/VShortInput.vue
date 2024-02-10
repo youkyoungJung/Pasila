@@ -2,23 +2,29 @@
 import { ref } from 'vue'
 
 const props = defineProps(['data', 'inputData'])
-defineEmits(['getData'])
+const emit = defineEmits(['getData', 'sendData'])
 
 const ph = ref(props.data.title + ' 입력하세요.')
+
+const clicked = () => {
+  console.log('눌렀따고')
+  emit('sendData', props.data)
+}
 </script>
 
 <template>
   <div class="short-body">
-    <label for="input">{{ props.data.title }}</label>
+    <label for="short-input">{{ props.data.title }}</label>
     <div class="input-area">
       <input
+        id="short-input"
         :type="props.data.type"
         :placeholder="ph"
         class="short-input"
         @input="$emit('getData', $event.target.value)"
         :value="props.inputData"
       />
-      <input type="submit" :value="props.data.text" class="input-btn" />
+      <input type="button" :value="props.data.text" class="input-btn" @click="clicked()" />
     </div>
   </div>
 </template>

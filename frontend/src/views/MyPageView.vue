@@ -3,7 +3,7 @@ import router from '@/router'
 import { ref, onMounted, reactive } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
-import { getMyPage, changeMyInfo } from '@/components/api/MyPageAPI'
+import { getMyPage, changeMyInfo, checkMyEmail } from '@/components/api/MyPageAPI'
 
 const user = ref({
   profile: '',
@@ -26,20 +26,6 @@ onMounted(() => {
 
 const getUser = async () => {
   const userDetail = await getMyPage()
-  // const userDetail = ref({
-  //   profile: '',
-  //   email: '',
-  //   name: '',
-  //   channel: '',
-  //   password: '',
-  //   phone: '',
-  //   address: '',
-  //   addressDetail: '',
-  //   bank: '',
-  //   account: '',
-  //   gender: '',
-  //   birth: ''
-  // })
   await Object.assign(user.value, userDetail)
   if (userDetail.gender == 'F') {
     user.value.gender = '여성'
@@ -48,7 +34,8 @@ const getUser = async () => {
   } else {
     user.value.gender = '선택안함'
   }
-  imageURL.value = userDetail.profile
+
+  user.value.profile = userDetail.profile
 }
 
 const longData = reactive({
@@ -119,32 +106,50 @@ const shortData = reactive({
   }
 })
 
-const certi = ref('')
+const emailCerti = ref(0)
+const certi = ref(false)
+const formData = new FormData()
 
 const uploadImg = (e) => {
-  // const fileInput = e.target
-  // if (fileInput && fileInput.files && fileInput.files.length > 0) {
-  //   const file = fileInput.files[0]
-  //   const reader = new FileReader()
+  const fileInput = e.target
+  if (fileInput && fileInput.files && fileInput.files.length > 0) {
+    const file = fileInput.files[0]
+    formData.append('new_image', file)
 
-  //   reader.onload = function (event) {
-  //     user.value.profile = file.name
-  //     imageURL.value = event.target.result
-  //   }
+    const reader = new FileReader()
 
-  //   reader.readAsDataURL(file)
-  // }
-  const fileInput = new FormData()
-  const imageFile = e.target
-  console.log(imageFile.files)
-  fileInput.append('name', 'new_image')
-  fileInput.append('key', imageFile.files[0])
-  console.log(fileInput)
+    reader.onload = (event) => {
+      imageURL.value = event.target.result
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
+const checkEmail = async () => {
+  const res = await checkMyEmail(user.value.email)
+  if (res) {
+    emailCerti.value = 1
+  } else {
+    emailCerti.value = 2
+  }
 }
 
 const modify = async () => {
-  await changeMyInfo(user.value, imageURL.value)
-  alert('수정 되었습니다.')
+  if (user.value.password == null) user.value.password = ''
+  if (user.value.gender == '여성') user.value.gender = 'F'
+  else if (user.value.gender == '남성') user.value.gender = 'M'
+  else user.value.gender = ''
+
+  formData.append(
+    'personal_info',
+    new Blob([JSON.stringify(user.value)], { type: 'application/json' })
+  )
+
+  const res = await changeMyInfo(formData)
+  if (res) {
+    alert('수정 되었습니다.')
+    router.push('/')
+  } else alert('수정이 실패하였습니다. 정보를 확인해주세요.')
 }
 </script>
 
@@ -154,22 +159,33 @@ const modify = async () => {
     <div class="content">
       <section class="profile">
         <div>
-          <div v-if="imageURL != ''">
-            <img :src="imageURL" id="profileImg" class="profile-img" />
+          <div v-if="user.profile != ''">
+            <img :src="user.profile" class="profile-img" />
           </div>
           <div v-else>
             <font-awesome-icon icon="fa-regular fa-user" class="profile-img" />
           </div>
         </div>
-        <label for="file">프로필 사진 변경</label>
-        <input type="file" id="file" @change="uploadImg" accept="image/*" class="profile-choose" />
+        <label for="imageFile">프로필 사진 변경</label>
+        <input
+          type="file"
+          id="imageFile"
+          @change="uploadImg"
+          accept="image/*"
+          class="profile-choose"
+        />
       </section>
       <section class="userInfo">
         <v-short-input
           :data="shortData.email"
           :inputData="user.email"
           @getData="(e) => (user.email = e)"
+          @sendData="(e) => checkEmail(e)"
         />
+        <div v-if="emailCerti == 1" class="check-text">사용가능한 이메일입니다.</div>
+        <div v-else-if="emailCerti == 2" class="wrong-text">
+          중복된 이메일입니다. 다른 이메일을 사용해 주세요.
+        </div>
       </section>
       <section class="userInfo">
         <v-long-input
@@ -261,7 +277,7 @@ const modify = async () => {
         <input type="date" v-model="user.birth" class="birth" />
       </section>
       <div class="modify-btn">
-        <button @click="modify" class="modify">수정</button>
+        <button @click="modify" class="modify" type="submit">수정</button>
       </div>
     </div>
   </div>
