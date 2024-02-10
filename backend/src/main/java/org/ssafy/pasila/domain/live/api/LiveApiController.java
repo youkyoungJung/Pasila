@@ -171,6 +171,11 @@ public class LiveApiController {
         
     }
 
+    @Operation(summary = "Get Top5 Question", description = "라이브 방송 중 상위 5개의 질문을 가져옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = List.class))})
+    })
     @GetMapping("/question")
     public ApiCommonResponse<?> getTop5Question(@RequestParam String liveId) {
 
