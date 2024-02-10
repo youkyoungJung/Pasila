@@ -113,8 +113,8 @@ public class MemberController {
     @Operation(summary = "Update channel desc by id", description = "id를 기준으로 하여 채널 설명 수정")
     @PutMapping("/channel/{id}")
     public ApiCommonResponse<?> updateChannel(@PathVariable("id") Long id,
-                                              @RequestBody String description) {
-        Long updatedId = memberService.updateChannel(id, description);
+                                              @RequestBody Map<String, String> descMap) {
+        Long updatedId = memberService.updateChannel(id, descMap.get("description"));
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), updatedId);
     }
 
