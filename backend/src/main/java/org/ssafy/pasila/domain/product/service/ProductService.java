@@ -85,7 +85,7 @@ public class ProductService {
                 .map(ProductOptionDto::new)
                 .toList();
 
-        ProductResponseDto result = ProductResponseDto.builder()
+        return ProductResponseDto.builder()
                 .id(product.getId())
                 .sellerId(product.getMember().getId())
                 .name(product.getName())
@@ -95,8 +95,6 @@ public class ProductService {
                 .categoryId(product.getCategory().getId())
                 .options(options)
                 .build();
-
-        return result;
 
     }
 

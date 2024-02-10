@@ -2,6 +2,7 @@ package org.ssafy.pasila.domain.order.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class OrderFormDto {
 
     @Schema(description = " 선택한 옵션id")

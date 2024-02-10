@@ -18,16 +18,13 @@ import org.ssafy.pasila.domain.order.repository.OrderRepository;
 import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OrderService {
 
@@ -41,9 +38,9 @@ public class OrderService {
 
     private final SseEmitterService sseEmitterService;
 
-    /** 주문 생성 */
+//    /** 주문 생0성 */
     @Transactional
-    public List<Long> saveOrder(OrderFormDto orderformDto){
+    public synchronized List<Long> saveOrder(OrderFormDto orderformDto){
 
         List<Long> list = new ArrayList<>();
         List<Long> optionsId = orderformDto.getOptions();
@@ -61,26 +58,34 @@ public class OrderService {
             productId = productOption.getProduct().getId();
             //주문 생성
             Order order = Order.createOrder(orderformDto, member, productOption);
-            orderRepository.save(order);
+//            orderRepository.save(order);
+            orderRepository.saveAndFlush(order);
+
             list.add(order.getId());
         }
 
-
-        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(productId)
-        .stream()
-        .map(option -> ProductOptionDto.builder()
-                .id(option.getId())
-                .name(option.getName())
-                .stock(option.getStock())
-                .price(option.getPrice())
-                .discountPrice(option.getDiscountPrice())
-                .build()).toList();
-
-        Optional<Live> live = liveRepository.findByProduct_IdAndIsOnTrue(productId);
-        live.ifPresent(l -> sseEmitterService.send(l.getId(), options));
+        getEventStock(productId);
 
         return list;
 
+    }
+
+//    @Transactional
+    public void getEventStock(String productId){
+
+        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(productId)
+                .stream()
+                .map(option -> ProductOptionDto.builder()
+                        .id(option.getId())
+                        .name(option.getName())
+                        .stock(option.getStock())
+                        .price(option.getPrice())
+                        .discountPrice(option.getDiscountPrice())
+                        .build())
+                .toList();
+
+        Optional<Live> live = liveRepository.findByProduct_IdAndIsOnTrue(productId);
+        live.ifPresent(l -> sseEmitterService.send(l.getId(), options));
     }
 
     public List<OrderDto> getOrderList(Long id){
@@ -111,20 +116,9 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
         order.cancel();
+        orderRepository.saveAndFlush(order);
 
-        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(order.getProductOption().getProduct().getId())
-                .stream()
-                .map(option -> ProductOptionDto.builder()
-                        .id(option.getId())
-                        .name(option.getName())
-                        .stock(option.getStock())
-                        .price(option.getPrice())
-                        .discountPrice(option.getDiscountPrice())
-                        .build()).toList();
-
-        Optional<Live> live = liveRepository.findByProduct_IdAndIsOnTrue(order.getProductOption().getProduct().getId());
-        live.ifPresent(l -> sseEmitterService.send(l.getId(), options));
-
+        getEventStock(order.getProductOption().getProduct().getId());
         return order.getId();
 
     }
