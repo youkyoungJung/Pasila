@@ -95,7 +95,7 @@ public class Live {
                 .member(member)
                 .product(product)
                 .build();
-        live.setChatbots(new ArrayList<>());
+        live.setChatbots();
         return live;
     }
 
@@ -103,6 +103,7 @@ public class Live {
         this.title = createLiveRequestDto.getTitle();
         this.liveScheduledAt = createLiveRequestDto.getLiveScheduledAt();
         this.script = createLiveRequestDto.getScript();
+    }
 
     public void setLiveOn(){
         this.isOn = true;
@@ -114,6 +115,10 @@ public class Live {
         this.isOn = false;
         this.fullVideoUrl = fullVideoUrl;
         this.likeCnt = likeCnt;
+    }
+
+    public void setChatbots() {
+        this.chatbots = new ArrayList<>();
     }
 
 }
