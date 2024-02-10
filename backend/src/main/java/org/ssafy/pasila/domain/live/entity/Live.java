@@ -6,6 +6,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.sqids.Sqids;
 import org.ssafy.pasila.domain.live.dto.response.LiveStatsResponseDto;
+import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.shortping.entity.Livelog;
@@ -88,6 +89,24 @@ public class Live {
     @OneToMany(mappedBy = "live", cascade = CascadeType.ALL)
     private List<Chatbot> chatbots = new ArrayList<>();
 
+    public static Live createLive(CreateLiveRequestDto createLiveRequestDto, Member member, Product product) {
+        Live live = Live.builder()
+                .title(createLiveRequestDto.getTitle())
+                .liveScheduledAt(createLiveRequestDto.getLiveScheduledAt())
+                .script(createLiveRequestDto.getScript())
+                .member(member)
+                .product(product)
+                .build();
+        live.setChatbots();
+        return live;
+    }
+
+    public void updateLive(CreateLiveRequestDto createLiveRequestDto) {
+        this.title = createLiveRequestDto.getTitle();
+        this.liveScheduledAt = createLiveRequestDto.getLiveScheduledAt();
+        this.script = createLiveRequestDto.getScript();
+    }
+
     public void setLiveOn(){
         this.isOn = true;
         this.liveOnAt = LocalDateTime.now();
@@ -115,7 +134,10 @@ public class Live {
         liveStats.setParticipant(participant);
 
         return liveStats;
+    }
 
+    public void setChatbots() {
+        this.chatbots = new ArrayList<>();
     }
 
 }
