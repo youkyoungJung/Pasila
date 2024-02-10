@@ -5,11 +5,13 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.sqids.Sqids;
+import org.ssafy.pasila.domain.live.dto.response.LiveStatsResponseDto;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.shortping.entity.Livelog;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -96,6 +98,24 @@ public class Live {
         this.isOn = false;
         this.fullVideoUrl = fullVideoUrl;
         this.likeCnt = likeCnt;
+    }
+
+    public LiveStatsResponseDto liveStats(int participant) {
+        // 방송 시간 계산
+        Duration duration = Duration.between(this.liveOffAt, this.liveOnAt);
+        long hours = duration.toHours();
+        long mins = duration.minusHours(hours).toMinutes();
+        long secs = duration.minusHours(hours).minusMinutes(mins).getSeconds();
+
+        LiveStatsResponseDto liveStats = new LiveStatsResponseDto();
+        liveStats.setLikeCnt(this.likeCnt);
+        liveStats.setLiveOnAt(this.liveOnAt);
+        liveStats.setLiveOffAt(this.liveOffAt);
+        liveStats.setTotalBroadcastTime(String.format("%02d:%02d:%02d", hours, mins, secs));
+        liveStats.setParticipant(participant);
+
+        return liveStats;
+
     }
 
 }

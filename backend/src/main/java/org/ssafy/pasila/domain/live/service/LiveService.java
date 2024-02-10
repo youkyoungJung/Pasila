@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
+import org.ssafy.pasila.domain.live.dto.response.LiveStatsResponseDto;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
@@ -37,6 +38,16 @@ public class LiveService {
 
     }
 
+    public int deleteParticipantInRedis(String liveId) {
+        SetOperations<String, String> setOperations = redisTemplate.opsForSet();
+        int participantCnt = 0;
+        if(Boolean.TRUE.equals(redisTemplate.hasKey("participant : " + liveId))){
+            participantCnt = setOperations.size("participant : " + liveId).intValue();
+            redisTemplate.delete("participant : " + liveId);
+        }
+        return participantCnt;
+    }
+
     @Transactional
     public void updateLiveOn(String liveId) {
         Live live = getLiveById(liveId);
@@ -57,5 +68,10 @@ public class LiveService {
     public String getProductId(String liveId) {
         Live live = liveRepository.findById(liveId).orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
         return live.getProduct().getId();
+    }
+
+    public LiveStatsResponseDto calcLiveStats(String liveId, int participantCnt) {
+        Live live = liveRepository.findById(liveId).orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+        return live.liveStats(participantCnt);
     }
 }

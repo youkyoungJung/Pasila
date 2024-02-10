@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequestDto;
 import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
+import org.ssafy.pasila.domain.live.dto.response.LiveStatsResponseDto;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.domain.live.service.OpenviduService;
 import org.ssafy.pasila.domain.product.dto.ProductResponseDto;
@@ -73,10 +74,13 @@ public class LiveApiController {
         // 2. Live 정보 업데이트
         liveService.updateLiveOff(liveId, recording.getUrl(), liveRedisService.getLikeCnt(liveId));
         // 3. Redis
-        liveRedisService.deleteLiveInRedis(liveId);
+        liveRedisService.deleteLiveInRedis(liveId); // 좋아요 수
+        int participantCnt = liveService.deleteParticipantInRedis(liveId); // 참여자
         // 4. mapRecording 삭제
         mapRecordings.remove(liveId);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+        // 5. 라이브 종료 정보(좋아요 수, 라이브 시작 시간, 라이브 종료 시간, 총 방송 시간, 시청자 수)
+        LiveStatsResponseDto liveStats = liveService.calcLiveStats(liveId, participantCnt);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveStats);
     }
 
     @Operation(summary = "Get ProductInfo", description = "라이브 방송시 판매하는 제품정보를 반환합니다.")
