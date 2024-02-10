@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.member.dto.ChannelDto;
+import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
 import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
 import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
 import org.ssafy.pasila.domain.member.entity.Member;
@@ -19,6 +20,7 @@ import org.ssafy.pasila.domain.member.repository.PersonalInfoRepository;
 import org.ssafy.pasila.domain.member.service.MemberService;
 
 import java.io.IOException;
+import java.nio.channels.Channel;
 import java.util.List;
 import java.util.Map;
 
@@ -122,6 +124,14 @@ public class MemberController {
                                               @RequestBody String description) {
         Long updatedId = memberService.updateChannel(id, description);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), updatedId);
+    }
+
+    // 채널별 Shortping 정보 조회 by id
+    @Operation(summary = "Get channel Shortping by id", description = "id로 채널별 숏핑 조회")
+    @GetMapping("/channel/{id}/shortping")
+    public ApiCommonResponse<List<ChannelShortpingDto>> getChannelShortping(@PathVariable("id") Long id) {
+        List<ChannelShortpingDto> results = memberService.getChannelShortpingById(id);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), results);
     }
 
     // 채널별 Live 정보 조회 by id
