@@ -45,9 +45,9 @@ public class SearchService {
     /**product name, live_title, short_title
      *  검색 키워드에 해당하는 Shortping 모음집
      * */
-    public List<SearchShortpingResponseDto> searchForShortping(String keyword, String sort){
+    public List<SearchShortpingResponseDto> searchForShortping(Long categoryId, String keyword, String sort){
 
-        return searchRepository.findAllForShortping(keyword, sort);
+        return searchRepository.findAllShortpingByFilter(categoryId, keyword, sort);
 
     }
 

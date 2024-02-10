@@ -47,9 +47,9 @@ public class SearchController {
                             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = SearchShortpingResponseDto.class)))
                     })})
     @GetMapping(value="/shortping")
-    public ApiCommonResponse<?> getAllResultsForShortping(@RequestParam String keyword, @RequestParam(name = "sort", defaultValue = "popularity") String sort){
+    public ApiCommonResponse<?> getAllResultsForShortping(@RequestParam(required = false) Long categoryId, @RequestParam(required = false) String keyword, @RequestParam(name = "sort", defaultValue = "popularity") String sort){
 
-        List<SearchShortpingResponseDto> result = searchService.searchForShortping(keyword, sort);
+        List<SearchShortpingResponseDto> result = searchService.searchForShortping(categoryId, keyword, sort);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
 
     }

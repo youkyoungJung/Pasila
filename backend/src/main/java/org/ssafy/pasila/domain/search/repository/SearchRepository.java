@@ -1,6 +1,7 @@
 package org.ssafy.pasila.domain.search.repository;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto;
@@ -61,6 +62,44 @@ public class SearchRepository {
                 .setParameter("keyword", likeParam)
                 .getResultList();
 
+    }
+
+    public List<SearchShortpingResponseDto> findAllShortpingByFilter(Long categoryId, String keyword, String sort) {
+        String orderByClause = getOrderByClause(sort, "shortping");
+        String likeParam = createLikeParam(keyword);
+
+        String jpql = "SELECT new org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto" +
+                "(s.id, s.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
+                "FROM Shortping s " +
+                "LEFT JOIN s.product p " +
+                "LEFT JOIN p.productOptions po " +
+                "LEFT JOIN p.member m ";
+
+        if(categoryId != null && categoryId != 0) {
+            jpql += "WHERE p.category.id = :categoryId " +
+                    "AND s.isActive = true " +
+                    "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) ";
+
+        } else if(keyword != null && !keyword.isEmpty()) {
+            jpql += "WHERE (s.title LIKE :keyword " +
+                    "OR p.name LIKE :keyword " +
+                    "OR m.channel LIKE :keyword) " +
+                    "AND s.isActive = true " +
+                    "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) ";
+        }
+
+        jpql += "GROUP BY s.id, s.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
+                orderByClause;
+
+        TypedQuery<SearchShortpingResponseDto> query = em.createQuery(jpql, SearchShortpingResponseDto.class);
+
+        if(categoryId != null && categoryId != 0) {
+            query.setParameter("categoryId", categoryId);
+        } else if(keyword != null && !keyword.isEmpty()) {
+            query.setParameter("keyword", likeParam);
+        }
+
+        return query.getResultList();
     }
 
     /** 정렬 조건 (인기순/최신순) - popularity/latest */
