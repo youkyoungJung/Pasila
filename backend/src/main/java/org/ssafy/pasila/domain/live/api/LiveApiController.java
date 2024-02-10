@@ -20,6 +20,7 @@ import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.domain.live.service.OpenviduService;
 import org.ssafy.pasila.domain.product.dto.ProductResponseDto;
+import org.ssafy.pasila.domain.product.dto.ProductSellResponseDto;
 import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
@@ -83,7 +84,7 @@ public class LiveApiController {
     @GetMapping("/{liveId}/product")
     public ApiCommonResponse<?> findSellProduct(@PathVariable("liveId") String liveId) {
         String productId = liveService.getProductId(liveId);
-        ProductResponseDto product = productService.getProduct(productId);
+        ProductSellResponseDto product = productService.getProductSell(productId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), product);
     }
 
