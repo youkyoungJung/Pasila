@@ -160,8 +160,10 @@ public class LiveApiController {
 
     @GetMapping("/question")
     public ApiCommonResponse<?> getTop5Question(@RequestParam String liveId) {
-        List<ChatRedis> result = liveService.getTop5Question(liveId);
+
+        List<String> result = liveService.getTop5Question(liveId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
+
     }
 
 }

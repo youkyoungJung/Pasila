@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class ChatRedisRepository {
@@ -26,13 +28,26 @@ public class ChatRedisRepository {
     public List<ChatRedis> findByLiveId(String key) throws JsonProcessingException {
         if(key == null) return null;
 
-        List<String> valueList = redisTemplate.opsForList().range(key, 0, -1);
+        List<String> valueList = redisTemplate.opsForList().range("chat:" + key, 0, -1);
 
         if(valueList == null || valueList.isEmpty()) return null;
 
         return valueList.stream()
                 .map(this::deserialization)
                 .collect(Collectors.toList());
+    }
+
+    public String recentChat(String key) {
+        if(key == null) return null;
+
+        List<String> valueList = redisTemplate.opsForList().range("chat:" + key, 0, -1);
+
+        if(valueList == null || valueList.isEmpty()) return null;
+
+        String result = valueList.stream().reduce("", (a, b) -> a + b + "\n");
+        redisTemplate.delete("chat:" + key);
+
+        return result;
     }
 
     public void saveChat(String key, ChatRedis chat) throws JsonProcessingException {

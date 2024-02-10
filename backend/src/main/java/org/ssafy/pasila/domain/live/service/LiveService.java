@@ -9,10 +9,12 @@ import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
+import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.redis.entity.ChatRedis;
 import org.ssafy.pasila.global.infra.redis.service.ChatRedisService;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.LocalDateTime.*;
@@ -26,6 +28,8 @@ public class LiveService {
     private final LiveRepository liveRepository;
 
     private final ChatRedisService chatRedisService;
+
+    private final GptClient gptClient;
 
     public int joinLive(String liveId, String memberId) {
 
@@ -64,9 +68,15 @@ public class LiveService {
                 .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
-    public List<ChatRedis> getTop5Question(String liveId) {
-        List<ChatRedis> chatList = chatRedisService.getChatList(liveId);
-        return null;
+    public List<String> getTop5Question(String liveId) {
+
+        String chatList = chatRedisService.getChatList(liveId);
+
+        if(chatList == null) return new ArrayList<>();
+
+        String result = gptClient.questionSummary(chatList).replaceAll("- ", "");
+
+        return List.of(result.split("\n"));
     }
 
 }

@@ -4,12 +4,14 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.redis.core.RedisHash;
+import org.ssafy.pasila.global.util.TimeUtil;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
-@RedisHash(value = "chat", timeToLive = 600)
+@RedisHash(value = "chat")
 @AllArgsConstructor
 public class ChatRedis implements Serializable {
     @Id
@@ -20,4 +22,9 @@ public class ChatRedis implements Serializable {
     private String message;
 
     private LocalDateTime createdAt;
+
+    @Override
+    public String toString() {
+        return "[" + createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")) + "] " + memberName + ": " + message;
+    }
 }
