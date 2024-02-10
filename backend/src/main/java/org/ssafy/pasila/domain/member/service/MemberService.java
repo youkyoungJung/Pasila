@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
+import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
 import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.ChannelRepository;
@@ -83,6 +84,13 @@ public class MemberService {
     private Member getMemberById(Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 멤버 정보가 없습니다."));
+    }
+
+    /**
+     * 채널별 라이브 조회 메서드
+     */
+    public List<ChannelLiveDto> getChannelLiveById(Long id) {
+        return channelRepository.findLiveById(id);
     }
 
     /**

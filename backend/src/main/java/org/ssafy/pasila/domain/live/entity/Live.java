@@ -1,10 +1,7 @@
 package org.ssafy.pasila.domain.live.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.sqids.Sqids;
@@ -20,7 +17,7 @@ import java.util.List;
 
 @Entity
 
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -88,5 +85,17 @@ public class Live {
 
     @OneToMany(mappedBy = "live", cascade = CascadeType.ALL)
     private List<Chatbot> chatbots = new ArrayList<>();
+
+    public void setLiveOn(){
+        this.isOn = true;
+        this.liveOnAt = LocalDateTime.now();
+    }
+
+    public void setLiveOff(String fullVideoUrl, int likeCnt){
+        this.liveOffAt = LocalDateTime.now();
+        this.isOn = false;
+        this.fullVideoUrl = fullVideoUrl;
+        this.likeCnt = likeCnt;
+    }
 
 }
