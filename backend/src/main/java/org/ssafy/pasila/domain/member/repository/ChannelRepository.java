@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.ssafy.pasila.domain.member.dto.ChannelDto;
 import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
-<<<<<<< backend/src/main/java/org/ssafy/pasila/domain/member/repository/ChannelRepository.java
 import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
-=======
->>>>>>> backend/src/main/java/org/ssafy/pasila/domain/member/repository/ChannelRepository.java
 
 import java.util.List;
 
