@@ -15,9 +15,6 @@ import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
 
-
-import static java.time.LocalDateTime.*;
-
 @Service
 @RequiredArgsConstructor
 public class LiveService {
@@ -49,17 +46,13 @@ public class LiveService {
     @Transactional
     public void updateLiveOn(String liveId) {
         Live live = getLiveById(liveId);
-        live.setLiveOnAt(now());
-        live.setOn(true);
+        live.setLiveOn();
     }
 
     @Transactional
     public void updateLiveOff(String liveId, String fullVideoUrl, int likeCnt) {
         Live live = getLiveById(liveId);
-        live.setLiveOffAt(now());
-        live.setOn(false);
-        live.setFullVideoUrl(fullVideoUrl);
-        live.setLikeCnt(likeCnt);
+        live.setLiveOff(fullVideoUrl, likeCnt);
     }
 
     public Live getLiveById(String id) {
