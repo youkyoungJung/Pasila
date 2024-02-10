@@ -11,8 +11,8 @@ public class ChatbotQueryRepository {
 
     public void deleteAllByLiveId(String liveId) {
         em.createQuery(
-                "delete from Chatbot c" +
-                        "where c.live.id =: liveId")
+                "delete from Chatbot c " +
+                        "where c.live.id = :liveId")
                 .setParameter("liveId", liveId)
                 .executeUpdate();
     }
