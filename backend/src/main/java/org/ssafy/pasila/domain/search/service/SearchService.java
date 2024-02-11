@@ -9,6 +9,7 @@ import org.ssafy.pasila.domain.product.entity.ProductOption;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
 import org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto;
 import org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto;
+import org.ssafy.pasila.domain.search.dto.ShortpingByCategoryResponseDto;
 import org.ssafy.pasila.domain.search.repository.SearchRepository;
 import org.ssafy.pasila.global.infra.redis.dto.LiveRedisDto;
 import org.ssafy.pasila.global.infra.redis.repository.LiveRedisRepository;
@@ -45,10 +46,19 @@ public class SearchService {
     /**product name, live_title, short_title
      *  검색 키워드에 해당하는 Shortping 모음집
      * */
-    public List<SearchShortpingResponseDto> searchForShortping(Long categoryId, String keyword, String sort){
+    public List<SearchShortpingResponseDto> searchForShortping(String keyword, String sort){
 
-        return searchRepository.findAllShortpingByFilter(categoryId, keyword, sort);
+        return searchRepository.findAllShortpingByFilter(0L, keyword, sort);
 
+    }
+
+    public ShortpingByCategoryResponseDto searchShortpingByCategory(Long categoryId) {
+
+        List<SearchShortpingResponseDto> top5 = searchRepository.top5Shortping(categoryId);
+        List<SearchShortpingResponseDto> latest = searchRepository.findAllShortpingByFilter(categoryId, "", "latest");
+        List<SearchShortpingResponseDto> popular = searchRepository.findAllShortpingByFilter(categoryId, "", "popularity");
+
+        return new ShortpingByCategoryResponseDto(top5, latest, popular);
     }
 
 }

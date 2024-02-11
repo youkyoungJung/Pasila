@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto;
 import org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto;
+import org.ssafy.pasila.domain.search.dto.ShortpingByCategoryResponseDto;
 import org.ssafy.pasila.domain.search.service.SearchService;
 import java.util.List;
 
@@ -47,9 +48,9 @@ public class SearchController {
                             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = SearchShortpingResponseDto.class)))
                     })})
     @GetMapping(value="/shortping")
-    public ApiCommonResponse<?> getAllResultsForShortping(@RequestParam(required = false) Long categoryId, @RequestParam(required = false) String keyword, @RequestParam(name = "sort", defaultValue = "popularity") String sort){
+    public ApiCommonResponse<?> getAllResultsForShortping(@RequestParam String keyword, @RequestParam(name = "sort", defaultValue = "popularity") String sort){
 
-        List<SearchShortpingResponseDto> result = searchService.searchForShortping(categoryId, keyword, sort);
+        List<SearchShortpingResponseDto> result = searchService.searchForShortping(keyword, sort);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
 
     }
