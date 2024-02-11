@@ -16,7 +16,7 @@ public class SearchRepository {
 
     private final EntityManager em;
 
-    public List<SearchLiveResponseDto> findAllForLive(String keyword, String sort) {
+    public List<SearchLiveResponseDto> findAllForLive(String keyword, String sort, int size) {
         String orderByClause = getOrderByClause(sort, "live");
         String likeParam = createLikeParam(keyword);
 
