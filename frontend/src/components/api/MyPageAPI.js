@@ -6,7 +6,8 @@ const formData = formDataAxios()
 const url = '/member'
 const loginUser = {
   id: 1,
-  email: 'acczoo@acczoo.com'
+  email: 'acczoo@acczoo.com',
+  channel: 'ACCZOO'
 }
 
 const checkPassword = async (user) => {
@@ -32,20 +33,32 @@ const getMyPage = async () => {
 }
 
 const checkMyEmail = async (myEmail) => {
-  if (loginUser.email == myEmail) return true
+  if (loginUser.email == myEmail) return 0
   try {
     const res = await local.get(`${url}/email`, {
       params: {
         email: myEmail
       }
     })
-    console.log(res)
     return res.data
   } catch (err) {
     console.error('localAxios error', err)
   }
 }
 
+const checkMyChannel = async (myChannel) => {
+  if (loginUser.channel == myChannel) return 0
+  try {
+    const res = await local.get(`${url}/channel`, {
+      params: {
+        channel: myChannel
+      }
+    })
+    return res.data
+  } catch (err) {
+    console.error('localAxios error', err)
+  }
+}
 const changeMyInfo = async (data) => {
   const loginUser = {
     id: 1
@@ -58,4 +71,4 @@ const changeMyInfo = async (data) => {
     console.error('localAxios error', err)
   }
 }
-export { checkPassword, getMyPage, checkMyEmail, changeMyInfo }
+export { checkPassword, getMyPage, checkMyEmail, checkMyChannel, changeMyInfo }

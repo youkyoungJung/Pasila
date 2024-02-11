@@ -7,7 +7,6 @@ const emit = defineEmits(['getData', 'sendData'])
 const ph = ref(props.data.title + ' 입력하세요.')
 
 const clicked = () => {
-  console.log('눌렀따고')
   emit('sendData', props.data)
 }
 </script>
@@ -20,9 +19,9 @@ const clicked = () => {
         id="short-input"
         :type="props.data.type"
         :placeholder="ph"
-        class="short-input"
         @input="$emit('getData', $event.target.value)"
         :value="props.inputData"
+        :class="[props.data.title == '주소' ? 'address-readonly' : 'short-input']"
       />
       <input type="button" :value="props.data.text" class="input-btn" @click="clicked()" />
     </div>
@@ -46,6 +45,13 @@ const clicked = () => {
     @include flex-box($justify: space-between);
     width: 92%;
     margin: 0.2rem 0;
+    .address-readonly {
+      pointer-events: none;
+      @include box(90%, 2.5rem, whitesmoke, 0, 0, 0);
+      border: none;
+      padding-left: 0.5rem;
+      outline: none;
+    }
 
     .short-input {
       @include box(90%, 2.5rem, whitesmoke, 0, 0, 0);
