@@ -129,6 +129,14 @@ const channelCerti = ref(0)
 const phoneCerti = ref(0)
 const formData = new FormData()
 
+//이메일, 비밀번호 유효성검사
+const strongEmail = (str) => {
+  return /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*/.text(str)
+}
+const strongPassword = (str) => {
+  return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(str)
+}
+
 const uploadImg = (e) => {
   const fileInput = e.target
   if (fileInput && fileInput.files && fileInput.files.length > 0) {
@@ -145,6 +153,14 @@ const uploadImg = (e) => {
 }
 
 const checkEmail = async () => {
+  if (user.value.email == '') {
+    alert('이메일을 입력해주세요')
+    return
+  }
+  if (!strongEmail(user.value.email)) {
+    alert('이메일 형식을 확인해주세요.')
+    return
+  }
   const res = await checkMyEmail(user.value.email)
   if (res == 0) {
     emailCerti.value = 0
@@ -198,8 +214,8 @@ const checkCertiNum = async () => {
 const openPostCode = async () => {
   new window.daum.Postcode({
     oncomplete: (data) => {
-      if (user.value.addressDetailddress !== '') {
-        user.value.addressDetailddress = ''
+      if (user.value.addressDetail !== '') {
+        user.value.addressDetail = ''
       }
       if (data.userSelectedType === 'R') {
         // 사용자가 도로명 주소를 선택했을 경우
@@ -234,8 +250,16 @@ const openPostCode = async () => {
 
 //수정완료
 const modify = async () => {
-  if (user.value.password != '' && user.value.password != user.value.passwordCheck) {
-    alert('비밀번호가 다릅니다. 다시 입력해주세요.')
+  if (!strongEmail) {
+    alert('이메일 확인해주세요.')
+    return
+  }
+  if (
+    !strongPassword(user.value.password) ||
+    user.value.password == '' ||
+    user.value.password != user.value.passwordCheck
+  ) {
+    alert('비밀번호를 확인해주세요.')
     return
   }
   if (phoneCerti.value == 2) {
@@ -331,8 +355,18 @@ const modify = async () => {
       </section>
       <section class="userInfo">
         <v-long-input :data="longData.passwordCheck" @getData="(e) => (user.passwordCheck = e)" />
-        <div v-if="user.password != '' && user.password === user.passwordCheck" class="check-text">
+        <div
+          v-if="
+            strongPassword(user.password) &&
+            user.password != '' &&
+            user.password === user.passwordCheck
+          "
+          class="check-text"
+        >
           비밀번호가 일치합니다.
+        </div>
+        <div v-else-if="!strongPassword(user.password)" class="wrong-text">
+          8글자 이상, 영문, 숫자, 특수문자(@$!%*#?&)를 포함해야 합니다.
         </div>
         <div v-else class="wrong-text">비밀번호가 일치하지 않습니다. 다시 입력해주세요.</div>
       </section>

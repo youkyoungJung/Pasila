@@ -3,19 +3,26 @@ import router from '@/router'
 import { ref } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
+import { joinUser, checkMyEmail, checkMyChannel } from '@/components/api/MyPageAPI'
+import {
+  getEmailAuthNumber,
+  checkEmailAuthNumber,
+  checkPhoneAuthNumber,
+  getPhoneAuthNumber
+} from '@/components/api/AuthAPI'
 
 const user = ref({
-  profile: '',
   email: '',
   name: '',
-  channelName: '',
+  channel: '',
   password: '',
   phone: '',
   address: '',
-  detailAddress: '',
+  addressDetail: '',
   gender: '',
   birth: ''
 })
+const userImage = ref('')
 
 const longData = ref({
   name: {
@@ -30,9 +37,9 @@ const longData = ref({
     title: '비밀번호 확인',
     type: 'password'
   },
-  detailAddress: {
+  addressDetail: {
     title: '상세주소',
-    type: 'password'
+    type: 'text'
   },
   birth: {
     title: '생년월일',
@@ -45,6 +52,12 @@ const shortData = ref({
     title: '이메일',
     type: 'email',
     text: '중복확인'
+  },
+  emailCerti: {
+    title: '이메일 인증',
+    type: 'text',
+    text: '인증하기',
+    value: ''
   },
   channel: {
     title: '채널명',
@@ -68,22 +81,168 @@ const shortData = ref({
   }
 })
 
-const certi = ref('')
+//이메일 중복확인
+const emailCerti = ref(0)
+//이메일 인증번호
+const emailCertiNum = ref('')
+//이메일 인증확인
+const resultCheckEmail = ref(0)
+//채널명 중복확인
+const channelCerti = ref(0)
+//핸드폰 인증번호
+const phoneCerti = ref(0)
+const formData = new FormData()
+
+//이메일, 비밀번호 유효성검사
+const strongEmail = (str) => {
+  return /^[A-Za-z0-9_.-]+@[A-Za-z0-9-]+\.[A-Za-z0-9-]/.test(str)
+}
+const strongPassword = (str) => {
+  return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(str)
+}
 const uploadImg = (e) => {
-  const file = e.target
-  const reader = new FileReader()
-  reader.onload = function (e) {
-    user.value.profile = e.target.result
+  const fileInput = e.target
+  if (fileInput && fileInput.files && fileInput.files.length > 0) {
+    const file = fileInput.files[0]
+    const reader = new FileReader()
+
+    reader.onload = (event) => {
+      userImage.value = event.target.result
+      formData.append('profileFile', file)
+    }
+
+    reader.readAsDataURL(file)
   }
-  reader.readAsDataURL(file.files[0])
 }
 
-const join = () => {
-  //user.value 백에 넘겨주기
-  if (user.value.birth != '') {
-    user.value.birth += ' 00:00:00'
+const checkEmail = async () => {
+  if (user.value.email == '') {
+    alert('이메일을 입력해주세요')
+    return
   }
-  router.push('/')
+  if (!strongEmail(user.value.email)) {
+    alert('이메일 형식을 확인해주세요.')
+    return
+  }
+  const res = await checkMyEmail(user.value.email)
+  if (res == 0) {
+    emailCerti.value = 0
+  } else if (res) {
+    emailCerti.value = 1
+    const res = await getEmailAuthNumber(user.value.email)
+    console.log(res)
+  } else {
+    emailCerti.value = 2
+  }
+}
+
+const checkEmailCerti = async () => {
+  const res = await checkEmailAuthNumber(user.value.email, emailCertiNum.value)
+  if (res == 0) {
+    resultCheckEmail.value = 0
+  } else if (res) {
+    resultCheckEmail.value = 1
+  } else {
+    resultCheckEmail.value = 2
+  }
+}
+const checkChannel = async () => {
+  const res = await checkMyChannel(user.value.channel)
+  if (res == 0) {
+    channelCerti.value = 0
+  } else if (res) {
+    channelCerti.value = 1
+  } else {
+    channelCerti.value = 2
+  }
+}
+
+const sendPhoneNum = async () => {
+  await getPhoneAuthNumber(user.value.phone)
+}
+
+const checkCertiNum = async () => {
+  const res = await checkPhoneAuthNumber(user.value.phone, user.value.phoneCheck)
+  console.log(res.data)
+  if (res === 0) {
+    phoneCerti.value = 0
+  } else if (res.data) {
+    phoneCerti.value = 1
+  } else if (!res.data) {
+    phoneCerti.value = 2
+  }
+}
+
+//주소검색
+const openPostCode = async () => {
+  new window.daum.Postcode({
+    oncomplete: (data) => {
+      if (user.value.addressDetail !== '') {
+        user.value.addressDetail = ''
+      }
+      if (data.userSelectedType === 'R') {
+        // 사용자가 도로명 주소를 선택했을 경우
+        user.value.address = data.roadAddress
+      } else {
+        // 사용자가 지번 주소를 선택했을 경우(J)
+        user.value.address = data.jibunAddress
+      }
+
+      // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+      if (data.userSelectedType === 'R') {
+        // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+        // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+        if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+          user.value.addressDetail = data.bname
+        }
+        // 건물명이 있고, 공동주택일 경우 추가한다.
+        if (data.buildingName !== '' && data.apartment === 'Y') {
+          user.value.addressDetail +=
+            user.value.addressDetail !== '' ? `, ${data.buildingName}` : data.buildingName
+        }
+        // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+        if (user.value.addressDetail !== '') {
+          user.value.addressDetail = `(${user.value.addressDetail})`
+        }
+      } else {
+        user.value.addressDetail = ''
+      }
+    }
+  }).open()
+}
+
+//회원가입
+const join = async () => {
+  if (!strongEmail) {
+    alert('이메일 확인해주세요.')
+    return
+  }
+  if (
+    !strongPassword(user.value.password) ||
+    user.value.password == '' ||
+    user.value.password != user.value.passwordCheck
+  ) {
+    alert('비밀번호를 확인해주세요.')
+    return
+  }
+  if (phoneCerti.value == 2) {
+    alert('핸드폰 인증을 완료해주세요.')
+    return
+  }
+  if (user.value.password == null) user.value.password = ''
+  if (user.value.gender == '여성') user.value.gender = 'F'
+  else if (user.value.gender == '남성') user.value.gender = 'M'
+  else user.value.gender = ''
+
+  formData.append('member', new Blob([JSON.stringify(user.value)], { type: 'application/json' }))
+
+  console.log(user.value)
+
+  const res = await joinUser(formData)
+  if (res) {
+    alert('회원가입이 완료 되었습니다.')
+    router.push('/')
+  } else alert('정보를 다시 확인해주세요.')
 }
 </script>
 
@@ -93,48 +252,112 @@ const join = () => {
     <div class="content">
       <section class="profile">
         <div>
-          <div v-if="user.profile != ''">
-            <img :src="user.profile" id="profileImg" class="profile-img" />
+          <div v-if="userImage != ''">
+            <img :src="userImage" class="profile-img" />
           </div>
           <div v-else>
             <font-awesome-icon icon="fa-regular fa-user" class="profile-img" />
           </div>
         </div>
-        <label for="file">프로필 사진 등록</label>
-        <input type="file" id="file" @change="uploadImg" accept="image/*" class="profile-choose" />
+        <label for="imageFile">프로필 사진 등록</label>
+        <input
+          type="file"
+          id="imageFile"
+          @change="uploadImg"
+          accept="image/*"
+          class="profile-choose"
+        />
       </section>
       <section class="userInfo">
-        <v-short-input :data="shortData.email" @getData="(e) => (user.email = e)" />
+        <v-short-input
+          :data="shortData.email"
+          @getData="(e) => (user.email = e)"
+          @sendData="(e) => checkEmail(e)"
+        />
+        <div v-if="emailCerti == 1" class="check-text">
+          사용가능한 이메일입니다. 인증을 위해 이메일을 확인해주세요.
+        </div>
+        <div v-if="emailCerti == 1">
+          <v-short-input
+            :data="shortData.emailCerti"
+            @getdata="(e) => (emailCertiNum = e)"
+            @sendData="(e) => checkEmailCerti(e)"
+          />
+          <div v-if="resultCheckEmail == 1" class="check-text">이메일 인증이 완료되었습니다.</div>
+          <div v-else-if="resultCheckEmail == 2" class="wrong-text">
+            인증번호를 다시 입력해주세요.
+          </div>
+        </div>
+        <div v-else-if="emailCerti == 2" class="wrong-text">
+          중복된 이메일입니다. 다른 이메일을 사용해 주세요.
+        </div>
       </section>
       <section class="userInfo">
         <v-long-input :data="longData.name" @getData="(e) => (user.name = e)" />
       </section>
       <section class="userInfo">
-        <v-short-input :data="shortData.channel" @getData="(e) => (user.channelName = e)" />
+        <v-short-input
+          :data="shortData.channel"
+          @getData="(e) => (user.channel = e)"
+          @sendData="(e) => checkChannel(e)"
+        />
+        <div v-if="channelCerti == 1" class="check-text">사용가능한 채널명입니다.</div>
+        <div v-else-if="channelCerti == 2" class="wrong-text">
+          중복된 채널명입니다. 다른 채널명을 사용해 주세요.
+        </div>
       </section>
       <section class="userInfo">
         <v-long-input :data="longData.password" @getData="(e) => (user.password = e)" />
       </section>
       <section class="userInfo">
         <v-long-input :data="longData.passwordCheck" @getData="(e) => (user.passwordCheck = e)" />
-        <div v-if="user.password != '' && user.password === user.passwordCheck" class="check-text">
+        <div
+          v-if="
+            strongPassword(user.password) &&
+            user.password != '' &&
+            user.password === user.passwordCheck
+          "
+          class="check-text"
+        >
           비밀번호가 일치합니다.
+        </div>
+        <div v-else-if="!strongPassword(user.password)" class="wrong-text">
+          8글자 이상, 영문, 숫자, 특수문자(@$!%*#?&)를 포함해야 합니다.
         </div>
         <div v-else class="wrong-text">비밀번호가 일치하지 않습니다. 다시 입력해주세요.</div>
       </section>
       <section class="userInfo">
-        <v-short-input :data="shortData.phone" @getData="(e) => (user.phone = e)" />
+        <v-short-input
+          :data="shortData.phone"
+          @getData="(e) => (user.phone = e)"
+          @sendData="(e) => sendPhoneNum(e)"
+        />
       </section>
       <section class="userInfo">
-        <v-short-input :data="shortData.phoneCheck" @getData="(e) => (certi = e)" />
-        <div v-if="certi != ''" class="check-text">인증번호가 일치합니다.</div>
-        <div v-else class="wrong-text">인증번호가 다릅니다. 다시 입력해주세요.</div>
+        <v-short-input
+          :data="shortData.phoneCheck"
+          @getData="(e) => (certi = e)"
+          @sendData="(e) => checkCertiNum(e)"
+        />
+        <div v-if="phoneCerti == 1" class="check-text">인증번호가 일치합니다.</div>
+        <div v-else-if="phoneCerti == 2" class="wrong-text">
+          인증번호가 다릅니다. 다시 입력해주세요.
+        </div>
       </section>
       <section class="userInfo">
-        <v-short-input :data="shortData.address" @getData="(e) => (user.address = e)" />
+        <v-short-input
+          :data="shortData.address"
+          :inputData="user.address"
+          @getData="(e) => (user.address = e)"
+          @sendData="(e) => openPostCode(e)"
+        />
       </section>
       <section class="userInfo">
-        <v-long-input :data="longData.detailAddress" @getData="(e) => (user.detailAddress = e)" />
+        <v-long-input
+          :data="longData.addressDetail"
+          :inputData="user.addressDetail"
+          @getData="(e) => (user.addressDetail = e)"
+        />
       </section>
       <section class="userInfo">
         <div class="gender">

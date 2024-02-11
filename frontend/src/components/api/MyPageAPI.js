@@ -10,6 +10,15 @@ const loginUser = {
   channel: 'ACCZOO'
 }
 
+const joinUser = async (data) => {
+  try {
+    const res = await formData.post(`${url}/join`, data)
+    return res.data
+  } catch (err) {
+    console.error('localAxios error', err)
+  }
+}
+
 const checkPassword = async (user) => {
   try {
     const res = await local.post(`${url}/${loginUser.id}/pw`, { password: user.password })
@@ -71,4 +80,4 @@ const changeMyInfo = async (data) => {
     console.error('localAxios error', err)
   }
 }
-export { checkPassword, getMyPage, checkMyEmail, checkMyChannel, changeMyInfo }
+export { joinUser, checkPassword, getMyPage, checkMyEmail, checkMyChannel, changeMyInfo }
