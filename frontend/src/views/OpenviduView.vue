@@ -162,7 +162,7 @@ const subToolBar = reactive([
     <div class="session" v-if="session">
       <section class="col-1">
         <user-video :stream-manager="mainStreamManager" :is-start="isStart" />
-        <live-script v-if="pubToolBar[0].isActive" />
+        <live-script v-if="pubToolBar[0].isActive" :script="props.script" />
       </section>
 
       <section class="col-2" v-if="pubToolBar[1].isActive">
