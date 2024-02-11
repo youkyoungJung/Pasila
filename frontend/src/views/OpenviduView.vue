@@ -2,8 +2,13 @@
 import { onMounted, onUnmounted, ref, reactive } from 'vue'
 import router from '@/router'
 import { OpenVidu } from 'openvidu-browser'
-import { createSessionApi, createTokenApi } from '@/components/api/OpenviduAPI.js'
-import { getLiveProductApi } from '@/components/api/OpenviduAPI.js'
+import {
+  createSessionApi,
+  createTokenApi,
+  getLiveProductApi,
+  startLiveApi,
+  stopLiveApi
+} from '@/components/api/OpenviduAPI.js'
 import { useMemberStore } from '@/stores/member'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
 import LiveScript from '@/components/live/seller/LiveScript.vue'
@@ -20,6 +25,7 @@ let publisher = ref(undefined)
 let subscribers = ref([])
 
 let userRole = ref('')
+let isStart = ref(false)
 
 let product = reactive({})
 
@@ -100,9 +106,19 @@ const joinSession = async () => {
   window.addEventListener('beforeunload', leaveSession)
 }
 
-const leaveSession = () => {
+const startLive = async () => {
+  await startLiveApi(props.liveId)
+  isStart.value = true
+}
+
+const stopLive = async () => {
+  await stopLiveApi(props.liveId)
+}
+
+const leaveSession = async () => {
   if (session.value) {
     if (userRole === 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
+      await stopLive()
       session.value.disconnect()
       router.push(`/live/${props.liveId}/end`)
     } else {
@@ -129,7 +145,9 @@ const pubToolBar = reactive([
   { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
   { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
   { isActive: true, iconName: 'fa-regular fa-circle-question', click: clickToolBarBtn },
-  { isActive: true, iconName: 'fa-regular fa-circle-xmark', click: leaveSession }
+  isStart.value
+    ? { isActive: true, iconName: 'fa-regular fa-circle-xmark', click: leaveSession }
+    : { isActive: true, iconName: 'fa-regular fa-circle-play', click: startLive }
 ])
 
 const subToolBar = reactive([
@@ -143,7 +161,7 @@ const subToolBar = reactive([
   <template v-if="userRole === 'PUB'">
     <div class="session" v-if="session">
       <section class="col-1">
-        <user-video :stream-manager="mainStreamManager" />
+        <user-video :stream-manager="mainStreamManager" :is-start="isStart" />
         <live-script v-if="pubToolBar[0].isActive" />
       </section>
 
@@ -169,7 +187,7 @@ const subToolBar = reactive([
   <template v-else>
     <div class="session" v-if="session">
       <section class="col-1">
-        <user-video :stream-manager="mainStreamManager" />
+        <user-video :stream-manager="mainStreamManager" :is-start="true" />
       </section>
 
       <section class="col-2" v-if="subToolBar[0].isActive">

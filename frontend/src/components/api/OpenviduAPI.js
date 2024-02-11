@@ -34,4 +34,24 @@ const getLiveProductApi = async (liveId) => {
   }
 }
 
-export { createSessionApi, createTokenApi, getLiveProductApi }
+const startLiveApi = async (liveId) => {
+  try {
+    const res = await local.put(`${url}/${liveId}/on`)
+    return res.data
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+
+const stopLiveApi = async (liveId) => {
+  try {
+    const res = await local.put(`${url}/${liveId}/off`)
+    return res.data
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+
+export { createSessionApi, createTokenApi, getLiveProductApi, startLiveApi, stopLiveApi }
