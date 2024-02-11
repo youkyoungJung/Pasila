@@ -80,7 +80,7 @@ const addOrder = async () => {
 
     router.replace('/order/success')
   } else {
-    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해주세요.')
+    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
   }
 }
 </script>

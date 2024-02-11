@@ -75,7 +75,7 @@ const joinSession = async () => {
   })
 
   session.value.on('exception', ({ exception }) => {
-    alert('서버에 문제가 발생했습니다. 잠시후 다시 시도해주세요.')
+    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
     router.push('/')
   })
 
@@ -100,15 +100,16 @@ const joinSession = async () => {
 
     session.value.publish(publisher.value)
   } catch (error) {
-    alert('서버에 문제가 발생했습니다. 잠시후 다시 시도해주세요.')
+    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
   }
 
   window.addEventListener('beforeunload', leaveSession)
 }
 
 const startLive = async () => {
-  await startLiveApi(props.liveId)
-  isStart.value = true
+  if (await startLiveApi(props.liveId)) {
+    isStart.value = true
+  }
 }
 
 const stopLive = async () => {
