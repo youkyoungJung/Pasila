@@ -10,7 +10,7 @@ import { addOrderApi } from '@/components/api/OrderAPI'
 
 const props = defineProps(['id'])
 const { member } = useMemberStore()
-const { orderList, product } = useOrderListStore()
+const { orderList, product, resetOrderList, resetProduct } = useOrderListStore()
 
 const inputData = ref([
   {
@@ -56,11 +56,32 @@ const totalPrice = computed(() => {
 })
 
 const addOrder = async () => {
-  const data = {}
-  await addOrderApi(data)
-  orderList = null
-  product = null
-  router.replace('/order/success')
+  const options = []
+
+  for (let i = 0; i < orderList.length; i++) {
+    let option = {
+      id: orderList[i].optionId,
+      quantity: orderList[i].quantity,
+      price: orderList[i].discountPrice * orderList[i].quantity
+    }
+    options.push(option)
+  }
+
+  const data = {
+    options: options,
+    memberId: member.id,
+    name: inputData.value[0].value,
+    address: inputData.value[1].value + ' ' + inputData.value[2].value
+  }
+
+  if (await addOrderApi(data)) {
+    resetOrderList
+    resetProduct
+
+    router.replace('/order/success')
+  } else {
+    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해주세요.')
+  }
 }
 </script>
 
