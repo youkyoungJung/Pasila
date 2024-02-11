@@ -8,7 +8,7 @@ import java.util.*;
 
 public interface ProductOptionRepository extends JpaRepository<ProductOption, Long> {
 
-    @Lock(value = LockModeType.OPTIMISTIC_FORCE_INCREMENT)
+    @Lock(value = LockModeType.OPTIMISTIC)
     List<ProductOption> findAllByProduct_Id(String productId);
 
 }
