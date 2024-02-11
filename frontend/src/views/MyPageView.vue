@@ -131,7 +131,7 @@ const formData = new FormData()
 
 //이메일, 비밀번호 유효성검사
 const strongEmail = (str) => {
-  return /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*/.text(str)
+  return /^[A-Za-z0-9_.-]+@[A-Za-z0-9-]+\.[A-Za-z0-9-]/.test(str)
 }
 const strongPassword = (str) => {
   return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(str)
