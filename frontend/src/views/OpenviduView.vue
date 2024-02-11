@@ -1,9 +1,10 @@
 <script setup>
-import { onMounted, ref, reactive } from 'vue'
+import { onMounted, onUnmounted, ref, reactive } from 'vue'
 import router from '@/router'
 import { OpenVidu } from 'openvidu-browser'
 import { createSessionApi, createTokenApi } from '@/components/api/OpenviduAPI.js'
-import { getProductApi } from '@/components/api/ProductAPI'
+import { getLiveProductApi } from '@/components/api/OpenviduAPI.js'
+import { useMemberStore } from '@/stores/member'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
 import LiveScript from '@/components/live/seller/LiveScript.vue'
 import LiveStock from '@/components/live/seller/LiveStock.vue'
@@ -22,19 +23,20 @@ let userRole = ref('SUB')
 
 let product = reactive({})
 
-const props = defineProps(['id'])
-
-// Join form
-const mySessionId = 'SessionA'
-const myUserName = 'Participant' + Math.floor(Math.random() * 100)
+const props = defineProps(['liveId'])
+const { member } = useMemberStore()
 
 onMounted(async () => {
   await getProduct()
   joinSession()
 })
 
+onUnmounted(() => {
+  leaveSession()
+})
+
 const getProduct = async () => {
-  product = await getProductApi(props.id)
+  product = await getLiveProductApi(props.liveId)
 }
 
 const clickToolBarBtn = (n) => {
@@ -64,11 +66,11 @@ const joinSession = async () => {
     router.push('/')
   })
 
-  const res = await getToken(mySessionId)
+  const res = await getToken(props.liveId)
   const token = res
 
   try {
-    await session.value.connect(token, { clientData: myUserName })
+    await session.value.connect(token, { clientData: member.name })
 
     const publisherInfo = OV.value.initPublisher(undefined, {
       audioSource: undefined,
@@ -93,11 +95,11 @@ const joinSession = async () => {
 
 const leaveSession = () => {
   if (session.value) {
-    if (confirm('라이브를 정말 종료하시겠습니까?')) {
+    if (userRole === 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
       session.value.disconnect()
-      router.push(`/live/${props.id}/end`)
+      router.push(`/live/${props.liveId}/end`)
     } else {
-      return
+      session.value.disconnect()
     }
   }
 
@@ -110,8 +112,8 @@ const leaveSession = () => {
   window.removeEventListener('beforeunload', leaveSession)
 }
 
-const getToken = async (mySessionId) => {
-  const res = await createSessionApi(mySessionId)
+const getToken = async (liveId) => {
+  const res = await createSessionApi(liveId)
   return await createTokenApi(res)
 }
 
@@ -147,7 +149,7 @@ const controlToolBar = reactive(
       </section>
 
       <section class="col-3" v-if="controlToolBar[2].isActive || controlToolBar[3].isActive">
-        <live-stock v-if="controlToolBar[2].isActive" :live-id="props.id" />
+        <live-stock v-if="controlToolBar[2].isActive" :live-id="props.liveId" />
         <live-question v-if="controlToolBar[3].isActive" />
       </section>
     </div>
@@ -163,11 +165,7 @@ const controlToolBar = reactive(
       </section>
 
       <section class="col-3">
-        <live-description
-          :description="product.description"
-          :options="product.options"
-          :live-id="props.id"
-        />
+        <live-description :product="product" :live-id="props.liveId" />
       </section>
     </div>
   </template>

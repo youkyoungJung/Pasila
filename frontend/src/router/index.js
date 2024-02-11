@@ -7,6 +7,7 @@ import FindPwSendView from '@/views/FindPwSendView.vue'
 import LiveView from '@/views/LiveView.vue'
 import OpenviduView from '@/views/OpenviduView.vue'
 import OrderView from '@/views/OrderView.vue'
+import OrderSuccessView from '@/views/OrderSuccessView.vue'
 import LiveEndView from '@/views/LiveEndView.vue'
 import ScheduleView from '@/views/ScheduleView.vue'
 import ChannelView from '@/views/ChannelView.vue'
@@ -48,13 +49,8 @@ const router = createRouter({
       name: 'findpwsend',
       component: FindPwSendView
     },
-    // {
-    //   path: '/live/:id',
-    //   name: 'live',
-    //   component: LiveView
-    // },
     {
-      path: '/live/:id',
+      path: '/live/:liveId',
       name: 'openvidu',
       component: OpenviduView,
       props: true
@@ -64,6 +60,11 @@ const router = createRouter({
       name: 'order',
       component: OrderView,
       props: true
+    },
+    {
+      path: '/order/success',
+      name: 'order-success',
+      component: OrderSuccessView
     },
     {
       path: '/live/:id/end',

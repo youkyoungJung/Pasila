@@ -3,5 +3,6 @@ import { defineStore } from 'pinia'
 
 export const useOrderListStore = defineStore('orderList', () => {
   const orderList = ref(null)
-  return { orderList }
+  const product = ref(null)
+  return { orderList, product }
 })
