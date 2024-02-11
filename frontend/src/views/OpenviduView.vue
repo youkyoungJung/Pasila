@@ -19,7 +19,7 @@ let mainStreamManager = ref(undefined)
 let publisher = ref(undefined)
 let subscribers = ref([])
 
-let userRole = ref('SUB')
+let userRole = ref('')
 
 let product = reactive({})
 
@@ -28,6 +28,14 @@ const { member } = useMemberStore()
 
 onMounted(async () => {
   await getProduct()
+  if (!member.id) {
+    alert('로그인 후 시청 가능합니다.')
+    router.push('/login')
+  } else if (product.sellerId === member.id) {
+    userRole = 'PUB'
+  } else {
+    userRole = 'SUB'
+  }
   joinSession()
 })
 
@@ -39,8 +47,8 @@ const getProduct = async () => {
   product = await getLiveProductApi(props.liveId)
 }
 
-const clickToolBarBtn = (n) => {
-  controlToolBar[n].isActive = !controlToolBar[n].isActive
+const clickToolBarBtn = (arr, n) => {
+  arr[n].isActive = !arr[n].isActive
 }
 
 const joinSession = async () => {
@@ -61,7 +69,6 @@ const joinSession = async () => {
   })
 
   session.value.on('exception', ({ exception }) => {
-    console.warn('exception=', exception)
     alert('서버에 문제가 발생했습니다. 잠시후 다시 시도해주세요.')
     router.push('/')
   })
@@ -87,7 +94,7 @@ const joinSession = async () => {
 
     session.value.publish(publisher.value)
   } catch (error) {
-    console.log('There was an error connecting to the session:', error.code, error.message)
+    alert('서버에 문제가 발생했습니다. 잠시후 다시 시도해주세요.')
   }
 
   window.addEventListener('beforeunload', leaveSession)
@@ -117,23 +124,19 @@ const getToken = async (liveId) => {
   return await createTokenApi(res)
 }
 
-const controlToolBar = reactive(
-  userRole.value === 'PUB'
-    ? [
-        { isActive: true, iconName: 'fa-regular fa-file-lines', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-circle-question', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-solid fa-phone-slash', click: leaveSession }
-      ]
-    : [
-        { isActive: true, iconName: 'fa-regular fa-file-lines', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-circle-question', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-solid fa-phone-slash', click: leaveSession }
-      ]
-)
+const pubToolBar = reactive([
+  { isActive: true, iconName: 'fa-regular fa-file-lines', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-circle-question', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-circle-xmark', click: leaveSession }
+])
+
+const subToolBar = reactive([
+  { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-circle-xmark', click: leaveSession }
+])
 </script>
 
 <template>
@@ -141,17 +144,26 @@ const controlToolBar = reactive(
     <div class="session" v-if="session">
       <section class="col-1">
         <user-video :stream-manager="mainStreamManager" />
-        <live-script v-if="controlToolBar[0].isActive" />
+        <live-script v-if="pubToolBar[0].isActive" />
       </section>
 
-      <section class="col-2" v-if="controlToolBar[1].isActive">
+      <section class="col-2" v-if="pubToolBar[1].isActive">
         <live-chat />
       </section>
 
-      <section class="col-3" v-if="controlToolBar[2].isActive || controlToolBar[3].isActive">
-        <live-stock v-if="controlToolBar[2].isActive" :live-id="props.liveId" />
-        <live-question v-if="controlToolBar[3].isActive" />
+      <section class="col-3" v-if="pubToolBar[2].isActive || pubToolBar[3].isActive">
+        <live-stock v-if="pubToolBar[2].isActive" :live-id="props.liveId" />
+        <live-question v-if="pubToolBar[3].isActive" />
       </section>
+    </div>
+    <div class="tool-bar">
+      <template v-for="(item, index) in pubToolBar" :key="index">
+        <tool-bar-btn
+          :is-active="item.isActive"
+          :icon-name="item.iconName"
+          @click-btn="item.click(pubToolBar, index)"
+        />
+      </template>
     </div>
   </template>
   <template v-else>
@@ -160,24 +172,24 @@ const controlToolBar = reactive(
         <user-video :stream-manager="mainStreamManager" />
       </section>
 
-      <section class="col-2" v-if="controlToolBar[1].isActive">
+      <section class="col-2" v-if="subToolBar[0].isActive">
         <live-chat />
       </section>
 
-      <section class="col-3">
+      <section class="col-3" v-if="subToolBar[1].isActive">
         <live-description :product="product" :live-id="props.liveId" />
       </section>
     </div>
+    <div class="tool-bar">
+      <template v-for="(item, index) in subToolBar" :key="index">
+        <tool-bar-btn
+          :is-active="item.isActive"
+          :icon-name="item.iconName"
+          @click-btn="item.click(subToolBar, index)"
+        />
+      </template>
+    </div>
   </template>
-  <div class="tool-bar">
-    <template v-for="(item, index) in controlToolBar" :key="index">
-      <tool-bar-btn
-        :is-active="item.isActive"
-        :icon-name="item.iconName"
-        @click-btn="item.click(index)"
-      />
-    </template>
-  </div>
 </template>
 
 <style lang="scss" scoped>
