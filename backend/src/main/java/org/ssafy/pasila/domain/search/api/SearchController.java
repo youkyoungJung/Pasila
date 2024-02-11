@@ -42,11 +42,11 @@ public class SearchController {
     @GetMapping(value="/live")
     public ApiCommonResponse<?> getAllResultsForLive(@RequestParam String keyword,
                                                      @RequestParam(name = "sort", defaultValue = "popularity") String sort,
-                                                     @RequestParam Long lastItemId,
-                                                     @RequestParam int size ){
+                                                     @RequestParam(required = false) Long lastItemId){
 
-        Pageable pageable = PageRequest.of(0, size);
-        Page<SearchLiveResponseDto> resultPage = searchService.searchForLive(keyword, sort, pageable);
+        Pageable pageable = PageRequest.of(0, 3);
+
+        Page<SearchLiveResponseDto> resultPage = searchService.searchForLive(keyword, sort, pageable, lastItemId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), resultPage.getContent());
 
     }
