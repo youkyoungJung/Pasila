@@ -1,6 +1,8 @@
 <script setup>
+import { useReadyLiveStore } from '@/stores/readyLive'
 import { ref, watch } from 'vue'
 
+const store = useReadyLiveStore
 const emit = defineEmits(['getProduct'])
 const product = ref({
   name: '',
@@ -19,6 +21,7 @@ const product = ref({
   formatOption2: '',
   formatOption3: ''
 })
+const productImage = ref('')
 
 watch(product.value, () => {
   emit('getProduct', product.value)
@@ -47,6 +50,15 @@ const changeDiscount = (field) => {
 const changeStock = (field) => {
   let cnt = 'option' + field.charAt(field.length - 1)
   product.value.stock[cnt] = parseFloat(changeNumber(field))
+}
+const uploadImg = (e) => {
+  const file = e.target
+  const reader = new FileReader()
+  reader.onload = function (e) {
+    productImage.value = e.target.result
+    store.liveFormData.append('image', file)
+  }
+  reader.readAsDataURL(file.files[0])
 }
 </script>
 
@@ -169,11 +181,26 @@ const changeStock = (field) => {
           </div>
         </div>
       </div>
+      <div class="product-image">
+        <label for="file">상품 대표 사진 등록</label>
+        <div v-if="productImage != ''">
+          <img :src="productImage" id="productImage" class="product-img" />
+        </div>
+        <input type="file" id="file" @change="uploadImg" accept="image/*" class="img-choose" />
+      </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.profile-choose {
+  @include font-factory(13px, null);
+  width: 0;
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+}
 .content {
   @include box(95%, 100%, none, 0, 0.3rem, 0.1rem);
   @include flex-box($align: center, $direction: column);
@@ -270,10 +297,28 @@ const changeStock = (field) => {
         }
       }
     }
-  }
+    .product-image {
+      @include box(100%, 10%, white, 0, 0.2rem, 0.2rem);
+      @include flex-box(flex-start, flex-start);
+      margin-bottom: 1rem;
 
-  .editor-body {
-    @include box(95%, 95%, $light-gray, 0, 0.3rem, 0);
+      .product-img {
+        @include box(28rem, 15rem, none, 0, 0, 0);
+      }
+
+      label {
+        @include font-factory(18px, null);
+        cursor: pointer;
+      }
+      .img-choose {
+        @include font-factory(13px, null);
+        width: 0;
+        height: 0;
+        padding: 0;
+        overflow: hidden;
+        border: 0;
+      }
+    }
   }
 }
 </style>

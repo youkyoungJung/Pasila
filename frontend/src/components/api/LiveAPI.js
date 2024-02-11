@@ -1,6 +1,7 @@
-import { localAxios } from '@/components/api/APIModule.js'
+import { localAxios, formDataAxios } from '@/components/api/APIModule.js'
 
 const local = localAxios()
+const formData = formDataAxios()
 
 const url = '/live'
 
@@ -16,4 +17,13 @@ const getScript = async (deal, success, fail) => {
   await fail()
 }
 
-export { getScript, getScriptExample }
+const sendLiveSchedule = async (data) => {
+  try {
+    const res = await formData.post(`${url}`, data)
+    return res.data
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+export { getScript, getScriptExample, sendLiveSchedule }

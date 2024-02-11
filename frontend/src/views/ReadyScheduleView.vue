@@ -1,22 +1,50 @@
 <script setup>
+import { sendLiveSchedule } from '@/components/api/LiveAPI'
 import ReadySteps from '@/components/ready/ReadySteps.vue'
 import ScheduleCalendar from '@/components/ready/ScheduleCalendar.vue'
 import ScheduleTime from '@/components/ready/ScheduleTime.vue'
+import { useReadyLiveStore } from '@/stores/readyLive'
 import { ref } from 'vue'
 
 const step = ref('schedule')
+const store = useReadyLiveStore()
 
 const liveTitle = ref('')
 const date = ref(new Date())
 const apm = ref(new Date().getHours() >= 12 ? '오후' : '오전')
 const hour = ref(date.value.getHours() > 12 ? date.value.getHours() - 12 : date.value.getHours())
 const minute = ref(new Date().getMinutes())
+const liveTime = ref({
+  title: '',
+  liveScheduleAt: '',
+  script: store.liveScript
+})
 
-/**
- * 라이브 예약 완료 버튼 추가하기
- *
- */
-const reserveLive = () => {}
+const reserveLive = async () => {
+  liveTime.value.title = liveTitle.value
+  liveTime.value.liveScheduleAt =
+    date.value.getFullYear() +
+    '-' +
+    (date.value.getMonth() + 1) +
+    '-' +
+    date.value.getDate() +
+    'T' +
+    hour.value +
+    ':' +
+    minute.value +
+    ':00'
+  store.liveSchedule = liveTime.value
+
+  store.liveFormData.append('live', store.liveSchedule)
+  store.liveFormData.append('product', store.liveProduct)
+  store.liveFormData.append('image', store.liveProduct)
+  store.liveFormData.append('chatbot', store.liveChatbot)
+  store.liveFormData.append('member', '1')
+
+  console.log(store.liveSchedule)
+  const res = await sendLiveSchedule(store.liveFormData)
+  console.log(res)
+}
 </script>
 
 <template>

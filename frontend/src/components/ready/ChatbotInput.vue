@@ -1,6 +1,6 @@
 <script setup>
 defineEmits(['getQuestion', 'getAnswer'])
-const props = defineProps({ q: String, a: String })
+const props = defineProps({ question: String, answer: String })
 </script>
 
 <template>
@@ -12,7 +12,7 @@ const props = defineProps({ q: String, a: String })
         type="text"
         placeholder="질문을 입력해주세요."
         class="input-box"
-        :value="props.q"
+        :value="props.question"
         @input="$emit('getQuestion', $event.target.value)"
       />
     </div>
@@ -23,7 +23,7 @@ const props = defineProps({ q: String, a: String })
         type="text"
         placeholder="답변을 입력해주세요."
         class="input-box"
-        :value="props.a"
+        :value="props.answer"
         @input="$emit('getAnswer', $event.target.value)"
       />
     </div>

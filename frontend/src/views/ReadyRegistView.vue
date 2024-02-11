@@ -18,10 +18,9 @@ const updateDesc = (message) => {
 }
 
 const sendProduct = async () => {
-  //상품 정보 보내기
-  store.readyProduct = product.value
-  store.readyProduct.value.description = preview.value
-  console.log(store.readyProduct)
+  store.liveProduct = product.value
+  store.liveProduct.value.description = preview.value
+  store.liveFormData.append('description', preview.value)
 }
 
 const currentTab = ref(0)
