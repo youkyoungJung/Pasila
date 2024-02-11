@@ -81,7 +81,7 @@ public class MemberService {
     /**
      * 멤버 조회 메서드
      */
-    private Member getMemberById(Long id) {
+    public Member getMemberById(Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 멤버 정보가 없습니다."));
     }
