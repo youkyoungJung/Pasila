@@ -6,17 +6,22 @@ import DescPreview from '@/components/editor/DescPreview.vue'
 import DescEditor from '@/components/editor/DescEditor.vue'
 
 import { ref } from 'vue'
+import { useReadyLiveStore } from '@/stores/readyLive'
 
 const step = ref('register')
 const nextStep = ref('script')
 const preview = ref('')
-
+const store = useReadyLiveStore()
+const product = ref({})
 const updateDesc = (message) => {
   preview.value = message
 }
 
-const sendProduct = () => {
+const sendProduct = async () => {
   //상품 정보 보내기
+  store.readyProduct = product.value
+  store.readyProduct.value.description = preview.value
+  console.log(store.readyProduct)
 }
 
 const currentTab = ref(0)
@@ -28,7 +33,14 @@ const tabs = ref(['작성하기', '미리보기'])
     <ready-steps :data="step" />
     <div class="body">
       <div class="input-body">
-        <product-input />
+        <product-input
+          @getProduct="
+            (e) => {
+              product.value = e
+              console.log(product.value)
+            }
+          "
+        />
       </div>
       <div class="editor-body">
         <div id="tabs" class="tabs">

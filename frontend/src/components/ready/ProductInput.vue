@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
+const emit = defineEmits(['getProduct'])
 const product = ref({
   name: '',
   regularPrice: 0,
@@ -17,6 +18,10 @@ const product = ref({
   formatOption1: '',
   formatOption2: '',
   formatOption3: ''
+})
+
+watch(product.value, () => {
+  emit('getProduct', product.value)
 })
 
 const discount = (per) => {

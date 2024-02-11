@@ -5,10 +5,12 @@ import ScriptSelect from '@/components/ready/ScriptSelect.vue'
 import ScriptResult from '@/components/ready/ScriptResult.vue'
 
 import { ref } from 'vue'
+import { useReadyLiveStore } from '@/stores/readyLive'
 
 const step = ref('script')
 const nextStep = ref('chatbot')
 const script = ref('')
+const store = useReadyLiveStore()
 
 const updateScript = (message) => {
   script.value = message
