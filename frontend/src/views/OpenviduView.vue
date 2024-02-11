@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, ref, reactive } from 'vue'
+import { onMounted, onUnmounted, ref, reactive, watch } from 'vue'
 import router from '@/router'
 import { OpenVidu } from 'openvidu-browser'
 import {
@@ -122,9 +122,9 @@ const leaveSession = async () => {
       await stopLive()
       session.value.disconnect()
       router.push(`/live/${props.liveId}/end`)
-    } else {
-      session.value.disconnect()
     }
+  } else {
+    session.value.disconnect()
   }
 
   session.value = undefined
@@ -146,9 +146,7 @@ const pubToolBar = reactive([
   { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
   { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
   { isActive: true, iconName: 'fa-regular fa-circle-question', click: clickToolBarBtn },
-  isStart.value
-    ? { isActive: true, iconName: 'fa-regular fa-circle-xmark', click: leaveSession }
-    : { isActive: true, iconName: 'fa-regular fa-circle-play', click: startLive }
+  { isActive: true, iconName: 'fa-regular fa-circle-play', click: startLive }
 ])
 
 const subToolBar = reactive([
@@ -156,6 +154,20 @@ const subToolBar = reactive([
   { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
   { isActive: true, iconName: 'fa-regular fa-circle-xmark', click: leaveSession }
 ])
+
+watch(
+  () => isStart.value,
+  () => {
+    if (isStart.value) {
+      pubToolBar.pop()
+      pubToolBar.push({
+        isActive: true,
+        iconName: 'fa-regular fa-circle-xmark',
+        click: leaveSession
+      })
+    }
+  }
+)
 </script>
 
 <template>
