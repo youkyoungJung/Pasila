@@ -2,6 +2,7 @@
 import router from '@/router'
 import { ref } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
+import { emailLogin } from '@/components/api/AuthAPI'
 
 const user = ref({
   userEmail: '',
@@ -23,8 +24,10 @@ const inputData = ref({
   }
 })
 
-const login = () => {
-  //이메일로 로그인하기
+const login = async () => {
+  console.log(user.value)
+  const res = await emailLogin(user.value.userEmail, user.value.userPassword)
+  console.log(res)
 }
 
 const join = () => {
@@ -33,11 +36,7 @@ const join = () => {
 
 //소셜 로그인 당시 필수나 선택으로 가져온 정보를 회원가입 페이지에 넣어주기
 //그리고 필수적으로 이메일을 받아서 이메일로 로그인 가능!
-const googleLogin = () => {}
-
 const kakaoLogin = () => {}
-
-const naverLogin = () => {}
 </script>
 
 <template>
@@ -56,17 +55,10 @@ const naverLogin = () => {}
       <button @click="login" class="login">로그인</button>
       <button @click="join" class="join">회원가입</button>
       <hr />
-      <div class="social-login" @click="googleLogin">
-        <img src="@/assets/img/google-logo.png" />
-        <button class="social-btn">구글로 시작하기</button>
-      </div>
+
       <div class="social-login" @click="kakaoLogin">
         <img src="@/assets/img/kakao-logo.png" />
         <button class="social-btn">카카오로 시작하기</button>
-      </div>
-      <div class="social-login" @click="naverLogin">
-        <img src="@/assets/img/naver-logo.png" />
-        <button class="social-btn">네이버로 시작하기</button>
       </div>
     </div>
   </div>
@@ -128,7 +120,7 @@ const naverLogin = () => {}
 
   hr {
     width: 90%;
-    margin: 35px 0px;
+    margin: 20px 0px;
   }
 
   .social-login {
