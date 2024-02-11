@@ -8,9 +8,20 @@ const props = defineProps({
 
 let productOptions
 
-onMounted(async () => {
-  const res = await getLiveStockApi(props.liveId)
-  productOptions = res.options
+onMounted(() => {
+  const stockEvent = getLiveStockApi(props.liveId)
+
+  stockEvent.onopen = () => {
+    console.log('data onopen')
+  }
+
+  stockEvent.onmessage = (event) => {
+    console.log('data onmessage==', event.data)
+  }
+
+  stockEvent.onerror = (err) => {
+    console.log(err)
+  }
 })
 </script>
 
