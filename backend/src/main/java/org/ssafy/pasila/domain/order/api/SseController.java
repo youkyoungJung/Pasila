@@ -10,16 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import org.ssafy.pasila.domain.apihandler.ErrorCode;
-import org.ssafy.pasila.domain.apihandler.RestApiException;
-import org.ssafy.pasila.domain.order.dto.OrderDto;
 import org.ssafy.pasila.domain.order.event.StockChangeEvent;
 import org.ssafy.pasila.domain.order.service.SseEmitterService;
-import retrofit2.http.Path;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,9 +30,9 @@ public class SseController {
     @Operation(summary = "Subscribe live", description = "라이브 정보를 구독")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = SseEmitter.class)))
+                    content = @Content(mediaType = "text/event-stream", schema = @Schema(implementation = StockChangeEvent.class)))
     })
-    @GetMapping("/subscribe/{liveId}")
+    @GetMapping(value = "/subscribe/{liveId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter getStockUpdates(@PathVariable String liveId, @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId){
         return sseEmitterService.subscribe(liveId, lastEventId);
     }

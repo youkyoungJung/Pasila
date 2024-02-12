@@ -13,19 +13,40 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+<<<<<<< HEAD
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
+=======
+import org.springframework.http.MediaType;
+>>>>>>> 5ef51c3aa34a255fbdc8e996d9f72137d720ab69
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
+<<<<<<< HEAD
 import org.ssafy.pasila.domain.live.dto.ChatLogDto;
+=======
+import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
+>>>>>>> 5ef51c3aa34a255fbdc8e996d9f72137d720ab69
 import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequestDto;
 import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
+import org.ssafy.pasila.domain.live.dto.response.LiveStatsResponseDto;
+import org.ssafy.pasila.domain.live.entity.Chatbot;
+import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.live.service.ChatbotService;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.domain.live.service.OpenviduService;
+import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
+import org.ssafy.pasila.domain.product.dto.ProductResponseDto;
+import org.ssafy.pasila.domain.product.dto.ProductSellResponseDto;
+import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
+import org.ssafy.pasila.global.infra.redis.entity.ChatRedis;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
 
+
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -46,10 +67,51 @@ public class LiveApiController {
 
     private final LiveRedisService liveRedisService;
 
+    private final ProductService productService;
+
+    private final ChatbotService chatbotService;
+
     // Pair - SessionId, RecordingId
     private final Map<String, String> mapRecordings = new ConcurrentHashMap<>();
 
+<<<<<<< HEAD
     private final SimpMessagingTemplate template;
+=======
+    @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브")
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiCommonResponse<?> reserveLive(@RequestPart(value = "live") CreateLiveRequestDto createLiveRequestDto,
+                                            @RequestPart(value = "product") ProductRequestDto productRequestDto,
+                                            @RequestPart(value = "image") MultipartFile image,
+                                            @RequestPart(value = "chatbot") List<Chatbot> chatbotList,
+                                            // 로그인 완료후 @RequestHeader로 변경 예정
+                                            @RequestPart(value = "member") Long memberId) throws IOException {
+        // 1. Product
+        String productId = productService.saveProduct(productRequestDto, image);
+        // 2. Live
+        String liveId = liveService.saveLive(createLiveRequestDto, memberId, productId);
+        // 3. Chatbot
+        chatbotService.save(chatbotList, liveId);
+
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+    }
+
+    @Operation(summary = "Update Reserved Live", description = "예약된 라이브 정보 업데이트(제품, 챗봇, 라이브)")
+    @PutMapping(value = "/{liveId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiCommonResponse<?> updateLive(@PathVariable("liveId") String liveId,
+                                           @RequestPart(value = "live") CreateLiveRequestDto createLiveRequestDto,
+                                           @RequestPart(value = "product") ProductRequestDto productRequestDto,
+                                           @RequestPart(value = "image", required = false) MultipartFile image,
+                                           @RequestPart(value = "chatbot") List<Chatbot> chatbotList) throws IOException {
+        // 1. Live
+        Live live = liveService.updateLive(liveId, createLiveRequestDto);
+        // 2. Product
+        String productId = productService.updateProduct(live.getProduct().getId(), productRequestDto, image);
+        // 3. Chatbot
+        chatbotService.updateChatbot(liveId, chatbotList);
+
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), live.getId());
+    }
+>>>>>>> 5ef51c3aa34a255fbdc8e996d9f72137d720ab69
 
     @Operation(summary = "Live On", description = "라이브 방송 시작")
     @PutMapping("/{liveId}/on")
@@ -62,6 +124,7 @@ public class LiveApiController {
         mapRecordings.put(liveId, recording.getId());
         // 3. Redis
         liveRedisService.addLive(liveId, liveService.getLiveById(liveId).getTitle());
+
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
     }
 
@@ -74,10 +137,21 @@ public class LiveApiController {
         // 2. Live 정보 업데이트
         liveService.updateLiveOff(liveId, recording.getUrl(), liveRedisService.getLikeCnt(liveId));
         // 3. Redis
-        liveRedisService.deleteLiveInRedis(liveId);
+        liveRedisService.deleteLiveInRedis(liveId); // 좋아요 수
+        int participantCnt = liveService.deleteParticipantInRedis(liveId); // 참여자
         // 4. mapRecording 삭제
         mapRecordings.remove(liveId);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+        // 5. 라이브 종료 정보(좋아요 수, 라이브 시작 시간, 라이브 종료 시간, 총 방송 시간, 시청자 수)
+        LiveStatsResponseDto liveStats = liveService.calcLiveStats(liveId, participantCnt);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveStats);
+    }
+
+    @Operation(summary = "Get ProductInfo", description = "라이브 방송시 판매하는 제품정보를 반환합니다.")
+    @GetMapping("/{liveId}/product")
+    public ApiCommonResponse<?> findSellProduct(@PathVariable("liveId") String liveId) {
+        String productId = liveService.getProductId(liveId);
+        ProductSellResponseDto product = productService.getProductSell(productId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), product);
     }
 
     @Operation(summary = "Create Qsheet", description = "큐시트를 생성합니다.")
@@ -160,6 +234,19 @@ public class LiveApiController {
 
         int participantNum = liveService.exitLive(chatLogDto.getLiveId() , chatLogDto.getMemberId());
         template.convertAndSend("/num/" + chatLogDto.getLiveId(), participantNum);
+
+    }
+
+    @Operation(summary = "Get Top5 Question", description = "라이브 방송 중 상위 5개의 질문을 가져옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = List.class))})
+    })
+    @GetMapping("/question")
+    public ApiCommonResponse<?> getTop5Question(@RequestParam String liveId) {
+
+        List<String> result = liveService.getTop5Question(liveId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
 
     }
 

@@ -8,6 +8,7 @@ import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.order.dto.OrderFormDto;
+import org.ssafy.pasila.domain.product.dto.ProductOptionFormDto;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
 import java.time.LocalDateTime;
 
@@ -55,19 +56,19 @@ public class Order {
     private ProductOption productOption;
 
     //== 생성 메서드 ==//
-    public static Order createOrder(OrderFormDto orderFormDto, Member member, ProductOption productOption){
+    public static Order createOrder(OrderFormDto orderFormDto, Member member, ProductOptionFormDto pof, ProductOption productOption){
 
         Order saved = Order.builder()
-                .orderCnt(orderFormDto.getQuantity())
+                .orderCnt(pof.getQuantity())
                 .name(orderFormDto.getName())
                 .address(orderFormDto.getAddress())
-                .price(orderFormDto.getPrice()) //수량 * 할인가
+                .price(pof.getPrice()) //수량 * 할인가
                 .status(Status.ORDER)
                 .member(member)
                 .productOption(productOption)
                 .build();
         //재고 수량 감소
-        productOption.removeStock(orderFormDto.getQuantity());
+        productOption.removeStock(pof.getQuantity());
         return saved;
 
     }

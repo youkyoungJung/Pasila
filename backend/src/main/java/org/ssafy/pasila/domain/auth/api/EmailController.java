@@ -24,9 +24,13 @@ public class EmailController {
     @Operation(summary = "Send Authentication Number", description = "해당 이메일로 인증번호 발송")
     @PostMapping("/email")
     public ApiCommonResponse<?> sendEmail(@RequestBody Map<String ,String> email){
+            try {
+                emailService.sendEmail(email.get("email"));
+                return ApiCommonResponse.successResponse(HttpStatus.OK.value(), true);
+            }catch (Exception e){
+                return ApiCommonResponse.successResponse(HttpStatus.BAD_REQUEST.value() , false);
+            }
 
-            emailService.sendEmail(email.get("email"));
-            return ApiCommonResponse.successResponse(HttpStatus.OK.value(), true);
     }
 
     @Operation(summary = "Check Authentication Number", description = "이메일 코드 확인")

@@ -16,18 +16,9 @@ public class ChatLogDto {
     private String liveId;
     
     @Schema(description = "시청자의 ID")
-    private String memberId;
+    private Long memberId;
     
     @Schema(description = "채팅 내용")
     private String message;
-    
-    @Schema(description = "채팅 시간")
-    private LocalDateTime createdAt;
-
-    public void setCreatedAt() {
-
-        this.createdAt = LocalDateTime.now();
-
-    }
 
 }

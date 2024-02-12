@@ -2,6 +2,7 @@ package org.ssafy.pasila.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +26,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class SseEmitterService {
 
     private static final Long DEFAULT_TIMEOUT = 10L * 1000 * 60; //10분
+    private static final long RECONNECTION_TIMEOUT = 1000 * 60;
     private List<SseEmitter> deadEmitter = new CopyOnWriteArrayList<>();
     private final EmitterRepository emitterRepository;
     private final ProductOptionRepository productOptionRepository;
     private final LiveRepository liveRepository;
 
     /**SSE통신*/
+//    @Transactional
     public SseEmitter subscribe(String liveId, String lastEventId){
 
         String emitterId = makeTimeIncludedId(liveId);
@@ -50,25 +53,11 @@ public class SseEmitterService {
         emitter.onTimeout(() -> emitterRepository.deleteAllEmitterStartWithId(liveId));
         emitter.onError((e) -> emitterRepository.deleteAllEmitterStartWithId(liveId));
 
-        Live live = liveRepository.findById(liveId)
-                .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
-
-        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(live.getProduct().getId())
-                .stream()
-                .map(option -> ProductOptionDto.builder()
-                        .id(option.getId())
-                        .name(option.getName())
-                        .stock(option.getStock())
-                        .price(option.getPrice())
-                        .discountPrice(option.getDiscountPrice())
-                        .productId(option.getProduct().getId())
-                        .build()
-                )
-                .toList();
+//        List<ProductOptionDto> options = getProductOptions(liveId);
 
         // 연결 직후, 데이터 전송이 없을 시 503 에러 발생. 에러 방지 위한 더미데이터 전송
-        StockChangeEvent notification = createNotification(liveId, options);
-        sendToClient(emitter, liveId, notification);
+//        StockChangeEvent notification = createNotification(liveId, options);
+        sendToClient(emitter, liveId, "connected!!");
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 Event 유실을 예방
         if (!lastEventId.isEmpty()) { // 클라이언트가 미수신한 Event 유실 예방, 연결이 끊켰거나 미수신된 데이터를 다 찾아서 보내준다.
@@ -81,6 +70,24 @@ public class SseEmitterService {
         return emitter;
     }
 
+    public  List<ProductOptionDto> getProductOptions(String liveId){
+
+        Live live = liveRepository.findById(liveId)
+                .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
+
+       return productOptionRepository.findAllByProduct_Id(live.getProduct().getId())
+                .stream()
+                .map(option -> ProductOptionDto.builder()
+                        .id(option.getId())
+                        .name(option.getName())
+                        .stock(option.getStock())
+                        .price(option.getPrice())
+                        .discountPrice(option.getDiscountPrice())
+                        .productId(option.getProduct().getId())
+                        .build()
+                )
+                .toList();
+    }
 
     @Transactional
     // 알림 보낼 로직에 send 메서드 호출하면 됨
@@ -119,7 +126,9 @@ public class SseEmitterService {
             emitter.send(SseEmitter.event()
                     .id(id)
                     .name("sse")
-                    .data(data));
+                    .data(data, MediaType.APPLICATION_JSON)
+                    //SSE 연결이 끊어진 경우 재접속 하기까지 대기 시간 (retry: <RECONNECTION_TIMEOUT>)
+                    .reconnectTime(RECONNECTION_TIMEOUT));
         } catch (IOException e) {
             deadEmitter.add(emitter);
             emitterRepository.deleteAllEmitterStartWithId(id);

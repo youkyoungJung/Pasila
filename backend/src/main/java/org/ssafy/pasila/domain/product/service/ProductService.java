@@ -11,6 +11,7 @@ import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
 import org.ssafy.pasila.domain.product.dto.ProductResponseDto;
+import org.ssafy.pasila.domain.product.dto.ProductSellResponseDto;
 import org.ssafy.pasila.domain.product.entity.*;
 import org.ssafy.pasila.domain.product.repository.CategoryRepository;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
@@ -85,7 +86,7 @@ public class ProductService {
                 .map(ProductOptionDto::new)
                 .toList();
 
-        ProductResponseDto result = ProductResponseDto.builder()
+        return ProductResponseDto.builder()
                 .id(product.getId())
                 .sellerId(product.getMember().getId())
                 .name(product.getName())
@@ -95,8 +96,6 @@ public class ProductService {
                 .categoryId(product.getCategory().getId())
                 .options(options)
                 .build();
-
-        return result;
 
     }
 
@@ -124,7 +123,8 @@ public class ProductService {
         Product product = getProductById(productId);
 
         productOptions.forEach(option -> {
-            ProductOption.createProductOption(product, option);
+            ProductOption productOption = ProductOption.createProductOption(product, option);
+            productOptionRepository.save(productOption);
         });
 
     }
@@ -196,4 +196,26 @@ public class ProductService {
 
     }
 
+    public ProductSellResponseDto getProductSell(String id) {
+        Product product = getProductById(id);
+        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(id)
+                .stream()
+                .map(ProductOptionDto::new)
+                .toList();
+
+        ProductSellResponseDto result = ProductSellResponseDto.builder()
+                .id(product.getId())
+                .sellerId(product.getMember().getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .createdAt(product.getCreatedAt())
+                .thumbnail(product.getThumbnail())
+                .categoryId(product.getCategory().getId())
+                .options(options)
+                .bank(product.getMember().getBank())
+                .account(product.getMember().getAccount())
+                .build();
+
+        return result;
+    }
 }

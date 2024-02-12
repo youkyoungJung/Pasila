@@ -16,18 +16,16 @@ import org.ssafy.pasila.domain.order.entity.Order;
 import org.ssafy.pasila.domain.order.entity.Status;
 import org.ssafy.pasila.domain.order.repository.OrderRepository;
 import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
+import org.ssafy.pasila.domain.product.dto.ProductOptionFormDto;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OrderService {
 
@@ -41,46 +39,53 @@ public class OrderService {
 
     private final SseEmitterService sseEmitterService;
 
-    /** 주문 생성 */
+//    /** 주문 생성 */
     @Transactional
-    public List<Long> saveOrder(OrderFormDto orderformDto){
+    public synchronized List<Long> saveOrder(OrderFormDto orderformDto){
 
         List<Long> list = new ArrayList<>();
-        List<Long> optionsId = orderformDto.getOptions();
+        List<ProductOptionFormDto> options = orderformDto.getOptions();
 
         Member member = memberRepository.findById(orderformDto.getMemberId())
                     .orElseThrow(()-> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
 
         String productId = null;
 
-        for(Long optionId : optionsId){
+        for(ProductOptionFormDto option : options){
 
-            ProductOption productOption = productOptionRepository.findById(optionId)
+            ProductOption productOption = productOptionRepository.findById(option.getId())
                     .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
 
             productId = productOption.getProduct().getId();
             //주문 생성
-            Order order = Order.createOrder(orderformDto, member, productOption);
+            Order order = Order.createOrder(orderformDto, member, option, productOption);
             orderRepository.save(order);
+
             list.add(order.getId());
         }
 
-
-        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(productId)
-        .stream()
-        .map(option -> ProductOptionDto.builder()
-                .id(option.getId())
-                .name(option.getName())
-                .stock(option.getStock())
-                .price(option.getPrice())
-                .discountPrice(option.getDiscountPrice())
-                .build()).toList();
-
-        Optional<Live> live = liveRepository.findByProduct_IdAndIsOnTrue(productId);
-        live.ifPresent(l -> sseEmitterService.send(l.getId(), options));
+        getEventStock(productId);
 
         return list;
 
+    }
+
+//    @Transactional
+    public void getEventStock(String productId){
+
+        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(productId)
+                .stream()
+                .map(option -> ProductOptionDto.builder()
+                        .id(option.getId())
+                        .name(option.getName())
+                        .stock(option.getStock())
+                        .price(option.getPrice())
+                        .discountPrice(option.getDiscountPrice())
+                        .build())
+                .toList();
+
+        Optional<Live> live = liveRepository.findByProduct_IdAndIsOnTrue(productId);
+        live.ifPresent(l -> sseEmitterService.send(l.getId(), options));
     }
 
     public List<OrderDto> getOrderList(Long id){
@@ -111,20 +116,9 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
         order.cancel();
+        orderRepository.save(order);
 
-        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(order.getProductOption().getProduct().getId())
-                .stream()
-                .map(option -> ProductOptionDto.builder()
-                        .id(option.getId())
-                        .name(option.getName())
-                        .stock(option.getStock())
-                        .price(option.getPrice())
-                        .discountPrice(option.getDiscountPrice())
-                        .build()).toList();
-
-        Optional<Live> live = liveRepository.findByProduct_IdAndIsOnTrue(order.getProductOption().getProduct().getId());
-        live.ifPresent(l -> sseEmitterService.send(l.getId(), options));
-
+        getEventStock(order.getProductOption().getProduct().getId());
         return order.getId();
 
     }
