@@ -30,7 +30,9 @@ import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
 import org.ssafy.pasila.domain.product.dto.ProductResponseDto;
 import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
+import org.ssafy.pasila.global.infra.redis.entity.ChatRedis;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -217,6 +219,19 @@ public class LiveApiController {
         int participantNum = liveService.exitLive(roomId , memberId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), participantNum);
         
+    }
+
+    @Operation(summary = "Get Top5 Question", description = "라이브 방송 중 상위 5개의 질문을 가져옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = List.class))})
+    })
+    @GetMapping("/question")
+    public ApiCommonResponse<?> getTop5Question(@RequestParam String liveId) {
+
+        List<String> result = liveService.getTop5Question(liveId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
+
     }
 
 }

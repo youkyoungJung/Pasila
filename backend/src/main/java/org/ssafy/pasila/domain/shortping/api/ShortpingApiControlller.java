@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
+import org.ssafy.pasila.domain.search.dto.ShortpingByCategoryResponseDto;
+import org.ssafy.pasila.domain.search.service.SearchService;
 import org.ssafy.pasila.domain.shortping.dto.request.ShortpingRequestDto;
 import org.ssafy.pasila.domain.shortping.dto.response.LiveThumbnailResponse;
 import org.ssafy.pasila.domain.shortping.dto.response.LivelogResponseDto;
@@ -26,6 +28,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", allowedHeaders = "*")
+@RequestMapping("/api/shortping")
 @Tag(name = "Shortping", description = "Shortping API")
 public class ShortpingApiControlller {
 
@@ -33,12 +36,14 @@ public class ShortpingApiControlller {
 
     private final LivelogService livelogService;
 
+    private final SearchService searchService;
+
     @Operation(summary = "Create Shortping", description = "숏핑을 생성합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = String.class))})
     })
-    @PostMapping(value = "/api/shortping", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ApiCommonResponse<?> shortpingList(@RequestPart(value = "video", required = false) MultipartFile video, @RequestPart ShortpingRequestDto shortpingRequest) {
         shortpingService.saveShortping(shortpingRequest, video);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), "");
@@ -49,7 +54,7 @@ public class ShortpingApiControlller {
             @ApiResponse(responseCode = "200", description = "성공",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ShortpingResponseDto.class))})
     })
-    @GetMapping("/api/shortping/{id}")
+    @GetMapping("/{id}")
     public ApiCommonResponse<?> shortpingDetail(@PathVariable String id) {
 
         ShortpingResponseDto shortpingResponse = shortpingService.getShortpingById(id);
@@ -62,7 +67,7 @@ public class ShortpingApiControlller {
             @ApiResponse(responseCode = "200", description = "성공",
                     content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = RecommendLivelogResponseDto.class)))})
     })
-    @GetMapping("/api/shortping/highlight")
+    @GetMapping("/highlight")
     public ApiCommonResponse<?> getLivelogList(@RequestParam(value = "live_id") String liveId) {
 
         List<LivelogResponseDto> livelogResponseDtoList = livelogService.getLivelogListByLiveId(liveId);
@@ -75,7 +80,7 @@ public class ShortpingApiControlller {
             @ApiResponse(responseCode = "200", description = "성공",
                     content = {@Content(mediaType = "application/json")})
     })
-    @DeleteMapping("/api/shortping/{id}")
+    @DeleteMapping("/{id}")
     public ApiCommonResponse<?> deleteShortping(@PathVariable String id) {
 
         shortpingService.deleteShortping(id);
@@ -88,7 +93,7 @@ public class ShortpingApiControlller {
             @ApiResponse(responseCode = "200", description = "성공",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LiveThumbnailResponse.class))})
     })
-    @GetMapping("/api/shortping/thumbnail")
+    @GetMapping("/thumbnail")
     public ApiCommonResponse<?> getThumbnailList(@RequestParam String productId) {
 
         LiveThumbnailResponse liveThumbnailResponse = shortpingService.getThumbnailList(productId);
@@ -96,4 +101,11 @@ public class ShortpingApiControlller {
 
     }
 
+    @GetMapping("/summary")
+    public ApiCommonResponse<?> getShortpingByCategory(@RequestParam(defaultValue = "0") Long categoryId) {
+
+        ShortpingByCategoryResponseDto result = searchService.searchShortpingByCategory(categoryId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
+
+    }
 }

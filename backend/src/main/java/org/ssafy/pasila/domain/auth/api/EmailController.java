@@ -17,24 +17,20 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class EmailController {
 
-    private final EmailService EmailService;
-    
+    private final EmailService emailService;
+
     @Operation(summary = "Send Authentication Number", description = "해당 이메일로 인증번호 발송")
     @PostMapping("/email")
     public ApiCommonResponse<?> sendEmail(@RequestBody Map<String ,String> email){
-        try {
-            EmailService.sendEmail(email.get("email"));
-            return ApiCommonResponse.successResponse(HttpStatus.OK.value(), true);
-        }catch (Exception e){
-            return ApiCommonResponse.successResponse(HttpStatus.BAD_REQUEST.value(), false);
-        }
-    }
 
+        emailService.sendEmail(email.get("email"));
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), true);
+    }
     @Operation(summary = "Check Authentication Number", description = "이메일 코드 확인")
     @PutMapping("/email")
     public ApiCommonResponse<?> checkEmailCode(@RequestBody EmailDto emailDto){
         try {
-            if(EmailService.checkEmailCode(emailDto)){
+            if(emailService.checkEmailCode(emailDto)){
                 return ApiCommonResponse.successResponse(HttpStatus.OK.value(), true);
             }else{
                 return ApiCommonResponse.successResponse(HttpStatus.BAD_REQUEST.value(), false);

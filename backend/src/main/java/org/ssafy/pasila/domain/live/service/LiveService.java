@@ -11,10 +11,18 @@ import org.ssafy.pasila.domain.live.dto.response.LiveStatsResponseDto;
 import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
+import org.ssafy.pasila.global.infra.gpt3.GptClient;
+import org.ssafy.pasila.global.infra.redis.service.ChatRedisService;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +32,14 @@ public class LiveService {
 
     private final LiveRepository liveRepository;
 
+    private final ChatRedisService chatRedisService;
+
+    private final GptClient gptClient;
+
     private final MemberRepository memberRepository;
 
     private final ProductRepository productRepository;
+
 
     public int joinLive(String liveId, String memberId) {
 
@@ -79,6 +92,17 @@ public class LiveService {
     public LiveStatsResponseDto calcLiveStats(String liveId, int participantCnt) {
         Live live = liveRepository.findById(liveId).orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
         return live.liveStats(participantCnt);
+    }
+
+    public List<String> getTop5Question(String liveId) {
+
+        String chatList = chatRedisService.getChatList(liveId);
+
+        if(chatList == null) return new ArrayList<>();
+
+        String result = gptClient.questionSummary(chatList).replaceAll("- ", "");
+
+        return List.of(result.split("\n"));
     }
 
     @Transactional

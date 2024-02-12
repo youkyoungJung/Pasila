@@ -15,6 +15,7 @@ import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.order.dto.OrderDto;
 import org.ssafy.pasila.domain.order.dto.OrderFormDto;
 import org.ssafy.pasila.domain.order.entity.Status;
+import org.ssafy.pasila.domain.order.facade.OptimisticLockStockFacade;
 import org.ssafy.pasila.domain.order.service.OrderService;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import java.util.Map;
 public class OrderController {
 
     private final OrderService orderService;
+    private final OptimisticLockStockFacade optimisticLockStockFacade;
 
     @Operation(summary = "Save order", description = "주문을 등록한다.")
     @ApiResponses(value = {
@@ -35,9 +37,10 @@ public class OrderController {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "Long")))
     })
     @PostMapping
-    public ApiCommonResponse<?> createOrder(@RequestBody OrderFormDto orderFormDto) {
+    public ApiCommonResponse<?> createOrder(@RequestBody OrderFormDto orderFormDto) throws InterruptedException {
 
-        List<Long> orderId = orderService.saveOrder(orderFormDto);
+//        List<Long> orderId = orderService.saveOrder(orderFormDto);
+        List<Long> orderId = optimisticLockStockFacade.saveTrade(orderFormDto);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), orderId);
 
     }

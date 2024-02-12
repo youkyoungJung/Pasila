@@ -19,6 +19,11 @@ public enum ErrorCode {
     NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "Not Enough Stock."),
 
     /*
+     * 400 BAD_REQUEST: 재고 부족
+     * */
+    FAIL_SAVE_ORDER(HttpStatus.BAD_REQUEST, "Failed to save order after maxRetries retries"),
+
+    /*
      * 400 BAD_REQUEST: 취소 불가
      * */
     NOT_CANCELLATION(HttpStatus.BAD_REQUEST, "Non-cancellable product."),
