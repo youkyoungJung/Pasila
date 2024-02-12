@@ -9,6 +9,9 @@ export default defineConfig({
   optimizeDeps: {
     include: ['quill']
   },
+  define: {
+    global: {}
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

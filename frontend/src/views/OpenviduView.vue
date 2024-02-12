@@ -2,13 +2,16 @@
 import { onMounted, onUnmounted, ref, reactive, watch } from 'vue'
 import router from '@/router'
 import { OpenVidu } from 'openvidu-browser'
+import Stomp from 'webstomp-client'
+import SockJs from 'sockjs-client'
 import {
   createSessionApi,
   createTokenApi,
   getLiveProductApi,
   startLiveApi,
   stopLiveApi,
-  getLiveQuestionApi
+  getLiveQuestionApi,
+  sendChatToChatbot
 } from '@/components/api/OpenviduAPI.js'
 import { getLiveStockApi } from '@/components/api/RealTimeAPI'
 import { useMemberStore } from '@/stores/member'
@@ -26,6 +29,9 @@ let mainStreamManager = ref(undefined)
 let publisher = ref(undefined)
 let subscribers = ref([])
 
+let ws
+let chatmsg = ref('')
+
 let userRole = ref('')
 let isStart = ref(false)
 
@@ -41,9 +47,9 @@ onMounted(async () => {
     alert('로그인 후 시청 가능합니다.')
     router.push('/login')
   } else if (product.sellerId === member.id) {
-    userRole = 'PUB'
+    userRole.value = 'PUB'
   } else {
-    userRole = 'SUB'
+    userRole.value = 'SUB'
   }
 
   const stockEvent = getLiveStockApi(props.liveId)
@@ -71,7 +77,7 @@ const getProduct = async () => {
 }
 
 /**
- * tool bar의 상태를 클릭 시 toggle 해주는 함수입니다.
+ * tool bar 클릭 시 상태를 toggle 해주는 함수입니다.
  */
 const clickToolBarBtn = (arr, n) => {
   arr[n].isActive = !arr[n].isActive
@@ -188,6 +194,48 @@ watch(
     }
   }
 )
+
+const sendChat = async (isChatbot) => {
+  if (isChatbot) {
+    const data = {
+      liveId: props.liveId,
+      message: chatmsg.value
+    }
+    const res = await sendChatToChatbot(data)
+    //TODO: res 받아서 chatlist에 넣기
+  } else {
+    if (ws && ws.connected) {
+      //TODO: send할 data 가공 필요
+      const chat = {}
+      //TODO: 채팅 받을 곳 필요
+      ws.send(`/receive/`, JSON.stringify(chat), {})
+    }
+  }
+  chatmsg.value = ''
+}
+
+const connectChat = () => {
+  //TODO: 서버 주소로 변경필요
+  const serverURL = 'https://i10a402.p.ssafy.io/chat'
+  const socket = new SockJs(serverURL)
+  ws = Stomp.over(socket)
+
+  //TODO: 토큰 저장 장소 localStorage 맞는지?, 채팅할 때 authorization 헤더 필요한거 맞는지
+  const headers = { Authorization: localStorage.getItem('token') }
+
+  ws.connect(
+    headers,
+    (frame) => {
+      window.connected = true
+      //TODO: subscribe 주소 확인, res 처리
+      ws.subscribe(`/send`, (res) => {})
+    },
+    (err) => {
+      console.error(err)
+      window.connected = false
+    }
+  )
+}
 </script>
 
 <template>
@@ -199,7 +247,12 @@ watch(
       </section>
 
       <section class="col-2" v-if="pubToolBar[1].isActive">
-        <live-chat />
+        <live-chat
+          :is-customer="false"
+          :chatmsg="chatmsg"
+          @change-msg="(e) => (chatmsg = e.target.value)"
+          @send-msg="sendChat"
+        />
       </section>
 
       <section class="col-3" v-if="pubToolBar[2].isActive || pubToolBar[3].isActive">
@@ -224,7 +277,12 @@ watch(
       </section>
 
       <section class="col-2" v-if="subToolBar[0].isActive">
-        <live-chat />
+        <live-chat
+          :is-customer="ture"
+          :chatmsg="chatmsg"
+          @change-msg="(e) => (chatmsg = e)"
+          @send-msg="sendChat"
+        />
       </section>
 
       <section class="col-3" v-if="subToolBar[1].isActive">

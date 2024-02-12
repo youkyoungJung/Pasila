@@ -64,11 +64,22 @@ const getLiveQuestionApi = async (liveId) => {
   }
 }
 
+const sendChatToChatbot = async (data) => {
+  try {
+    const res = await local.post(`${url}/chatbot`, data)
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+
 export {
   createSessionApi,
   createTokenApi,
   getLiveProductApi,
   startLiveApi,
   stopLiveApi,
-  getLiveQuestionApi
+  getLiveQuestionApi,
+  sendChatToChatbot
 }
