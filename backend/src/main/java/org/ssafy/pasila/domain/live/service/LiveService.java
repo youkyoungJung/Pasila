@@ -21,24 +21,17 @@ import org.ssafy.pasila.domain.product.repository.ProductRepository;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.time.LocalDateTime.*;
 
-<<<<<<< HEAD
-import static java.time.LocalDateTime.*;
-=======
-
->>>>>>> 5ef51c3aa34a255fbdc8e996d9f72137d720ab69
 
 @Service
 @RequiredArgsConstructor
 public class LiveService {
 
     private final RedisTemplate<String, String> redisTemplate;
+
     private final LiveRepository liveRepository;
 
-<<<<<<< HEAD
-    @Transactional
-    public int joinLive(String liveId , String memberId) {
-=======
     private final ChatRedisService chatRedisService;
 
     private final GptClient gptClient;
@@ -47,21 +40,20 @@ public class LiveService {
 
     private final ProductRepository productRepository;
 
-
-    public int joinLive(String liveId, String memberId) {
->>>>>>> 5ef51c3aa34a255fbdc8e996d9f72137d720ab69
+    @Transactional
+    public int joinLive(String liveId , Long memberId) {
 
         SetOperations<String, String> setOperations = redisTemplate.opsForSet();
-        setOperations.add("participant : " + liveId, memberId);
+        setOperations.add("participant : " + liveId, memberId.toString());
         return setOperations.size("participant : " + liveId).intValue();
 
     }
 
     @Transactional
-    public int exitLive(String liveId ,String memberId) {
+    public int exitLive(String liveId ,Long memberId) {
 
         SetOperations<String, String> setOperations = redisTemplate.opsForSet();
-        setOperations.remove("participant : " + liveId, memberId);
+        setOperations.remove("participant : " + liveId, memberId.toString());
         return setOperations.size("participant : " + liveId).intValue();
 
     }

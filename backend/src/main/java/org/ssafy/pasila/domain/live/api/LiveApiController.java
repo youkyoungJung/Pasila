@@ -9,25 +9,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-<<<<<<< HEAD
+import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
-=======
-import org.springframework.http.MediaType;
->>>>>>> 5ef51c3aa34a255fbdc8e996d9f72137d720ab69
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
-<<<<<<< HEAD
 import org.ssafy.pasila.domain.live.dto.ChatLogDto;
-=======
 import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
->>>>>>> 5ef51c3aa34a255fbdc8e996d9f72137d720ab69
 import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequestDto;
 import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
 import org.ssafy.pasila.domain.live.dto.response.LiveStatsResponseDto;
@@ -37,13 +30,10 @@ import org.ssafy.pasila.domain.live.service.ChatbotService;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.domain.live.service.OpenviduService;
 import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
-import org.ssafy.pasila.domain.product.dto.ProductResponseDto;
 import org.ssafy.pasila.domain.product.dto.ProductSellResponseDto;
 import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
-import org.ssafy.pasila.global.infra.redis.entity.ChatRedis;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
-
 
 import java.io.IOException;
 import java.util.List;
@@ -74,9 +64,8 @@ public class LiveApiController {
     // Pair - SessionId, RecordingId
     private final Map<String, String> mapRecordings = new ConcurrentHashMap<>();
 
-<<<<<<< HEAD
     private final SimpMessagingTemplate template;
-=======
+
     @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브")
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiCommonResponse<?> reserveLive(@RequestPart(value = "live") CreateLiveRequestDto createLiveRequestDto,
@@ -111,7 +100,6 @@ public class LiveApiController {
 
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), live.getId());
     }
->>>>>>> 5ef51c3aa34a255fbdc8e996d9f72137d720ab69
 
     @Operation(summary = "Live On", description = "라이브 방송 시작")
     @PutMapping("/{liveId}/on")
