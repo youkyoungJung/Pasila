@@ -1,10 +1,12 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { getHighlight } from '@/components/api/ShortpingAPI'
 
 import ShortpingVideo from '@/components/shortping/ShortpingVideo.vue'
 import ShortpingHighlight from '@/components/shortping/ShortpingHighlight.vue'
 
 const video = ref('')
+
 const shortping = ref({
   title: ''
 })
@@ -13,32 +15,41 @@ const highlights = ref([
     isEnroll: true,
     highlightTitle: '첫 인사',
     highlightStartTime: '00:00:01',
-    highlightEndTime: '00:00:03',
-    highlightSubtitle: '안녕하세요! 오늘은 신상 니트를 소개해 드릴게요.'
+    highlightEndTime: '00:00:03'
   },
   {
     isEnroll: true,
     highlightTitle: '앙고라 니트 - 핑크 컬러',
-    highlightStartTime: '00:00:04',
-    highlightEndTime: '00:00:06',
-    highlightSubtitle: '뽀용한 색감의 핑크컬러! 청바지에 찰떡'
+    highlightStartTime: '00:00:05',
+    highlightEndTime: '00:00:06'
   },
   {
     isEnroll: true,
     highlightTitle: '앙고라 니트 - 블루 컬러',
     highlightStartTime: '00:00:07',
-    highlightEndTime: '00:00:09',
-    highlightSubtitle: '어디에나 입기 좋은 블루 컬러! 하나쯤 가지고 있으면 활용성 갑'
+    highlightEndTime: '00:00:09'
   },
   {
     isEnroll: true,
     highlightTitle: '앙고라 니트 - 블랙 컬러',
     highlightStartTime: '00:00:10',
-    highlightEndTime: '00:00:12',
-    highlightSubtitle: '어디에나 입기 좋은 블랙 컬러! 하나쯤 가지고 있으면 활용성 갑'
+    highlightEndTime: '00:00:12'
   }
 ])
 
+onMounted(() => {
+  getHighlightDatas()
+})
+
+const getHighlightDatas = () => {
+  //하이라이트 추천받기(라이브아이디)
+  // const res = getHighlight(id)
+  //console.log(res)
+  //highlightTitle == title
+  //highlightStartTime == start
+  //highlightEndTime == end
+  //isEnroll = true로 해주기
+}
 const sortHighlight = (e) => {
   highlights.value[e].isEnroll = true
   highlights.value.sort((o1, o2) => {
@@ -84,7 +95,6 @@ const complete = () => {
           @getData="(e) => sortHighlight(e)"
           @video="
             (e) => {
-              console.log(video)
               video = e
             }
           "

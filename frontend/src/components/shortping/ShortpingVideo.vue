@@ -1,15 +1,25 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { getThumbnail } from '@/components/api/ShortpingAPI'
+import res from 'express/lib/response'
 
 const vi = ref(null)
 const currentTime = ref(0)
 const props = defineProps(['data', 'video'])
-const videoURL = 'http://localhost:5173/src/assets/video/test/test.mp4'
+const videoURL = ref('http://localhost:5173/src/assets/video/test/test.mp4')
 
 onMounted(() => {
+  getPictures()
   colorList()
 })
 
+const getPictures = () => {
+  //이미지 가져오기(상품아이디)
+  // const res = getThumbnail(1)
+  // console.log(res)
+  // videoURL.value = res.liveURL
+  // videoImages.value = res.thumbnails
+}
 watch(currentTime, (newTime) => {
   // currentTime이 바뀔 때마다 스크롤 위치 업데이트
   const index = Math.floor(newTime)
@@ -20,6 +30,8 @@ watch(currentTime, (newTime) => {
 })
 
 watch(props, () => {
+  vi.value = props.video
+  videoURL.value = props.video
   colorList()
 })
 
@@ -132,7 +144,7 @@ const controlMove = (e) => {
         controls
         width="400"
         height="300"
-        ref="vi"
+        :src="videoURL"
         @play="(e) => (currentTime = e.target.currentTime)"
         @timeupdate="(e) => (currentTime = e.target.currentTime)"
       >

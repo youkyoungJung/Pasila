@@ -11,15 +11,14 @@ let emptyData = ref({
   isEnroll: false,
   highlightTitle: '',
   highlightStartTime: '',
-  highlightEndTime: '',
-  highlightSubtitle: ''
+  highlightEndTime: ''
 })
 
 const ffmpeg = new FFmpeg()
 const baseURL = 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm'
 const videoURL = 'http://localhost:5173/src/assets/video/test/test.mp4'
 
-let video1 = ref('')
+let video = ref('')
 
 const preview = async () => {
   await ffmpeg.load({
@@ -29,62 +28,39 @@ const preview = async () => {
   })
 
   const outputs = []
-  const inputFileName = 'test1.mp4'
+  const inputFileName = 'test.mp4'
   await ffmpeg.writeFile(inputFileName, await fetchFile(videoURL))
-  const drawTextArgs = [
-    '-i',
-    inputFileName,
-    '-filter:v',
-    'drawtext=textfont="C:\\Users\\SSAFY\\S10P12A402\\frontend\\src\\assets\\font\\NotoSans.ttf":text="this is drawtext":fontsize=50',
-    '-c:a',
-    'copy',
-    '-c:v',
-    'libx264',
-    '-preset',
-    'slow',
-    '-crf',
-    '18',
-    'test.mkv'
-  ]
-  const answer = await ffmpeg.exec([...drawTextArgs])
-  if (answer.error) {
-    console.error('Error during drawtext operation:', answer.error)
-    console.error('ErrnoError details:', answer.error.errno, answer.error.code)
+
+  for (let i = 0; i < props.data.length; i++) {
+    const start = props.data[i].highlightStartTime
+    const end = props.data[i].highlightEndTime
+    const args = [
+      '-i',
+      'test.mp4',
+      '-ss',
+      `${start}`,
+      '-to',
+      `${end}`,
+      '-c',
+      'copy',
+      `output${i}.mp4`
+    ]
+    await ffmpeg.exec([...args])
+    const convertArgs = ['-i', `output${i}.mp4`, '-c', 'copy', `output${i}.ts`]
+    await ffmpeg.exec([...convertArgs])
+    outputs.push(`output${i}.ts`)
+  }
+  const concatArgs = ['-i', `concat:${outputs.join('|')}`, '-c', 'copy', 'output.mp4']
+  const result = await ffmpeg.exec([...concatArgs])
+
+  if (result.error) {
+    console.error('FFmpeg execution error:', result.error)
     return
   }
-  const args = ['-i', 'test.mkv', '-c', 'copy', 'test.mp4']
-  await ffmpeg.exec([...args])
-  // for (let i = 0; i < props.data.length; i++) {
-  //   const start = props.data[i].highlightStartTime
-  //   const end = props.data[i].highlightEndTime
-  //   const subtitle = props.data[i].highlightSubtitle
-  //   const args = [
-  //     '-i',
-  //     'test.mp4',
-  //     '-ss',
-  //     `${start}`,
-  //     '-to',
-  //     `${end}`,
-  //     '-c',
-  //     'copy',
-  //     `output${i}.mp4`
-  //   ]
-  //   await ffmpeg.exec([...args])
-  //   const convertArgs = ['-i', `output${i}.mp4`, '-c', 'copy', `output${i}.ts`]
-  //   await ffmpeg.exec([...convertArgs])
-  //   outputs.push(`output${i}.ts`)
-  // }
-  // console.log(outputs.join('|'))
-  // const concatArgs = ['-i', `concat:${outputs.join('|')}`, '-c', 'copy', 'output.mp4']
-  // const result = await ffmpeg.exec([...concatArgs])
 
-  // if (result.error) {
-  //   console.error('FFmpeg execution error:', result.error)
-  //   return
-  // }
-
-  const finalOutput = await ffmpeg.readFile('test.mp4')
-  video1.value = URL.createObjectURL(new Blob([finalOutput.buffer], { type: 'video/mp4' }))
+  const finalOutput = await ffmpeg.readFile('output.mp4')
+  video.value = URL.createObjectURL(new Blob([finalOutput.buffer], { type: 'video/mp4' }))
+  emit('video', video.value)
 }
 
 const addHighlight = () => {
@@ -126,7 +102,6 @@ const addHighlight = () => {
             :data="highlight"
             :index="index"
             @getTitle="(e) => (highlight.highlightTitle = e)"
-            @getSubtitle="(e) => (highlight.highlightSubtitle = e)"
             @getStartTime="(e) => (highlight.highlightStartTime = e)"
             @getEndTime="(e) => (highlight.highlightEndTime = e)"
             @getData="
@@ -138,7 +113,6 @@ const addHighlight = () => {
         </div>
       </div>
     </div>
-    <video :src="video1" controls style="width: 400px; height: 150px"></video>
   </div>
 </template>
 
