@@ -23,7 +23,6 @@ public class MailConfig {
     @Value("${mail.password}")
     private String passWord;
 
-
     @Bean
     public JavaMailSender javaMailService() {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();

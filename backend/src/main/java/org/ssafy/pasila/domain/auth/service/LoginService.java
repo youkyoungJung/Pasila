@@ -26,7 +26,7 @@ public class LoginService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public String login(LoginRequestDto dto) {
+    public Member login(LoginRequestDto dto) {
         String email = dto.getEmail();
         String password = dto.getPassword();
 
@@ -37,11 +37,15 @@ public class LoginService {
             throw new BadCredentialsException("Invalid email or password.");
         }
 
-        MemberInfoDto info = modelMapper.map(member, MemberInfoDto.class);
+        MemberInfoDto info = modelMapper.map(member.get(), MemberInfoDto.class);
 
         info.setRole("COMMON");
 
         String accessToken = jwtUtil.createAccessToken(info);
-        return accessToken;
+
+        member.get().addToken(accessToken);
+        member.get().blankPassword();
+
+        return member.get();
     }
 }

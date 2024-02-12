@@ -20,7 +20,7 @@ public class MemberDetailDto implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<String> roles = new ArrayList<>();
-        roles.add("ROLE_" + member.getRole().toString());
+//        roles.add("ROLE_" + member.getRole().toString());
 
 
         return roles.stream()
@@ -37,7 +37,6 @@ public class MemberDetailDto implements UserDetails {
     public String getUsername() {
         return member.getId().toString();
     }
-
 
     @Override
     public boolean isAccountNonExpired() {
@@ -58,7 +57,5 @@ public class MemberDetailDto implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
-
 
 }

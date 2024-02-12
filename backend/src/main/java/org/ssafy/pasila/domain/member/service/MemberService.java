@@ -2,13 +2,13 @@ package org.ssafy.pasila.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
-import org.ssafy.pasila.domain.auth.dto.request.LoginRequestDto;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
@@ -25,6 +25,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     private final S3Uploader s3Uploader;
+
+    private final PasswordEncoder encoder;
 
     /**
      * 사용자 정보 수정 메서드
@@ -127,28 +129,29 @@ public class MemberService {
     public boolean checkEmail(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
         if (member.isPresent()) {
-            return false; //이미 존재하는 경우
+            return false;
         } else {
-            return true; // 생성가능
+            return true;
         }
     }
 
     public boolean checkChannel(String channel) {
         Optional<Member> member = Optional.ofNullable(memberRepository.findByChannel(channel));
         if (member.isPresent()) {
-            return false; // 이미 존재하는 경우
+            return false;
         } else {
-            return true;  // 생성가능
+            return true;
         }
     }
 
     @Transactional
     public void join(Member member, MultipartFile profileFile) throws IOException {
-        // profileFile 을 S3에서 받아온 url 주소를 member profile
+
         if (!profileFile.isEmpty()) {
             String url = s3Uploader.upload(member.getId().toString(), profileFile, "member");
             member.addProfile(url);
         }
+        member.encodePassword(encoder.encode(member.getPassword()));
         memberRepository.save(member);
     }
 

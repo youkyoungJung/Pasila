@@ -18,6 +18,7 @@ import org.ssafy.pasila.domain.member.repository.PersonalInfoRepository;
 import org.ssafy.pasila.domain.member.service.MemberService;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -35,37 +36,37 @@ public class MemberController {
 
     @Operation(summary = "Check Emmail", description = "중복 이메일 확인")
     @GetMapping("/email")
-    public ResponseEntity<?> checkEmail(@RequestParam String email) {
+    public ApiCommonResponse<?> checkEmail(@RequestParam String email) {
 
         if (memberService.checkEmail(email)) {
-            return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+            return ApiCommonResponse.successResponse(HttpStatus.OK.value(), true);
         } else {
-            return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ApiCommonResponse.successResponse(HttpStatus.BAD_REQUEST.value(), false);
         }
 
     }
 
     @Operation(summary = "Check Channel name", description = "채널명 중복 확인")
     @GetMapping("/channel")
-    public ResponseEntity<?> checkChannel(@RequestParam String channel) {
+    public ApiCommonResponse<?> checkChannel(@RequestParam String channel) {
         if (memberService.checkChannel(channel)) {
-            return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+            return ApiCommonResponse.successResponse(HttpStatus.OK.value(), true);
         } else {
-            return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ApiCommonResponse.successResponse(HttpStatus.BAD_REQUEST.value(), false);
         }
     }
 
     @Operation(summary = "Join member", description = "회원 가입")
     @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> join(@RequestPart(value = "member") Member member,
+    public ApiCommonResponse<?> join(@RequestPart(value = "member") Member member,
                                   @RequestPart(value = "profileFile", required = false) MultipartFile profileFile) {
         try {
             memberService.join(member, profileFile);
-            return ResponseEntity.status(HttpStatus.CREATED).body("success");
+            return ApiCommonResponse.successResponse(HttpStatus.OK.value(), "success");
         } catch (Exception e) {
             String errorMessage = "An error occurred: " + e.getMessage();
 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+            return ApiCommonResponse.successResponse(HttpStatus.BAD_REQUEST.value(), errorMessage);
         }
     }
 
@@ -81,10 +82,10 @@ public class MemberController {
 
     // 비밀번호 확인
     @Operation(summary = "Check password", description = "마이페이지 정보 수정을 위한 비밀번호 확인")
-    @GetMapping("/{id}/pw")
+    @PostMapping("/{id}/pw")
     public ApiCommonResponse<Boolean> checkPw(@PathVariable("id") Long id,
-                                              @RequestBody String password) {
-        Boolean isEqual = memberService.checkPW(id, password);
+                                              @RequestBody Map<String, String> passwordMap) {
+        Boolean isEqual = memberService.checkPW(id, passwordMap.get("password"));
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), isEqual);
     }
 

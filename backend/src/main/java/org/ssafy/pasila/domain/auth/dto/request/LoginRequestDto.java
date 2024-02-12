@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 public class LoginRequestDto {
 
     @NotBlank(message = "이메일 입력은 필수입니다.")
-    @Email(message = "이메일 형식을 확인하세요")
     private String email;
 
     @NotBlank(message = "패스워드 입력은 필수입니다.")

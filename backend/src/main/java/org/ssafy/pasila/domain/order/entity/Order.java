@@ -49,7 +49,7 @@ public class Order {
     @JsonIgnore
     private Member member;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_option_id")
     @JsonIgnore
     private ProductOption productOption;

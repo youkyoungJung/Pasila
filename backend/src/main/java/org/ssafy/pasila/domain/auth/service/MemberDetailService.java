@@ -24,6 +24,8 @@ public class MemberDetailService implements UserDetailsService {
         Member member = memberRepository.findById(Long.parseLong(id))
                 .orElseThrow(() -> new UsernameNotFoundException("userid not found"));
 
+        System.out.println(member.getId());
+
         MemberInfoDto dto = mapper.map(member, MemberInfoDto.class);
 
         return new MemberDetailDto(dto);

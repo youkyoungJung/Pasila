@@ -7,6 +7,8 @@ import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.NotEnoughStockException;
 import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -46,6 +48,8 @@ public class ProductOption {
     }
 
     //== 재고 관련 메서드 ==//
+
+    //재고 증가 메서드
     public void removeStock(int quantity){
 
         int restStock = this.stock - quantity;
@@ -59,6 +63,7 @@ public class ProductOption {
     public void addStock(int quantity){
 
         this.stock += quantity;
+
 
     }
 

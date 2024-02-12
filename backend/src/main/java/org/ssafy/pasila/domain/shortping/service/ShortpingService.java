@@ -1,6 +1,5 @@
 package org.ssafy.pasila.domain.shortping.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,6 +13,7 @@ import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.domain.shortping.dto.request.LivelogRequestDto;
 import org.ssafy.pasila.domain.shortping.dto.request.ShortpingRequestDto;
+import org.ssafy.pasila.domain.shortping.dto.response.LiveThumbnailResponse;
 import org.ssafy.pasila.domain.shortping.dto.response.RecommendLivelogResponseDto;
 import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponseDto;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
@@ -116,4 +116,30 @@ public class ShortpingService {
         shortpingQueryService.delete(shortping);
     }
 
+
+    // 라이브 영상 & 썸네일
+    public LiveThumbnailResponse getThumbnailList(String id) {
+        try {
+            Live live = liveQueryRepository.findByProductId(id);
+
+            // 라이브 영상 파일 이름 가져오기
+            String liveUrl = live.getFullVideoUrl();
+
+            // TODO: 라이브 영상 가져오기
+            byte[] liveVideo = null;
+
+            // 라이브 영상 썸네일 뽑기
+            List<String> thumbnails = ffmpegClient.convertImages(liveVideo);
+
+            return LiveThumbnailResponse.builder()
+                    .liveUrl(liveUrl)
+                    .thumbnails(thumbnails)
+                    .build();
+
+        } catch (Exception e) {
+            log.error("{}", e.getMessage());
+            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 }

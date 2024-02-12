@@ -22,8 +22,6 @@ import org.ssafy.pasila.global.util.JwtUtil;
 public class SecurityConfig  {
     private final MemberDetailService memberDetailService;
     private final JwtUtil jwtUtil;
-//    private final CustomAccessDeniedHandler accessDeniedHandler;
-//    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -31,30 +29,19 @@ public class SecurityConfig  {
         http.csrf((csrf) -> csrf.disable());
         http.cors(Customizer.withDefaults());
 
-        //세션 관리 상태 없음으로 구성, Spring Security가 세션 생성 or 사용 X
         http.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(
                 SessionCreationPolicy.STATELESS));
 
-        //FormLogin, BasicHttp 비활성화
         http.formLogin((form) -> form.disable());
         http.httpBasic(AbstractHttpConfigurer::disable);
 
-
-        //JwtAuthFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
         http.addFilterBefore(new JwtAuthFilter(memberDetailService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
-//        http.exceptionHandling((exceptionHandling) -> exceptionHandling
-//                .authenticationEntryPoint(authenticationEntryPoint)
-//                .accessDeniedHandler(accessDeniedHandler)
-//        );
-
-        // 권한 규칙 작성
         http.authorizeHttpRequests(authorize -> authorize
                         .anyRequest().permitAll()
         );
 
         return http.build();
     }
-
 
 }

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 /**주문이 들어올때 dto*/
 @Getter
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class OrderFormDto {
 
     @Schema(description = " 선택한 옵션id")
-    Long optionId;
+    List<Long> options;
 
     @Schema(description = "구매자")
     Long memberId;
@@ -20,7 +21,7 @@ public class OrderFormDto {
     @Schema(description = "수량")
     int quantity;
 
-    @Schema(description = "수량인")
+    @Schema(description = "수령자 이름")
     String name;
 
     @Schema(description = "배송지")
