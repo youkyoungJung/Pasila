@@ -54,4 +54,21 @@ const stopLiveApi = async (liveId) => {
   }
 }
 
-export { createSessionApi, createTokenApi, getLiveProductApi, startLiveApi, stopLiveApi }
+const getLiveQuestionApi = async (liveId) => {
+  try {
+    const res = await local.get(`${url}/question?liveId=${liveId}`)
+    return res.data
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+
+export {
+  createSessionApi,
+  createTokenApi,
+  getLiveProductApi,
+  startLiveApi,
+  stopLiveApi,
+  getLiveQuestionApi
+}

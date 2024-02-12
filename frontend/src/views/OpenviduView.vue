@@ -7,8 +7,10 @@ import {
   createTokenApi,
   getLiveProductApi,
   startLiveApi,
-  stopLiveApi
+  stopLiveApi,
+  getLiveQuestionApi
 } from '@/components/api/OpenviduAPI.js'
+import { getLiveStockApi } from '@/components/api/RealTimeAPI'
 import { useMemberStore } from '@/stores/member'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
 import LiveScript from '@/components/live/seller/LiveScript.vue'
@@ -28,6 +30,7 @@ let userRole = ref('')
 let isStart = ref(false)
 
 let product = reactive({})
+let questionList = ref([])
 
 const props = defineProps(['liveId'])
 const { member } = useMemberStore()
@@ -42,7 +45,21 @@ onMounted(async () => {
   } else {
     userRole = 'SUB'
   }
+
+  const stockEvent = getLiveStockApi(props.liveId)
+
+  stockEvent.addEventListener('sse', (e) => {
+    const data = JSON.parse(e.data)
+    if (data.liveId) {
+      product.options = data.options
+    }
+  })
+
   joinSession()
+
+  setInterval(async () => {
+    questionList.value = await getLiveQuestionApi(props.liveId)
+  }, 300000)
 })
 
 onUnmounted(() => {
@@ -53,6 +70,9 @@ const getProduct = async () => {
   product = await getLiveProductApi(props.liveId)
 }
 
+/**
+ * tool bar의 상태를 클릭 시 toggle 해주는 함수입니다.
+ */
 const clickToolBarBtn = (arr, n) => {
   arr[n].isActive = !arr[n].isActive
 }
@@ -183,8 +203,8 @@ watch(
       </section>
 
       <section class="col-3" v-if="pubToolBar[2].isActive || pubToolBar[3].isActive">
-        <live-stock v-if="pubToolBar[2].isActive" :live-id="props.liveId" />
-        <live-question v-if="pubToolBar[3].isActive" />
+        <live-stock v-if="pubToolBar[2].isActive" :product-options="product.options" />
+        <live-question v-if="pubToolBar[3].isActive" :question-list="questionList" />
       </section>
     </div>
     <div class="tool-bar">
