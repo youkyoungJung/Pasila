@@ -21,6 +21,7 @@ const liveTime = ref({
 })
 
 const reserveLive = async () => {
+  store.liveFormData.append('image', 'hi')
   liveTime.value.title = liveTitle.value
   liveTime.value.liveScheduleAt =
     date.value.getFullYear() +
@@ -35,14 +36,7 @@ const reserveLive = async () => {
     ':00'
   store.liveSchedule = liveTime.value
 
-  store.liveFormData.append('live', store.liveSchedule)
-  store.liveFormData.append('product', store.liveProduct)
-  store.liveFormData.append('image', store.liveProduct)
-  store.liveFormData.append('chatbot', store.liveChatbot)
-  store.liveFormData.append('member', '1')
-
-  console.log(store.liveSchedule)
-  const res = await sendLiveSchedule(store.liveFormData)
+  const res = await store.sendData()
   console.log(res)
 }
 </script>
