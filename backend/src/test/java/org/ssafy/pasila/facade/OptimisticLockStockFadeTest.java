@@ -18,9 +18,7 @@ import org.ssafy.pasila.domain.product.entity.ProductOption;
 import org.ssafy.pasila.domain.product.repository.CategoryRepository;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;

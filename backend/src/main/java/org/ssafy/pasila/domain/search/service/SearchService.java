@@ -8,9 +8,7 @@ import org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto;
 import org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto;
 import org.ssafy.pasila.domain.search.dto.ShortpingByCategoryResponseDto;
 import org.ssafy.pasila.domain.search.repository.SearchRepository;
-
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
-
 import java.util.ArrayList;
 import java.util.List;
 

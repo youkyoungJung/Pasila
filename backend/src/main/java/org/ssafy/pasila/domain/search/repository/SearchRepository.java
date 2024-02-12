@@ -7,12 +7,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Repository;
 import org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto;
 import org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto;
-
 import java.time.LocalDateTime;
 import java.util.List;
-
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @Repository

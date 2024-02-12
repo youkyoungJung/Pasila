@@ -15,11 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto;
 import org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto;
-import org.ssafy.pasila.domain.search.dto.ShortpingByCategoryResponseDto;
 import org.ssafy.pasila.domain.search.service.SearchService;
-
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
