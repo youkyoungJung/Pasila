@@ -5,13 +5,19 @@ const ChatList = reactive([
   {
     type: 'user',
     user: '김빨강',
-    content: '그래서 기능이 먼데;',
+    content: '어 이거 카리나 인스타에서 봤어요!',
     profile: new URL('@/assets/img/test/rose.jpg', import.meta.url).href
   },
   {
     type: 'user',
     user: '김빨강',
-    content: '!기능',
+    content: '하 사야되나 이거',
+    profile: new URL('@/assets/img/test/rose.jpg', import.meta.url).href
+  },
+  {
+    type: 'user',
+    user: '김빨강',
+    content: '!길이감',
     profile: new URL('@/assets/img/test/rose.jpg', import.meta.url).href
   },
   {
@@ -23,14 +29,14 @@ const ChatList = reactive([
   {
     type: 'user',
     user: '한보라',
-    content: '!구성',
+    content: '저 이거 갖고싶었던거에요!!!',
     profile: new URL('@/assets/img/test/karina.jpg', import.meta.url).href
   },
   {
     type: 'chatbot',
     user: '챗봇',
     content:
-      '안녕하세요 고객님. 해당 제품의 기능은 수분 충전, 피부 열감 완화, 노화 방지 등이 있습니다. 더 다양한 설명은 상품 상세 페이지를 참고해주시기 바랍니다.',
+      '안녕하세요 고객님. 해당 제품은 2가지 길이 조정이 가능한 제품으로 무드에 따라 길이를 조절하실 수 있습니다. 자세한 내용은 상품설명을 참고하세요.',
     profile: new URL('@/assets/img/test/robot-solid 2.png', import.meta.url).href
   }
 ])
@@ -74,6 +80,8 @@ onMounted(() => {
     padding: 1rem;
     height: 63vh;
     overflow-y: scroll;
+    box-shadow: 0px -4px 10px 0px rgba(0, 0, 0, 0.25) inset;
+    border-radius: 20px 20px 0 0;
 
     -ms-overflow-style: none;
     .chat-line {

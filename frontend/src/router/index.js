@@ -6,6 +6,9 @@ import FindPwView from '@/views/FindPwView.vue'
 import FindPwSendView from '@/views/FindPwSendView.vue'
 import LiveView from '@/views/LiveView.vue'
 import OpenviduView from '@/views/OpenviduView.vue'
+import OrderView from '@/views/OrderView.vue'
+import OrderSuccessView from '@/views/OrderSuccessView.vue'
+import LiveEndView from '@/views/LiveEndView.vue'
 import ScheduleView from '@/views/ScheduleView.vue'
 import ChannelView from '@/views/ChannelView.vue'
 import EditView from '@/views/EditView.vue'
@@ -46,15 +49,28 @@ const router = createRouter({
       name: 'findpwsend',
       component: FindPwSendView
     },
-    // {
-    //   path: '/live/:id',
-    //   name: 'live',
-    //   component: LiveView
-    // },
     {
-      path: '/live/:id',
+      path: '/live/:liveId',
       name: 'openvidu',
-      component: OpenviduView
+      component: OpenviduView,
+      props: true
+    },
+    {
+      path: '/live/:id/order',
+      name: 'order',
+      component: OrderView,
+      props: true
+    },
+    {
+      path: '/order/success',
+      name: 'order-success',
+      component: OrderSuccessView
+    },
+    {
+      path: '/live/:id/end',
+      name: 'liveend',
+      component: LiveEndView,
+      props: true
     },
     {
       path: '/schedule',
