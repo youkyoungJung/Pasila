@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
+const emit = defineEmits(['categoryIndex'])
 const categories = [
   //대분류 카테고리 이름들
   {
@@ -49,6 +50,8 @@ const selectedBigCate = ref('전체')
 
 const selectBigCate = (name) => {
   selectedBigCate.value = name
+  const index = categories.findIndex((category) => category.name === name)
+  emit('categoryIndex', index)
 }
 </script>
 

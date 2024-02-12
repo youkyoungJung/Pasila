@@ -7,11 +7,14 @@ defineProps({
 <template>
   <div class="video-card">
     <!-- <video :src="video.src" class="input-video" /> -->
-    <div class="input-video" :style="{ backgroundImage: `url(${video?.src})` }"></div>
+    <div
+      class="input-video"
+      :style="{ backgroundImage: `url(${video?.productThumbnailUrl})` }"
+    ></div>
     <div class="user-info">
-      <div :style="{ backgroundImage: `url(${video?.profile}` }" class="user-profile"></div>
+      <div :style="{ backgroundImage: `url(${video?.profileUrl}` }" class="user-profile"></div>
       <div class="user-name">
-        <div class="name">{{ video?.name }}</div>
+        <div class="name">{{ video?.channel }}</div>
         <div class="title">{{ video?.title }}</div>
       </div>
       <div class="price">

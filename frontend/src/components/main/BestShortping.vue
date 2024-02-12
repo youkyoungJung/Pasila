@@ -1,37 +1,47 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import VideoCard from '@/components/common/VideoCard.vue'
 
-//숏핑 받아오면 숏핑의 제품 id로 판매자 id가져와서 판매자 정보 뿌리기
+const props = defineProps(['data'])
+
+onMounted(() => {
+  getDatas()
+})
+
+const getDatas = async () => {
+  //숏핑 데이터 가져오면 풀기
+  // videos.value = props.data
+  console.log(videos.value)
+}
 const videos = ref([
   {
-    src: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profile: new URL('@/assets/img/karina.jpg', import.meta.url).href,
-    name: '카리나나',
+    productThumbnailUrl: new URL('@/assets/img/main-sample.png', import.meta.url).href,
+    profileUrl: new URL('@/assets/img/karina.jpg', import.meta.url).href,
+    channel: '카리나나',
     title: '겨울에 필수! 앙고라 니트',
     price: '36,000',
     discountPrice: '20,000'
   },
   {
-    src: new URL('@/assets/img/main-sample2.png', import.meta.url).href,
-    profile: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-    name: '김제니',
+    productThumbnailUrl: new URL('@/assets/img/main-sample2.png', import.meta.url).href,
+    profileUrl: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
+    channel: '김제니',
     title: '제니도 쓴다는 그 스킨',
     price: '18,000',
     discountPrice: '15,000'
   },
   {
-    src: new URL('@/assets/img/main-sample3.png', import.meta.url).href,
-    profile: new URL('@/assets/img/rose.jpg', import.meta.url).href,
-    name: '로제제',
+    productThumbnailUrl: new URL('@/assets/img/main-sample3.png', import.meta.url).href,
+    profileUrl: new URL('@/assets/img/rose.jpg', import.meta.url).href,
+    channel: '로제제',
     title: '꿀보이스 만들어 주는 배도라지 차',
     price: '36,000',
     discountPrice: '20,000'
   },
   {
-    src: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profile: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-    name: '김가을',
+    productThumbnailUrl: new URL('@/assets/img/main-sample.png', import.meta.url).href,
+    profileUrl: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
+    channel: '김가을',
     title: '겨울에 필수! 앙고라 니트',
     price: '36,000',
     discountPrice: '20,000'

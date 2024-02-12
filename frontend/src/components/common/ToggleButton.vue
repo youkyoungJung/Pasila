@@ -2,13 +2,15 @@
 import { ref } from 'vue'
 
 const isLive = ref(true)
-
+const emit = defineEmits(['isLive'])
 const goLive = () => {
   if (!isLive.value) isLive.value = !isLive.value
+  emit('isLive', true)
 }
 
 const goShortping = () => {
   if (isLive.value) isLive.value = !isLive.value
+  emit('isLive', false)
 }
 </script>
 

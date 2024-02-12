@@ -1,55 +1,67 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import VideoCard from '@/components/common/VideoCard.vue'
 import ToggleButton from '@/components/common/ToggleButton.vue'
 
-//라이브, 숏핑 확인하고
-//받아오면 정렬대로 뿌리기
+const props = defineProps(['popular', 'latest'])
+const selected = ref('popular')
+const isLive = ref(true)
+
+watch(isLive, () => {
+  // if (isLive)
+})
+const toggle = async (e) => {
+  selected.value = e.target.value
+  //// 인기수니면
+  // if (selected.value == 'popular') videos.value = props.popular
+  //// 최신순이면
+  // else if (selected.value == 'new') videos.value = props.latest
+}
 const videos = ref([
   {
-    src: new URL('@/assets/img/main-sample3.png', import.meta.url).href,
-    profile: new URL('@/assets/img/rose.jpg', import.meta.url).href,
-    name: '로제제',
+    productThumbnailUrl: new URL('@/assets/img/main-sample3.png', import.meta.url).href,
+    profileUrl: new URL('@/assets/img/rose.jpg', import.meta.url).href,
+    channel: '로제제',
     title: '꿀보이스 만들어 주는 배 도라지 차',
     price: '36,000',
     discountPrice: '20,000'
   },
   {
-    src: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profile: new URL('@/assets/img/karina.jpg', import.meta.url).href,
-    name: '카리나나',
+    productThumbnailUrl: new URL('@/assets/img/main-sample.png', import.meta.url).href,
+    profileUrl: new URL('@/assets/img/karina.jpg', import.meta.url).href,
+    channel: '카리나나',
     title: '겨울에 필수! 앙고라 니트',
     price: '36,000',
     discountPrice: '20,000'
   },
   {
-    src: new URL('@/assets/img/main-sample2.png', import.meta.url).href,
-    profile: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-    name: '김제니',
+    productThumbnailUrl: new URL('@/assets/img/main-sample2.png', import.meta.url).href,
+    profileUrl: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
+    channel: '김제니',
     title: '제니도 쓴다는 그 스킨',
     price: '18,000',
     discountPrice: '15,000'
   },
   {
-    src: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profile: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-    name: '김가을',
+    productThumbnailUrl: new URL('@/assets/img/main-sample.png', import.meta.url).href,
+    profileUrl: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
+    channel: '김가을',
     title: '겨울에 필수! 앙고라 니트',
     price: '36,000',
     discountPrice: '20,000'
   },
   {
-    src: new URL('@/assets/img/main-sample3.png', import.meta.url).href,
-    profile: new URL('@/assets/img/rose.jpg', import.meta.url).href,
-    name: '로제제',
+    productThumbnailUrl: new URL('@/assets/img/main-sample3.png', import.meta.url).href,
+    profileUrl: new URL('@/assets/img/rose.jpg', import.meta.url).href,
+    channel: '로제제',
     title: '꿀보이스 만들어 주는 배 도라지 차',
     price: '36,000',
     discountPrice: '20,000'
   },
   {
-    src: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profile: new URL('@/assets/img/karina.jpg', import.meta.url).href,
-    name: '카리나나',
+    productThumbnailUrl: new URL('@/assets/img/main-sample.png', import.meta.url).href,
+    profileUrl: new URL('@/assets/img/karina.jpg', import.meta.url).href,
+    channel: '카리나나',
     title: '겨울에 필수! 앙고라 니트',
     price: '36,000',
     discountPrice: '20,000'
@@ -65,11 +77,11 @@ const videos = ref([
         <span class="subtitle">원하는 상품을 찾아보세요!</span>
       </div>
       <div class="order-type">
-        <toggle-button />
+        <toggle-button @isLive="(e) => (isLive = e)" />
         <div>
           <form action="#">
-            <select name="orders" id="order" class="select-type">
-              <option value="popular">인기순</option>
+            <select name="orders" id="order" class="select-type" @change="toggle">
+              <option value="popular" selected>인기순</option>
               <option value="new">최신순</option>
             </select>
           </form>
@@ -119,6 +131,7 @@ const videos = ref([
         color: white;
         text-align: center;
         border: 1px solid $main;
+        outline: none;
 
         option {
           background-color: white;
