@@ -5,6 +5,7 @@ import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Repository;
+import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto;
 import org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto;
 import java.time.LocalDateTime;
@@ -22,6 +23,14 @@ public class SearchRepository {
         String orderByClause = getOrderByClause(sort, "live");
         String likeParam = createLikeParam(keyword);
 
+        // 이전 페이지의 마지막 아이템의 likeCnt 또는 liveOnAt을 가져옴
+        Integer lastLikeCnt = null;
+        LocalDateTime lastLiveOnAt = null;
+        if ("popularity".equals(sort)) {
+            lastLikeCnt = getLastLikeCnt(lastItemId);
+        } else if ("latest".equals(sort)) {
+            lastLiveOnAt = getLastLiveOnAt(lastItemId);
+        }
         // 쿼리 수행
         TypedQuery<SearchLiveResponseDto> query = em.createQuery(
                         "SELECT new org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto" +
@@ -36,13 +45,25 @@ public class SearchRepository {
                                 "AND l.isActive = true " +
                                 "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) " +
                                 "AND l.liveOffAt IS NOT NULL " +
-                                (lastItemId != null ? "AND l.id < :lastItemId " : "") + // 이전 페이지의 마지막 아이템보다 작은 ID를 가진 DB 데이터를 가져옴
+                                (lastLikeCnt != null ? "AND l.likeCnt < :lastLikeCnt " : "") + // 이전 페이지의 마지막 likeCnt보다 작은 데이터를 가져옴
+                                (lastLiveOnAt != null ? "AND l.liveOnAt < :lastLiveOnAt " : "") + // 이전 페이지의 마지막 liveOnAt보다 작은 데이터를 가져옴
+                                (lastItemId != null ? "AND l.id != :lastItemId " : "") + // lastItemId와 동일하지 않은 데이터만 가져옴
                                 "GROUP BY l.id, l.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
                                 orderByClause
                         , SearchLiveResponseDto.class)
                 .setParameter("keyword", likeParam);
 
-        // lastItemId가 null이 아닌 경우에만 해당 파라미터를 설정
+
+        // lastLikeCnt가 null이 아닌 경우에만 해당 파라미터를 설정
+        if (lastLikeCnt != null) {
+            query.setParameter("lastLikeCnt", lastLikeCnt);
+        }
+
+        // lastLiveOnAt가 null이 아닌 경우에만 해당 파라미터를 설정
+        if (lastLiveOnAt != null) {
+            query.setParameter("lastLiveOnAt", lastLiveOnAt);
+        }
+
         if (lastItemId != null) {
             query.setParameter("lastItemId", lastItemId);
         }
@@ -57,6 +78,25 @@ public class SearchRepository {
         return new PageImpl<>(resultList, pageable, totalCount);
     }
 
+    // 이전 페이지의 마지막 아이템의 likeCnt를 가져오는 메서드
+    private Integer getLastLikeCnt(Long lastItemId) {
+        if (lastItemId == null) {
+            return null; // lastItemId가 null이면 null 반환
+        }
+        // lastItemId를 사용하여 해당 아이템의 likeCnt를 조회하여 반환
+        Live lastItem = em.find(Live.class, lastItemId);
+        return lastItem != null ? lastItem.getLikeCnt() : null;
+    }
+
+    // 이전 페이지의 마지막 아이템의 liveOnAt을 가져오는 메서드
+    private LocalDateTime getLastLiveOnAt(Long lastItemId) {
+        if (lastItemId == null) {
+            return null; // lastItemId가 null이면 null 반환
+        }
+        // lastItemId를 사용하여 해당 아이템의 liveOnAt을 조회하여 반환
+        Live lastItem = em.find(Live.class, lastItemId);
+        return lastItem != null ? lastItem.getLiveOnAt() : null;
+    }
 
     // 총 결과 수 조회
     private long getTotalCount(String keyword) {
