@@ -122,3 +122,7 @@ mail:
         timeout: 5000
         starttls:
           enable: true
+
+jwt:
+  expiration_time: 86400000
+  secret: ${JWT_SECRET}

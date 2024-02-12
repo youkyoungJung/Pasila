@@ -135,4 +135,16 @@ public class Member {
         this.description = description;
     }
 
+    public void encodePassword(String password){
+        this.password = password;
+    }
+
+    public void addToken(String token){
+        this.token = token;
+    }
+
+    public void blankPassword(){
+        this.password = null;
+    }
+
 }
