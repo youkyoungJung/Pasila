@@ -2,6 +2,7 @@ package org.ssafy.pasila.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +31,8 @@ public class MemberService {
     private final ChannelRepository channelRepository;
 
     private final S3Uploader s3Uploader;
+
+    private final PasswordEncoder encoder;
 
     /**
      * 사용자 정보 수정 메서드
@@ -147,39 +150,30 @@ public class MemberService {
     public boolean checkEmail(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
         if (member.isPresent()) {
-            return false; //이미 존재하는 경우
+            return false;
         } else {
-            return true; // 생성가능
+            return true;
         }
     }
 
     public boolean checkChannel(String channel) {
         Optional<Member> member = Optional.ofNullable(memberRepository.findByChannel(channel));
         if (member.isPresent()) {
-            return false; // 이미 존재하는 경우
+            return false;
         } else {
-            return true;  // 생성가능
+            return true;
         }
     }
 
     @Transactional
     public void join(Member member, MultipartFile profileFile) throws IOException {
-        // profileFile 을 S3에서 받아온 url 주소를 member profile
+
         if (!profileFile.isEmpty()) {
             String url = s3Uploader.upload(member.getId().toString(), profileFile, "member");
             member.addProfile(url);
         }
+        member.encodePassword(encoder.encode(member.getPassword()));
         memberRepository.save(member);
-    }
-
-    public Member login(String email, String password) {
-        Optional<Member> findMember = memberRepository.findByEmail(email);
-        findMember.orElseThrow(() -> new IllegalStateException("The email address does not exit."));
-
-        if (findMember.get().getPassword().equals(password)) {
-            throw new IllegalStateException("Invalid email or password.");
-        }
-        return findMember.get();
     }
 
 }

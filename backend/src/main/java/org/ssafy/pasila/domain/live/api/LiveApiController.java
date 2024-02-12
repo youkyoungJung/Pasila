@@ -9,14 +9,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
+import org.ssafy.pasila.domain.live.dto.ChatLogDto;
 import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
 import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequestDto;
 import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
@@ -27,13 +30,10 @@ import org.ssafy.pasila.domain.live.service.ChatbotService;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.domain.live.service.OpenviduService;
 import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
-import org.ssafy.pasila.domain.product.dto.ProductResponseDto;
 import org.ssafy.pasila.domain.product.dto.ProductSellResponseDto;
 import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
-import org.ssafy.pasila.global.infra.redis.entity.ChatRedis;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
-
 
 import java.io.IOException;
 import java.util.List;
@@ -63,6 +63,8 @@ public class LiveApiController {
 
     // Pair - SessionId, RecordingId
     private final Map<String, String> mapRecordings = new ConcurrentHashMap<>();
+
+    private final SimpMessagingTemplate template;
 
     @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브")
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -202,11 +204,12 @@ public class LiveApiController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공")
     })
-    @GetMapping("/join")
-    public ApiCommonResponse<?> joinLive(@RequestParam String roomId , @RequestParam String memberId) {
+    @MessageMapping("/join")
+    @PreAuthorize("isAuthenticated()")
+    public void joinLive(@RequestBody ChatLogDto chatLogDto) {
 
-        int participantNum = liveService.joinLive(roomId , memberId);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), participantNum);
+        int participantNum = liveService.joinLive(chatLogDto.getLiveId() , chatLogDto.getMemberId());
+        template.convertAndSend("/num/" + chatLogDto.getLiveId(), participantNum);
 
     }
 
@@ -214,12 +217,12 @@ public class LiveApiController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공")
     })
-    @DeleteMapping("/exit")
-    public ApiCommonResponse<?> exitLive(@RequestParam String roomId , @RequestParam String memberId){
+    @MessageMapping("/exit")
+    public void exitLive(@RequestBody ChatLogDto chatLogDto){
 
-        int participantNum = liveService.exitLive(roomId , memberId);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), participantNum);
-        
+        int participantNum = liveService.exitLive(chatLogDto.getLiveId() , chatLogDto.getMemberId());
+        template.convertAndSend("/num/" + chatLogDto.getLiveId(), participantNum);
+
     }
 
     @Operation(summary = "Get Top5 Question", description = "라이브 방송 중 상위 5개의 질문을 가져옵니다.")

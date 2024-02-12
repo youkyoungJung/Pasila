@@ -7,20 +7,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
-import org.ssafy.pasila.domain.live.dto.response.LiveStatsResponseDto;
 import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
+import org.ssafy.pasila.domain.live.dto.response.LiveStatsResponseDto;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
-import org.ssafy.pasila.global.infra.gpt3.GptClient;
-import org.ssafy.pasila.global.infra.redis.service.ChatRedisService;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
+import org.ssafy.pasila.global.infra.gpt3.GptClient;
+import org.ssafy.pasila.global.infra.redis.service.ChatRedisService;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 
 
@@ -40,19 +39,20 @@ public class LiveService {
 
     private final ProductRepository productRepository;
 
-
-    public int joinLive(String liveId, String memberId) {
+    @Transactional
+    public int joinLive(String liveId , Long memberId) {
 
         SetOperations<String, String> setOperations = redisTemplate.opsForSet();
-        setOperations.add("participant : " + liveId, memberId);
+        setOperations.add("participant : " + liveId, memberId.toString());
         return setOperations.size("participant : " + liveId).intValue();
 
     }
 
-    public int exitLive(String liveId, String memberId) {
+    @Transactional
+    public int exitLive(String liveId ,Long memberId) {
 
         SetOperations<String, String> setOperations = redisTemplate.opsForSet();
-        setOperations.remove("participant : " + liveId, memberId);
+        setOperations.remove("participant : " + liveId, memberId.toString());
         return setOperations.size("participant : " + liveId).intValue();
 
     }
