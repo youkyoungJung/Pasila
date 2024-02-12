@@ -3,7 +3,7 @@ import router from '@/router'
 import { ref, onMounted, reactive } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
-import { getMyPage, changeMyInfo, checkMyEmail, checkMyChannel } from '@/components/api/MyPageAPI'
+import { getMyPage, changeMyInfo, checkMyEmail, checkMyChannel } from '@/components/api/MemberAPI'
 import {
   getEmailAuthNumber,
   checkEmailAuthNumber,

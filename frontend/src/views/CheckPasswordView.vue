@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import FormInput from '@/components/login/FormInput.vue'
 import router from '@/router'
-import { checkPassword } from '@/components/api/MyPageAPI.js'
+import { checkPassword } from '@/components/api/MemberAPI.js'
 
 const inputData = ref({
   title: '비밀번호 확인',

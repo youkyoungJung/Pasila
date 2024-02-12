@@ -3,7 +3,7 @@ import router from '@/router'
 import { ref } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
-import { joinUser, checkMyEmail, checkMyChannel } from '@/components/api/MyPageAPI'
+import { joinUser, checkMyEmail, checkMyChannel } from '@/components/api/MemberAPI'
 import {
   getEmailAuthNumber,
   checkEmailAuthNumber,
