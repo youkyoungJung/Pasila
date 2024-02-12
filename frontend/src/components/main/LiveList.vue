@@ -3,19 +3,22 @@ import { ref, watch } from 'vue'
 import VideoCard from '@/components/common/VideoCard.vue'
 import ToggleButton from '@/components/common/ToggleButton.vue'
 
-const props = defineProps(['popular', 'latest'])
+const props = defineProps(['popularLive', 'latestLive', 'popularShortping', 'latestShortping'])
 const selected = ref('popular')
 const isLive = ref(true)
 
 watch(isLive, () => {
-  // if (isLive)
+  // if (!isLive && selected.value == 'popular') videos.value = props.popularShortping
+  // else if (!isLive && selected.value == 'new') videos.value = props.latestShortping
+  // else if (isLive && selected.value == 'popular') videos.value = props.popularLive
+  // else if (isLive && selected.value == 'new') videos.value = props.latestLive
 })
 const toggle = async (e) => {
   selected.value = e.target.value
-  //// 인기수니면
-  // if (selected.value == 'popular') videos.value = props.popular
-  //// 최신순이면
-  // else if (selected.value == 'new') videos.value = props.latest
+  // if (!isLive && selected.value == 'popular') videos.value = props.popularShortping
+  // else if (!isLive && selected.value == 'new') videos.value = props.latestShortping
+  // else if (isLive && selected.value == 'popular') videos.value = props.popularLive
+  // else if (isLive && selected.value == 'new') videos.value = props.latestLive
 }
 const videos = ref([
   {
@@ -77,7 +80,14 @@ const videos = ref([
         <span class="subtitle">원하는 상품을 찾아보세요!</span>
       </div>
       <div class="order-type">
-        <toggle-button @isLive="(e) => (isLive = e)" />
+        <toggle-button
+          @isLive="
+            (e) => {
+              isLive = e
+              $emit('isLive', e)
+            }
+          "
+        />
         <div>
           <form action="#">
             <select name="orders" id="order" class="select-type" @change="toggle">

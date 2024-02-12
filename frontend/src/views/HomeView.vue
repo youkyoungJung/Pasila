@@ -7,7 +7,9 @@ import { ref, watch, onMounted } from 'vue'
 const latestShortping = ref([])
 const popularShortping = ref([])
 const top5Shortping = ref([])
-
+const latestLive = ref([])
+const popularLive = ref([])
+const isLive = ref(true)
 onMounted(() => {
   getDatas()
 })
@@ -18,19 +20,22 @@ const getDatas = async () => {
   popularShortping.value = res.popularShortping
   top5Shortping.value = res.top5Shortping
   const resp = await getPopularLive(0)
-  console.log(resp)
+  latestLive.value = resp.latestLive
+  popularLive.value = resp.popularLive
 }
 
 const categoryIndex = ref('')
 watch(categoryIndex, async () => {
-  const res = await getVideos(categoryIndex.value)
-  latestShortping.value = res.latestShortping
-  popularShortping.value = res.popularShortping
-  top5Shortping.value = res.top5Shortping
-  console.log(latestShortping.value)
-  console.log(popularShortping.value)
-  console.log(top5Shortping.value)
-  //이 데이터를 넘겨줄거야 어디에? best shortping과 livelist에!
+  if (isLive.value) {
+    const resp = await getPopularLive(categoryIndex.value)
+    latestLive.value = resp.latestLive
+    popularLive.value = resp.popularLive
+  } else {
+    const res = await getVideos(categoryIndex.value)
+    latestShortping.value = res.latestShortping
+    popularShortping.value = res.popularShortping
+    top5Shortping.value = res.top5Shortping
+  }
 })
 </script>
 
@@ -43,7 +48,13 @@ watch(categoryIndex, async () => {
     "
   />
   <best-shortping :data="popularShortping" />
-  <live-list :popular="popularShortping" :latest="latestShortping" />
+  <live-list
+    :popularLive="popularLive"
+    :latestLive="latestLive"
+    :popularShortping="popularShortping"
+    :latestShortping="latestShortping"
+    @isLive="(e) => (isLive = e)"
+  />
 </template>
 
 <style lang="scss">
