@@ -45,11 +45,10 @@ public class SearchService {
     }
 
     public LiveByCategoryResponseDto serachLiveByCategory(Long categoryId) {
-        List<SearchShortpingResponseDto> top5 = searchRepository.top5Shortping(categoryId);
         List<SearchLiveResponseDto> latest = searchRepository.findAllLiveByFilter(categoryId, "", "latest");
         List<SearchLiveResponseDto> popular = searchRepository.findAllLiveByFilter(categoryId, "", "popularity");
 
-        return new LiveByCategoryResponseDto(top5, latest, popular);
+        return new LiveByCategoryResponseDto(latest, popular);
     }
 
     /**product name, live_title, short_title

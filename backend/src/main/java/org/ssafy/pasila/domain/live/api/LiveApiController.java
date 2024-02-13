@@ -29,14 +29,11 @@ import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.service.ChatbotService;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.domain.live.service.OpenviduService;
-import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
-import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
 import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
 import org.ssafy.pasila.domain.product.dto.ProductSellResponseDto;
 import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.domain.search.dto.LiveByCategoryResponseDto;
 import org.ssafy.pasila.domain.search.service.SearchService;
-import org.ssafy.pasila.domain.shortping.service.ShortpingService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
 
