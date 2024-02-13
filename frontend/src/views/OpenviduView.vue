@@ -278,7 +278,7 @@ const connectChat = () => {
 
       <section class="col-2" v-if="subToolBar[0].isActive">
         <live-chat
-          :is-customer="ture"
+          :is-customer="true"
           :chatmsg="chatmsg"
           @change-msg="(e) => (chatmsg = e)"
           @send-msg="sendChat"

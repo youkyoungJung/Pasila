@@ -22,4 +22,13 @@ const getChannelApi = async (memberId) => {
   }
 }
 
-export { getMemberApi, getChannelApi }
+const updateChannelDescApi = async (memberId, data) => {
+  try {
+    const res = await local.put(`${url}/channel/${memberId}`, data)
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+  }
+}
+
+export { getMemberApi, getChannelApi, updateChannelDescApi }
