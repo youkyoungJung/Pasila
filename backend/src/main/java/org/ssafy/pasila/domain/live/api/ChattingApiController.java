@@ -21,6 +21,7 @@ import org.ssafy.pasila.domain.live.service.ChattingService;
 @RequestMapping("/api/live")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @Tag(name = "Chatting", description = "Chatting API")
+
 public class ChattingApiController {
 
     private final SimpMessagingTemplate template;
