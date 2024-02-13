@@ -9,8 +9,7 @@ onMounted(() => {
 })
 
 const getDatas = async () => {
-  //숏핑 데이터 가져오면 풀기
-  // videos.value = props.data
+  videos.value = props.data
   console.log(videos.value)
 }
 const videos = ref([

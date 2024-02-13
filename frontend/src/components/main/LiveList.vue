@@ -1,5 +1,6 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { getPopularLive } from '@/components/api/SearchAPI'
 import VideoCard from '@/components/common/VideoCard.vue'
 import ToggleButton from '@/components/common/ToggleButton.vue'
 
@@ -7,18 +8,41 @@ const props = defineProps(['popularLive', 'latestLive', 'popularShortping', 'lat
 const selected = ref('popular')
 const isLive = ref(true)
 
+onMounted(() => {
+  getDatas()
+})
+
+const getDatas = async () => {
+  const resp = await getPopularLive(0)
+  videos.value = resp.popularLives
+  for (let i = 0; i < videos.value.length; i++) {
+    const videoURL = videos.value[i].productThumbnailUrl
+    videos.value[i].productThumbnailUrl = new URL(`${videoURL}`, import.meta.url).href
+
+    const profileURL = videos.value[i].profileUrl
+    videos.value[i].profileUrl = new URL(`${profileURL}`, import.meta.url).href
+  }
+}
 watch(isLive, () => {
-  // if (!isLive && selected.value == 'popular') videos.value = props.popularShortping
-  // else if (!isLive && selected.value == 'new') videos.value = props.latestShortping
-  // else if (isLive && selected.value == 'popular') videos.value = props.popularLive
-  // else if (isLive && selected.value == 'new') videos.value = props.latestLive
+  if (!isLive.value && selected.value == 'popular') videos.value = props.popularShortping
+  else if (!isLive.value && selected.value == 'new') videos.value = props.latestShortping
+  else if (isLive.value && selected.value == 'popular') videos.value = props.popularLive
+  else if (isLive.value && selected.value == 'new') videos.value = props.latestLive
+
+  for (let i = 0; i < videos.value.length; i++) {
+    const videoURL = videos.value[i].productThumbnailUrl
+    videos.value[i].productThumbnailUrl = new URL(`${videoURL}`, import.meta.url).href
+
+    const profileURL = videos.value[i].profileUrl
+    videos.value[i].profileUrl = new URL(`${profileURL}`, import.meta.url).href
+  }
 })
 const toggle = async (e) => {
   selected.value = e.target.value
-  // if (!isLive && selected.value == 'popular') videos.value = props.popularShortping
-  // else if (!isLive && selected.value == 'new') videos.value = props.latestShortping
-  // else if (isLive && selected.value == 'popular') videos.value = props.popularLive
-  // else if (isLive && selected.value == 'new') videos.value = props.latestLive
+  if (!isLive.value && selected.value == 'popular') videos.value = props.popularShortping
+  else if (!isLive.value && selected.value == 'new') videos.value = props.latestShortping
+  else if (isLive.value && selected.value == 'popular') videos.value = props.popularLive
+  else if (isLive.value && selected.value == 'new') videos.value = props.latestLive
 }
 const videos = ref([
   {

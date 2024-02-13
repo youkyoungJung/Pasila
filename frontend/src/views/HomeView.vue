@@ -20,21 +20,45 @@ const getDatas = async () => {
   popularShortping.value = res.popularShortping
   top5Shortping.value = res.top5Shortping
   const resp = await getPopularLive(0)
-  latestLive.value = resp.latestLive
-  popularLive.value = resp.popularLive
+  latestLive.value = resp.latestLives
+  popularLive.value = resp.popularLives
+  // console.log(latestLive.value)
+  // console.log(popularLive.value)
+  // console.log(latestShortping.value)
+  // console.log(popularShortping.value)
+  // console.log(top5Shortping.value)
 }
 
 const categoryIndex = ref('')
 watch(categoryIndex, async () => {
   if (isLive.value) {
     const resp = await getPopularLive(categoryIndex.value)
-    latestLive.value = resp.latestLive
-    popularLive.value = resp.popularLive
+    latestLive.value = resp.latestLives
+    popularLive.value = resp.popularLives
+    // console.log(latestLive.value)
+    // console.log(popularLive.value)
   } else {
     const res = await getVideos(categoryIndex.value)
     latestShortping.value = res.latestShortping
     popularShortping.value = res.popularShortping
-    top5Shortping.value = res.top5Shortping
+    // console.log(latestShortping.value)
+    // console.log(popularShortping.value)
+  }
+})
+
+watch(isLive, async () => {
+  if (isLive.value) {
+    const resp = await getPopularLive(categoryIndex.value)
+    latestLive.value = resp.latestLives
+    popularLive.value = resp.popularLives
+    // console.log(latestLive.value)
+    // console.log(popularLive.value)
+  } else {
+    const res = await getVideos(categoryIndex.value)
+    latestShortping.value = res.latestShortping
+    popularShortping.value = res.popularShortping
+    // console.log(latestShortping.value)
+    // console.log(popularShortping.value)
   }
 })
 </script>

@@ -2,13 +2,13 @@ import { localAxios } from '@/components/api/APIModule.js'
 
 const local = localAxios()
 
-const url = '/search'
+const url = '/summary'
 
 const getPopularLive = async (id) => {
   try {
-    const res = await local.get(`${url}/live`, {
+    const res = await local.get(`live${url}`, {
       parmas: {
-        keyword: id
+        categoryId: id
       }
     })
     return res.data.data
@@ -19,7 +19,7 @@ const getPopularLive = async (id) => {
 
 const getVideos = async (id) => {
   try {
-    const res = await local.get('shortping/summary', {
+    const res = await local.get(`shortping${url}`, {
       parmas: {
         categoryId: id
       }
