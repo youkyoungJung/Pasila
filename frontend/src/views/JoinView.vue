@@ -277,17 +277,17 @@ const join = async () => {
         <div v-if="emailCerti == 1" class="check-text">
           사용가능한 이메일입니다. 인증을 위해 이메일을 확인해주세요.
         </div>
-        <div v-if="emailCerti == 1">
-          <v-short-input
-            :data="shortData.emailCerti"
-            @getdata="(e) => (emailCertiNum = e)"
-            @sendData="(e) => checkEmailCerti(e)"
-          />
-          <div v-if="resultCheckEmail == 1" class="check-text">이메일 인증이 완료되었습니다.</div>
-          <div v-else-if="resultCheckEmail == 2" class="wrong-text">
-            인증번호를 다시 입력해주세요.
-          </div>
+
+        <v-short-input
+          :data="shortData.emailCerti"
+          @getdata="(e) => (emailCertiNum = e)"
+          @sendData="(e) => checkEmailCerti(e)"
+        />
+        <div v-if="resultCheckEmail == 1" class="check-text">이메일 인증이 완료되었습니다.</div>
+        <div v-else-if="resultCheckEmail == 2" class="wrong-text">
+          인증번호를 다시 입력해주세요.
         </div>
+
         <div v-else-if="emailCerti == 2" class="wrong-text">
           중복된 이메일입니다. 다른 이메일을 사용해 주세요.
         </div>
