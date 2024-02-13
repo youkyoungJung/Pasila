@@ -1,18 +1,67 @@
 <script setup>
 import { ref } from 'vue'
+import { FFmpeg } from '@ffmpeg/ffmpeg'
+import { fetchFile, toBlobURL } from '@ffmpeg/util'
 import NewHighlight from '@/components/shortping/NewHighlight.vue'
 import SavedHighlight from '@/components/shortping/SavedHighlight.vue'
 
 const props = defineProps(['data'])
-const emit = defineEmits(['getData', 'deleteData', 'addEmptyData'])
-
+const emit = defineEmits(['getData', 'deleteData', 'addEmptyData', 'video'])
 let emptyData = ref({
   isEnroll: false,
   highlightTitle: '',
   highlightStartTime: '',
-  highlightEndTime: '',
-  highlightSubtitle: ''
+  highlightEndTime: ''
 })
+
+const ffmpeg = new FFmpeg()
+const baseURL = 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm'
+const videoURL = 'http://localhost:5173/src/assets/video/test/test.mp4'
+
+let video = ref('')
+
+const preview = async () => {
+  await ffmpeg.load({
+    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+    workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript')
+  })
+
+  const outputs = []
+  const inputFileName = 'test.mp4'
+  await ffmpeg.writeFile(inputFileName, await fetchFile(videoURL))
+
+  for (let i = 0; i < props.data.length; i++) {
+    const start = props.data[i].highlightStartTime
+    const end = props.data[i].highlightEndTime
+    const args = [
+      '-i',
+      'test.mp4',
+      '-ss',
+      `${start}`,
+      '-to',
+      `${end}`,
+      '-c',
+      'copy',
+      `output${i}.mp4`
+    ]
+    await ffmpeg.exec([...args])
+    const convertArgs = ['-i', `output${i}.mp4`, '-c', 'copy', `output${i}.ts`]
+    await ffmpeg.exec([...convertArgs])
+    outputs.push(`output${i}.ts`)
+  }
+  const concatArgs = ['-i', `concat:${outputs.join('|')}`, '-c', 'copy', 'output.mp4']
+  const result = await ffmpeg.exec([...concatArgs])
+
+  if (result.error) {
+    console.error('FFmpeg execution error:', result.error)
+    return
+  }
+
+  const finalOutput = await ffmpeg.readFile('output.mp4')
+  video.value = URL.createObjectURL(new Blob([finalOutput.buffer], { type: 'video/mp4' }))
+  emit('video', video.value)
+}
 
 const addHighlight = () => {
   emit('addEmptyData', emptyData.value)
@@ -30,7 +79,10 @@ const addHighlight = () => {
   <div class="shortping-highlight">
     <div class="highlight-top">
       <span>하이라이트</span>
-      <button @click="addHighlight">추가</button>
+      <div class="highlight-btn">
+        <button @click="preview()" class="preview-btn">미리보기</button>
+        <button @click="addHighlight" class="add-btn">추가</button>
+      </div>
     </div>
     <div class="highlight-body">
       <div v-for="(highlight, index) in props.data" :key="index" class="highlights">
@@ -50,7 +102,6 @@ const addHighlight = () => {
             :data="highlight"
             :index="index"
             @getTitle="(e) => (highlight.highlightTitle = e)"
-            @getSubtitle="(e) => (highlight.highlightSubtitle = e)"
             @getStartTime="(e) => (highlight.highlightStartTime = e)"
             @getEndTime="(e) => (highlight.highlightEndTime = e)"
             @getData="
@@ -81,14 +132,30 @@ const addHighlight = () => {
       font-weight: bold;
     }
 
-    button {
-      width: 10%;
-      border: none;
-      background-color: $dark;
-      color: white;
-      border-radius: 0.2rem;
-      font-size: 0.7rem;
-      cursor: pointer;
+    .highlight-btn {
+      width: 30%;
+      display: flex;
+      text-align: center;
+      justify-content: space-evenly;
+      margin-right: 1rem;
+      .preview-btn {
+        width: 45%;
+        border: none;
+        background-color: $main;
+        color: white;
+        border-radius: 0.2rem;
+        font-size: 0.7rem;
+        cursor: pointer;
+      }
+      .add-btn {
+        width: 45%;
+        border: none;
+        background-color: $dark;
+        color: white;
+        border-radius: 0.2rem;
+        font-size: 0.7rem;
+        cursor: pointer;
+      }
     }
   }
 

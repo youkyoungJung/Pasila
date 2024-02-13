@@ -1,8 +1,20 @@
 <script setup>
-import { onMounted, ref, reactive } from 'vue'
+import { onMounted, onUnmounted, ref, reactive, watch } from 'vue'
 import router from '@/router'
 import { OpenVidu } from 'openvidu-browser'
-import { createSession, createToken } from '@/components/api/OpenviduAPI.js'
+import Stomp from 'webstomp-client'
+import SockJs from 'sockjs-client'
+import {
+  createSessionApi,
+  createTokenApi,
+  getLiveProductApi,
+  startLiveApi,
+  stopLiveApi,
+  getLiveQuestionApi,
+  sendChatToChatbot
+} from '@/components/api/OpenviduAPI.js'
+import { getLiveStockApi } from '@/components/api/RealTimeAPI'
+import { useMemberStore } from '@/stores/member'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
 import LiveScript from '@/components/live/seller/LiveScript.vue'
 import LiveStock from '@/components/live/seller/LiveStock.vue'
@@ -17,24 +29,63 @@ let mainStreamManager = ref(undefined)
 let publisher = ref(undefined)
 let subscribers = ref([])
 
-let userRole = ref('PUB')
+let ws
+let chatmsg = ref('')
 
-const props = defineProps(['id'])
+let userRole = ref('')
+let isStart = ref(false)
 
-// Join form
-const mySessionId = 'SessionA'
-const myUserName = 'Participant' + Math.floor(Math.random() * 100)
+let product = reactive({})
+let questionList = ref([])
 
-onMounted(() => {
+const props = defineProps(['liveId'])
+const { member } = useMemberStore()
+
+onMounted(async () => {
+  await getProduct()
+  if (!member.id) {
+    alert('로그인 후 시청 가능합니다.')
+    router.push('/login')
+  } else if (product.sellerId === member.id) {
+    userRole.value = 'PUB'
+  } else {
+    userRole.value = 'SUB'
+  }
+
+  const stockEvent = getLiveStockApi(props.liveId)
+
+  stockEvent.addEventListener('sse', (e) => {
+    const data = JSON.parse(e.data)
+    if (data.liveId) {
+      product.options = data.options
+    }
+  })
+
   joinSession()
+
+  setInterval(async () => {
+    questionList.value = await getLiveQuestionApi(props.liveId)
+  }, 300000)
 })
 
-const clickToolBarBtn = (n) => {
-  controlToolBar[n].isActive = !controlToolBar[n].isActive
+onUnmounted(() => {
+  leaveSession()
+})
+
+const getProduct = async () => {
+  product = await getLiveProductApi(props.liveId)
+}
+
+/**
+ * tool bar 클릭 시 상태를 toggle 해주는 함수입니다.
+ */
+const clickToolBarBtn = (arr, n) => {
+  arr[n].isActive = !arr[n].isActive
 }
 
 const joinSession = async () => {
   OV.value = new OpenVidu()
+  OV.value.enableProdMode()
   session.value = OV.value.initSession()
 
   session.value.on('streamCreated', ({ stream }) => {
@@ -50,16 +101,15 @@ const joinSession = async () => {
   })
 
   session.value.on('exception', ({ exception }) => {
-    console.warn('exception=', exception)
-    alert('서버에 문제가 발생했습니다. 잠시후 다시 시도해주세요.')
+    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
     router.push('/')
   })
 
-  const res = await getToken(mySessionId)
-  const token = res.data
+  const res = await getToken(props.liveId)
+  const token = res
 
   try {
-    await session.value.connect(token, { clientData: myUserName })
+    await session.value.connect(token, { clientData: member.name })
 
     const publisherInfo = OV.value.initPublisher(undefined, {
       audioSource: undefined,
@@ -76,19 +126,31 @@ const joinSession = async () => {
 
     session.value.publish(publisher.value)
   } catch (error) {
-    console.log('There was an error connecting to the session:', error.code, error.message)
+    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
   }
 
   window.addEventListener('beforeunload', leaveSession)
 }
 
-const leaveSession = () => {
+const startLive = async () => {
+  if (await startLiveApi(props.liveId)) {
+    isStart.value = true
+  }
+}
+
+const stopLive = async () => {
+  await stopLiveApi(props.liveId)
+}
+
+const leaveSession = async () => {
   if (session.value) {
-    if (confirm('라이브를 정말 종료하시겠습니까?')) {
+    if (userRole.value === 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
+      await stopLive()
       session.value.disconnect()
-    } else {
-      return
+      router.push(`/live/${props.liveId}/end`)
     }
+  } else {
+    session.value.disconnect()
   }
 
   session.value = undefined
@@ -100,83 +162,143 @@ const leaveSession = () => {
   window.removeEventListener('beforeunload', leaveSession)
 }
 
-const getToken = async (mySessionId) => {
-  const res = await createSession(mySessionId)
-  return await createToken(res.data)
+const getToken = async (liveId) => {
+  const res = await createSessionApi(liveId)
+  return await createTokenApi(res)
 }
 
-const controlToolBar = reactive(
-  userRole.value === 'PUB'
-    ? [
-        { isActive: true, iconName: 'fa-regular fa-file-lines', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-circle-question', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-solid fa-phone-slash', click: leaveSession }
-      ]
-    : [
-        { isActive: true, iconName: 'fa-regular fa-file-lines', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-circle-question', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-solid fa-phone-slash', click: leaveSession }
-      ]
+const pubToolBar = reactive([
+  { isActive: true, iconName: 'fa-regular fa-file-lines', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-circle-question', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-circle-play', click: startLive }
+])
+
+const subToolBar = reactive([
+  { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-circle-xmark', click: leaveSession }
+])
+
+watch(
+  () => isStart.value,
+  () => {
+    if (isStart.value) {
+      pubToolBar.pop()
+      pubToolBar.push({
+        isActive: true,
+        iconName: 'fa-regular fa-circle-xmark',
+        click: leaveSession
+      })
+    }
+  }
 )
 
-const product = reactive({
-  id: 1,
-  description:
-    '<h2 class="ql-align-center">[aespa 카리나 착용] <strong>big heart necklace (3color)</strong></h2><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p><br></p><p class="ql-align-center"><strong>big heart necklace (3color)</strong></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center">사랑스러운의 하트 펜던트로 룩의 포인트가 되어 줄 네크리스입니다 :)</p><p class="ql-align-center">적당한 크기로 과하지 않고 은은한 포인트를 더해 줄 아이템이에요</p><p class="ql-align-center">일반 네크리스보다 조금 더 롱하게 내려오는</p><p class="ql-align-center">기장감으로 더욱 유니크하게 착용가능하구요,</p><p class="ql-align-center">여유줄이 있어 간편하게 길이 조절이 가능하답니다</p><p class="ql-align-center">가벼운 무게감으로 부담없이 데일리로 착용하실 수 있으실거에요!</p><p class="ql-align-center">썸머시즌에도 편안하게 착용 가능하여 추천드릴게요♡</p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong style="color: rgb(37, 37, 37);">COLOR</strong><span style="color: rgb(37, 37, 37);">&nbsp;실버, 골드, 블랙</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong style="color: rgb(37, 37, 37);">FABRIC</strong><span style="color: rgb(37, 37, 37);">&nbsp;신주</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong style="color: rgb(37, 37, 37);">비침&nbsp;</strong>X<strong style="color: rgb(37, 37, 37);">&nbsp;/&nbsp;안감&nbsp;</strong>X</p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong style="color: rgb(37, 37, 37);">SIZE</strong><span style="color: rgb(37, 37, 37);">&nbsp;free</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center">(상세사이즈)</p><p class="ql-align-center"><span style="color: rgb(117, 117, 117);">&nbsp;&nbsp;</span></p><p class="ql-align-center"><span style="color: rgb(117, 117, 117);">가로 2 세로 2 끈길이 60 (+5cm)</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong style="color: rgb(37, 37, 37);">MODEL</strong><span style="color: rgb(37, 37, 37);">&nbsp;&nbsp;JUYOUNG&nbsp;(</span><span style="color: rgb(0, 0, 0);">162cm /&nbsp;44,5size / 26inch / 235mm / pants_ s)</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong>NOTICE</strong></p><p class="ql-align-center"><br></p><p class="ql-align-center">모든 의류제품은 드라이 클리닝을 권장합니다</p><p class="ql-align-center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p><p class="ql-align-center"><br></p><p class="ql-align-center"><span style="color: rgb(125, 125, 125);">모든 실측은 단면(cm)으로 측정 되었습니다.</span></p><p class="ql-align-center"><span style="color: rgb(125, 125, 125);">제품 측정법에 따라 1-3cm정도의 오차가 발생 할 수 있습니다.</span></p><p class="ql-align-center"><span style="color: rgb(125, 125, 125);">제품 컬러는 사용자의 모니터 환경에 따라 다소 차이가 있을 수 있으며</span></p><p class="ql-align-center"><span style="color: rgb(125, 125, 125);">모델컷 보다는 상품컷 컬러를 참고 해주세요.</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><span style="color: rgb(125, 125, 125);">어리틀빗에 게시된 모든 컨텐츠들은 저작권법에 의거하여 보호받고</span></p><p class="ql-align-center"><span style="color: rgb(125, 125, 125);">있으며 무단 도용시 저작권법에 의해 법적조치를 받을 수 있습니다.</span></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><br></p><p class="ql-align-center"><strong>ALWAYS ALITTLEBEAT!</strong></p><p><br></p>',
-  productOption: [
-    { optionId: 1, name: 'silver', price: 120000, discountPrice: 65000, stock: 12 },
-    { optionId: 2, name: 'gold', price: 120000, discountPrice: 65000, stock: 12 },
-    { optionId: 3, name: 'black', price: 120000, discountPrice: 65000, stock: 12 }
-  ]
-})
+const sendChat = async (isChatbot) => {
+  if (isChatbot) {
+    const data = {
+      liveId: props.liveId,
+      message: chatmsg.value
+    }
+    const res = await sendChatToChatbot(data)
+    //TODO: res 받아서 chatlist에 넣기
+  } else {
+    if (ws && ws.connected) {
+      //TODO: send할 data 가공 필요
+      const chat = {}
+      //TODO: 채팅 받을 곳 필요
+      ws.send(`/receive/`, JSON.stringify(chat), {})
+    }
+  }
+  chatmsg.value = ''
+}
+
+const connectChat = () => {
+  //TODO: 서버 주소로 변경필요
+  const serverURL = 'https://i10a402.p.ssafy.io/chat'
+  const socket = new SockJs(serverURL)
+  ws = Stomp.over(socket)
+
+  //TODO: 토큰 저장 장소 localStorage 맞는지?, 채팅할 때 authorization 헤더 필요한거 맞는지
+  const headers = { Authorization: localStorage.getItem('token') }
+
+  ws.connect(
+    headers,
+    (frame) => {
+      window.connected = true
+      //TODO: subscribe 주소 확인, res 처리
+      ws.subscribe(`/send`, (res) => {})
+    },
+    (err) => {
+      console.error(err)
+      window.connected = false
+    }
+  )
+}
 </script>
 
 <template>
   <template v-if="userRole === 'PUB'">
     <div class="session" v-if="session">
       <section class="col-1">
-        <user-video :stream-manager="mainStreamManager" />
-        <live-script v-if="controlToolBar[0].isActive" />
+        <user-video :stream-manager="mainStreamManager" :is-start="isStart" />
+        <live-script v-if="pubToolBar[0].isActive" :script="props.script" />
       </section>
 
-      <section class="col-2" v-if="controlToolBar[1].isActive">
-        <live-chat />
+      <section class="col-2" v-if="pubToolBar[1].isActive">
+        <live-chat
+          :is-customer="false"
+          :chatmsg="chatmsg"
+          @change-msg="(e) => (chatmsg = e.target.value)"
+          @send-msg="sendChat"
+        />
       </section>
 
-      <section class="col-3" v-if="controlToolBar[2].isActive || controlToolBar[3].isActive">
-        <live-stock v-if="controlToolBar[2].isActive" :live-id="props.id" />
-        <live-question v-if="controlToolBar[3].isActive" />
+      <section class="col-3" v-if="pubToolBar[2].isActive || pubToolBar[3].isActive">
+        <live-stock v-if="pubToolBar[2].isActive" :product-options="product.options" />
+        <live-question v-if="pubToolBar[3].isActive" :question-list="questionList" />
       </section>
+    </div>
+    <div class="tool-bar">
+      <template v-for="(item, index) in pubToolBar" :key="index">
+        <tool-bar-btn
+          :is-active="item.isActive"
+          :icon-name="item.iconName"
+          @click-btn="item.click(pubToolBar, index)"
+        />
+      </template>
     </div>
   </template>
   <template v-else>
     <div class="session" v-if="session">
       <section class="col-1">
-        <user-video :stream-manager="mainStreamManager" />
+        <user-video :stream-manager="mainStreamManager" :is-start="true" />
       </section>
 
-      <section class="col-2" v-if="controlToolBar[1].isActive">
-        <live-chat />
+      <section class="col-2" v-if="subToolBar[0].isActive">
+        <live-chat
+          :is-customer="ture"
+          :chatmsg="chatmsg"
+          @change-msg="(e) => (chatmsg = e)"
+          @send-msg="sendChat"
+        />
       </section>
 
-      <section class="col-3">
-        <live-description :description="product.description" :options="product.productOption" />
+      <section class="col-3" v-if="subToolBar[1].isActive">
+        <live-description :product="product" :live-id="props.liveId" />
       </section>
     </div>
+    <div class="tool-bar">
+      <template v-for="(item, index) in subToolBar" :key="index">
+        <tool-bar-btn
+          :is-active="item.isActive"
+          :icon-name="item.iconName"
+          @click-btn="item.click(subToolBar, index)"
+        />
+      </template>
+    </div>
   </template>
-  <div class="tool-bar">
-    <template v-for="(item, index) in controlToolBar" :key="index">
-      <tool-bar-btn
-        :is-active="item.isActive"
-        :icon-name="item.iconName"
-        @click-btn="item.click(index)"
-      />
-    </template>
-  </div>
 </template>
 
 <style lang="scss" scoped>

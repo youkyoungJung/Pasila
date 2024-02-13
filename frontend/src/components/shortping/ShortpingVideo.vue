@@ -1,14 +1,24 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { getThumbnail } from '@/components/api/ShortpingAPI'
 
 const vi = ref(null)
 const currentTime = ref(0)
-const props = defineProps(['data'])
+const props = defineProps(['data', 'video'])
+const videoURL = ref('http://localhost:5173/src/assets/video/test/test.mp4')
 
 onMounted(() => {
+  getPictures()
   colorList()
 })
 
+const getPictures = () => {
+  //이미지 가져오기(상품아이디)
+  // const res = getThumbnail(1)
+  // console.log(res)
+  // videoURL.value = res.liveURL
+  // videoImages.value = res.thumbnails
+}
 watch(currentTime, (newTime) => {
   // currentTime이 바뀔 때마다 스크롤 위치 업데이트
   const index = Math.floor(newTime)
@@ -19,13 +29,14 @@ watch(currentTime, (newTime) => {
 })
 
 watch(props, () => {
+  vi.value = props.video
+  videoURL.value = props.video
   colorList()
 })
 
 const times = ref([])
 const colorList = () => {
   let newTimes = ref([])
-  //숏핑 시간 list에 css 추가
   for (let i = 0; i < props.data.length; i++) {
     let start = 0
     let startTimeArr = props.data[i].highlightStartTime.split(':')
@@ -44,7 +55,7 @@ const colorList = () => {
   times.value = newTimes.value
 }
 
-const videos = ref([
+const videoImages = ref([
   {
     src: new URL('@/assets/video/test/0second.png', import.meta.url).href
   },
@@ -71,6 +82,27 @@ const videos = ref([
   },
   {
     src: new URL('@/assets/video/test/8second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/9second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/10second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/11second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/12second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/13second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/14second.png', import.meta.url).href
+  },
+  {
+    src: new URL('@/assets/video/test/15second.png', import.meta.url).href
   }
 ])
 
@@ -111,11 +143,11 @@ const controlMove = (e) => {
         controls
         width="400"
         height="300"
-        ref="vi"
+        :src="videoURL"
         @play="(e) => (currentTime = e.target.currentTime)"
         @timeupdate="(e) => (currentTime = e.target.currentTime)"
       >
-        <source src="@/assets/video/test/sample-video.mp4" id="test" />
+        <source :src="videoURL" type="video/mp4" id="test" />
       </video>
     </div>
     <div class="timeline">
@@ -128,7 +160,7 @@ const controlMove = (e) => {
         @mousemove="controlMove"
       >
         <li
-          v-for="(video, idx) in videos"
+          v-for="(video, idx) in videoImages"
           :key="idx"
           @click="() => (vi.currentTime = idx)"
           :class="currentTime >= idx && currentTime < idx + 1 ? 'selectImg' : ''"
@@ -180,7 +212,7 @@ const controlMove = (e) => {
       }
 
       li {
-        @include box(98%, 100%, white, 0.1rem, 0, 0);
+        @include box(98%, 100%, white, 0, 0, 0);
         list-style: none;
         display: flex;
         flex-direction: column;
@@ -190,12 +222,12 @@ const controlMove = (e) => {
           background-position: center;
           width: 100px;
           height: 150px;
-          margin: 0.1rem;
+          margin: 0.2rem;
           border-radius: 0.5rem;
         }
 
         .seconds {
-          @include font-factory($fs-1, bold);
+          @include font-factory(0.8rem, bold);
         }
       }
     }

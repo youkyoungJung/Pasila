@@ -1,20 +1,26 @@
 <script setup>
 import { ref } from 'vue'
+import router from '@/router'
+import { useOrderListStore } from '@/stores/orderList'
+
 const props = defineProps({
-  description: String,
-  options: Array
+  liveId: String,
+  product: Object
 })
+const orderListStore = useOrderListStore()
 
 let myOrderList = ref([])
 
 const addOrder = (e) => {
-  const index = myOrderList.value.findIndex((el) => el.optionId === e.target.value)
-  console.log('index==', index)
+  const index = myOrderList.value.findIndex((el) => el.id === e.target.value)
   if (index < 0) {
     const order = {
-      optionId: e.target.value,
-      optionName: props.options[e.target.value].name,
-      quantity: 1
+      id: e.target.value,
+      optionId: props.product.options[e.target.value].id,
+      optionName: props.product.options[e.target.value].name,
+      quantity: 1,
+      price: props.product.options[e.target.value].price,
+      discountPrice: props.product.options[e.target.value].discountPrice
     }
     myOrderList.value.push(order)
   } else {
@@ -29,12 +35,21 @@ const setQuantity = (index, num) => {
   }
 }
 
-const goPay = () => {}
+const goPay = () => {
+  if (myOrderList.value.length > 0) {
+    orderListStore.orderList = myOrderList
+    orderListStore.product = props.product
+    //TODO: 나갈 때 session 제거 필요!
+    router.push(`/live/${props.liveId}/order`)
+  } else {
+    alert('상품 옵션을 하나 이상 선택해주세요.')
+  }
+}
 </script>
 
 <template>
   <div class="live-desc-box">
-    <div class="live-desc" v-dompurify-html="description"></div>
+    <div class="live-desc" v-dompurify-html="product.description"></div>
     <div class="order">
       <div class="order-list" v-for="(order, index) in myOrderList" :key="index">
         <span>{{ order.optionName }}</span>
@@ -46,7 +61,7 @@ const goPay = () => {}
       </div>
       <select data-title="옵션 선택" @change="addOrder">
         <option value="" disabled selected>옵션 선택</option>
-        <template v-for="(item, index) in options" :key="index">
+        <template v-for="(item, index) in product.options" :key="index">
           <option :value="index">{{ item.name }}</option>
         </template>
       </select>
@@ -93,6 +108,7 @@ const goPay = () => {}
 
         svg {
           height: 1.3rem;
+          cursor: pointer;
         }
       }
     }
@@ -110,6 +126,7 @@ const goPay = () => {}
       @include font-factory($fs-1, bold, white);
       border: none;
       outline: none;
+      cursor: pointer;
     }
   }
 }

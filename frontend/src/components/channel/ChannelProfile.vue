@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import router from '@/router'
 const props = defineProps({
   member: Object
 })
@@ -44,7 +45,8 @@ const undoDesc = () => {
       <div class="name-line">
         <span class="name">{{ member?.channel }}</span>
         <button class="profile-btn gray">내 정보 수정</button>
-        <button class="profile-btn red">주문 관리</button>
+        <!-- TODO: router 실제 url로 변경하기 -->
+        <button class="profile-btn red" @click="() => router.push('1/orders')">주문 관리</button>
       </div>
       <textarea
         class="desc"
@@ -68,6 +70,7 @@ const undoDesc = () => {
   .profile-img {
     @include box(10rem, 10rem, $gray, 50%, 0 2rem 0 0, 0);
     min-width: 10rem;
+    background-size: cover;
   }
   .name-line {
     @include flex-box(center, flex-start);

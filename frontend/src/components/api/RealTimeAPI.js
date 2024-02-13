@@ -4,13 +4,9 @@ const local = localAxios()
 
 const url = '/real-time'
 
-const getLiveStockApi = async (liveId) => {
-  try {
-    const res = await local.get(`${url}/subscribe/${liveId}`)
-    return res.data.data
-  } catch (err) {
-    console.error('localAxios error', err)
-  }
+const getLiveStockApi = (liveId) => {
+  const event = new EventSource(`https://i10a402.p.ssafy.io/api${url}/subscribe/${liveId}`)
+  return event
 }
 
 export { getLiveStockApi }
