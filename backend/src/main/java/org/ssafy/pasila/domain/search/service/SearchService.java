@@ -24,7 +24,7 @@ public class SearchService {
     /** product name, live_title, channel_name
      *  검색 키워드에 해당하는 Live 모음집 (Redis : 방송중)
      * */
-    public Page<SearchLiveResponseDto> searchForLive(String keyword, String sort, Pageable pageable, Long lastItemId){
+    public Page<SearchLiveResponseDto> searchForLive(String keyword, String sort, Pageable pageable, Long lastItemId, Long categoryId){
 
         List<SearchLiveResponseDto> result = new ArrayList<>();
 
@@ -35,7 +35,7 @@ public class SearchService {
         }
 
         // 이전 페이지의 마지막 아이템보다 작은 ID를 가진 DB 데이터를 가져옴
-        Page<SearchLiveResponseDto> dbLike = searchRepository.findAllForLive(keyword, sort, pageable, lastItemId);
+        Page<SearchLiveResponseDto> dbLike = searchRepository.findAllForLive(keyword, sort, pageable, lastItemId, categoryId);
         result.addAll(dbLike.getContent());
 
         return new PageImpl<>(result, pageable, dbLike.getTotalPages());
@@ -46,19 +46,22 @@ public class SearchService {
     /**product name, live_title, short_title
      *  검색 키워드에 해당하는 Shortping 모음집
      * */
-    public List<SearchShortpingResponseDto> searchForShortping(String keyword, String sort){
+    public Page<SearchShortpingResponseDto> searchForShortping(Long categoryId, String keyword, Pageable pageable, String sort,  Long lastItemId){
 
-        return searchRepository.findAllShortpingByFilter(0L, keyword, sort);
+        Page<SearchShortpingResponseDto> selectShort =  searchRepository.findAllShortping(categoryId, keyword, pageable, sort, lastItemId);
+        List<SearchShortpingResponseDto> result = new ArrayList<>(selectShort.getContent());
+
+        return new PageImpl<>(result, pageable, selectShort.getTotalPages());
 
     }
 
-    public ShortpingByCategoryResponseDto searchShortpingByCategory(Long categoryId) {
-
-        List<SearchShortpingResponseDto> top5 = searchRepository.top5Shortping(categoryId);
-        List<SearchShortpingResponseDto> latest = searchRepository.findAllShortpingByFilter(categoryId, "", "latest");
-        List<SearchShortpingResponseDto> popular = searchRepository.findAllShortpingByFilter(categoryId, "", "popularity");
-
-        return new ShortpingByCategoryResponseDto(top5, latest, popular);
-    }
+//    public ShortpingByCategoryResponseDto searchShortpingByCategory(Long categoryId) {
+//
+//        List<SearchShortpingResponseDto> top5 = searchRepository.top5Shortping(categoryId);
+//        List<SearchShortpingResponseDto> latest = searchRepository.findAllShortpingByFilter(categoryId, "", "latest");
+//        List<SearchShortpingResponseDto> popular = searchRepository.findAllShortpingByFilter(categoryId, "", "popularity");
+//
+//        return new ShortpingByCategoryResponseDto(top5, latest, popular);
+//    }
 
 }

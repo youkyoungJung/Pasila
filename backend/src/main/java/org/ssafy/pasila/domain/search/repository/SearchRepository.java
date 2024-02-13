@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.ssafy.pasila.domain.shortping.entity.Shortping;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ public class SearchRepository {
 
     private final EntityManager em;
 
-    public Page<SearchLiveResponseDto> findAllForLive(String keyword, String sort, Pageable pageable, Long lastItemId) {
+    public Page<SearchLiveResponseDto> findAllForLive(String keyword, String sort, Pageable pageable, Long lastItemId, Long categoryId) {
         String orderByClause = getOrderByClause(sort, "live");
         String likeParam = createLikeParam(keyword);
 
@@ -32,27 +33,56 @@ public class SearchRepository {
             lastLiveOnAt = getLastLiveOnAt(lastItemId);
         }
         // 쿼리 수행
-        TypedQuery<SearchLiveResponseDto> query = em.createQuery(
-                        "SELECT new org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto" +
-                                "(l.id, l.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
-                                "FROM Live l " +
-                                "LEFT JOIN l.product p " +
-                                "LEFT JOIN p.productOptions po " +
-                                "LEFT JOIN l.member m " +
-                                "WHERE (l.title LIKE :keyword " +
-                                "OR p.name LIKE :keyword " +
-                                "OR m.channel LIKE :keyword) " +
-                                "AND l.isActive = true " +
-                                "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) " +
-                                "AND l.liveOffAt IS NOT NULL " +
-                                (lastLikeCnt != null ? "AND l.likeCnt < :lastLikeCnt " : "") + // 이전 페이지의 마지막 likeCnt보다 작은 데이터를 가져옴
-                                (lastLiveOnAt != null ? "AND l.liveOnAt < :lastLiveOnAt " : "") + // 이전 페이지의 마지막 liveOnAt보다 작은 데이터를 가져옴
-                                (lastItemId != null ? "AND l.id != :lastItemId " : "") + // lastItemId와 동일하지 않은 데이터만 가져옴
-                                "GROUP BY l.id, l.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
-                                orderByClause
-                        , SearchLiveResponseDto.class)
-                .setParameter("keyword", likeParam);
+        String jpql =
+                "SELECT new org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto" +
+                        "(l.id, l.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
+                        "FROM Live l " +
+                        "LEFT JOIN l.product p " +
+                        "LEFT JOIN p.productOptions po " +
+                        "LEFT JOIN l.member m " +
+                        "WHERE l.isActive = true " +
+                        "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) " +
+                        "AND l.liveOffAt IS NOT NULL ";
 
+        if(categoryId != null && categoryId != 0) {
+            jpql += "AND p.category.id = :categoryId ";
+        }
+        // 키워드가 있는 경우에만 검색 조건 추가
+        else if (keyword != null && !keyword.isEmpty()) {
+            jpql += "AND (l.title LIKE :keyword " +
+                    "OR p.name LIKE :keyword " +
+                    "OR m.channel LIKE :keyword) ";
+        }
+
+        // 마지막 likeCnt 또는 liveOnAt에 따른 조건 추가
+        if (lastLikeCnt != null) {
+            jpql += "AND l.likeCnt < :lastLikeCnt ";
+        }
+        if (lastLiveOnAt != null) {
+            jpql += "AND l.liveOnAt < :lastLiveOnAt ";
+        }
+
+        // lastItemId에 따른 조건 추가
+        if (lastItemId != null) {
+            jpql += "AND l.id != :lastItemId ";
+        }
+
+        jpql += "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) " +
+                "GROUP BY l.id, l.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
+                orderByClause;
+
+
+        TypedQuery<SearchLiveResponseDto> query = em.createQuery(jpql, SearchLiveResponseDto.class);
+
+        //카테고리가 있는 경우에만 파라미터 설정
+        if(categoryId != null && categoryId != 0) {
+            query.setParameter("categoryId", categoryId);
+        }
+
+        // 키워드가 있는 경우에만 파라미터 설정
+        if (keyword != null && !keyword.isEmpty()) {
+            query.setParameter("keyword", likeParam);
+        }
 
         // lastLikeCnt가 null이 아닌 경우에만 해당 파라미터를 설정
         if (lastLikeCnt != null) {
@@ -74,8 +104,9 @@ public class SearchRepository {
 
         // 결과 반환
         List<SearchLiveResponseDto> resultList = query.getResultList();
-        long totalCount = getTotalCount(keyword); // 총 결과 수 조회
+        long totalCount = getLiveTotalCount(keyword); // 총 결과 수 조회
         return new PageImpl<>(resultList, pageable, totalCount);
+
     }
 
     // 이전 페이지의 마지막 아이템의 likeCnt를 가져오는 메서드
@@ -99,7 +130,7 @@ public class SearchRepository {
     }
 
     // 총 결과 수 조회
-    private long getTotalCount(String keyword) {
+    private long getLiveTotalCount(String keyword) {
         String likeParam = createLikeParam(keyword);
         String countQuery = "SELECT COUNT(*) FROM Live l " +
                 "LEFT JOIN l.product p " +
@@ -111,61 +142,78 @@ public class SearchRepository {
                 "AND l.isActive = true " +
                 "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) " +
                 "AND l.liveOffAt IS NOT NULL";
+
         TypedQuery<Long> query = em.createQuery(countQuery, Long.class);
         query.setParameter("keyword", likeParam);
         return query.getSingleResult();
     }
 
-    public List<SearchShortpingResponseDto> findAllForShortping(String keyword, String sort) {
-
-        String orderByClause = getOrderByClause(sort, "shortping");
+    // 총 결과 수 조회
+    private long getShortTotalCount(String keyword) {
         String likeParam = createLikeParam(keyword);
+        String countQuery = "SELECT COUNT(*) FROM Shortping s " +
+                "LEFT JOIN s.product p " +
+                "LEFT JOIN p.productOptions po " +
+                "LEFT JOIN p.member m " +
+                "WHERE (s.title LIKE :keyword " +
+                "OR p.name LIKE :keyword " +
+                "OR m.channel LIKE :keyword) " +
+                "AND s.isActive = true " +
+                "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) ";
 
-        return em.createQuery(
-                        "SELECT new org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto" +
-                                "(s.id, s.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
-                                "FROM Shortping s " +
-                                "LEFT JOIN s.product p " +
-                                "LEFT JOIN p.productOptions po " +
-                                "LEFT JOIN p.member m " +
-                                "WHERE (s.title LIKE :keyword " +
-                                "OR p.name LIKE :keyword " +
-                                "OR m.channel LIKE :keyword) " +
-                                "AND s.isActive = true " +
-                                "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) " +
-                                "GROUP BY s.id, s.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
-                                orderByClause
-                        , SearchShortpingResponseDto.class)
-                .setParameter("keyword", likeParam)
-                .getResultList();
-
+        TypedQuery<Long> query = em.createQuery(countQuery, Long.class);
+        query.setParameter("keyword", likeParam);
+        return query.getSingleResult();
     }
 
-    public List<SearchShortpingResponseDto> findAllShortpingByFilter(Long categoryId, String keyword, String sort) {
+
+
+    public Page<SearchShortpingResponseDto> findAllShortping(Long categoryId, String keyword, Pageable pageable, String sort, Long lastItemId) {
         String orderByClause = getOrderByClause(sort, "shortping");
         String likeParam = createLikeParam(keyword);
+
+        // 이전 페이지의 마지막 아이템의 likeCnt 또는 liveOnAt을 가져옴
+        Integer lastShortpingLikeCnt = null;
+        LocalDateTime lastShortpingCreatedAt = null;
+
+        if ("popularity".equals(sort)) {
+            lastShortpingLikeCnt = getLastShortpingLikeCnt(lastItemId);
+        } else if ("latest".equals(sort)) {
+            lastShortpingCreatedAt = getLastShortpingCreatedAt(lastItemId);
+        }
 
         String jpql = "SELECT new org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto" +
                 "(s.id, s.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
                 "FROM Shortping s " +
                 "LEFT JOIN s.product p " +
                 "LEFT JOIN p.productOptions po " +
-                "LEFT JOIN p.member m ";
+                "LEFT JOIN p.member m " +
+                "WHERE s.isActive = true ";
 
         if(categoryId != null && categoryId != 0) {
-            jpql += "WHERE p.category.id = :categoryId " +
-                    "AND s.isActive = true " +
-                    "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) ";
+            jpql += "AND p.category.id = :categoryId ";
 
         } else if(keyword != null && !keyword.isEmpty()) {
-            jpql += "WHERE (s.title LIKE :keyword " +
+            jpql += "AND (s.title LIKE :keyword " +
                     "OR p.name LIKE :keyword " +
-                    "OR m.channel LIKE :keyword) " +
-                    "AND s.isActive = true " +
-                    "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) ";
+                    "OR m.channel LIKE :keyword) ";
         }
 
-        jpql += "GROUP BY s.id, s.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
+        // 마지막 likeCnt 또는 liveOnAt에 따른 조건 추가
+        if (lastShortpingLikeCnt != null) {
+            jpql += "AND s.likeCnt < :lastShortpingLikeCnt ";
+        }
+        if (lastShortpingCreatedAt != null) {
+            jpql += "AND s.createdAt < :lastShortpingCreatedAt ";
+        }
+
+        // lastItemId에 따른 조건 추가
+        if (lastItemId != null) {
+            jpql += "AND s.id != :lastItemId ";
+        }
+
+        jpql += " AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) " +
+                " GROUP BY s.id, s.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
                 orderByClause;
 
         TypedQuery<SearchShortpingResponseDto> query = em.createQuery(jpql, SearchShortpingResponseDto.class);
@@ -176,7 +224,47 @@ public class SearchRepository {
             query.setParameter("keyword", likeParam);
         }
 
-        return query.getResultList();
+        // lastLikeCnt가 null이 아닌 경우에만 해당 파라미터를 설정
+        if (lastShortpingLikeCnt != null) {
+            query.setParameter("lastShortpingLikeCnt", lastShortpingLikeCnt);
+        }
+
+        // lastLiveOnAt가 null이 아닌 경우에만 해당 파라미터를 설정
+        if (lastShortpingCreatedAt != null) {
+            query.setParameter("lastShortpingCreatedAt", lastShortpingCreatedAt);
+        }
+
+        if (lastItemId != null) {
+            query.setParameter("lastItemId", lastItemId);
+        }
+
+        // 페이지네이션 적용
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
+
+        // 결과 반환
+        List<SearchShortpingResponseDto> resultList = query.getResultList();
+        long totalCount = getShortTotalCount(keyword); // 총 결과 수 조회
+        return new PageImpl<>(resultList, pageable, totalCount);
+    }
+
+    private LocalDateTime getLastShortpingCreatedAt(Long lastItemId) {
+
+        if (lastItemId == null) {
+            return null; // lastItemId가 null이면 null 반환
+        }
+        // lastItemId를 사용하여 해당 아이템의 createdAt을 조회하여 반환
+        Shortping lastItem = em.find(Shortping.class, lastItemId);
+        return lastItem != null ? lastItem.getCreatedAt() : null;
+
+    }
+
+    private Integer getLastShortpingLikeCnt(Long lastItemId) {
+        if (lastItemId == null) {
+            return null; // lastItemId가 null이면 null 반환
+        }
+        Shortping lastItem = em.find(Shortping.class, lastItemId);
+        return lastItem != null ? lastItem.getLikeCnt() : null;
     }
 
     public List<SearchShortpingResponseDto> top5Shortping(Long categoryId) {
@@ -186,15 +274,12 @@ public class SearchRepository {
                 "FROM Shortping s " +
                 "LEFT JOIN s.product p " +
                 "LEFT JOIN p.productOptions po " +
-                "LEFT JOIN p.member m ";
+                "LEFT JOIN p.member m " +
+                "WHERE s.isActive = true";
 
         if(categoryId != null && categoryId != 0) {
-            jpql += "WHERE p.category.id = :categoryId " +
-                    "AND s.isActive = true ";
-        } else {
-            jpql += "WHERE s.isActive = true ";
+            jpql += "AND p.category.id = :categoryId ";
         }
-
         jpql += "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) " +
                 "AND s.createdAt >= :threshold " +
                 "GROUP BY s.id, s.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
@@ -232,3 +317,34 @@ public class SearchRepository {
     }
 
 }
+
+/*
+
+
+ public List<SearchShortpingResponseDto> findAllForShortping(String keyword, String sort) {
+
+        String orderByClause = getOrderByClause(sort, "shortping");
+        String likeParam = createLikeParam(keyword);
+
+        return em.createQuery(
+                        "SELECT new org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto" +
+                                "(s.id, s.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
+                                "FROM Shortping s " +
+                                "LEFT JOIN s.product p " +
+                                "LEFT JOIN p.productOptions po " +
+                                "LEFT JOIN p.member m " +
+                                "WHERE (s.title LIKE :keyword " +
+                                "OR p.name LIKE :keyword " +
+                                "OR m.channel LIKE :keyword) " +
+                                "AND s.isActive = true " +
+                                "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) " +
+                                "GROUP BY s.id, s.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
+                                orderByClause
+                        , SearchShortpingResponseDto.class)
+                .setParameter("keyword", likeParam)
+                .getResultList();
+
+    }
+
+
+* */

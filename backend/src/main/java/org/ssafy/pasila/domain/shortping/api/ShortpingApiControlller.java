@@ -101,11 +101,11 @@ public class ShortpingApiControlller {
 
     }
 
-    @GetMapping("/summary")
-    public ApiCommonResponse<?> getShortpingByCategory(@RequestParam(defaultValue = "0") Long categoryId) {
-
-        ShortpingByCategoryResponseDto result = searchService.searchShortpingByCategory(categoryId);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
-
-    }
+//    @GetMapping("/summary")
+//    public ApiCommonResponse<?> getShortpingByCategory(@RequestParam(defaultValue = "0") Long categoryId) {
+//
+//        ShortpingByCategoryResponseDto result = searchService.searchShortpingByCategory(categoryId);
+//        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
+//
+//    }
 }

@@ -39,11 +39,12 @@ public class SearchController {
     @GetMapping(value="/live")
     public ApiCommonResponse<?> getAllResultsForLive(@RequestParam String keyword,
                                                      @RequestParam(name = "sort", defaultValue = "popularity") String sort,
-                                                     @RequestParam(required = false) Long lastItemId){
+                                                     @RequestParam(required = false) Long lastItemId,
+                                                     @RequestParam(defaultValue = "0") Long categoryId){
 
         Pageable pageable = PageRequest.of(0, 3);
 
-        Page<SearchLiveResponseDto> resultPage = searchService.searchForLive(keyword, sort, pageable, lastItemId);
+        Page<SearchLiveResponseDto> resultPage = searchService.searchForLive(keyword, sort, pageable, lastItemId, categoryId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), resultPage.getContent());
 
     }
@@ -55,10 +56,15 @@ public class SearchController {
                             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = SearchShortpingResponseDto.class)))
                     })})
     @GetMapping(value="/shortping")
-    public ApiCommonResponse<?> getAllResultsForShortping(@RequestParam String keyword, @RequestParam(name = "sort", defaultValue = "popularity") String sort){
+    public ApiCommonResponse<?> getAllResultsForShortping(@RequestParam String keyword,
+                                                          @RequestParam(name = "sort", defaultValue = "popularity") String sort,
+                                                          @RequestParam(required = false) Long lastItemId,
+                                                          @RequestParam(defaultValue = "0") Long categoryId){
 
-        List<SearchShortpingResponseDto> result = searchService.searchForShortping(keyword, sort);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
+        Pageable pageable = PageRequest.of(0, 3);
+
+        Page<SearchShortpingResponseDto> result = searchService.searchForShortping(categoryId, keyword, pageable, sort, lastItemId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result.getContent());
 
     }
 
