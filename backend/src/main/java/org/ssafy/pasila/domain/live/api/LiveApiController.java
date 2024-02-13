@@ -29,9 +29,14 @@ import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.service.ChatbotService;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.domain.live.service.OpenviduService;
+import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
+import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
 import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
 import org.ssafy.pasila.domain.product.dto.ProductSellResponseDto;
 import org.ssafy.pasila.domain.product.service.ProductService;
+import org.ssafy.pasila.domain.search.dto.LiveByCategoryResponseDto;
+import org.ssafy.pasila.domain.search.service.SearchService;
+import org.ssafy.pasila.domain.shortping.service.ShortpingService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
 
@@ -60,6 +65,8 @@ public class LiveApiController {
     private final ProductService productService;
 
     private final ChatbotService chatbotService;
+
+    private final SearchService searchService;
 
     // Pair - SessionId, RecordingId
     private final Map<String, String> mapRecordings = new ConcurrentHashMap<>();
@@ -100,6 +107,14 @@ public class LiveApiController {
 
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), live.getId());
     }
+
+    @Operation(summary = "Live List In Home", description = "메인화면에서 카테고리별 라이브 목록")
+    @GetMapping("/summary")
+    public ApiCommonResponse<?> findLiveByCategory(@RequestParam(defaultValue = "0") Long categoryId) {
+        LiveByCategoryResponseDto result = searchService.serachLiveByCategory(categoryId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
+    }
+
 
     @Operation(summary = "Live On", description = "라이브 방송 시작")
     @PutMapping("/{liveId}/on")

@@ -9,6 +9,7 @@ import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
+import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.domain.shortping.dto.request.LivelogRequestDto;
@@ -17,6 +18,7 @@ import org.ssafy.pasila.domain.shortping.dto.response.LiveThumbnailResponse;
 import org.ssafy.pasila.domain.shortping.dto.response.RecommendLivelogResponseDto;
 import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponseDto;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
+import org.ssafy.pasila.domain.shortping.repository.ShortpingQueryRepository;
 import org.ssafy.pasila.domain.shortping.service.query.ShortpingQueryService;
 import org.ssafy.pasila.global.infra.FFmpeg.FFmpegClient;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
@@ -39,6 +41,8 @@ public class ShortpingService {
     private final ShortpingQueryService shortpingQueryService;
 
     private final LiveQueryRepository liveQueryRepository;
+
+    private final ShortpingQueryRepository shortpingQueryRepository;
 
     private final GptClient gptService;
 
@@ -141,5 +145,9 @@ public class ShortpingService {
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+    public List<ChannelShortpingDto> getTop5ByCategoryOrderByLikeCnt(Long categoryId) {
+        return shortpingQueryRepository.findTop5ByCategoryOrderByLikeCnt(categoryId);
     }
 }

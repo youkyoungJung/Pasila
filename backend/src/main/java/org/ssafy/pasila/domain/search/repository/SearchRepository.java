@@ -137,6 +137,44 @@ public class SearchRepository {
                 .getResultList();
     }
 
+    public List<SearchLiveResponseDto> findAllLiveByFilter(Long categoryId, String keyword, String sort) {
+        String orderByClause = getOrderByClause(sort, "live");
+        String likeParam = createLikeParam(keyword);
+
+        String jpql = "SELECT new org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto" +
+                "(l.id, l.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
+                "FROM Live l " +
+                "LEFT JOIN l.product p " +
+                "LEFT JOIN p.productOptions po " +
+                "LEFT JOIN l.member m ";
+
+        if(categoryId != null && categoryId != 0) {
+            jpql += "WHERE p.category.id = :categoryId " +
+                    "AND l.isActive = true " +
+                    "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) ";
+
+        } else if(keyword != null && !keyword.isEmpty()) {
+            jpql += "WHERE (l.title LIKE :keyword " +
+                    "OR p.name LIKE :keyword " +
+                    "OR m.channel LIKE :keyword) " +
+                    "AND l.isActive = true " +
+                    "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) ";
+        }
+
+        jpql += "GROUP BY l.id, l.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
+                orderByClause;
+
+        TypedQuery<SearchLiveResponseDto> query = em.createQuery(jpql, SearchLiveResponseDto.class);
+
+        if(categoryId != null && categoryId != 0) {
+            query.setParameter("categoryId", categoryId);
+        } else if(keyword != null && !keyword.isEmpty()) {
+            query.setParameter("keyword", likeParam);
+        }
+
+        return query.getResultList();
+    }
+
     /** 정렬 조건 (인기순/최신순) - popularity/latest */
     private String getOrderByClause(String sort, String classify) {
 
