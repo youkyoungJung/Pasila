@@ -20,7 +20,6 @@ public class EncryptService {
     public String encryptAccount(String account) {
         byte[] encrypt = encryptor.encrypt(account.getBytes(StandardCharsets.UTF_8));
         String a = Base64.encodeBase64String(encrypt);
-        log.info("여기요!!!!!! : {}" , a.length());
         return a;
     }
 
@@ -29,24 +28,5 @@ public class EncryptService {
         byte[] decrypt = encryptor.decrypt(decryptBytes);
         return new String(decrypt, StandardCharsets.UTF_8);
     }
-
-//    public String byteArrayToString(byte[] bytes) {
-//        StringBuilder sb = new StringBuilder();
-//        for (byte abyte :bytes){
-//            sb.append(abyte);
-//            sb.append(" ");
-//        }
-//        log.info("sb length:{}", sb.length());
-//        return sb.toString();
-//    }
-//
-//    public byte[] stringToByteArray(String byteString) {
-//        String[] split = byteString.split("\\s");
-//        ByteBuffer buffer = ByteBuffer.allocate(split.length);
-//        for (String s : split) {
-//            buffer.put((byte) Integer.parseInt(s));
-//        }
-//        return buffer.array();
-//    }
 
 }

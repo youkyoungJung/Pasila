@@ -44,7 +44,7 @@ public class MemberService {
     @Transactional
     public Long updateMember(Long id, PersonalInfoDto request, MultipartFile newImageFile) throws IOException {
         Member result = getMemberById(id);
-        log.info("여기요!!!!!!!!!!!!!!!!!"+encryptService.encryptAccount(request.getAccount()));
+
         request.setAccount(encryptService.encryptAccount(request.getAccount()));
         if (request.getPassword().isEmpty()) {
             result.updateMember(request);
