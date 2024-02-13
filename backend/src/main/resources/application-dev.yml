@@ -117,6 +117,7 @@ openvidu:
 
 # google SMTP
 mail:
+  protocol: smtp
   host: ${MAIL_URL}
   port: ${MAIL_PORT}
   username: ${USER_EMAIL}
@@ -128,6 +129,7 @@ mail:
         timeout: 5000
         starttls:
           enable: true
+          required: true
 
 jwt:
   expiration_time: 86400000
