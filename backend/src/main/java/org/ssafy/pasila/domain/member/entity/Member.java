@@ -143,7 +143,7 @@ public class Member {
         this.token = token;
     }
 
-    public void blankPassword(){
+    public void updatePassword(String password){
         this.password = null;
     }
 
