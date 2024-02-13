@@ -49,7 +49,7 @@ public class MsgService {
     }
 
     public boolean checkMsgCode(MsgDto msgDto){
-        String authNum = redisTemplate.opsForValue().get("AUTH_EMAIL : " + msgDto.getPhoneNum()).toString();
+        String authNum = redisTemplate.opsForValue().get("AUTH_PHONE : " + msgDto.getPhoneNum()).toString();
         if(authNum.equals(msgDto.getAuthNum())){
             return true;
         }else {
