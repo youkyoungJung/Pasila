@@ -18,14 +18,16 @@ public class JwtUtil {
 
     private final Key key;
     private final long accessTokenExpTime;
+    private final TokenUtil tokenUtil;
 
     public JwtUtil(
             @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expiration_time}") long accessTokenExpTime
+            @Value("${jwt.expiration_time}") long accessTokenExpTime, TokenUtil tokenUtil
     ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpTime = accessTokenExpTime;
+        this.tokenUtil = tokenUtil;
     }
 
     /**
@@ -81,6 +83,9 @@ public class JwtUtil {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            if (tokenUtil.hasKeyBlackList(token)){
+                throw new RuntimeException("Expired JWT Token");
+            }
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT Token", e);
