@@ -70,7 +70,7 @@ public class LiveApiController {
 
     private final SimpMessagingTemplate template;
 
-    @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브")
+    @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브)")
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiCommonResponse<?> reserveLive(@RequestPart(value = "live") CreateLiveRequestDto createLiveRequestDto,
                                             @RequestPart(value = "product") ProductRequestDto productRequestDto,
@@ -103,6 +103,13 @@ public class LiveApiController {
         chatbotService.updateChatbot(liveId, chatbotList);
 
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), live.getId());
+    }
+
+    @Operation(summary = "Delete Live", description = "라이브 삭제")
+    @DeleteMapping("/{liveId}")
+    public ApiCommonResponse<?> deleteLive(@PathVariable("liveId")String id) {
+        String liveId = liveService.deleteLive(id);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
     }
 
     @Operation(summary = "Live List In Home", description = "메인화면에서 카테고리별 라이브 목록")

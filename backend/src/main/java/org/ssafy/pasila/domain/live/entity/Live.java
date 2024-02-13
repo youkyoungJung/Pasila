@@ -72,6 +72,7 @@ public class Live {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Setter
     @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     @ColumnDefault("true")
     private boolean isActive;
