@@ -135,4 +135,11 @@ public class LiveService {
     public List<ChannelLiveDto> findAllByCategory(Long categoryId, String sort) {
         return liveQueryRepository.findAllByCategory(categoryId, sort);
     }
+
+    @Transactional
+    public String deleteLive(String id) {
+        Live live = getLiveById(id);
+        live.setActive(false);
+        return live.getId();
+    }
 }
