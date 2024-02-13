@@ -27,6 +27,7 @@ import java.util.List;
 @RequestMapping("/api/live")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @Tag(name = "Chatting", description = "Chatting API")
+
 public class ChattingApiController {
 
     private final SimpMessagingTemplate template;
