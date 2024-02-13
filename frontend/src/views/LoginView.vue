@@ -96,6 +96,7 @@ const kakaoLogin = () => {}
       margin-top: 30px;
       border: none;
       color: white;
+      cursor: pointer;
     }
 
     .forget-pw {

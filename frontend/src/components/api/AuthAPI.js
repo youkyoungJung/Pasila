@@ -1,14 +1,12 @@
 import { localAxios } from '@/components/api/APIModule.js'
-import { useMemberStore } from '@/stores/member'
 
 const local = localAxios()
 
 const url = '/auth'
-const store = useMemberStore()
 
 const emailLogin = async (myEmail, myPassword) => {
   try {
-    const res = await local.post(`${url}`, {
+    const res = await local.post(`${url}/login`, {
       email: myEmail,
       password: myPassword
     })
