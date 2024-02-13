@@ -1,11 +1,9 @@
 package org.ssafy.pasila.domain.live.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
-import org.ssafy.pasila.domain.live.dto.ChatLogDto;
+import org.ssafy.pasila.domain.live.dto.chat.ChatLogDto;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.service.MemberService;
 import org.ssafy.pasila.global.infra.redis.entity.ChatRedis;
