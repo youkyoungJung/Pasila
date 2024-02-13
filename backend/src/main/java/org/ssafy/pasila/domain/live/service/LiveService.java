@@ -98,7 +98,9 @@ public class LiveService {
 
         String chatList = chatRedisService.getChatList(liveId);
 
-        if(chatList == null) return new ArrayList<>();
+        if(chatList == null) {
+            throw new RestApiException(ErrorCode.CHAT_NOT_EXIST);
+        }
 
         String result = gptClient.questionSummary(chatList).replaceAll("- ", "");
 
