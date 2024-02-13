@@ -144,7 +144,7 @@ const stopLive = async () => {
 
 const leaveSession = async () => {
   if (session.value) {
-    if (userRole === 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
+    if (userRole.value === 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
       await stopLive()
       session.value.disconnect()
       router.push(`/live/${props.liveId}/end`)
