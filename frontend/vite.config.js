@@ -7,7 +7,11 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   optimizeDeps: {
-    include: ['quill']
+    include: ['quill'],
+    exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util']
+  },
+  define: {
+    global: {}
   },
   resolve: {
     alias: {
@@ -21,6 +25,12 @@ export default defineConfig({
           @import "./src/assets/scss/_common.scss";
         `
       }
+    }
+  },
+  server: {
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'credentialless',
+      'Cross-Origin-Opener-Policy': 'same-origin'
     }
   }
 })

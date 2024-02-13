@@ -1,9 +1,19 @@
 <script setup>
-import { onMounted, onUnmounted, ref, reactive } from 'vue'
+import { onMounted, onUnmounted, ref, reactive, watch } from 'vue'
 import router from '@/router'
 import { OpenVidu } from 'openvidu-browser'
-import { createSessionApi, createTokenApi } from '@/components/api/OpenviduAPI.js'
-import { getLiveProductApi } from '@/components/api/OpenviduAPI.js'
+import Stomp from 'webstomp-client'
+import SockJs from 'sockjs-client'
+import {
+  createSessionApi,
+  createTokenApi,
+  getLiveProductApi,
+  startLiveApi,
+  stopLiveApi,
+  getLiveQuestionApi,
+  sendChatToChatbot
+} from '@/components/api/OpenviduAPI.js'
+import { getLiveStockApi } from '@/components/api/RealTimeAPI'
 import { useMemberStore } from '@/stores/member'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
 import LiveScript from '@/components/live/seller/LiveScript.vue'
@@ -19,16 +29,43 @@ let mainStreamManager = ref(undefined)
 let publisher = ref(undefined)
 let subscribers = ref([])
 
-let userRole = ref('SUB')
+let ws
+let chatmsg = ref('')
+
+let userRole = ref('')
+let isStart = ref(false)
 
 let product = reactive({})
+let questionList = ref([])
 
 const props = defineProps(['liveId'])
 const { member } = useMemberStore()
 
 onMounted(async () => {
   await getProduct()
+  if (!member.id) {
+    alert('로그인 후 시청 가능합니다.')
+    router.push('/login')
+  } else if (product.sellerId === member.id) {
+    userRole.value = 'PUB'
+  } else {
+    userRole.value = 'SUB'
+  }
+
+  const stockEvent = getLiveStockApi(props.liveId)
+
+  stockEvent.addEventListener('sse', (e) => {
+    const data = JSON.parse(e.data)
+    if (data.liveId) {
+      product.options = data.options
+    }
+  })
+
   joinSession()
+
+  setInterval(async () => {
+    questionList.value = await getLiveQuestionApi(props.liveId)
+  }, 300000)
 })
 
 onUnmounted(() => {
@@ -39,8 +76,11 @@ const getProduct = async () => {
   product = await getLiveProductApi(props.liveId)
 }
 
-const clickToolBarBtn = (n) => {
-  controlToolBar[n].isActive = !controlToolBar[n].isActive
+/**
+ * tool bar 클릭 시 상태를 toggle 해주는 함수입니다.
+ */
+const clickToolBarBtn = (arr, n) => {
+  arr[n].isActive = !arr[n].isActive
 }
 
 const joinSession = async () => {
@@ -61,8 +101,7 @@ const joinSession = async () => {
   })
 
   session.value.on('exception', ({ exception }) => {
-    console.warn('exception=', exception)
-    alert('서버에 문제가 발생했습니다. 잠시후 다시 시도해주세요.')
+    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
     router.push('/')
   })
 
@@ -87,20 +126,31 @@ const joinSession = async () => {
 
     session.value.publish(publisher.value)
   } catch (error) {
-    console.log('There was an error connecting to the session:', error.code, error.message)
+    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
   }
 
   window.addEventListener('beforeunload', leaveSession)
 }
 
-const leaveSession = () => {
+const startLive = async () => {
+  if (await startLiveApi(props.liveId)) {
+    isStart.value = true
+  }
+}
+
+const stopLive = async () => {
+  await stopLiveApi(props.liveId)
+}
+
+const leaveSession = async () => {
   if (session.value) {
-    if (userRole === 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
+    if (userRole.value === 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
+      await stopLive()
       session.value.disconnect()
       router.push(`/live/${props.liveId}/end`)
-    } else {
-      session.value.disconnect()
     }
+  } else {
+    session.value.disconnect()
   }
 
   session.value = undefined
@@ -117,67 +167,138 @@ const getToken = async (liveId) => {
   return await createTokenApi(res)
 }
 
-const controlToolBar = reactive(
-  userRole.value === 'PUB'
-    ? [
-        { isActive: true, iconName: 'fa-regular fa-file-lines', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-circle-question', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-solid fa-phone-slash', click: leaveSession }
-      ]
-    : [
-        { isActive: true, iconName: 'fa-regular fa-file-lines', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-regular fa-circle-question', click: clickToolBarBtn },
-        { isActive: true, iconName: 'fa-solid fa-phone-slash', click: leaveSession }
-      ]
+const pubToolBar = reactive([
+  { isActive: true, iconName: 'fa-regular fa-file-lines', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-circle-question', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-circle-play', click: startLive }
+])
+
+const subToolBar = reactive([
+  { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
+  { isActive: true, iconName: 'fa-regular fa-circle-xmark', click: leaveSession }
+])
+
+watch(
+  () => isStart.value,
+  () => {
+    if (isStart.value) {
+      pubToolBar.pop()
+      pubToolBar.push({
+        isActive: true,
+        iconName: 'fa-regular fa-circle-xmark',
+        click: leaveSession
+      })
+    }
+  }
 )
+
+const sendChat = async (isChatbot) => {
+  if (isChatbot) {
+    const data = {
+      liveId: props.liveId,
+      message: chatmsg.value
+    }
+    const res = await sendChatToChatbot(data)
+    //TODO: res 받아서 chatlist에 넣기
+  } else {
+    if (ws && ws.connected) {
+      //TODO: send할 data 가공 필요
+      const chat = {}
+      //TODO: 채팅 받을 곳 필요
+      ws.send(`/receive/`, JSON.stringify(chat), {})
+    }
+  }
+  chatmsg.value = ''
+}
+
+const connectChat = () => {
+  //TODO: 서버 주소로 변경필요
+  const serverURL = 'https://i10a402.p.ssafy.io/chat'
+  const socket = new SockJs(serverURL)
+  ws = Stomp.over(socket)
+
+  //TODO: 토큰 저장 장소 localStorage 맞는지?, 채팅할 때 authorization 헤더 필요한거 맞는지
+  const headers = { Authorization: localStorage.getItem('token') }
+
+  ws.connect(
+    headers,
+    (frame) => {
+      window.connected = true
+      //TODO: subscribe 주소 확인, res 처리
+      ws.subscribe(`/send`, (res) => {})
+    },
+    (err) => {
+      console.error(err)
+      window.connected = false
+    }
+  )
+}
 </script>
 
 <template>
   <template v-if="userRole === 'PUB'">
     <div class="session" v-if="session">
       <section class="col-1">
-        <user-video :stream-manager="mainStreamManager" />
-        <live-script v-if="controlToolBar[0].isActive" />
+        <user-video :stream-manager="mainStreamManager" :is-start="isStart" />
+        <live-script v-if="pubToolBar[0].isActive" :script="props.script" />
       </section>
 
-      <section class="col-2" v-if="controlToolBar[1].isActive">
-        <live-chat />
+      <section class="col-2" v-if="pubToolBar[1].isActive">
+        <live-chat
+          :is-customer="false"
+          :chatmsg="chatmsg"
+          @change-msg="(e) => (chatmsg = e.target.value)"
+          @send-msg="sendChat"
+        />
       </section>
 
-      <section class="col-3" v-if="controlToolBar[2].isActive || controlToolBar[3].isActive">
-        <live-stock v-if="controlToolBar[2].isActive" :live-id="props.liveId" />
-        <live-question v-if="controlToolBar[3].isActive" />
+      <section class="col-3" v-if="pubToolBar[2].isActive || pubToolBar[3].isActive">
+        <live-stock v-if="pubToolBar[2].isActive" :product-options="product.options" />
+        <live-question v-if="pubToolBar[3].isActive" :question-list="questionList" />
       </section>
+    </div>
+    <div class="tool-bar">
+      <template v-for="(item, index) in pubToolBar" :key="index">
+        <tool-bar-btn
+          :is-active="item.isActive"
+          :icon-name="item.iconName"
+          @click-btn="item.click(pubToolBar, index)"
+        />
+      </template>
     </div>
   </template>
   <template v-else>
     <div class="session" v-if="session">
       <section class="col-1">
-        <user-video :stream-manager="mainStreamManager" />
+        <user-video :stream-manager="mainStreamManager" :is-start="true" />
       </section>
 
-      <section class="col-2" v-if="controlToolBar[1].isActive">
-        <live-chat />
+      <section class="col-2" v-if="subToolBar[0].isActive">
+        <live-chat
+          :is-customer="true"
+          :chatmsg="chatmsg"
+          @change-msg="(e) => (chatmsg = e)"
+          @send-msg="sendChat"
+        />
       </section>
 
-      <section class="col-3">
+      <section class="col-3" v-if="subToolBar[1].isActive">
         <live-description :product="product" :live-id="props.liveId" />
       </section>
     </div>
+    <div class="tool-bar">
+      <template v-for="(item, index) in subToolBar" :key="index">
+        <tool-bar-btn
+          :is-active="item.isActive"
+          :icon-name="item.iconName"
+          @click-btn="item.click(subToolBar, index)"
+        />
+      </template>
+    </div>
   </template>
-  <div class="tool-bar">
-    <template v-for="(item, index) in controlToolBar" :key="index">
-      <tool-bar-btn
-        :is-active="item.isActive"
-        :icon-name="item.iconName"
-        @click-btn="item.click(index)"
-      />
-    </template>
-  </div>
 </template>
 
 <style lang="scss" scoped>
