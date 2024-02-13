@@ -41,6 +41,15 @@ const getMyPage = async () => {
   }
 }
 
+const getMemberApi = async (memberId) => {
+  try {
+    const res = await local.get(`${url}/${memberId}`)
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+  }
+}
+
 const checkMyEmail = async (myEmail) => {
   if (loginUser.email == myEmail) return 0
   try {
@@ -69,10 +78,6 @@ const checkMyChannel = async (myChannel) => {
   }
 }
 const changeMyInfo = async (data) => {
-  const loginUser = {
-    id: 1
-  }
-
   try {
     const res = await formData.put(`${url}/${loginUser.id}`, data)
     return res.data
@@ -80,4 +85,12 @@ const changeMyInfo = async (data) => {
     console.error('localAxios error', err)
   }
 }
-export { joinUser, checkPassword, getMyPage, checkMyEmail, checkMyChannel, changeMyInfo }
+export {
+  joinUser,
+  checkPassword,
+  getMyPage,
+  checkMyEmail,
+  checkMyChannel,
+  changeMyInfo,
+  getMemberApi
+}

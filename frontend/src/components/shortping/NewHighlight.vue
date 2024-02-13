@@ -1,6 +1,6 @@
 <script setup>
 const props = defineProps(['data', 'index'])
-const emit = defineEmits(['getData', 'getTitle', 'getSubtitle', 'getStartTime', 'getEndTime'])
+const emit = defineEmits(['getData', 'getTitle', 'getStartTime', 'getEndTime'])
 
 const changeTime = (e) => {
   const parsedTime = e.replace(/:/g, '') || 0
@@ -39,6 +39,8 @@ const newHighlight = () => {
     const endTime = parseInt(props.data.highlightEndTime.replaceAll(':', ''))
     if (endTime - startTime < 0) {
       alert('시작시간이 끝시간보다 늦을 수 없습니다.')
+    } else if (endTime == startTime) {
+      alert('시작시간과 끝시간이 같을 수 없습니다.')
     } else {
       emit('getData', props)
     }
@@ -75,27 +77,17 @@ const newHighlight = () => {
         @input="$emit('getTitle', $event.target.value)"
       />
     </div>
-    <div class="highlight-subtitle">
-      <label for="subtitle">자막</label>
-      <textarea
-        id="subtitle"
-        type="text"
-        placeholder="자막을 입력해주세요."
-        :value="props.data.highlightSubtitle"
-        @input="$emit('getSubtitle', $event.target.value)"
-      ></textarea>
-    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .highlight {
-  @include box(95%, 10rem, white, 0.2rem, 0, 0.3rem);
+  @include box(95%, 7rem, white, 0.2rem, 0, 0.3rem);
   @include font-factory($fs-1, bold);
   @include drop-shadow;
 
   .highlight-top {
-    @include box(98%, 25%, white, 0.2rem, 0, 0.1rem);
+    @include box(98%, 40%, white, 0.2rem, 0, 0.1rem);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -133,32 +125,14 @@ const newHighlight = () => {
     @include box(95%, 25%, white, 0.2rem, 0, 0.3rem);
     display: flex;
     align-items: flex-start;
+    margin-left: 0.5rem;
 
     input {
-      width: 70%;
-      height: 70%;
+      width: 80%;
+      height: 100%;
+      border-radius: 0.3rem;
       border: none;
       outline: none;
-      background-color: $light-gray;
-    }
-  }
-
-  .highlight-subtitle {
-    @include box(95%, 35%, white, 0.2rem, 0, 0.3rem);
-    display: flex;
-    align-items: flex-start;
-
-    input {
-      width: 70%;
-      border: none;
-      outline: none;
-      background-color: $light-gray;
-    }
-    textarea {
-      resize: none;
-      outline: none;
-      width: 70%;
-      border: none;
       background-color: $light-gray;
     }
   }
