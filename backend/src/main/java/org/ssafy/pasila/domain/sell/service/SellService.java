@@ -63,7 +63,7 @@ public class SellService {
                     return OrderManagementDto.builder()
                             .id(order.getProductId())
                             .thumbnail(order.getProductUrl())
-                            .name(member.getName())
+                            .name(order.getProductName())
                             .price(options.get(0).getPrice())
                             .discount(options.get(0).getDiscountPrice())
                             .liveOnAt(live.getLiveOnAt())
