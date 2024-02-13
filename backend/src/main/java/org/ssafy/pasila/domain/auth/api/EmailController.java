@@ -27,7 +27,8 @@ public class EmailController {
             try {
                 emailService.sendEmail(email.get("email"));
                 return ApiCommonResponse.successResponse(HttpStatus.OK.value(), true);
-            }catch (Exception e){
+            } catch (Exception e) {
+                log.error(e.getMessage());
                 return ApiCommonResponse.successResponse(HttpStatus.BAD_REQUEST.value() , false);
             }
 
