@@ -29,6 +29,7 @@ import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.service.ChatbotService;
 import org.ssafy.pasila.domain.live.service.LiveService;
 import org.ssafy.pasila.domain.live.service.OpenviduService;
+import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
 import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
 import org.ssafy.pasila.domain.product.dto.ProductSellResponseDto;
 import org.ssafy.pasila.domain.product.service.ProductService;
@@ -38,6 +39,7 @@ import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -110,6 +112,13 @@ public class LiveApiController {
     public ApiCommonResponse<?> deleteLive(@PathVariable("liveId")String id) {
         String liveId = liveService.deleteLive(id);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+    }
+
+    @Operation(summary = "Get Live Schedule", description = "일자별 라이브 목록 조회")
+    @GetMapping("/{date}")
+    public ApiCommonResponse<?> findLiveList(@PathVariable("date") LocalDate date) {
+        List<ChannelLiveDto> results = liveService.getScheduledLiveByDate(date);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), results);
     }
 
     @Operation(summary = "Live List In Home", description = "메인화면에서 카테고리별 라이브 목록")
