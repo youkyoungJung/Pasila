@@ -8,11 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.ssafy.pasila.domain.live.dto.ChatLogDto;
+import org.springframework.web.bind.annotation.*;
+import org.ssafy.pasila.domain.live.dto.chat.ChatLogDto;
 import org.ssafy.pasila.domain.live.service.ChattingService;
 
 @Slf4j
@@ -21,6 +18,7 @@ import org.ssafy.pasila.domain.live.service.ChattingService;
 @RequestMapping("/api/live")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @Tag(name = "Chatting", description = "Chatting API")
+
 public class ChattingApiController {
 
     private final SimpMessagingTemplate template;
