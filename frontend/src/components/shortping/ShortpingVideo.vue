@@ -29,8 +29,8 @@ watch(currentTime, (newTime) => {
 })
 
 watch(props, () => {
-  vi.value = props.video
-  videoURL.value = props.video
+  vi.value = URL.createObjectURL(props.video)
+  videoURL.value = URL.createObjectURL(props.video)
   colorList()
 })
 

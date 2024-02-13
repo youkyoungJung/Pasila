@@ -1,6 +1,7 @@
-import { localAxios } from '@/components/api/APIModule.js'
+import { localAxios, formDataAxios } from '@/components/api/APIModule.js'
 
 const local = localAxios()
+const formData = formDataAxios()
 const url = '/shortping'
 
 const getHighlight = async (liveId) => {
@@ -29,37 +30,12 @@ const getThumbnail = async (id) => {
   }
 }
 
-const sendShortping = async () => {
-  const data = {
-    video: 'string',
-    shortpingRequest: {
-      productId: 'string',
-      title: 'string',
-      livelogs: [
-        {
-          title: 'string',
-          start: {
-            hour: 0,
-            minute: 0,
-            second: 0,
-            nano: 0
-          },
-          end: {
-            hour: 0,
-            minute: 0,
-            second: 0,
-            nano: 0
-          },
-          subtitle: 'string'
-        }
-      ]
-    }
-  }
+const sendShortping = async (data) => {
   try {
-    const res = await local.post(`${url}`, data)
+    const res = await formData.post(`${url}`, data)
     return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }
 }
-export { getHighlight, getThumbnail }
+export { getHighlight, getThumbnail, sendShortping }
