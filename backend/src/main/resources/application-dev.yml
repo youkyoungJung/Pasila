@@ -134,3 +134,7 @@ mail:
 jwt:
   expiration_time: 86400000
   secret: ${JWT_SECRET}
+
+aes:
+  secret: ${AES_SECRET}
+  salt: ${AES_SALT}

@@ -28,6 +28,7 @@ public class LoginService {
     private final PasswordEncoder encoder;
     private final ModelMapper modelMapper;
     private final TokenUtil tokenUtil;
+    private final EncryptService encryptService;
 
     @Transactional
     public LoginResponseDto login(LoginRequestDto dto) {
@@ -51,6 +52,9 @@ public class LoginService {
 
         LoginResponseDto loginResponseDto = modelMapper.map(member.get(),LoginResponseDto.class);
 
+        if(loginResponseDto.getAccount() != null && !loginResponseDto.getAccount().equals("")){
+        loginResponseDto.setAccount(encryptService.decryptAccount(loginResponseDto.getAccount()));
+        }
         return loginResponseDto;
     }
 
