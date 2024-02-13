@@ -129,8 +129,8 @@ const checkEmail = async () => {
     emailCerti.value = 0
   } else if (res) {
     emailCerti.value = 1
-    const res = await getEmailAuthNumber(user.value.email)
-    console.log(res)
+    const result = await getEmailAuthNumber(user.value.email)
+    console.log(result)
   } else {
     emailCerti.value = 2
   }
@@ -138,9 +138,7 @@ const checkEmail = async () => {
 
 const checkEmailCerti = async () => {
   const res = await checkEmailAuthNumber(user.value.email, emailCertiNum.value)
-  if (res == 0) {
-    resultCheckEmail.value = 0
-  } else if (res) {
+  if (res.data) {
     resultCheckEmail.value = 1
   } else {
     resultCheckEmail.value = 2

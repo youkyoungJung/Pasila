@@ -10,8 +10,8 @@ const emailLogin = async (myEmail, myPassword) => {
       email: myEmail,
       password: myPassword
     })
-    alert('로그인 성공')
-    let token = res.data.data
+    alert(`${res.data.data.name}님! 반갑습니다 ><`)
+    let token = res.data.data.token
     localStorage.setItem('token', token)
 
     return res.data.data

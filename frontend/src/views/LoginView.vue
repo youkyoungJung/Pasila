@@ -3,11 +3,13 @@ import router from '@/router'
 import { ref } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import { emailLogin } from '@/components/api/AuthAPI'
+import { useMemberStore } from '@/stores/member'
 
 const user = ref({
   userEmail: '',
   userPassword: ''
 })
+const store = useMemberStore()
 
 const findPassword = () => {
   router.push('/findpw')
@@ -28,14 +30,15 @@ const login = async () => {
   console.log(user.value)
   const res = await emailLogin(user.value.userEmail, user.value.userPassword)
   console.log(res)
+  store.member = res
+  console.log(store.member)
+  router.push('/')
 }
 
 const join = () => {
   router.push('/join')
 }
 
-//소셜 로그인 당시 필수나 선택으로 가져온 정보를 회원가입 페이지에 넣어주기
-//그리고 필수적으로 이메일을 받아서 이메일로 로그인 가능!
 const kakaoLogin = () => {}
 </script>
 
