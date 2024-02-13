@@ -10,6 +10,9 @@ export default defineConfig({
     include: ['quill'],
     exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util']
   },
+  define: {
+    global: {}
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -26,7 +29,7 @@ export default defineConfig({
   },
   server: {
     headers: {
-      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Embedder-Policy': 'credentialless',
       'Cross-Origin-Opener-Policy': 'same-origin'
     }
   }

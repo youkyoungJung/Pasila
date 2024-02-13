@@ -1,6 +1,14 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 
+defineProps({
+  isCustomer: Boolean,
+  chatmsg: String
+})
+
+let isChatbot = ref(false)
+const liveChat = ref(null)
+
 const ChatList = reactive([
   {
     type: 'user',
@@ -41,13 +49,15 @@ const ChatList = reactive([
   }
 ])
 
-const liveChat = ref(null)
-
 onMounted(() => {
   nextTick(() => {
     liveChat.value.scrollTop = 30 + liveChat.value.scrollHeight
   })
 })
+
+const clickChatbot = () => {
+  isChatbot.value = !isChatbot.value
+}
 </script>
 
 <template>
@@ -62,10 +72,21 @@ onMounted(() => {
       </div>
     </div>
     <div class="chat-input">
-      <input type="text" />
-      <span>
-        <font-awesome-icon icon="fa-solid fa-paper-plane" class="send-icon" />
-      </span>
+      <div class="top" v-if="isChatbot">
+        <span class="chatbot-info">
+          챗봇에게 질문 중
+          <font-awesome-icon icon="ellipsis" />
+        </span>
+      </div>
+      <div class="bottom">
+        <span class="chatbot" @click="clickChatbot">
+          <font-awesome-icon icon="robot" class="icon" />
+        </span>
+        <input type="text" @input="$emit('changeMsg', $event.target.value)" :value="chatmsg" />
+        <span class="plane" @click="$emit('sendMsg', isChatbot)">
+          <font-awesome-icon icon="fa-solid fa-paper-plane" class="icon" />
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -73,12 +94,11 @@ onMounted(() => {
 <style lang="scss" scoped>
 .live-chat-box {
   @include box(null, calc(78vh - 5px), none, 20px, 0, 0);
+  @include flex-box(center, space-between, column);
   border: 3px solid $main;
-  position: relative;
 
   .live-chat {
     padding: 1rem;
-    height: 63vh;
     overflow-y: scroll;
     box-shadow: 0px -4px 10px 0px rgba(0, 0, 0, 0.25) inset;
     border-radius: 20px 20px 0 0;
@@ -89,6 +109,7 @@ onMounted(() => {
       margin-bottom: 1rem;
       .profile {
         @include box(3rem, 3rem, none, 50px, 0, 0);
+        object-fit: cover;
       }
       .chat-box {
         margin-left: 0.5rem;
@@ -110,19 +131,42 @@ onMounted(() => {
 }
 
 .chat-input {
-  @include flex-box(center, space-between, row);
-  @include box(calc(100% - 2rem), 10vh, white, 0 0 20px 20px, 0, 0 1rem);
-  position: absolute;
-  bottom: 0;
+  padding: 0 0.5rem;
+
+  .top {
+    @include box(100%, calc(3vh - 0.4rem), white, 0 0 20px 20px, 0, 0.2rem 0);
+
+    .chatbot-info {
+      margin-right: 0.5rem;
+      @include font-factory($fs-1, normal, $orange);
+    }
+  }
+  .bottom {
+    @include flex-box(center, space-between, row);
+    @include box(100%, 10vh, white, 0 0 20px 20px, 0, 0);
+  }
+
+  .chatbot {
+    @include box(2.5rem, 2.5rem, $orange, 50%, 0.5rem, 0);
+    @include flex-box();
+    color: white;
+    cursor: pointer;
+  }
 
   input {
-    @include box(75%, null, $gray, 30px, 0, 0.5rem 1rem);
+    flex: 3;
+    @include box(100%, null, $gray, 30px, 0, 0.5rem 1rem);
     @include font-factory($fs-1, 500);
     outline: none;
     border: none;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25) inset;
   }
-  .send-icon {
+  .plane {
+    color: $dark;
+    margin: 0 0.5rem;
+  }
+  .icon {
+    flex: 1;
     height: 1.3rem;
     width: 2rem;
   }

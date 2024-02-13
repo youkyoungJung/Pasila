@@ -34,4 +34,52 @@ const getLiveProductApi = async (liveId) => {
   }
 }
 
-export { createSessionApi, createTokenApi, getLiveProductApi }
+const startLiveApi = async (liveId) => {
+  try {
+    const res = await local.put(`${url}/${liveId}/on`)
+    return res.data
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+
+const stopLiveApi = async (liveId) => {
+  try {
+    const res = await local.put(`${url}/${liveId}/off`)
+    return res.data
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+
+const getLiveQuestionApi = async (liveId) => {
+  try {
+    const res = await local.get(`${url}/question?liveId=${liveId}`)
+    return res.data
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+
+const sendChatToChatbot = async (data) => {
+  try {
+    const res = await local.post(`${url}/chatbot`, data)
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+
+export {
+  createSessionApi,
+  createTokenApi,
+  getLiveProductApi,
+  startLiveApi,
+  stopLiveApi,
+  getLiveQuestionApi,
+  sendChatToChatbot
+}

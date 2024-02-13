@@ -12,7 +12,7 @@ import LiveEndView from '@/views/LiveEndView.vue'
 import ScheduleView from '@/views/ScheduleView.vue'
 import ChannelView from '@/views/ChannelView.vue'
 import EditView from '@/views/EditView.vue'
-import ChannelOrders from '@/views/ChannelOrders.vue'
+import ChannelOrdersView from '@/views/ChannelOrdersView.vue'
 import ReadyRegistView from '@/views/ReadyRegistView.vue'
 import ReadyScriptView from '@/views/ReadyScriptView.vue'
 import ReadyChatbotView from '@/views/ReadyChatbotView.vue'
@@ -78,9 +78,10 @@ const router = createRouter({
       component: ScheduleView
     },
     {
-      path: '/channel/:id',
+      path: '/channel/:channelId',
       name: 'channel',
-      component: ChannelView
+      component: ChannelView,
+      props: true
     },
     {
       path: '/edit/:id',
@@ -88,9 +89,10 @@ const router = createRouter({
       component: EditView
     },
     {
-      path: '/channel/:id/orders',
+      path: '/channel/:channelId/orders',
       name: 'orders',
-      component: ChannelOrders
+      component: ChannelOrdersView,
+      props: true
     },
     {
       path: '/ready/regist',

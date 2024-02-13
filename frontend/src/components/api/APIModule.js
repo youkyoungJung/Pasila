@@ -12,6 +12,16 @@ const localAxios = () => {
   return instance
 }
 
+const problemJsonAxios = () => {
+  const instance = axios.create({
+    baseURL: API_URL,
+    headers: {
+      'Content-Type': 'application/problem+json'
+    }
+  })
+  return instance
+}
+
 const formDataAxios = () => {
   const instance = axios.create({
     baseURL: API_URL,
@@ -22,4 +32,4 @@ const formDataAxios = () => {
   return instance
 }
 
-export { localAxios, formDataAxios }
+export { localAxios, problemJsonAxios, formDataAxios }

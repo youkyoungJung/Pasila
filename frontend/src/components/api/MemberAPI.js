@@ -13,6 +13,7 @@ const loginUser = {
 const joinUser = async (data) => {
   try {
     const res = await formData.post(`${url}/join`, data)
+    console.log(res.data)
     return res.data
   } catch (err) {
     console.error('localAxios error', err)
@@ -64,6 +65,15 @@ const checkMyEmail = async (myEmail) => {
   }
 }
 
+const getChannelApi = async (memberId) => {
+  try {
+    const res = await local.get(`${url}/channel/${memberId}`)
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+  }
+}
+
 const checkMyChannel = async (myChannel) => {
   if (loginUser.channel == myChannel) return 0
   try {
@@ -73,6 +83,15 @@ const checkMyChannel = async (myChannel) => {
       }
     })
     return res.data
+  } catch (err) {
+    console.error('localAxios error', err)
+  }
+}
+
+const updateChannelDescApi = async (memberId, data) => {
+  try {
+    const res = await local.put(`${url}/channel/${memberId}`, data)
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }
@@ -92,5 +111,7 @@ export {
   checkMyEmail,
   checkMyChannel,
   changeMyInfo,
-  getMemberApi
+  getMemberApi,
+  getChannelApi,
+  updateChannelDescApi
 }
