@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
-import org.ssafy.pasila.domain.live.dto.ChatLogDto;
+import org.ssafy.pasila.domain.live.dto.chat.ChatLogDto;
 import org.ssafy.pasila.domain.live.entity.Chatbot;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
