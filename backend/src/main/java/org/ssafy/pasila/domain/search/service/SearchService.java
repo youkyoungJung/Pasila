@@ -7,6 +7,7 @@ import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.product.entity.ProductOption;
 import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
+import org.ssafy.pasila.domain.search.dto.LiveByCategoryResponseDto;
 import org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto;
 import org.ssafy.pasila.domain.search.dto.SearchShortpingResponseDto;
 import org.ssafy.pasila.domain.search.dto.ShortpingByCategoryResponseDto;
@@ -34,13 +35,20 @@ public class SearchService {
 
         List<SearchLiveResponseDto> result = new ArrayList<>();
         List<SearchLiveResponseDto> redisLive = liveRedisService.getTop3Living(keyword);
-        List<SearchLiveResponseDto> dbLike = searchRepository.findAllForLive(keyword, sort);
+        List<SearchLiveResponseDto> dbLike = searchRepository.findAllLiveByFilter(0L, keyword, sort);
 
         result.addAll(redisLive);
         result.addAll(dbLike);
 
         return result;
 
+    }
+
+    public LiveByCategoryResponseDto serachLiveByCategory(Long categoryId) {
+        List<SearchLiveResponseDto> latest = searchRepository.findAllLiveByFilter(categoryId, "", "latest");
+        List<SearchLiveResponseDto> popular = searchRepository.findAllLiveByFilter(categoryId, "", "popularity");
+
+        return new LiveByCategoryResponseDto(latest, popular);
     }
 
     /**product name, live_title, short_title

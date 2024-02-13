@@ -2,11 +2,14 @@ package org.ssafy.pasila.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
+import org.ssafy.pasila.domain.auth.dto.request.LoginRequestDto;
+import org.ssafy.pasila.domain.auth.service.EncryptService;
 import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
 import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
 import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
@@ -31,23 +34,27 @@ public class MemberService {
 
     private final S3Uploader s3Uploader;
 
+    private final PasswordEncoder encoder;
+
+    private final EncryptService encryptService;
+
     /**
      * 사용자 정보 수정 메서드
      */
     @Transactional
-    //TODO 비밀번호 암호화, 계좌번호 암호화
     public Long updateMember(Long id, PersonalInfoDto request, MultipartFile newImageFile) throws IOException {
         Member result = getMemberById(id);
-        /* 계좌번호 암호화 */
-//        request.setAccount(암호화 메서드);
+
+        request.setAccount(encryptService.encryptAccount(request.getAccount()));
         if (request.getPassword().isEmpty()) {
             result.updateMember(request);
         } else {
-            /* 비밀번호 암호화 */
-//            request.setPassword(암호화 메서드);
+            request.setPassword(encoder.encode(request.getPassword()));
             result.updateMemberWithPw(request);
         }
-        handleImage(result, newImageFile);
+        if(!newImageFile.isEmpty()) {
+            handleImage(result, newImageFile);
+        }
         return result.getId();
     }
 
@@ -74,8 +81,7 @@ public class MemberService {
      * 비밀번호 확인 메서드
      */
     public Boolean checkPW(Long id, String pw) {
-        return getMemberById(id).getPassword().equals(pw);
-//        return getMemberById(id).getPassword().equals(암호화메서드(pw));
+        return encoder.matches(pw, getMemberById(id).getPassword());
     }
 
     /**
@@ -98,7 +104,7 @@ public class MemberService {
      * 반환된 url을 바탕으로 memberProfile에 저장
      */
     private void handleImage(Member member, MultipartFile image) throws IOException {
-        if (!image.isEmpty()) {
+        if (image != null && !image.isEmpty()) {
             log.info("member:{}", member);
             String storedFileName = s3Uploader.upload(member.getId().toString(), image, "images");
             member.addProfile(storedFileName);
@@ -147,39 +153,38 @@ public class MemberService {
     public boolean checkEmail(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
         if (member.isPresent()) {
-            return false; //이미 존재하는 경우
+            return false;
         } else {
-            return true; // 생성가능
+            return true;
         }
     }
 
     public boolean checkChannel(String channel) {
         Optional<Member> member = Optional.ofNullable(memberRepository.findByChannel(channel));
         if (member.isPresent()) {
-            return false; // 이미 존재하는 경우
+            return false;
         } else {
-            return true;  // 생성가능
+            return true;
         }
     }
 
     @Transactional
     public void join(Member member, MultipartFile profileFile) throws IOException {
-        // profileFile 을 S3에서 받아온 url 주소를 member profile
+        member.encodePassword(encoder.encode(member.getPassword()));
+        memberRepository.save(member);
+
         if (!profileFile.isEmpty()) {
             String url = s3Uploader.upload(member.getId().toString(), profileFile, "member");
             member.addProfile(url);
         }
-        memberRepository.save(member);
+
     }
 
-    public Member login(String email, String password) {
-        Optional<Member> findMember = memberRepository.findByEmail(email);
-        findMember.orElseThrow(() -> new IllegalStateException("The email address does not exit."));
+    public void updatePassword(LoginRequestDto dto){
+        Member member = memberRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
+        member.updatePassword(encoder.encode(dto.getPassword()));
 
-        if (findMember.get().getPassword().equals(password)) {
-            throw new IllegalStateException("Invalid email or password.");
-        }
-        return findMember.get();
     }
 
 }

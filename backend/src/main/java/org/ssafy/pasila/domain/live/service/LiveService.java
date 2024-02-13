@@ -8,18 +8,22 @@ import org.springframework.transaction.annotation.Transactional;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
+import org.ssafy.pasila.domain.live.dto.response.LiveStatsResponseDto;
 import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
+import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.redis.service.ChatRedisService;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
+import org.ssafy.pasila.global.infra.gpt3.GptClient;
+import org.ssafy.pasila.global.infra.redis.service.ChatRedisService;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 
 
@@ -31,6 +35,8 @@ public class LiveService {
 
     private final LiveRepository liveRepository;
 
+    private final LiveQueryRepository liveQueryRepository;
+
     private final ChatRedisService chatRedisService;
 
     private final GptClient gptClient;
@@ -39,21 +45,32 @@ public class LiveService {
 
     private final ProductRepository productRepository;
 
-
-    public int joinLive(String liveId, String memberId) {
+    @Transactional
+    public int joinLive(String liveId , Long memberId) {
 
         SetOperations<String, String> setOperations = redisTemplate.opsForSet();
-        setOperations.add("participant : " + liveId, memberId);
+        setOperations.add("participant : " + liveId, memberId.toString());
         return setOperations.size("participant : " + liveId).intValue();
 
     }
 
-    public int exitLive(String liveId, String memberId) {
+    @Transactional
+    public int exitLive(String liveId ,Long memberId) {
 
         SetOperations<String, String> setOperations = redisTemplate.opsForSet();
-        setOperations.remove("participant : " + liveId, memberId);
+        setOperations.remove("participant : " + liveId, memberId.toString());
         return setOperations.size("participant : " + liveId).intValue();
 
+    }
+
+    public int deleteParticipantInRedis(String liveId) {
+        SetOperations<String, String> setOperations = redisTemplate.opsForSet();
+        int participantCnt = 0;
+        if(Boolean.TRUE.equals(redisTemplate.hasKey("participant : " + liveId))){
+            participantCnt = setOperations.size("participant : " + liveId).intValue();
+            redisTemplate.delete("participant : " + liveId);
+        }
+        return participantCnt;
     }
 
     @Transactional
@@ -78,11 +95,18 @@ public class LiveService {
         return live.getProduct().getId();
     }
 
+    public LiveStatsResponseDto calcLiveStats(String liveId, int participantCnt) {
+        Live live = liveRepository.findById(liveId).orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+        return live.liveStats(participantCnt);
+    }
+
     public List<String> getTop5Question(String liveId) {
 
         String chatList = chatRedisService.getChatList(liveId);
 
-        if(chatList == null) return new ArrayList<>();
+        if(chatList == null) {
+            throw new RestApiException(ErrorCode.CHAT_NOT_EXIST);
+        }
 
         String result = gptClient.questionSummary(chatList).replaceAll("- ", "");
 
@@ -106,5 +130,9 @@ public class LiveService {
         Live live = getLiveById(liveId);
         live.updateLive(createLiveRequestDto);
         return live;
+    }
+
+    public List<ChannelLiveDto> findAllByCategory(Long categoryId, String sort) {
+        return liveQueryRepository.findAllByCategory(categoryId, sort);
     }
 }

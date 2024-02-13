@@ -5,6 +5,12 @@ spring:
     password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+      enabled: true
+
   jpa:
     hibernate:
       ddl-auto: update # create / none
@@ -111,6 +117,7 @@ openvidu:
 
 # google SMTP
 mail:
+  protocol: smtp
   host: ${MAIL_URL}
   port: ${MAIL_PORT}
   username: ${USER_EMAIL}
@@ -122,3 +129,12 @@ mail:
         timeout: 5000
         starttls:
           enable: true
+          required: true
+
+jwt:
+  expiration_time: 86400000
+  secret: ${JWT_SECRET}
+
+aes:
+  secret: ${AES_SECRET}
+  salt: ${AES_SALT}
