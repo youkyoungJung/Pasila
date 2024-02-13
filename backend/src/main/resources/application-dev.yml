@@ -126,8 +126,8 @@ mail:
       smtp:
         auth: true
         timeout: 5000
-        starttls:
-          enable: true
+#        starttls:
+#          enable: true
         ssl:
           enable: true
 
