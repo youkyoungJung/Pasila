@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.auth.dto.request.LoginRequestDto;
+import org.ssafy.pasila.domain.auth.service.EncryptService;
 import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
 import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
 import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
@@ -35,6 +36,8 @@ public class MemberService {
 
     private final PasswordEncoder encoder;
 
+    private final EncryptService encryptService;
+
     /**
      * 사용자 정보 수정 메서드
      */
@@ -42,8 +45,8 @@ public class MemberService {
     //TODO 비밀번호 암호화, 계좌번호 암호화
     public Long updateMember(Long id, PersonalInfoDto request, MultipartFile newImageFile) throws IOException {
         Member result = getMemberById(id);
-
-        request.setAccount(encoder.encode(request.getAccount()));
+        log.info("여기요!!!!!!!!!!!!!!!!!"+encryptService.encryptAccount(request.getAccount()));
+        request.setAccount(encryptService.encryptAccount(request.getAccount()));
         if (request.getPassword().isEmpty()) {
             result.updateMember(request);
         } else {
@@ -100,7 +103,7 @@ public class MemberService {
      * 반환된 url을 바탕으로 memberProfile에 저장
      */
     private void handleImage(Member member, MultipartFile image) throws IOException {
-        if (!image.isEmpty()) {
+        if (image != null && !image.isEmpty()) {
             log.info("member:{}", member);
             String storedFileName = s3Uploader.upload(member.getId().toString(), image, "images");
             member.addProfile(storedFileName);

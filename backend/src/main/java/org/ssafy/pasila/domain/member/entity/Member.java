@@ -61,7 +61,7 @@ public class Member {
     @Column(length = 10)
     private String bank;
 
-    @Column(length = 20)
+    @Column(length = 64)
     private String account;
 
     @Column(length = 2083)

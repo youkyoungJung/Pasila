@@ -1,6 +1,8 @@
 package org.ssafy.pasila.global.config;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -9,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.encrypt.AesBytesEncryptor;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.ssafy.pasila.domain.auth.service.MemberDetailService;
@@ -18,10 +21,15 @@ import org.ssafy.pasila.global.util.JwtUtil;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-@AllArgsConstructor
+//@AllArgsConstructor
+@RequiredArgsConstructor
 public class SecurityConfig  {
     private final MemberDetailService memberDetailService;
     private final JwtUtil jwtUtil;
+    @Value("${aes.secret}")
+    private String secret;
+    @Value("${aes.salt}")
+    private String salt;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -42,6 +50,11 @@ public class SecurityConfig  {
         );
 
         return http.build();
+    }
+
+    @Bean
+    public AesBytesEncryptor aesBytesEncryptor() {
+        return new AesBytesEncryptor(secret, salt);
     }
 
 }
