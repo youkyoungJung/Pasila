@@ -65,7 +65,7 @@ onMounted(async () => {
 
   setInterval(async () => {
     questionList.value = await getLiveQuestionApi(props.liveId)
-  }, 300000)
+  }, 60000)
 })
 
 onUnmounted(() => {
