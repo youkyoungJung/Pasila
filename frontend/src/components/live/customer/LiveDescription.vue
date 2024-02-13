@@ -12,11 +12,11 @@ const orderListStore = useOrderListStore()
 let myOrderList = ref([])
 
 const addOrder = (e) => {
-  const index = myOrderList.value.findIndex((el) => el.optionId === e.target.value)
-  console.log('index==', index)
+  const index = myOrderList.value.findIndex((el) => el.id === e.target.value)
   if (index < 0) {
     const order = {
-      optionId: e.target.value,
+      id: e.target.value,
+      optionId: props.product.options[e.target.value].id,
       optionName: props.product.options[e.target.value].name,
       quantity: 1,
       price: props.product.options[e.target.value].price,

@@ -1,6 +1,7 @@
-import { localAxios } from '@/components/api/APIModule.js'
+import { localAxios, problemJsonAxios } from '@/components/api/APIModule.js'
 
 const local = localAxios()
+const problem = problemJsonAxios()
 
 const url = '/order'
 
@@ -14,4 +15,24 @@ const addOrderApi = async (data) => {
   }
 }
 
-export { addOrderApi }
+const getOrderStatusApi = async () => {
+  try {
+    const res = await local.get(`${url}/statusValues`)
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+
+const changeOrderStatusApi = async (orderId, status) => {
+  try {
+    const res = await problem.put(`${url}/${orderId}/status`, status)
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+
+export { addOrderApi, getOrderStatusApi, changeOrderStatusApi }

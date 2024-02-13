@@ -1,25 +1,22 @@
 <script setup>
+import { ref, onMounted } from 'vue'
+import { getChannelApi } from '@/components/api/MemberAPI'
 import ChannelProfile from '@/components/channel/ChannelProfile.vue'
 import ToggleButton from '@/components/common/ToggleButton.vue'
 
-const member = {
-  channel: '김가을',
-  description:
-    '안녕하세요! 패션 인플루언서 김가을입니다.\n파시라 한정 세일 진행중이니, 라이브에 많은 관심 부탁드립니다!',
-  profile: new URL('@/assets/img/test/gaeul.png', import.meta.url).href,
-  live: [
-    {
-      url: '/',
-      thumb: new URL('@/assets/img/test/live-thumb.png', import.meta.url).href,
-      shortping: ''
-    }
-  ]
-}
+const props = defineProps(['channelId'])
+
+let member = ref(null)
+
+onMounted(async () => {
+  const data = await getChannelApi(props.channelId)
+  member.value = data
+})
 </script>
 
 <template>
   <div class="channel">
-    <channel-profile :member="member" />
+    <channel-profile v-if="member" :member="member" :channel-id="channelId" />
     <toggle-button />
   </div>
 </template>

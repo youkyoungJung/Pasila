@@ -1,13 +1,15 @@
 <script setup>
-const QList = ['제품 기능', '제품 설명', '사이즈 정보']
+defineProps({
+  questionList: Array
+})
 </script>
 
 <template>
   <div class="live-question">
-    <h1>질문 리스트</h1>
-    <h2>시청자들이 답변을 원하는 질문들이에요!</h2>
+    <h1>실시간 질문 리스트</h1>
+    <h2>시청자들이 답변을 원하는 질문들이에요.</h2>
     <div class="question-list">
-      <div v-for="(item, index) in QList" :key="index" class="question">{{ item }}</div>
+      <div v-for="(item, index) in questionList" :key="index" class="question">{{ item }}</div>
     </div>
   </div>
 </template>
