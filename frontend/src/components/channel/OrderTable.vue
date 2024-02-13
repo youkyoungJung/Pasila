@@ -1,7 +1,15 @@
 <script setup>
+import { ref, onMounted } from 'vue'
+import { changeOrderStatusApi } from '@/components/api/OrderAPI.js'
+
 defineProps({
-  orders: Array
+  orders: Array,
+  statusList: Array
 })
+
+const changeStatus = async (e, id) => {
+  await changeOrderStatusApi(id, e.target.value)
+}
 </script>
 
 <template>
@@ -23,7 +31,19 @@ defineProps({
               <td>{{ order.buyerName }}</td>
               <td>{{ order.address }}</td>
               <td>{{ order.productOptionName }} / {{ order.orderCnt }}개</td>
-              <td>{{ order.status }}</td>
+              <td>
+                <select
+                  @change="changeStatus($event, order.id)"
+                  :value="order.status"
+                  class="status"
+                >
+                  <template v-for="(status, index) in statusList" :key="index">
+                    <template v-if="index !== 0">
+                      <option :value="status.key">{{ status.desc }}</option>
+                    </template>
+                  </template>
+                </select>
+              </td>
               <td>{{ order.price.toLocaleString('kr-KR') }}원</td>
             </tr>
           </template>
@@ -37,7 +57,6 @@ defineProps({
 .order-table {
   // table-layout: fixed;
   width: 100%;
-  border-collapse: collapse;
   text-align: center;
   tr {
     border-bottom: 1px solid $gray;
@@ -47,6 +66,9 @@ defineProps({
   }
   td {
     padding: 1.5rem 0;
+  }
+  .status {
+    padding: 0.3rem 0.5rem;
   }
 }
 </style>

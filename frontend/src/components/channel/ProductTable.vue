@@ -4,7 +4,8 @@ import OrderTable from '@/components/channel/OrderTable.vue'
 import { getChannelOrderDetailApi } from '../api/SellAPI'
 
 const props = defineProps({
-  products: Array
+  products: Array,
+  statusList: Array
 })
 
 let showIndex = ref()
@@ -62,7 +63,7 @@ const tableHeader = ['상품 정보', '등록일', '상품 옵션', '주문 리�
             </span>
           </td>
         </tr>
-        <order-table v-if="showIndex === index" :orders="orders" />
+        <order-table v-if="showIndex === index" :orders="orders" :status-list="statusList" />
       </template>
     </tbody>
   </table>
