@@ -39,7 +39,6 @@ public class MemberService {
      * 사용자 정보 수정 메서드
      */
     @Transactional
-    //TODO 비밀번호 암호화, 계좌번호 암호화
     public Long updateMember(Long id, PersonalInfoDto request, MultipartFile newImageFile) throws IOException {
         Member result = getMemberById(id);
 
@@ -50,7 +49,9 @@ public class MemberService {
             request.setPassword(encoder.encode(request.getPassword()));
             result.updateMemberWithPw(request);
         }
-        handleImage(result, newImageFile);
+        if(!newImageFile.isEmpty()) {
+            handleImage(result, newImageFile);
+        }
         return result.getId();
     }
 
