@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { getThumbnail } from '@/components/api/ShortpingAPI'
-import res from 'express/lib/response'
 
 const vi = ref(null)
 const currentTime = ref(0)

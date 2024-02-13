@@ -21,20 +21,20 @@ const highlights = ref([
     isEnroll: true,
     highlightTitle: '앙고라 니트 - 핑크 컬러',
     highlightStartTime: '00:00:05',
-    highlightEndTime: '00:00:06'
+    highlightEndTime: '00:00:08'
   },
   {
     isEnroll: true,
     highlightTitle: '앙고라 니트 - 블루 컬러',
-    highlightStartTime: '00:00:07',
-    highlightEndTime: '00:00:09'
-  },
-  {
-    isEnroll: true,
-    highlightTitle: '앙고라 니트 - 블랙 컬러',
     highlightStartTime: '00:00:10',
-    highlightEndTime: '00:00:12'
+    highlightEndTime: '00:00:13'
   }
+  // {
+  //   isEnroll: true,
+  //   highlightTitle: '앙고라 니트 - 블랙 컬러',
+  //   highlightStartTime: '00:00:11',
+  //   highlightEndTime: '00:00:12'
+  // }
 ])
 
 onMounted(() => {
