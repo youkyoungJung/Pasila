@@ -1,14 +1,17 @@
 <script setup>
-import OrderTable from '@/components/channel/OrderTable.vue'
 import { ref } from 'vue'
+import OrderTable from '@/components/channel/OrderTable.vue'
+import { getChannelOrderDetailApi } from '../api/SellAPI'
 
 const props = defineProps({
   products: Array
 })
 
 let showIndex = ref()
+let orders = ref()
 
-const setShowIndex = (index) => {
+const setShowIndex = async (index) => {
+  orders.value = await getChannelOrderDetailApi(props.products[index].id)
   if (showIndex.value === index) {
     showIndex.value = null
     return
@@ -16,7 +19,7 @@ const setShowIndex = (index) => {
   showIndex.value = index
 }
 
-const tableHeader = ['상품 정보', '등록일', '재고', '주문 리스트']
+const tableHeader = ['상품 정보', '등록일', '상품 옵션', '주문 리스트']
 </script>
 
 <template>
@@ -34,21 +37,20 @@ const tableHeader = ['상품 정보', '등록일', '재고', '주문 리스트']
             <div class="right">
               <span class="name">{{ item.name }}</span>
               <div class="price-line">
-                <span class="price">{{
-                  item.ProductOptions[0].price.toLocaleString('kr-KR')
-                }}</span>
-                <span class="discount-price">{{
-                  item.ProductOptions[0].discountPrice.toLocaleString('kr-KR')
-                }}</span>
+                <span class="price">{{ item.price.toLocaleString('kr-KR') }}</span>
+                <span class="discount-price">{{ item.discount.toLocaleString('kr-KR') }}원</span>
               </div>
             </div>
           </td>
-          <td class="date">{{ item.createdAt.substring(0, 10) }}</td>
+          <td class="date">{{ item.liveOnAt.substring(0, 10) }}</td>
           <td class="option-stock">
-            <template v-for="(option, index) in item.ProductOptions" :key="index">
+            <template v-for="(option, index) in item.options" :key="index">
               <div>
-                <span class="name">{{ option.name }} : </span>
-                <span class="stock">{{ option.stock === 0 ? '품절' : option.stock }}</span>
+                <span class="name">{{ option.name }}</span>
+                <span class="stock">
+                  ({{ option.stock === 0 ? '품절' : option.stock + '개 남음' }})
+                </span>
+                <span class="name">: {{ option.discountPrice.toLocaleString('kr-KR') }}원</span>
               </div>
             </template>
           </td>
@@ -60,7 +62,7 @@ const tableHeader = ['상품 정보', '등록일', '재고', '주문 리스트']
             </span>
           </td>
         </tr>
-        <order-table v-if="showIndex === index" :orders="item.Orders" />
+        <order-table v-if="showIndex === index" :orders="orders" />
       </template>
     </tbody>
   </table>
@@ -80,7 +82,7 @@ table {
   tbody {
     .product {
       @include flex-box(flex-start, flex-start);
-      padding: 2.5rem 5rem;
+      padding: 2.5rem 2rem;
       text-align: start;
       width: max-content;
       .thumbnail {

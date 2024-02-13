@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 export const useMemberStore = defineStore('member', () => {
   const member = ref({
-    id: 2,
+    id: 1,
     email: 'acczoo@acczoo.com',
     name: '최지우',
     channel: 'ACCZOO',
