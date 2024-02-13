@@ -50,9 +50,6 @@ public class SellService {
                     Live live = liveRepository.findByProduct_Id(order.getProductId())
                             .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
 
-                    Member member = memberRepository.findById(order.getSellerId())
-                            .orElseThrow(() -> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
-
                     List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(order.getProductId())
                             .stream()
                             .map(ProductOptionDto::new)
