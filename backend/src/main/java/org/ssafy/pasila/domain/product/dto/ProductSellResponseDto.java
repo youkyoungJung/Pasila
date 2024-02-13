@@ -47,10 +47,13 @@ public class ProductSellResponseDto {
     @Schema(description = "계좌")
     private String account;
 
+    @Schema(description = "대본")
+    private String script;
+
     @Builder
-    public ProductSellResponseDto(String id, Long sellerId, String name, String description,
-                              LocalDateTime createdAt, String thumbnail, Long categoryId,
-                                  List<ProductOptionDto> options, String bank, String account){
+    public ProductSellResponseDto(String id, Long sellerId, String name, String description, LocalDateTime createdAt,
+                                  String thumbnail, Long categoryId, List<ProductOptionDto> options, String bank,
+                                  String account, String script){
 
         this.id = id;
         this.sellerId = sellerId;
@@ -62,6 +65,7 @@ public class ProductSellResponseDto {
         this.options = options;
         this.bank = bank;
         this.account = account;
+        this.script = script;
 
     }
 }

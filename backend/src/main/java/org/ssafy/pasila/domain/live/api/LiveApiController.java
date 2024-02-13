@@ -134,7 +134,7 @@ public class LiveApiController {
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveStats);
     }
 
-    @Operation(summary = "Get ProductInfo", description = "라이브 방송시 판매하는 제품정보를 반환합니다.")
+    @Operation(summary = "Get ProductInfo", description = "라이브 방송시 필요한 정보를 반환합니다.")
     @GetMapping("/{liveId}/product")
     public ApiCommonResponse<?> findSellProduct(@PathVariable("liveId") String liveId) {
         String productId = liveService.getProductId(liveId);
