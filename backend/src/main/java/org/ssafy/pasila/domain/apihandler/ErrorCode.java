@@ -49,6 +49,11 @@ public enum ErrorCode {
     SESSION_NOT_EXIST(HttpStatus.NOT_FOUND, "Session does not exist."),
 
     /*
+     * 404 NOT_FOUND: 리소스를 찾을 수 없음
+     */
+    CHAT_NOT_EXIST(HttpStatus.NOT_FOUND, "Chat message does not exist"),
+
+    /*
      * 405 METHOD_NOT_ALLOWED: 허용되지 않은 Request Method 호출
      */
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "Not allowed method."),

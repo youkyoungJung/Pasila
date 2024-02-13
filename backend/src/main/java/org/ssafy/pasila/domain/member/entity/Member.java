@@ -19,13 +19,18 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Builder
+@SequenceGenerator(name = "member_seq_generator",
+            sequenceName = "member_seq",
+        initialValue = 11,
+        allocationSize = 1 )
 @Entity
 @Table(name = "member")
 @ToString(exclude = {"orders", "liveList", "products"})
 public class Member {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "member_seq_generator")
     private Long id;
 
     @Column(length = 320, nullable = false)

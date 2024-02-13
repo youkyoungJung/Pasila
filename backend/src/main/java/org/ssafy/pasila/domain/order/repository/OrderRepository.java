@@ -11,6 +11,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findAllByMemberId(Long id);
 
+    List<Order> findAllByProductOption_Product_Member_Id(Long id);
+
     List<Order> findAllByProductOption_Product_Id(String id);
 
     @Query("Select new org.ssafy.pasila.domain.order.dto.OrderDto" +
