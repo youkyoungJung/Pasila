@@ -10,6 +10,9 @@ export default defineConfig({
     include: ['quill'],
     exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util']
   },
+  define: {
+    global: {}
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

@@ -78,9 +78,10 @@ const router = createRouter({
       component: ScheduleView
     },
     {
-      path: '/channel/:id',
+      path: '/channel/:channelId',
       name: 'channel',
-      component: ChannelView
+      component: ChannelView,
+      props: true
     },
     {
       path: '/edit/:id',

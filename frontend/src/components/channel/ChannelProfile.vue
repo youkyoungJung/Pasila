@@ -70,6 +70,7 @@ const undoDesc = () => {
   .profile-img {
     @include box(10rem, 10rem, $gray, 50%, 0 2rem 0 0, 0);
     min-width: 10rem;
+    background-size: cover;
   }
   .name-line {
     @include flex-box(center, flex-start);
