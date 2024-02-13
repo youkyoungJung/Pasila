@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
+import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.live.repository.LiveRepository;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
@@ -34,6 +36,8 @@ public class ProductService {
     private final ProductOptionRepository productOptionRepository;
 
     private final MemberRepository memberRepository;
+
+    private final LiveRepository liveRepository;
 
     private final S3Uploader s3Uploader;
 
@@ -197,6 +201,8 @@ public class ProductService {
     }
 
     public ProductSellResponseDto getProductSell(String id) {
+        Live live = liveRepository.findByProduct_Id(id)
+                .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
         Product product = getProductById(id);
         List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(id)
                 .stream()
@@ -214,6 +220,7 @@ public class ProductService {
                 .options(options)
                 .bank(product.getMember().getBank())
                 .account(product.getMember().getAccount())
+                .script(live.getScript())
                 .build();
 
         return result;
