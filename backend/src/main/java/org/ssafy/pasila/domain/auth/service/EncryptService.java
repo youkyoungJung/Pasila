@@ -19,8 +19,7 @@ public class EncryptService {
 
     public String encryptAccount(String account) {
         byte[] encrypt = encryptor.encrypt(account.getBytes(StandardCharsets.UTF_8));
-        String a = Base64.encodeBase64String(encrypt);
-        return a;
+        return Base64.encodeBase64String(encrypt);
     }
 
     public String decryptAccount(String encryptString) {
