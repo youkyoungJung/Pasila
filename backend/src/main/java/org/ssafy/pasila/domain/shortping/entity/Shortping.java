@@ -23,7 +23,7 @@ import java.util.List;
 public class Shortping {
 
     @Id
-    @Column(columnDefinition = "VARCHAR(10)")
+    @Column(columnDefinition = "VARCHAR(12)")
     private String id;
 
     @PrePersist

@@ -25,9 +25,6 @@ public class Livelog {
     @Column(length = 30)
     private String title;
 
-    @Column(length = 30)
-    private String subtitle;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "live_id")
     private Live live;
@@ -37,11 +34,10 @@ public class Livelog {
         live.getLivelogs().add(this);
     }
 
-    public Livelog(LocalTime start, LocalTime end, String title, String subtitle, Live live) {
+    public Livelog(LocalTime start, LocalTime end, String title, Live live) {
         this.start = start;
         this.end = end;
         this.title = title;
-        this.subtitle = subtitle;
         setLive(live);
     }
 }

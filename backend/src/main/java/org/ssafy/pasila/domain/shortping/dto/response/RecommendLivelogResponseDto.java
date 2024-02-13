@@ -22,7 +22,7 @@ public class RecommendLivelogResponseDto {
     public Livelog toEntity(Live live) {
         LocalTime startTime = LocalTime.parse(start);
         LocalTime endTime = LocalTime.parse(end);
-        return new Livelog(startTime, endTime, title, null, live);
+        return new Livelog(startTime, endTime, title, live);
     }
 
 }
