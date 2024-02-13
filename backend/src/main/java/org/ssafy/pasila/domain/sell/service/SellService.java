@@ -17,6 +17,8 @@ import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
 import org.ssafy.pasila.domain.sell.dto.OrderManagementDetailDto;
 import org.ssafy.pasila.domain.sell.dto.OrderManagementDto;
+
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +40,7 @@ public class SellService {
 
     public List<OrderManagementDto> getSellProductList(Long sellerId) {
 
-        List<OrderDto> orders = orderRepository.findAllByMemberId(sellerId)
+        List<OrderDto> orders = orderRepository.findAllByProductOption_Product_Member_Id(sellerId)
                 .stream()
                 .map(OrderDto::new)
                 .toList();
@@ -54,6 +56,8 @@ public class SellService {
                     List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(order.getProductId())
                             .stream()
                             .map(ProductOptionDto::new)
+                            .sorted(Comparator.comparing(ProductOptionDto::getPrice)
+                            .thenComparing(ProductOptionDto::getDiscountPrice))
                             .toList();
 
                     return OrderManagementDto.builder()
@@ -67,7 +71,6 @@ public class SellService {
                             .build();
                 })
                 .collect(Collectors.toList());
-
     }
 
     public List<OrderManagementDetailDto> getSellProductDetail(String productId) {
