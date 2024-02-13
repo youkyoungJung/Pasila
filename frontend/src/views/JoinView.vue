@@ -125,12 +125,11 @@ const checkEmail = async () => {
     return
   }
   const res = await checkMyEmail(user.value.email)
-  if (res == 0) {
+  if (res == -1) {
     emailCerti.value = 0
   } else if (res) {
     emailCerti.value = 1
-    const result = await getEmailAuthNumber(user.value.email)
-    console.log(result)
+    await getEmailAuthNumber(user.value.email)
   } else {
     emailCerti.value = 2
   }
@@ -138,7 +137,7 @@ const checkEmail = async () => {
 
 const checkEmailCerti = async () => {
   const res = await checkEmailAuthNumber(user.value.email, emailCertiNum.value)
-  if (res.data) {
+  if (res) {
     resultCheckEmail.value = 1
   } else {
     resultCheckEmail.value = 2
@@ -146,7 +145,7 @@ const checkEmailCerti = async () => {
 }
 const checkChannel = async () => {
   const res = await checkMyChannel(user.value.channel)
-  if (res == 0) {
+  if (res == -1) {
     channelCerti.value = 0
   } else if (res) {
     channelCerti.value = 1
@@ -160,13 +159,12 @@ const sendPhoneNum = async () => {
 }
 
 const checkCertiNum = async () => {
-  const res = await checkPhoneAuthNumber(user.value.phone, user.value.phoneCheck)
-  console.log(res.data)
-  if (res === 0) {
+  const res = await checkPhoneAuthNumber(user.value.phone, phoneCerti.value)
+  if (res === -1) {
     phoneCerti.value = 0
-  } else if (res.data) {
+  } else if (res) {
     phoneCerti.value = 1
-  } else if (!res.data) {
+  } else {
     phoneCerti.value = 2
   }
 }
@@ -275,10 +273,13 @@ const join = async () => {
         <div v-if="emailCerti == 1" class="check-text">
           사용가능한 이메일입니다. 인증을 위해 이메일을 확인해주세요.
         </div>
-
         <v-short-input
           :data="shortData.emailCerti"
-          @getdata="(e) => (emailCertiNum = e)"
+          @getData="
+            (e) => {
+              emailCertiNum = e
+            }
+          "
           @sendData="(e) => checkEmailCerti(e)"
         />
         <div v-if="resultCheckEmail == 1" class="check-text">이메일 인증이 완료되었습니다.</div>
@@ -334,7 +335,7 @@ const join = async () => {
       <section class="userInfo">
         <v-short-input
           :data="shortData.phoneCheck"
-          @getData="(e) => (certi = e)"
+          @getData="(e) => (phoneCerti = e)"
           @sendData="(e) => checkCertiNum(e)"
         />
         <div v-if="phoneCerti == 1" class="check-text">인증번호가 일치합니다.</div>

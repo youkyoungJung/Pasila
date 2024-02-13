@@ -50,14 +50,14 @@ const getMemberApi = async (memberId) => {
 
 const checkMyEmail = async (myEmail) => {
   const store = useMemberStore()
-  if (store.member.email == myEmail) return 0
+  if (store.member.email == myEmail) return -1
   try {
     const res = await local.get(`${url}/email`, {
       params: {
         email: myEmail
       }
     })
-    return res.data
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }
@@ -74,14 +74,14 @@ const getChannelApi = async (memberId) => {
 
 const checkMyChannel = async (myChannel) => {
   const store = useMemberStore()
-  if (store.member.channel == myChannel) return 0
+  if (store.member.channel == myChannel) return -1
   try {
     const res = await local.get(`${url}/channel`, {
       params: {
         channel: myChannel
       }
     })
-    return res.data
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }

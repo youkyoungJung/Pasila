@@ -19,13 +19,28 @@ const emailLogin = async (myEmail, myPassword) => {
     console.error('localAxios error', err)
   }
 }
+
+const kakao = async (url) => {
+  try {
+    const res = await local.get('https://kauth.kakao.com/oauth/authorize', {
+      params: {
+        url: url
+      }
+    })
+    alert(`${res.data.data.name}님! 반갑습니다 ><`)
+    let token = res.data.data.token
+    localStorage.setItem('token', token)
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+  }
+}
+
 const getEmailAuthNumber = async (myEmail) => {
   const newEmail = { email: myEmail }
-  console.log(newEmail)
   try {
     const res = await local.post(`${url}/email`, newEmail)
-    console.log(res)
-    return res.data
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }
@@ -37,8 +52,7 @@ const checkEmailAuthNumber = async (myEmail, certiNum) => {
       email: myEmail,
       authNum: certiNum
     })
-    console.log(res)
-    return res.data
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }
@@ -48,8 +62,7 @@ const getPhoneAuthNumber = async (phone) => {
   console.log(newPhone)
   try {
     const res = await local.post(`${url}/sms`, newPhone)
-    console.log(res)
-    return res.data
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }
@@ -61,8 +74,7 @@ const checkPhoneAuthNumber = async (phone, certi) => {
       phoneNum: phone,
       authNum: certi
     })
-    console.log(res)
-    return res.data
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }
@@ -70,6 +82,7 @@ const checkPhoneAuthNumber = async (phone, certi) => {
 
 export {
   emailLogin,
+  kakao,
   getEmailAuthNumber,
   checkEmailAuthNumber,
   getPhoneAuthNumber,

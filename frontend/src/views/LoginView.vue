@@ -2,7 +2,7 @@
 import router from '@/router'
 import { ref } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
-import { emailLogin } from '@/components/api/AuthAPI'
+import { emailLogin, kakao } from '@/components/api/AuthAPI'
 import { useMemberStore } from '@/stores/member'
 
 const user = ref({
@@ -39,7 +39,16 @@ const join = () => {
   router.push('/join')
 }
 
-const kakaoLogin = () => {}
+const kakaoLogin = () => {
+  const url =
+    'https://kauth.kakao.com/oauth/authorize?client_id=' +
+    'a63ab4b378ad27ff5bf2096393db8ca2' +
+    '&redirect_uri=' +
+    'https://localhost:5173' +
+    '&response_type=code&' +
+    'scope=profile_nickname profile_image'
+  kakao(url)
+}
 </script>
 
 <template>

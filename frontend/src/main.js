@@ -33,6 +33,7 @@ library.add(faCalendarCheck, faUser, fas, far)
 
 const app = createApp(App)
 app.config.globalProperties.$axios = axios
+// window.Kakao.init('11389aa63ab4b378ad27ff5bf2096393db8ca209809')
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.component('VCalendar', Calendar)
