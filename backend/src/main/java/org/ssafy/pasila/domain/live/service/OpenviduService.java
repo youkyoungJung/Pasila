@@ -27,7 +27,7 @@ public class OpenviduService {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-    public Session createSession(@RequestBody(required = false) Map<String, Object> params)
+    public Session createSession(Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException, InterruptedException, RetryException {
         return createSession(params, new RetryOptions());
     }

@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
+import org.ssafy.pasila.domain.auth.dto.request.LoginRequestDto;
 import org.ssafy.pasila.domain.member.dto.ChannelDto;
 import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
 import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
@@ -70,6 +71,13 @@ public class MemberController {
 
             return ApiCommonResponse.successResponse(HttpStatus.BAD_REQUEST.value(), errorMessage);
         }
+    }
+
+    @Operation(summary = "Update password", description = "비밀번호 변경")
+    @PostMapping(value = "/updatePw")
+    public ApiCommonResponse<?> updatePw(@RequestBody LoginRequestDto requestDto) {
+        memberService.updatePassword(requestDto);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), "success");
     }
 
     /**

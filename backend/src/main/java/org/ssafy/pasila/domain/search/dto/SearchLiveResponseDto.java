@@ -20,13 +20,13 @@ public class SearchLiveResponseDto {
     private String channel;
 
     @Schema(description = "판매자 프로필 url")
-    private String profile;
+    private String profileUrl;
 
     @Schema(description = "제품 id")
     private String productId;
 
     @Schema(description = "제품 썸네일 url")
-    private String productThumbnail;
+    private String productThumbnailUrl;
 
     @Schema(description = "제품 이름")
     private String productName;

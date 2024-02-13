@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
+import org.ssafy.pasila.domain.auth.dto.request.LoginRequestDto;
 import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
 import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
 import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
@@ -38,19 +39,19 @@ public class MemberService {
      * 사용자 정보 수정 메서드
      */
     @Transactional
-    //TODO 비밀번호 암호화, 계좌번호 암호화
     public Long updateMember(Long id, PersonalInfoDto request, MultipartFile newImageFile) throws IOException {
         Member result = getMemberById(id);
-        /* 계좌번호 암호화 */
-//        request.setAccount(암호화 메서드);
+
+        request.setAccount(encoder.encode(request.getAccount()));
         if (request.getPassword().isEmpty()) {
             result.updateMember(request);
         } else {
-            /* 비밀번호 암호화 */
-//            request.setPassword(암호화 메서드);
+            request.setPassword(encoder.encode(request.getPassword()));
             result.updateMemberWithPw(request);
         }
-        handleImage(result, newImageFile);
+        if(!newImageFile.isEmpty()) {
+            handleImage(result, newImageFile);
+        }
         return result.getId();
     }
 
@@ -77,8 +78,7 @@ public class MemberService {
      * 비밀번호 확인 메서드
      */
     public Boolean checkPW(Long id, String pw) {
-        return getMemberById(id).getPassword().equals(pw);
-//        return getMemberById(id).getPassword().equals(암호화메서드(pw));
+        return encoder.matches(pw, getMemberById(id).getPassword());
     }
 
     /**
@@ -167,13 +167,21 @@ public class MemberService {
 
     @Transactional
     public void join(Member member, MultipartFile profileFile) throws IOException {
+        member.encodePassword(encoder.encode(member.getPassword()));
+        memberRepository.save(member);
 
         if (!profileFile.isEmpty()) {
             String url = s3Uploader.upload(member.getId().toString(), profileFile, "member");
             member.addProfile(url);
         }
-        member.encodePassword(encoder.encode(member.getPassword()));
-        memberRepository.save(member);
+
+    }
+
+    public void updatePassword(LoginRequestDto dto){
+        Member member = memberRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
+        member.updatePassword(encoder.encode(dto.getPassword()));
+
     }
 
 }

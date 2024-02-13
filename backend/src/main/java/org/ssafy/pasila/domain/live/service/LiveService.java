@@ -10,7 +10,11 @@ import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
 import org.ssafy.pasila.domain.live.dto.response.LiveStatsResponseDto;
 import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
+import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
+import org.ssafy.pasila.global.infra.gpt3.GptClient;
+import org.ssafy.pasila.global.infra.redis.service.ChatRedisService;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.domain.product.entity.Product;
@@ -30,6 +34,8 @@ public class LiveService {
     private final RedisTemplate<String, String> redisTemplate;
 
     private final LiveRepository liveRepository;
+
+    private final LiveQueryRepository liveQueryRepository;
 
     private final ChatRedisService chatRedisService;
 
@@ -98,7 +104,9 @@ public class LiveService {
 
         String chatList = chatRedisService.getChatList(liveId);
 
-        if(chatList == null) return new ArrayList<>();
+        if(chatList == null) {
+            throw new RestApiException(ErrorCode.CHAT_NOT_EXIST);
+        }
 
         String result = gptClient.questionSummary(chatList).replaceAll("- ", "");
 
@@ -122,5 +130,9 @@ public class LiveService {
         Live live = getLiveById(liveId);
         live.updateLive(createLiveRequestDto);
         return live;
+    }
+
+    public List<ChannelLiveDto> findAllByCategory(Long categoryId, String sort) {
+        return liveQueryRepository.findAllByCategory(categoryId, sort);
     }
 }
