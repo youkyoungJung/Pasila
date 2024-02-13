@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 
-const props = defineProps(['data'])
+const props = defineProps(['data', 'inputData'])
 defineEmits(['getData'])
 
 const ph = ref(props.data.title + ' 입력하세요.')
@@ -9,12 +9,13 @@ const ph = ref(props.data.title + ' 입력하세요.')
 
 <template>
   <div class="long-body">
-    <label for="input" class="label">{{ props.data.title }}</label>
+    <label for="longInput" class="label">{{ props.data.title }}</label>
     <input
+      id="longInput"
       :type="props.data.type"
       :placeholder="ph"
       @input="$emit('getData', $event.target.value)"
-      :value="props.data.value"
+      :value="props.inputData"
     />
   </div>
 </template>

@@ -1,24 +1,29 @@
 <script setup>
 import { ref } from 'vue'
 
-const props = defineProps(['data'])
-defineEmits(['getData'])
+const props = defineProps(['data', 'inputData'])
+const emit = defineEmits(['getData', 'sendData'])
 
 const ph = ref(props.data.title + ' 입력하세요.')
+
+const clicked = () => {
+  emit('sendData', props.data)
+}
 </script>
 
 <template>
   <div class="short-body">
-    <label for="input">{{ props.data.title }}</label>
+    <label for="short-input">{{ props.data.title }}</label>
     <div class="input-area">
       <input
+        id="short-input"
         :type="props.data.type"
         :placeholder="ph"
-        class="short-input"
         @input="$emit('getData', $event.target.value)"
-        :value="props.data.value"
+        :value="props.inputData"
+        :class="[props.data.title == '주소' ? 'address-readonly' : 'short-input']"
       />
-      <input type="submit" :value="props.data.text" class="input-btn" />
+      <input type="button" :value="props.data.text" class="input-btn" @click="clicked()" />
     </div>
   </div>
 </template>
@@ -40,6 +45,13 @@ const ph = ref(props.data.title + ' 입력하세요.')
     @include flex-box($justify: space-between);
     width: 92%;
     margin: 0.2rem 0;
+    .address-readonly {
+      pointer-events: none;
+      @include box(90%, 2.5rem, whitesmoke, 0, 0, 0);
+      border: none;
+      padding-left: 0.5rem;
+      outline: none;
+    }
 
     .short-input {
       @include box(90%, 2.5rem, whitesmoke, 0, 0, 0);
