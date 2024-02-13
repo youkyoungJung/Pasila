@@ -10,16 +10,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.live.dto.chat.ChatLogDto;
-import org.ssafy.pasila.domain.live.entity.Chatbot;
-import org.ssafy.pasila.domain.live.entity.Live;
-import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
-import org.ssafy.pasila.domain.live.repository.LiveRepository;
-import org.ssafy.pasila.domain.live.service.ChatbotService;
 import org.ssafy.pasila.domain.live.service.ChattingService;
-import org.ssafy.pasila.global.infra.gpt3.model.Message;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @RestController
