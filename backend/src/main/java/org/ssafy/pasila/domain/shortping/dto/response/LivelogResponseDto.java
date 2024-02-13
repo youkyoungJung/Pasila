@@ -26,16 +26,12 @@ public class LivelogResponseDto {
     @Schema(description = "제목")
     private String title;
 
-    @Schema(description = "자막")
-    private String subtitle;
-
     public static LivelogResponseDto of(Livelog livelog) {
         return LivelogResponseDto.builder()
                 .id(livelog.getId())
                 .start(livelog.getStart())
                 .end(livelog.getEnd())
                 .title(livelog.getTitle())
-                .subtitle(livelog.getSubtitle())
                 .build();
     }
 

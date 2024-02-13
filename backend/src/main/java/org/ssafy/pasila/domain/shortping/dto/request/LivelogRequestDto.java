@@ -26,10 +26,7 @@ public class LivelogRequestDto {
     @DateTimeFormat(pattern = "HH:mm:ss")
     private LocalTime end;
 
-    @Schema(description = "자막")
-    private String subtitle;
-
     public Livelog toEntity(Live live) {
-        return new Livelog(start, end, title, subtitle, live);
+        return new Livelog(start, end, title, live);
     }
 }
