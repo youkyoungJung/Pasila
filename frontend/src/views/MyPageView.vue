@@ -128,6 +128,7 @@ const channelCerti = ref(0)
 //핸드폰 인증번호
 const phoneCerti = ref(0)
 const formData = new FormData()
+formData.append('new_image', '')
 
 //이메일, 비밀번호 유효성검사
 const strongEmail = (str) => {
@@ -254,7 +255,7 @@ const modify = async () => {
     alert('이메일 확인해주세요.')
     return
   }
-  if (user.value.passowrd != '' && user.value.password != user.value.passwordCheck) {
+  if (user.value.password != '' && user.value.password != user.value.passwordCheck) {
     alert('비밀번호를 확인해주세요.')
     return
   }
@@ -262,6 +263,8 @@ const modify = async () => {
     alert('핸드폰 인증을 완료해주세요.')
     return
   }
+  if (user.value.bank == null) user.value.bank = ''
+  if (user.value.account == null) user.value.account = ''
   if (user.value.password == null) user.value.password = ''
   if (user.value.gender == '여성') user.value.gender = 'F'
   else if (user.value.gender == '남성') user.value.gender = 'M'
@@ -271,7 +274,6 @@ const modify = async () => {
     'personal_info',
     new Blob([JSON.stringify(user.value)], { type: 'application/json' })
   )
-
   const res = await changeMyInfo(formData)
   if (res) {
     alert('수정 되었습니다.')

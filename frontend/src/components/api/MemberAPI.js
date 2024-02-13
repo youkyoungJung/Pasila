@@ -13,7 +13,6 @@ const loginUser = {
 const joinUser = async (data) => {
   try {
     const res = await formData.post(`${url}/join`, data)
-    console.log(res.data)
     return res.data
   } catch (err) {
     console.error('localAxios error', err)
