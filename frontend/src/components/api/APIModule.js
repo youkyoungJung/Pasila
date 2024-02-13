@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'http://i10a402.p.ssafy.io:8080/api'
+const API_URL = 'https://i10a402.p.ssafy.io/api'
 
 const localAxios = () => {
   const instance = axios.create({
