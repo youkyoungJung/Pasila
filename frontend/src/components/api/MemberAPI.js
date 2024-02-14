@@ -1,14 +1,10 @@
 import { localAxios, formDataAxios } from '@/components/api/APIModule.js'
+import { useMemberStore } from '@/stores/member'
 
 const local = localAxios()
 const formData = formDataAxios()
 
 const url = '/member'
-const loginUser = {
-  id: 1,
-  email: 'acczoo@acczoo.com',
-  channel: 'ACCZOO'
-}
 
 const joinUser = async (data) => {
   try {
@@ -20,8 +16,9 @@ const joinUser = async (data) => {
 }
 
 const checkPassword = async (user) => {
+  const store = useMemberStore()
   try {
-    const res = await local.post(`${url}/${loginUser.id}/pw`, { password: user.password })
+    const res = await local.post(`${url}/${store.member.id}/pw`, { password: user.password })
     if (res.data.data) {
       return res.data
     } else {
@@ -33,8 +30,9 @@ const checkPassword = async (user) => {
 }
 
 const getMyPage = async () => {
+  const store = useMemberStore()
   try {
-    const res = await local.get(`${url}/${loginUser.id}`)
+    const res = await local.get(`${url}/${store.member.id}`)
     return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
@@ -51,14 +49,15 @@ const getMemberApi = async (memberId) => {
 }
 
 const checkMyEmail = async (myEmail) => {
-  if (loginUser.email == myEmail) return 0
+  const store = useMemberStore()
+  if (store.member.email == myEmail) return -1
   try {
     const res = await local.get(`${url}/email`, {
       params: {
         email: myEmail
       }
     })
-    return res.data
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }
@@ -74,14 +73,15 @@ const getChannelApi = async (memberId) => {
 }
 
 const checkMyChannel = async (myChannel) => {
-  if (loginUser.channel == myChannel) return 0
+  const store = useMemberStore()
+  if (store.member.channel == myChannel) return -1
   try {
     const res = await local.get(`${url}/channel`, {
       params: {
         channel: myChannel
       }
     })
-    return res.data
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }
@@ -96,9 +96,24 @@ const updateChannelDescApi = async (memberId, data) => {
   }
 }
 const changeMyInfo = async (data) => {
+  const store = useMemberStore()
   try {
-    const res = await formData.put(`${url}/${loginUser.id}`, data)
+    const res = await formData.put(`${url}/${store.member.id}`, data)
     return res.data
+  } catch (err) {
+    console.error('localAxios error', err)
+  }
+}
+
+const updatePw = async (myEmail, myPassword) => {
+  console.log(myEmail)
+  console.log(myPassword)
+  try {
+    const res = await local.post(`${url}/updatePw`, {
+      email: myEmail,
+      password: myPassword
+    })
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }
@@ -112,5 +127,6 @@ export {
   changeMyInfo,
   getMemberApi,
   getChannelApi,
-  updateChannelDescApi
+  updateChannelDescApi,
+  updatePw
 }

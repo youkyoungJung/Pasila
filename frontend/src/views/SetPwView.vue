@@ -2,7 +2,10 @@
 import router from '@/router'
 import { ref } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
+import { useMemberStore } from '@/stores/member'
+import { updatePw } from '@/components/api/MemberAPI'
 
+const store = useMemberStore()
 const inputData = ref({
   password: {
     title: '새 비밀번호',
@@ -20,11 +23,15 @@ const login = () => {
   router.push('/login')
 }
 
-const findPw = () => {
-  if (inputData.value.password.value != inputData.value.passwordCheck.value) {
-    alert('비밀번호가 다릅니다. 다시 확인해 주세요.')
+const strongPassword = (str) => {
+  return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(str)
+}
+
+const setPw = async () => {
+  if (inputData.value.password.value != inputData.value.passwordCheck.value || !strongPassword) {
+    alert('비밀번호를 확인해주세요.')
   } else {
-    //비밀번호 변경해주기
+    await updatePw(store.checkPwEmail, inputData.value.password.value)
     alert('비밀번호가 변경되었습니다. 로그인을 해주세요.')
     router.push('/login')
   }
@@ -37,14 +44,13 @@ const findPw = () => {
     <div class="content">
       <section class="long-type">
         <v-long-input :data="inputData.password" @getData="(e) => (inputData.password.value = e)" />
-      </section>
-      <section class="long-type">
         <v-long-input
           :data="inputData.passwordCheck"
           @getData="(e) => (inputData.passwordCheck.value = e)"
         />
         <div
           v-if="
+            strongPassword(inputData.password.value) &&
             inputData.password.value != '' &&
             inputData.password.value === inputData.passwordCheck.value
           "
@@ -52,9 +58,12 @@ const findPw = () => {
         >
           비밀번호가 일치합니다.
         </div>
+        <div v-else-if="!strongPassword(inputData.password.value)" class="wrong-text">
+          8글자 이상, 영문, 숫자, 특수문자(@$!%*#?&)를 포함해야 합니다.
+        </div>
         <div v-else class="wrong-text">비밀번호가 일치하지 않습니다. 다시 입력해주세요.</div>
       </section>
-      <button @click="findPw" class="find-pw">확인</button>
+      <button @click="setPw" class="find-pw">확인</button>
       <button @click="login" class="login">로그인으로 돌아가기</button>
     </div>
   </div>
