@@ -9,6 +9,7 @@ import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
+import org.ssafy.pasila.domain.live.repository.LiveRepository;
 import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.service.ProductService;
@@ -42,6 +43,8 @@ public class ShortpingService {
     private final ShortpingQueryService shortpingQueryService;
 
     private final LiveQueryRepository liveQueryRepository;
+
+    private final LiveRepository liveRepository;
 
     private final ShortpingQueryRepository shortpingQueryRepository;
 
@@ -126,12 +129,13 @@ public class ShortpingService {
     // 라이브 영상 & 썸네일
     public LiveThumbnailResponse getThumbnailList(String id) {
         try {
-            Live live = liveQueryRepository.findByProductId(id);
+            Live live = liveRepository.findById(id)
+                    .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
 
             // 라이브 영상 파일 이름 가져오기
-            String liveUrl = live.getFullVideoUrl();
+            String liveUrl = "https://i10p402.p.ssafy.io/download/live/" + live.getId() + "/" + live.getId() + ".mp4";
 
-            byte[] liveVideo = fileStorageUtil.download("live/" + live.getId() + ".mp4");
+            byte[] liveVideo = fileStorageUtil.download("live/" + live.getId() + "/" + live.getId() + ".mp4");
 
             // 라이브 영상 썸네일 뽑기
             List<String> thumbnails = ffmpegClient.convertImages(liveVideo);
