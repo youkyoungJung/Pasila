@@ -47,7 +47,7 @@ onMounted(async () => {
   if (!memberId) {
     alert('로그인 후 시청 가능합니다.')
     router.push('/login')
-  } else if (product.sellerId === memberId) {
+  } else if (product.sellerId == memberId) {
     userRole.value = 'PUB'
   } else {
     userRole.value = 'SUB'
@@ -93,7 +93,7 @@ const joinSession = async () => {
   session.value = OV.value.initSession()
 
   session.value.on('streamCreated', ({ stream }) => {
-    const subscriber = session.value.subscribe(stream)
+    const subscriber = session.value.subscribe(stream, undefined)
     subscribers.value.push(subscriber)
   })
 
@@ -104,33 +104,41 @@ const joinSession = async () => {
     }
   })
 
-  session.value.on('exception', ({ exception }) => {
-    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
+  session.value.on('exception', () => {
+    alert('진행중인 라이브가 아닙니다.')
     router.push('/')
   })
 
-  const res = await getToken(props.liveId)
-  const token = res
+  let token
+  if (userRole.value === 'PUB') {
+    const res = await getToken(props.liveId)
+    token = res
+  } else {
+    const res = await createTokenApi(props.liveId)
+    token = res
+  }
+  // const token = await getToken(props.liveId)
 
   try {
     await session.value.connect(token)
+    if (userRole.value === 'PUB') {
+      const publisherInfo = OV.value.initPublisher(undefined, {
+        audioSource: undefined,
+        videoSource: undefined,
+        publishAudio: true,
+        publishVideo: true,
+        frameRate: 30,
+        insertMode: 'APPEND',
+        mirror: false
+      })
 
-    const publisherInfo = OV.value.initPublisher(undefined, {
-      audioSource: undefined,
-      videoSource: undefined,
-      publishAudio: true,
-      publishVideo: true,
-      frameRate: 30,
-      insertMode: 'APPEND',
-      mirror: false
-    })
-
-    mainStreamManager.value = publisherInfo
-    publisher.value = publisherInfo
-
-    session.value.publish(publisher.value)
+      mainStreamManager.value = publisherInfo
+      publisher.value = publisherInfo
+      session.value.publish(publisher.value)
+    }
   } catch (error) {
-    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
+    alert('진행중인 라이브가 아닙니다.')
+    router.push('/')
   }
 
   window.addEventListener('beforeunload', leaveSession)
@@ -148,7 +156,7 @@ const stopLive = async () => {
 
 const leaveSession = async () => {
   if (session.value) {
-    if (userRole.value === 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
+    if (userRole.value == 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
       await stopLive()
       session.value.disconnect()
       router.push(`/live/${props.liveId}/end`)
@@ -239,10 +247,9 @@ const connectChat = () => {
   ws = Stomp.over(socket, { debug: false })
 
   ws.connect(
-    { Authorization: localStorage.getItem('token') },
+    { Authorization: `Bearer ${localStorage.getItem('token')}` },
     () => {
       ws.subscribe(`/id/${props.liveId}`, (res) => {
-        console.log('구독으로 받은 메시지 입니다.', JSON.parse(res.body))
         chatList.value.push(JSON.parse(res.body))
       })
     },
@@ -292,7 +299,7 @@ const connectChat = () => {
   <template v-else>
     <div class="session" v-if="session">
       <section class="col-1">
-        <user-video :stream-manager="mainStreamManager" :is-start="true" />
+        <user-video :stream-manager="subscribers[0]" :is-start="true" />
       </section>
 
       <section class="col-2" v-if="subToolBar[0].isActive">
