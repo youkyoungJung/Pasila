@@ -13,6 +13,8 @@ import org.ssafy.pasila.domain.live.utils.RetryOptions;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -63,12 +65,13 @@ public class OpenviduService {
         throw new RetryException(ErrorCode.MAX_RETRIES_EXCEEDED);
     }
 
-    public String createConnection(String sessionId, String token, Map<String, Object> params)
+    public String createConnection(String sessionId, String token)
             throws OpenViduHttpException, InterruptedException, OpenViduJavaClientException {
+        Map<String, Object> params = new HashMap<>();
         if(!token.isEmpty() && isShowHost(sessionId, getMemberIdFromToken(token))){
-            params.put("role", OpenViduRole.PUBLISHER);
+            params.put("role", "PUBLISHER");
         }else {
-            params.put("role", OpenViduRole.SUBSCRIBER);
+            params.put("role", "SUBSCRIBER");
         }
         Session session = openvidu.getActiveSession(sessionId);
         return createConnection(session, params, new RetryOptions()).getToken();
@@ -115,7 +118,6 @@ public class OpenviduService {
 
     // 녹화 시작
     public Recording startRecording(String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {
-
         return openvidu.startRecording(sessionId);
     }
 
