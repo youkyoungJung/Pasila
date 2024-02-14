@@ -4,13 +4,11 @@ import ScheduleCalendar from '@/components/ready/ScheduleCalendar.vue'
 import ScheduleTime from '@/components/ready/ScheduleTime.vue'
 import { useReadyLiveStore } from '@/stores/readyLive'
 import { ref, watch } from 'vue'
-import { sendLiveSchedule } from '@/components/api/LiveAPI'
-import { useMemberStore } from '@/stores/member'
+import { sendLiveScheduleApi } from '@/components/api/LiveAPI'
 import router from '@/router'
 
 const step = ref('schedule')
 const store = useReadyLiveStore()
-const userStore = useMemberStore()
 
 const liveTitle = ref('')
 const date = ref(new Date())
@@ -109,7 +107,7 @@ const reserveLive = async () => {
 }
 const sendData = async () => {
   const memberId = {
-    memberId: userStore.member.id
+    memberId: localStorage.id
   }
 
   liveFormData.set(
@@ -133,7 +131,7 @@ const sendData = async () => {
   )
   liveFormData.set('memberId', new Blob([JSON.stringify(memberId)], { type: 'application/json' }))
 
-  const res = await sendLiveSchedule(liveFormData)
+  const res = await sendLiveScheduleApi(liveFormData)
   alert('라이브 예약이 완료되었습니다!')
   router.push('/')
 }

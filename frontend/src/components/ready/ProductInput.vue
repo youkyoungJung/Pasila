@@ -1,9 +1,7 @@
 <script setup>
 import ProductOption from '@/components/ready/ProductOption.vue'
-import { useMemberStore } from '@/stores/member'
 import { ref, watch } from 'vue'
 
-const store = useMemberStore()
 const emit = defineEmits(['getProduct'])
 const options = ref([
   {
@@ -31,7 +29,7 @@ const options = ref([
 const product = ref({
   name: '',
   description: '',
-  memberId: store.member.id,
+  memberId: localStorage.id,
   categoryId: '',
   options: [
     {

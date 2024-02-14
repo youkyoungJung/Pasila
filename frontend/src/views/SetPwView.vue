@@ -2,10 +2,9 @@
 import router from '@/router'
 import { ref } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
+import { updatePwApi } from '@/components/api/MemberAPI'
 import { useMemberStore } from '@/stores/member'
-import { updatePw } from '@/components/api/MemberAPI'
 
-const store = useMemberStore()
 const inputData = ref({
   password: {
     title: '새 비밀번호',
@@ -18,6 +17,7 @@ const inputData = ref({
     value: ''
   }
 })
+const store = useMemberStore()
 
 const login = () => {
   router.push('/login')
@@ -28,10 +28,13 @@ const strongPassword = (str) => {
 }
 
 const setPw = async () => {
-  if (inputData.value.password.value != inputData.value.passwordCheck.value || !strongPassword) {
+  if (
+    inputData.value.password.value != inputData.value.passwordCheck.value ||
+    !strongPassword(inputData.value.password.value)
+  ) {
     alert('비밀번호를 확인해주세요.')
   } else {
-    await updatePw(store.checkPwEmail, inputData.value.password.value)
+    await updatePwApi(store.checkPwEmail, inputData.value.password.value)
     alert('비밀번호가 변경되었습니다. 로그인을 해주세요.')
     router.push('/login')
   }

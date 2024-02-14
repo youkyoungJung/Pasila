@@ -2,14 +2,12 @@
 import router from '@/router'
 import { ref } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
-import { emailLogin } from '@/components/api/AuthAPI'
-import { useMemberStore } from '@/stores/member'
+import { emailLoginApi } from '@/components/api/AuthAPI'
 
 const user = ref({
   userEmail: '',
   userPassword: ''
 })
-const store = useMemberStore()
 
 const findPassword = () => {
   router.push('/findpw')
@@ -27,9 +25,8 @@ const inputData = ref({
 })
 
 const login = async () => {
-  const res = await emailLogin(user.value.userEmail, user.value.userPassword)
+  const res = await emailLoginApi(user.value.userEmail, user.value.userPassword)
   if (res) {
-    store.member = res
     router.go()
   } else {
     alert('비밀번호가 틀렸습니다. 다시 입력해주세요!')
@@ -39,17 +36,6 @@ const login = async () => {
 const join = () => {
   router.push('/join')
 }
-
-// const kakaoLogin = () => {
-//   const url =
-//     'https://kauth.kakao.com/oauth/authorize?client_id=' +
-//     'a63ab4b378ad27ff5bf2096393db8ca2' +
-//     '&redirect_uri=' +
-//     'https://localhost:5173' +
-//     '&response_type=code&' +
-//     'scope=profile_nickname profile_image'
-//   kakao(url)
-// }
 </script>
 
 <template>
@@ -67,12 +53,6 @@ const join = () => {
       </section>
       <button @click="login" class="login">로그인</button>
       <button @click="join" class="join">회원가입</button>
-      <hr />
-
-      <div class="social-login" @click="kakaoLogin">
-        <img src="@/assets/img/kakao-logo.png" />
-        <button class="social-btn">카카오로 시작하기</button>
-      </div>
     </div>
   </div>
 </template>
@@ -85,6 +65,7 @@ const join = () => {
   border: 2px solid #d9d9d9;
   margin-left: auto;
   margin-right: auto;
+  padding: 1rem 0;
 
   .header {
     margin: 2rem 0;
@@ -135,23 +116,6 @@ const join = () => {
   hr {
     width: 90%;
     margin: 20px 0px;
-  }
-
-  .social-login {
-    @include box(85%, 2.5rem, whitesmoke, 0, 0.5rem, 0);
-    @include flex-box();
-    cursor: pointer;
-
-    img {
-      width: 1rem;
-      height: 1rem;
-      vertical-align: middle;
-    }
-    .social-btn {
-      cursor: pointer;
-      background-color: whitesmoke;
-      border: none;
-    }
   }
 }
 </style>

@@ -1,17 +1,15 @@
 <script setup>
 import { ref } from 'vue'
 import ScriptSelectButton from '@/components/ready/ScriptSelectButton.vue'
-import { getScript } from '@/components/api/LiveAPI.js'
-import { useMemberStore } from '@/stores/member'
+import { getScriptApi } from '@/components/api/LiveAPI.js'
 import { useReadyLiveStore } from '@/stores/readyLive'
 
-const userStore = useMemberStore()
-const liveStore = useReadyLiveStore()
+const store = useReadyLiveStore()
 const emits = defineEmits(['script'])
 const data = ref({
   style: '',
-  userName: userStore.member.name,
-  productName: liveStore.liveProduct.name,
+  userName: localStorage.name,
+  productName: store.liveProduct.name,
   description: ''
 })
 
@@ -33,7 +31,7 @@ const selectAccent = (i) => {
 const script = ref('')
 const makeScript = () => {
   data.value.description = script.value.replaceAll('\n', '')
-  getScript(data.value, sendData, failLog)
+  getScriptApi(data.value, sendData, failLog)
 }
 
 const sendData = (e) => {

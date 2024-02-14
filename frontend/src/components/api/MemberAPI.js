@@ -1,12 +1,11 @@
 import { localAxios, formDataAxios } from '@/components/api/APIModule.js'
-import { useMemberStore } from '@/stores/member'
 
 const local = localAxios()
 const formData = formDataAxios()
 
 const url = '/member'
 
-const joinUser = async (data) => {
+const joinUserApi = async (data) => {
   try {
     const res = await formData.post(`${url}/join`, data)
     return res.data
@@ -15,10 +14,9 @@ const joinUser = async (data) => {
   }
 }
 
-const checkPassword = async (user) => {
-  const store = useMemberStore()
+const checkPasswordApi = async (user) => {
   try {
-    const res = await local.post(`${url}/${store.member.id}/pw`, { password: user.password })
+    const res = await local.post(`${url}/${localStorage.id}/pw`, { password: user.password })
     if (res.data.data) {
       return res.data
     } else {
@@ -29,10 +27,9 @@ const checkPassword = async (user) => {
   }
 }
 
-const getMyPage = async () => {
-  const store = useMemberStore()
+const getMyPageApi = async () => {
   try {
-    const res = await local.get(`${url}/${store.member.id}`)
+    const res = await local.get(`${url}/${localStorage.id}`)
     return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
@@ -48,9 +45,7 @@ const getMemberApi = async (memberId) => {
   }
 }
 
-const checkMyEmail = async (myEmail) => {
-  const store = useMemberStore()
-  if (store.member.email == myEmail) return -1
+const checkMyEmailApi = async (myEmail) => {
   try {
     const res = await local.get(`${url}/email`, {
       params: {
@@ -72,9 +67,7 @@ const getChannelApi = async (memberId) => {
   }
 }
 
-const checkMyChannel = async (myChannel) => {
-  const store = useMemberStore()
-  if (store.member.channel == myChannel) return -1
+const checkMyChannelApi = async (myChannel) => {
   try {
     const res = await local.get(`${url}/channel`, {
       params: {
@@ -95,17 +88,16 @@ const updateChannelDescApi = async (memberId, data) => {
     console.error('localAxios error', err)
   }
 }
-const changeMyInfo = async (data) => {
-  const store = useMemberStore()
+const changeMyInfoApi = async (data) => {
   try {
-    const res = await formData.put(`${url}/${store.member.id}`, data)
+    const res = await formData.put(`${url}/${localStorage.id}`, data)
     return res.data
   } catch (err) {
     console.error('localAxios error', err)
   }
 }
 
-const updatePw = async (myEmail, myPassword) => {
+const updatePwApi = async (myEmail, myPassword) => {
   try {
     const res = await local.post(`${url}/updatePw`, {
       email: myEmail,
@@ -117,14 +109,14 @@ const updatePw = async (myEmail, myPassword) => {
   }
 }
 export {
-  joinUser,
-  checkPassword,
-  getMyPage,
-  checkMyEmail,
-  checkMyChannel,
-  changeMyInfo,
+  joinUserApi,
+  checkPasswordApi,
+  getMyPageApi,
+  checkMyEmailApi,
+  checkMyChannelApi,
+  changeMyInfoApi,
   getMemberApi,
   getChannelApi,
   updateChannelDescApi,
-  updatePw
+  updatePwApi
 }

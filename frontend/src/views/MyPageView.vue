@@ -3,8 +3,8 @@ import router from '@/router'
 import { ref, onMounted, reactive } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
-import { getMyPage, changeMyInfo, checkMyChannel } from '@/components/api/MemberAPI'
-import { checkPhoneAuthNumber, getPhoneAuthNumber } from '@/components/api/AuthAPI'
+import { getMyPageApi, changeMyInfoApi, checkMyChannelApi } from '@/components/api/MemberAPI'
+import { checkPhoneAuthNumberApi, getPhoneAuthNumberApi } from '@/components/api/AuthAPI'
 
 const user = ref({
   email: '',
@@ -26,7 +26,7 @@ onMounted(() => {
 })
 
 const getUser = async () => {
-  const userDetail = await getMyPage()
+  const userDetail = await getMyPageApi()
   await Object.assign(user.value, userDetail)
   if (userDetail.gender == 'F') {
     user.value.gender = '여성'
@@ -110,7 +110,7 @@ const channelCerti = ref(0)
 //핸드폰 인증번호
 const phoneCerti = ref(0)
 const formData = new FormData()
-formData.append('new_image', '')
+formData.set('new_image', '')
 
 //비밀번호 유효성검사
 const strongPassword = (str) => {
@@ -125,7 +125,7 @@ const uploadImg = (e) => {
 
     reader.onload = (event) => {
       userImage.value = event.target.result
-      formData.append('new_image', file)
+      formData.set('new_image', file)
     }
 
     reader.readAsDataURL(file)
@@ -133,10 +133,8 @@ const uploadImg = (e) => {
 }
 
 const checkChannel = async () => {
-  const res = await checkMyChannel(user.value.channel)
-  if (res == -1) {
-    channelCerti.value = 0
-  } else if (res) {
+  const res = await checkMyChannelApi(user.value.channel)
+  if (res) {
     channelCerti.value = 1
   } else {
     channelCerti.value = 2
@@ -144,14 +142,12 @@ const checkChannel = async () => {
 }
 
 const sendPhoneNum = async () => {
-  await getPhoneAuthNumber(user.value.phone)
+  await getPhoneAuthNumberApi(user.value.phone)
 }
 
 const checkCertiNum = async () => {
-  const res = await checkPhoneAuthNumber(user.value.phone, phoneCerti.value)
-  if (res === -1) {
-    phoneCerti.value = 0
-  } else if (res) {
+  const res = await checkPhoneAuthNumberApi(user.value.phone, phoneCerti.value)
+  if (res) {
     phoneCerti.value = 1
   } else {
     phoneCerti.value = 2
@@ -217,7 +213,7 @@ const modify = async () => {
     'personal_info',
     new Blob([JSON.stringify(user.value)], { type: 'application/json' })
   )
-  const res = await changeMyInfo(formData)
+  const res = await changeMyInfoApi(formData)
   if (res) {
     alert('수정 되었습니다.')
     router.push('/')

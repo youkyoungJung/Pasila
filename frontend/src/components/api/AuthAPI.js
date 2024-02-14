@@ -4,7 +4,7 @@ const local = localAxios()
 
 const url = '/auth'
 
-const emailLogin = async (myEmail, myPassword) => {
+const emailLoginApi = async (myEmail, myPassword) => {
   try {
     const res = await local.post(`${url}/login`, {
       email: myEmail,
@@ -14,32 +14,18 @@ const emailLogin = async (myEmail, myPassword) => {
     let token = res.data.data.token
     let id = res.data.data.id
     let profile = res.data.data.profile
+    let name = res.data.data.name
     localStorage.setItem('token', token)
     localStorage.setItem('id', id)
     localStorage.setItem('profile', profile)
+    localStorage.setItem('name', name)
     return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
   }
 }
 
-// const kakao = async (url) => {
-//   try {
-//     const res = await local.get('https://kauth.kakao.com/oauth/authorize', {
-//       params: {
-//         url: url
-//       }
-//     })
-//     alert(`${res.data.data.name}님! 반갑습니다 ><`)
-//     let token = res.data.data.token
-//     localStorage.setItem('token', token)
-//     return res.data.data
-//   } catch (err) {
-//     console.error('localAxios error', err)
-//   }
-// }
-
-const getEmailAuthNumber = async (myEmail) => {
+const getEmailAuthNumberApi = async (myEmail) => {
   const newEmail = { email: myEmail }
   try {
     const res = await local.post(`${url}/email`, newEmail)
@@ -49,7 +35,7 @@ const getEmailAuthNumber = async (myEmail) => {
   }
 }
 
-const checkEmailAuthNumber = async (myEmail, certiNum) => {
+const checkEmailAuthNumberApi = async (myEmail, certiNum) => {
   try {
     const res = await local.put(`${url}/email`, {
       email: myEmail,
@@ -60,7 +46,7 @@ const checkEmailAuthNumber = async (myEmail, certiNum) => {
     console.error('localAxios error', err)
   }
 }
-const getPhoneAuthNumber = async (phone) => {
+const getPhoneAuthNumberApi = async (phone) => {
   const newPhone = { phoneNum: phone }
   try {
     const res = await local.post(`${url}/sms`, newPhone)
@@ -70,7 +56,7 @@ const getPhoneAuthNumber = async (phone) => {
   }
 }
 
-const checkPhoneAuthNumber = async (phone, certi) => {
+const checkPhoneAuthNumberApi = async (phone, certi) => {
   try {
     const res = await local.put(`${url}/sms`, {
       phoneNum: phone,
@@ -83,9 +69,9 @@ const checkPhoneAuthNumber = async (phone, certi) => {
 }
 
 export {
-  emailLogin,
-  getEmailAuthNumber,
-  checkEmailAuthNumber,
-  getPhoneAuthNumber,
-  checkPhoneAuthNumber
+  emailLoginApi,
+  getEmailAuthNumberApi,
+  checkEmailAuthNumberApi,
+  getPhoneAuthNumberApi,
+  checkPhoneAuthNumberApi
 }
