@@ -31,6 +31,7 @@ let subscribers = ref([])
 
 let ws
 let chatmsg = ref('')
+let isChatbot = ref(false)
 const chatList = ref([])
 
 let userRole = ref('')
@@ -53,21 +54,22 @@ onMounted(async () => {
     userRole.value = 'SUB'
   }
 
-  const stockEvent = getLiveStockApi(props.liveId)
+  if (userRole.value === 'PUB') {
+    const stockEvent = getLiveStockApi(props.liveId)
 
-  stockEvent.addEventListener('sse', (e) => {
-    const data = JSON.parse(e.data)
-    if (data.liveId) {
-      product.options = data.options
-    }
-  })
+    stockEvent.addEventListener('sse', (e) => {
+      const data = JSON.parse(e.data)
+      if (data.liveId) {
+        product.options = data.options
+      }
+    })
+    setInterval(async () => {
+      questionList.value = await getLiveQuestionApi(props.liveId)
+    }, 60000)
+  }
 
-  joinSession()
-
-  setInterval(async () => {
-    questionList.value = await getLiveQuestionApi(props.liveId)
-  }, 60000)
   connectChat()
+  joinSession()
 })
 
 onUnmounted(() => {
@@ -198,29 +200,38 @@ watch(
   }
 )
 
-const sendChat = async (isChatbot) => {
+const clickChatbot = () => {
+  isChatbot.value = !isChatbot.value
+}
+
+const sendChat = async () => {
   if (chatmsg.value.length <= 0) {
     alert('내용을 입력하세요')
     return
   }
-  if (isChatbot) {
-    const data = {
+  if (ws && ws.connected) {
+    const msg = {
       liveId: props.liveId,
+      memberId: 11,
       message: chatmsg.value
     }
+    ws.send(`/send/chatting`, JSON.stringify(msg), {})
+  }
+  const msg = chatmsg.value
+  chatmsg.value = ''
+  if (isChatbot.value) {
+    const data = {
+      liveId: props.liveId,
+      message: msg
+    }
     const res = await sendChatToChatbot(data)
-    //TODO: res 받아서 chatlist에 넣기
-  } else {
-    if (ws && ws.connected) {
-      const msg = {
-        liveId: props.liveId,
-        memberId: 11,
-        message: chatmsg.value
-      }
-      ws.send(`/send/chatting`, JSON.stringify(msg), {})
+    if (res) {
+      chatList.value.push({
+        memberId: 'PASILA',
+        message: res
+      })
     }
   }
-  chatmsg.value = ''
 }
 
 const connectChat = () => {
@@ -253,11 +264,13 @@ const connectChat = () => {
 
       <section class="col-2" v-if="pubToolBar[1].isActive">
         <live-chat
-          :is-customer="false"
+          :is-customer="userRole === 'SUB'"
+          :is-chatbot="isChatbot"
           :chatmsg="chatmsg"
           @change-msg="(e) => (chatmsg = e)"
           @send-msg="sendChat"
           @send="sendChat"
+          @click-chatbot="clickChatbot"
           :chat-list="chatList"
         />
       </section>
@@ -285,11 +298,13 @@ const connectChat = () => {
 
       <section class="col-2" v-if="subToolBar[0].isActive">
         <live-chat
-          :is-customer="true"
+          :is-customer="userRole === 'SUB'"
+          :is-chatbot="isChatbot"
           :chatmsg="chatmsg"
           @change-msg="(e) => (chatmsg = e)"
           @send-msg="sendChat"
           @send="sendChat"
+          @click-chatbot="clickChatbot"
           :chat-list="chatList"
         />
       </section>

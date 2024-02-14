@@ -3,11 +3,11 @@ import { ref, onMounted, onUpdated } from 'vue'
 
 defineProps({
   isCustomer: Boolean,
+  isChatbot: Boolean,
   chatmsg: String,
   chatList: Array
 })
 
-let isChatbot = ref(false)
 const liveChat = ref(null)
 
 onMounted(() => {
@@ -20,10 +20,6 @@ onUpdated(() => {
 
 const scrollBottom = () => {
   liveChat.value.scrollTop = liveChat.value.scrollHeight
-}
-
-const clickChatbot = () => {
-  isChatbot.value = !isChatbot.value
 }
 </script>
 
@@ -46,7 +42,7 @@ const clickChatbot = () => {
         </span>
       </div>
       <div class="bottom">
-        <span class="chatbot" @click="clickChatbot" v-if="isCustomer">
+        <span class="chatbot" @click="$emit('clickChatbot')" v-if="isCustomer">
           <font-awesome-icon icon="robot" class="icon" />
         </span>
         <input
@@ -55,7 +51,7 @@ const clickChatbot = () => {
           :value="chatmsg"
           @keyup.enter="$emit('send')"
         />
-        <span class="plane" @click="$emit('sendMsg', isChatbot)">
+        <span class="plane" @click="$emit('sendMsg')">
           <font-awesome-icon icon="fa-solid fa-paper-plane" class="icon" />
         </span>
       </div>
