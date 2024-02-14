@@ -30,7 +30,7 @@ const login = async () => {
   const res = await emailLogin(user.value.userEmail, user.value.userPassword)
   if (res) {
     store.member = res
-    router.push('/')
+    router.go()
   } else {
     alert('비밀번호가 틀렸습니다. 다시 입력해주세요!')
   }

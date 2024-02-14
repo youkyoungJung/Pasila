@@ -14,7 +14,6 @@ import {
   sendChatToChatbot
 } from '@/components/api/OpenviduAPI.js'
 import { getLiveStockApi } from '@/components/api/RealTimeAPI'
-import { useMemberStore } from '@/stores/member'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
 import LiveScript from '@/components/live/seller/LiveScript.vue'
 import LiveStock from '@/components/live/seller/LiveStock.vue'
@@ -41,14 +40,14 @@ let product = reactive({})
 let questionList = ref([])
 
 const props = defineProps(['liveId'])
-const { member } = useMemberStore()
 
 onMounted(async () => {
   await getProduct()
-  if (!member.id) {
+  const memberId = localStorage.getItem('id')
+  if (!memberId) {
     alert('로그인 후 시청 가능합니다.')
     router.push('/login')
-  } else if (product.sellerId === member.id) {
+  } else if (product.sellerId === memberId) {
     userRole.value = 'PUB'
   } else {
     userRole.value = 'SUB'
@@ -114,7 +113,7 @@ const joinSession = async () => {
   const token = res
 
   try {
-    await session.value.connect(token, { clientData: member.name })
+    await session.value.connect(token)
 
     const publisherInfo = OV.value.initPublisher(undefined, {
       audioSource: undefined,
