@@ -21,13 +21,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry){
-
-        registry.addEndpoint("/stomp/pasila")   //클라이언트가 Handshake를 위해 연결해야하는 end-point의 url
-//                .setAllowedOrigins("http://127.0.0.1")
-                .setAllowedOrigins("*")
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/stomp/pasila").
+                setAllowedOriginPatterns("*")
                 .withSockJS();
-
     }
 
 }
