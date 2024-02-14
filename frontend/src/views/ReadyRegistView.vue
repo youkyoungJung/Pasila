@@ -19,59 +19,7 @@ const updateDesc = (message) => {
 
 const sendProduct = async () => {
   store.liveProduct = product.value
-  const searchSrc = (root) => {
-    const arr1 = root.split('img').map((v) => v.includes('src') === true && v.split('src='))
-    const arr2 = arr1.map((v) => v && v[1]?.split('></p'))
-    return arr2.map((v) => v && v[0].slice(1, v[0]?.length - 1)).filter((v) => v !== false)
-  } // "data:image/png;base64~~~"
-  const DataURIToBlob = (dataURI) => {
-    let splitDataURI = dataURI.split(',')
-    let byteString =
-      splitDataURI[0].indexOf('base64') >= 0 ? atob(splitDataURI[1]) : decodeURI(splitDataURI[1])
-    let mimeString = splitDataURI[0].split(':')[1].split(';')[0]
-    const ia = new Uint8Array(byteString.length)
-    for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i)
-    return ia
-    // return new Blob([ia], { type: mimeString })
-  }
-  const Base64toServerImage = (fullstring) => {
-    const changeStr = fullstring
-      .split('>')
-      .map((v) => {
-        if (v.includes('<p')) {
-          return v + '>'
-        } else if (v.includes('</p')) {
-          return v + '>'
-        } else if (v.includes('<img')) {
-          return false
-        } else {
-          return false
-        }
-      })
-      .filter((v) => v !== false)
-      .join('')
-
-    return changeStr
-  } // <p><img ~~~/></p> => <p></p>
-  searchSrc(preview.value).map((v, i) => {
-    if (v?.length > 1000) {
-      //  "data:image/png;base64~~~"는 1000자를 넘어가기 때문에 + base64만 가져오기 위해서
-      const imgBase64 = v
-      const file = DataURIToBlob(imgBase64)
-      const nameMaking = `${Math.floor(Math.random() * 3000)}` + '_' + `${new Date().getTime()}`
-      store.productImage = file
-      store.imageName = nameMaking
-    }
-  })
-  searchSrc(preview.value).map((v, i) => {
-    if (v?.length > 1000) {
-      const innerHTML = Base64toServerImage(preview.value)
-      preview.value = innerHTML
-    }
-  })
-  store.liveProduct.value.description = preview.value
-  //로그인 하면 바꿔주기
-  store.liveProduct.value.memberId = 1
+  store.productDesc = preview.value
 }
 
 const currentTab = ref(0)

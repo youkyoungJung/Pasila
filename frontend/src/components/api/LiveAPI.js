@@ -18,6 +18,7 @@ const getScript = async (deal, success, fail) => {
 }
 
 const sendLiveSchedule = async (data) => {
+  console.log(data)
   try {
     const res = await formData.post(`${url}`, data)
     console.log(res.data.data)

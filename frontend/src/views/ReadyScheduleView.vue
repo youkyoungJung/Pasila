@@ -41,20 +41,71 @@ const reserveLive = async () => {
     ':00'
   store.liveSchedule = liveTime.value
 
+  const searchSrc = (root) => {
+    const arr1 = root.split('img').map((v) => v.includes('src') === true && v.split('src='))
+    const arr2 = arr1.map((v) => v && v[1]?.split('></p'))
+    return arr2.map((v) => v && v[0].slice(1, v[0]?.length - 1)).filter((v) => v !== false)
+  }
+  const Base64toServerImage = (fullstring) => {
+    const changeStr = fullstring
+      .split('>')
+      .map((v) => {
+        if (v.includes('<p')) {
+          return v + '>'
+        } else if (v.includes('</p')) {
+          return v + '>'
+        } else if (v.includes('<img')) {
+          return false
+        } else {
+          return false
+        }
+      })
+      .filter((v) => v !== false)
+      .join('')
+
+    return changeStr
+  } // <p><img ~~~/></p> => <p></p>
+  const base64toFile = (base_data, filename) => {
+    let arr = base_data.split(','),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n)
+
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n)
+    }
+
+    return new File([u8arr], filename, { type: mime })
+  }
+  searchSrc(store.productDesc).map((v, i) => {
+    if (v?.length > 1000) {
+      //  "data:image/png;base64~~~"는 1000자를 넘어가기 때문에 + base64만 가져오기 위해서
+      const imgBase64 = v
+      const file = base64toFile(imgBase64, 'newFile')
+      store.productImage = file
+    }
+  })
+  searchSrc(store.productDesc).map((v, i) => {
+    if (v?.length > 1000) {
+      const innerHTML = Base64toServerImage(store.productDesc)
+      store.liveProduct.value.description = innerHTML
+    }
+  })
+
   await sendData()
 }
 const sendData = async () => {
   console.log(JSON.stringify(store.liveSchedule))
-  console.log(JSON.stringify(store.liveProduct))
+  console.log(JSON.stringify(store.liveProduct.value))
   console.log(JSON.stringify(store.liveChatbot))
   console.log(store.productImage)
   console.log(userStore.member.id)
-  const realFile = new File([store.productImage], 'productImage')
-  console.log(realFile)
-  liveFormData.append('image', realFile)
-  liveFormData.append('product', JSON.stringify(store.liveProduct))
+
   liveFormData.append('live', JSON.stringify(store.liveSchedule))
+  liveFormData.append('product', JSON.stringify(store.liveProduct.value))
   liveFormData.append('chatbot', JSON.stringify(store.liveChatbot))
+  liveFormData.append('image', store.pruductImage)
   liveFormData.append('member', userStore.member.id)
 
   const res = await sendLiveSchedule(liveFormData)

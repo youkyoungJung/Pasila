@@ -6,17 +6,16 @@ export const useReadyLiveStore = defineStore('readyLive', () => {
   const store = useMemberStore()
 
   const productImage = ref()
-  const imageName = ref()
+  const productDesc = ref()
   const liveProduct = ref({})
   const liveScript = ref('')
   const liveChatbot = ref([])
   const liveSchedule = ref({})
-  console.log(productImage.value)
 
   return {
     store,
     productImage,
-    imageName,
+    productDesc,
     liveProduct,
     liveScript,
     liveChatbot,
