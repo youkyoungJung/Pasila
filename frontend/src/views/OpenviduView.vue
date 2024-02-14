@@ -105,7 +105,7 @@ const joinSession = async () => {
   })
 
   session.value.on('exception', () => {
-    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
+    alert('진행중인 라이브가 아닙니다.')
     router.push('/')
   })
 
@@ -137,7 +137,8 @@ const joinSession = async () => {
       session.value.publish(publisher.value)
     }
   } catch (error) {
-    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
+    alert('진행중인 라이브가 아닙니다.')
+    router.push('/')
   }
 
   window.addEventListener('beforeunload', leaveSession)
@@ -155,7 +156,7 @@ const stopLive = async () => {
 
 const leaveSession = async () => {
   if (session.value) {
-    if (userRole.value === 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
+    if (userRole.value == 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
       await stopLive()
       session.value.disconnect()
       router.push(`/live/${props.liveId}/end`)
