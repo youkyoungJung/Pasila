@@ -1,9 +1,14 @@
 <script setup>
 import router from '@/router'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import { emailLoginApi } from '@/components/api/AuthAPI'
 
+onMounted(() => {
+  if (localStorage.id != '' || localStorage != null) {
+    router.push('/')
+  }
+})
 const user = ref({
   userEmail: '',
   userPassword: ''
@@ -27,7 +32,7 @@ const inputData = ref({
 const login = async () => {
   const res = await emailLoginApi(user.value.userEmail, user.value.userPassword)
   if (res) {
-    router.go()
+    router.push('/')
   } else {
     alert('비밀번호가 틀렸습니다. 다시 입력해주세요!')
   }

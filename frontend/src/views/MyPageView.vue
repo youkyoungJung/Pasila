@@ -22,6 +22,10 @@ const user = ref({
 const userImage = ref('')
 
 onMounted(() => {
+  if (localStorage.id == null || localStorage.id == '') {
+    alert('로그인을 먼저 해주세요')
+    router.push('/login')
+  }
   getUser()
 })
 
