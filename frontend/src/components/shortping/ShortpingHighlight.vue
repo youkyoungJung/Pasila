@@ -16,7 +16,7 @@ let emptyData = ref({
 
 const ffmpeg = new FFmpeg()
 const baseURL = 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm'
-const videoURL = 'http://localhost:5173/src/assets/video/test/test.mp4'
+const videoURL = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
 
 let video = ref('')
 
