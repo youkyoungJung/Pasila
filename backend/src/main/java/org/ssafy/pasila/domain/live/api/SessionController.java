@@ -33,7 +33,7 @@ public class SessionController {
 
     @PostMapping("/sessions/{liveId}/connections")
     public ApiCommonResponse<?> createConnection(@PathVariable("liveId") String sessionId,
-                                                 @RequestHeader(value = "token", required = false) String memberToken)
+                                                 @RequestHeader(value = "Authorization", required = false) String memberToken)
             throws OpenViduJavaClientException, OpenViduHttpException, InterruptedException {
         String token = openviduService.createConnection(sessionId, memberToken);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), token);
