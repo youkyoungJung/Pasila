@@ -244,7 +244,7 @@ public class LiveApiController {
     @MessageMapping("/join")
     @PreAuthorize("isAuthenticated()")
     public void joinLive(@RequestBody ChatLogDto chatLogDto) {
-        int participantNum = liveService.joinLive(chatLogDto.getLiveId() , chatLogDto.getMemberId());
+        int participantNum = liveService.joinLive(chatLogDto.getLiveId() , chatLogDto.getName());
         template.convertAndSend("/num/" + chatLogDto.getLiveId(), participantNum);
 
     }
@@ -255,7 +255,7 @@ public class LiveApiController {
     })
     @MessageMapping("/exit")
     public void exitLive(@RequestBody ChatLogDto chatLogDto){
-        int participantNum = liveService.exitLive(chatLogDto.getLiveId() , chatLogDto.getMemberId());
+        int participantNum = liveService.exitLive(chatLogDto.getLiveId() , chatLogDto.getName());
         template.convertAndSend("/num/" + chatLogDto.getLiveId(), participantNum);
 
     }
