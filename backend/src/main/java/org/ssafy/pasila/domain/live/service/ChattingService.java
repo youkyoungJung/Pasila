@@ -21,12 +21,11 @@ public class ChattingService {
 
     private final MemberService memberService;
 
-    public Member saveChat(ChatLogDto chatLog , Long userId) {
-
-        Member member = memberService.getMemberById(userId);
+    public void saveChat(ChatLogDto chatLog) {
+        Member member = memberService.getMemberById(chatLog.getMemberId());
         ChatRedis chatRedis = new ChatRedis(chatLog.getLiveId(), member.getName(), chatLog.getMessage(), LocalDateTime.now());
         chatRedisService.saveChat(chatRedis);
-        return member;
+
     }
 
 }

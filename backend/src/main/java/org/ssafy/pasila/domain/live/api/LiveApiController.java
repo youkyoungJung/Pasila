@@ -75,8 +75,6 @@ public class LiveApiController {
 
     private final SimpMessagingTemplate template;
 
-    private final JwtUtil jwtUtil;
-
     private final EncryptService encryptService;
 
     @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브)")
@@ -245,13 +243,8 @@ public class LiveApiController {
     })
     @MessageMapping("/join")
     @PreAuthorize("isAuthenticated()")
-    public void joinLive(@RequestBody ChatLogDto chatLogDto,
-                         @Header("Authorization") String data) {
-
-        String token = data.substring(7);
-        Long userId = jwtUtil.getUserId(token);
-
-        int participantNum = liveService.joinLive(chatLogDto.getLiveId() , userId);
+    public void joinLive(@RequestBody ChatLogDto chatLogDto) {
+        int participantNum = liveService.joinLive(chatLogDto.getLiveId() , chatLogDto.getMemberId());
         template.convertAndSend("/num/" + chatLogDto.getLiveId(), participantNum);
 
     }
@@ -261,13 +254,8 @@ public class LiveApiController {
             @ApiResponse(responseCode = "200", description = "성공")
     })
     @MessageMapping("/exit")
-    public void exitLive(@RequestBody ChatLogDto chatLogDto,
-                         @Header("Authorization") String data){
-
-        String token = data.substring(7);
-        Long userId = jwtUtil.getUserId(token);
-
-        int participantNum = liveService.exitLive(chatLogDto.getLiveId() , userId);
+    public void exitLive(@RequestBody ChatLogDto chatLogDto){
+        int participantNum = liveService.exitLive(chatLogDto.getLiveId() , chatLogDto.getMemberId());
         template.convertAndSend("/num/" + chatLogDto.getLiveId(), participantNum);
 
     }
