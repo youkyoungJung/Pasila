@@ -2,7 +2,7 @@
 import router from '@/router'
 import { ref } from 'vue'
 import FormInput from '@/components/login/FormInput.vue'
-import { checkEmailAuthNumber } from '@/components/api/AuthAPI'
+import { checkEmailAuthNumberApi } from '@/components/api/AuthAPI'
 import { useMemberStore } from '@/stores/member'
 
 const store = useMemberStore()
@@ -17,7 +17,7 @@ const inputData = ref({
 })
 
 const goPassword = async (e) => {
-  const res = await checkEmailAuthNumber(store.checkPwEmail, e)
+  const res = await checkEmailAuthNumberApi(store.checkPwEmail, e)
   if (res) {
     router.push('/setpw')
   } else {

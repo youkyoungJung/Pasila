@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import FormInput from '@/components/login/FormInput.vue'
 import router from '@/router'
-import { checkPassword } from '@/components/api/MemberAPI.js'
+import { checkPasswordApi } from '@/components/api/MemberAPI.js'
 
 const inputData = ref({
   title: '비밀번호 확인',
@@ -20,7 +20,7 @@ const goMypage = async (e) => {
     password: e
   }
 
-  const res = await checkPassword(user)
+  const res = await checkPasswordApi(user)
 
   if (res) {
     router.push(`/my`)

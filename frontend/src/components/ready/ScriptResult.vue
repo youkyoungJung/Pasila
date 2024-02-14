@@ -1,9 +1,10 @@
 <script setup>
+import { useReadyLiveStore } from '@/stores/readyLive'
 const props = defineProps(['script'])
 defineEmits(['getData'])
-
+const store = useReadyLiveStore()
 const saveScript = () => {
-  //스크립트 저장하기
+  store.liveScript = props.script
   alert('저장 되었습니다.')
 }
 </script>

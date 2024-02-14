@@ -3,12 +3,12 @@ import router from '@/router'
 import { ref } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
-import { joinUser, checkMyEmail, checkMyChannel } from '@/components/api/MemberAPI'
+import { joinUserApi, checkMyEmailApi, checkMyChannelApi } from '@/components/api/MemberAPI'
 import {
-  getEmailAuthNumber,
-  checkEmailAuthNumber,
-  checkPhoneAuthNumber,
-  getPhoneAuthNumber
+  getEmailAuthNumberApi,
+  checkEmailAuthNumberApi,
+  checkPhoneAuthNumberApi,
+  getPhoneAuthNumberApi
 } from '@/components/api/AuthAPI'
 
 const user = ref({
@@ -124,19 +124,19 @@ const checkEmail = async () => {
     alert('이메일 형식을 확인해주세요.')
     return
   }
-  const res = await checkMyEmail(user.value.email)
+  const res = await checkMyEmailApi(user.value.email)
   if (res == -1) {
     emailCerti.value = 0
   } else if (res) {
     emailCerti.value = 1
-    await getEmailAuthNumber(user.value.email)
+    await getEmailAuthNumberApi(user.value.email)
   } else {
     emailCerti.value = 2
   }
 }
 
 const checkEmailCerti = async () => {
-  const res = await checkEmailAuthNumber(user.value.email, emailCertiNum.value)
+  const res = await checkEmailAuthNumberApi(user.value.email, emailCertiNum.value)
   if (res) {
     resultCheckEmail.value = 1
   } else {
@@ -144,7 +144,7 @@ const checkEmailCerti = async () => {
   }
 }
 const checkChannel = async () => {
-  const res = await checkMyChannel(user.value.channel)
+  const res = await checkMyChannelApi(user.value.channel)
   if (res == -1) {
     channelCerti.value = 0
   } else if (res) {
@@ -155,11 +155,11 @@ const checkChannel = async () => {
 }
 
 const sendPhoneNum = async () => {
-  await getPhoneAuthNumber(user.value.phone)
+  await getPhoneAuthNumberApi(user.value.phone)
 }
 
 const checkCertiNum = async () => {
-  const res = await checkPhoneAuthNumber(user.value.phone, phoneCerti.value)
+  const res = await checkPhoneAuthNumberApi(user.value.phone, phoneCerti.value)
   if (res === -1) {
     phoneCerti.value = 0
   } else if (res) {
@@ -232,7 +232,7 @@ const join = async () => {
 
   formData.append('member', new Blob([JSON.stringify(user.value)], { type: 'application/json' }))
 
-  const res = await joinUser(formData)
+  const res = await joinUserApi(formData)
   if (res) {
     alert('회원가입이 완료 되었습니다.')
     router.push('/')
@@ -271,6 +271,9 @@ const join = async () => {
         <div v-if="emailCerti == 1" class="check-text">
           사용가능한 이메일입니다. 인증을 위해 이메일을 확인해주세요.
         </div>
+        <div v-else-if="emailCerti == 2" class="wrong-text">
+          중복된 이메일입니다. 다른 이메일을 사용해 주세요.
+        </div>
         <v-short-input
           :data="shortData.emailCerti"
           @getData="
@@ -283,10 +286,6 @@ const join = async () => {
         <div v-if="resultCheckEmail == 1" class="check-text">이메일 인증이 완료되었습니다.</div>
         <div v-else-if="resultCheckEmail == 2" class="wrong-text">
           인증번호를 다시 입력해주세요.
-        </div>
-
-        <div v-else-if="emailCerti == 2" class="wrong-text">
-          중복된 이메일입니다. 다른 이메일을 사용해 주세요.
         </div>
       </section>
       <section class="userInfo">
