@@ -68,7 +68,7 @@ public class OpenviduService {
     public String createConnection(String sessionId, String token)
             throws OpenViduHttpException, InterruptedException, OpenViduJavaClientException {
         Map<String, Object> params = new HashMap<>();
-        if(!token.isEmpty() && isShowHost(sessionId, getMemberIdFromToken(token))){
+        if(token != null && !token.isEmpty() && isShowHost(sessionId, getMemberIdFromToken(token))){
             params.put("role", "PUBLISHER");
         }else {
             params.put("role", "SUBSCRIBER");
