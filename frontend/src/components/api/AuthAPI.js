@@ -12,7 +12,9 @@ const emailLogin = async (myEmail, myPassword) => {
     })
     alert(`${res.data.data.name}님! 반갑습니다 ><`)
     let token = res.data.data.token
+    let id = res.data.data.id
     localStorage.setItem('token', token)
+    localStorage.setItem('id', id)
     return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
