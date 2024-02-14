@@ -73,17 +73,17 @@ public class LiveApiController {
     private final SimpMessagingTemplate template;
 
     @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브)")
-    @PostMapping(value = "/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiCommonResponse<?> reserveLive(@RequestPart(value = "live") CreateLiveRequestDto createLiveRequestDto,
                                             @RequestPart(value = "product") ProductRequestDto productRequestDto,
                                             @RequestPart(value = "image") MultipartFile image,
                                             @RequestPart(value = "chatbot") List<Chatbot> chatbotList,
                                             // 로그인 완료후 @RequestHeader로 변경 예정
-                                            @PathVariable("memberId") Long memberId) throws IOException {
+                                            @RequestPart("memberId") Map<String, Long> memberIdMap) throws IOException {
         // 1. Product
         String productId = productService.saveProduct(productRequestDto, image);
         // 2. Live
-        String liveId = liveService.saveLive(createLiveRequestDto, memberId, productId);
+        String liveId = liveService.saveLive(createLiveRequestDto, memberIdMap.get("memberId"), productId);
         // 3. Chatbot
         chatbotService.save(chatbotList, liveId);
 
