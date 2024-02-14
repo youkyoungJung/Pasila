@@ -2,6 +2,7 @@ package org.ssafy.pasila.global.infra.gpt3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GptClient {
@@ -144,9 +146,9 @@ public class GptClient {
                 throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
             }
 
-            String result = response.getChoices().get(0).getMessage().getContent();
-            return splitMessage(result);
+            return response.getChoices().get(0).getMessage().getContent();
         } catch (Exception e) {
+            log.error("{}", e.getMessage());
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
@@ -178,6 +180,7 @@ public class GptClient {
 
             return response.getChoices().get(0).getMessage().getContent();
         } catch (Exception e) {
+            log.error("{}", e.getMessage());
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
@@ -188,7 +191,7 @@ public class GptClient {
         for (int i = 0; i < 2; i++) {
             resultArr[i] = tempArr[i];
         }
-        String res = String.join(".", resultArr);
+        String res = String.join(". ", resultArr);
         String splitResult = res.replace(String.valueOf("null"), "");
         String realSplitResult = splitResult.substring(0, splitResult.length() - 1);
         return realSplitResult;
