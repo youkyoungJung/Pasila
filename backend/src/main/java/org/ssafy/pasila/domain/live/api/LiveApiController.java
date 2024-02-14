@@ -19,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
+import org.ssafy.pasila.domain.auth.service.EncryptService;
 import org.ssafy.pasila.domain.live.dto.chat.ChatLogDto;
 import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
 import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequestDto;
@@ -74,6 +75,8 @@ public class LiveApiController {
     private final SimpMessagingTemplate template;
 
     private final JwtUtil jwtUtil;
+
+    private final EncryptService encryptService;
 
     @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브)")
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -170,6 +173,7 @@ public class LiveApiController {
     public ApiCommonResponse<?> findSellProduct(@PathVariable("liveId") String liveId) {
         String productId = liveService.getProductId(liveId);
         ProductSellResponseDto product = productService.getProductSell(productId);
+        product.setAccount(encryptService.decryptAccount(product.getAccount()));
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), product);
     }
 
