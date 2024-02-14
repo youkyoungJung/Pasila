@@ -71,7 +71,6 @@ public class FileStorageUtil {
             String[] split = url.split("/");
             String filename = split[split.length - 1];
             String path = "live/" + split[split.length - 2];
-            log.info("fileStorage - {}", uploadDirectory + path + "/" + filename);
             Path downloadPath = Paths.get(uploadDirectory + path + "/" + filename);
 
             if (!Files.exists(downloadPath)) {
