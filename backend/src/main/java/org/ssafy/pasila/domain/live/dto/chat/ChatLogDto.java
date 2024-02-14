@@ -15,6 +15,9 @@ public class ChatLogDto {
     @Schema(description = "라이브 방송 ID")
     private String liveId;
 
+    @Schema(description = "시청자의 ID")
+    private Long memberId;
+
     @Schema(description = "채팅 내용")
     private String message;
 
