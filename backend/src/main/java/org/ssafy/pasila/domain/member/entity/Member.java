@@ -61,7 +61,7 @@ public class Member {
     @Column(length = 10)
     private String bank;
 
-    @Column(length = 20)
+    @Column(length = 64)
     private String account;
 
     @Column(length = 2083)
@@ -113,7 +113,6 @@ public class Member {
         this.birth = request.getBirth();
         this.bank = request.getBank();
         this.account = request.getAccount();
-        this.profile = request.getProfile();
     }
 
     public void updateMemberWithPw(PersonalInfoDto request) {
@@ -127,7 +126,6 @@ public class Member {
         this.birth = request.getBirth();
         this.bank = request.getBank();
         this.account = request.getAccount();
-        this.profile = request.getProfile();
     }
 
     // 채널 설명 수정

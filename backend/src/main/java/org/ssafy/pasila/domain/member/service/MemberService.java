@@ -36,10 +36,10 @@ public class MemberService {
     private final PasswordEncoder encoder;
 
     /**
-     * 사용자 정보 수정 메서드
+     * 사용자 정보 수정 메서드(프로필 제외)
      */
     @Transactional
-    public Long updateMember(Long id, PersonalInfoDto request, MultipartFile newImageFile) throws IOException {
+    public Long updateMember(Long id, PersonalInfoDto request) {
         Member result = getMemberById(id);
 
         request.setAccount(encoder.encode(request.getAccount()));
@@ -49,9 +49,15 @@ public class MemberService {
             request.setPassword(encoder.encode(request.getPassword()));
             result.updateMemberWithPw(request);
         }
-        if(!newImageFile.isEmpty()) {
-            handleImage(result, newImageFile);
-        }
+        return result.getId();
+    }
+
+    /**
+     * 프로필 수정 메서드
+     */
+    public Long updateProfile(Long id, MultipartFile newImage) throws IOException {
+        Member result = getMemberById(id);
+        handleNewImage(result, newImage);
         return result.getId();
     }
 
@@ -65,7 +71,6 @@ public class MemberService {
         member.updateChannel(description);
         return member.getId();
     }
-
 
     /**
      * 채널별 라이브 조회 메서드
@@ -183,5 +188,4 @@ public class MemberService {
         member.updatePassword(encoder.encode(dto.getPassword()));
 
     }
-
 }
