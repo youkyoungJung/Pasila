@@ -40,7 +40,7 @@ public class ChatRedisRepository {
     public String recentChat(String key) {
         if(key == null) return null;
 
-        List<String> valueList = redisTemplate.opsForList().range("chat:" + key, 0, -1);
+        List<String> valueList = redisTemplate.opsForList().range("chat:" + key, 0, -2);
 
         if(valueList == null || valueList.isEmpty()) return null;
 
