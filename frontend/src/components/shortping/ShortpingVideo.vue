@@ -5,7 +5,9 @@ import { getThumbnailApi } from '@/components/api/ShortpingAPI'
 const vi = ref(null)
 const currentTime = ref(0)
 const props = defineProps(['data', 'video'])
-const videoURL = ref('http://localhost:5173/src/assets/video/test/test.mp4')
+const videoURL = ref(
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+)
 
 onMounted(() => {
   getPictures()
