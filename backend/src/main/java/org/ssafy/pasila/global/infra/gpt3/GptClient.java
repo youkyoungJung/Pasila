@@ -2,6 +2,7 @@ package org.ssafy.pasila.global.infra.gpt3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -25,7 +26,10 @@ import org.ssafy.pasila.global.infra.gpt3.model.TranscriptionResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GptClient {
@@ -135,7 +139,7 @@ public class GptClient {
             String system = "넌 " + product.getName() + "를 판매하는 상담사야." +
                     "제품의 정보는 다음과 같아.\n" +
                     product.getDescription() +
-                    "\n상품에 대한 질문에만 답변해주고 상품 이외의 다른 정보는 말하지마.";
+                    "\n상품 이외의 다른 정보는 말하지마.";
 
             ChatRequest request = new ChatRequest(model, system, message, chatbotMessages, temperature, top_p);
             ChatResponse response = restTemplate.postForObject(apiUrl + "/chat/completions", request, ChatResponse.class);
@@ -147,6 +151,7 @@ public class GptClient {
             String result = response.getChoices().get(0).getMessage().getContent();
             return splitMessage(result);
         } catch (Exception e) {
+            log.error("{}", e.getMessage());
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
@@ -178,20 +183,26 @@ public class GptClient {
 
             return response.getChoices().get(0).getMessage().getContent();
         } catch (Exception e) {
+            log.error("{}", e.getMessage());
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
     public String splitMessage(String message) {
-        String[] tempArr = message.split("[.]");
-        String[] resultArr = new String[tempArr.length];
-        for (int i = 0; i < 2; i++) {
-            resultArr[i] = tempArr[i];
+        List<String> allMatches = new ArrayList<String>();
+        Matcher m = Pattern.compile("[^\\.\\!\\?]*[\\.\\!\\?]*\\s*")
+                .matcher(message);
+        
+        while (m.find()) {
+            allMatches.add(m.group());
         }
-        String res = String.join(".", resultArr);
-        String splitResult = res.replace(String.valueOf("null"), "");
-        String realSplitResult = splitResult.substring(0, splitResult.length() - 1);
-        return realSplitResult;
+        
+        String result = "";
+        for (int i = 0; i < 2 && i < allMatches.size(); i++) {
+            result += allMatches.get(i);
+        }
+
+        return result;
     }
 
 }
