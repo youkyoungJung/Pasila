@@ -62,7 +62,7 @@ public class Live {
     private String fullVideoUrl;
 
     @Column(name = "like_cnt")
-    private Integer likeCnt;
+    private Integer likeCnt = 0;
 
     @Column(name = "is_on", columnDefinition = "TINYINT(1)")
     @ColumnDefault("false")
@@ -70,7 +70,7 @@ public class Live {
 
     @CreationTimestamp
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Setter
     @Column(name = "is_active", columnDefinition = "TINYINT(1)")

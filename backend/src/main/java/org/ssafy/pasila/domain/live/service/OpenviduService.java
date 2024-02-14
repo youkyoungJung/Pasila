@@ -10,8 +10,6 @@ import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
 import org.ssafy.pasila.domain.live.utils.RetryException;
 import org.ssafy.pasila.domain.live.utils.RetryOptions;
-import org.ssafy.pasila.domain.member.entity.Member;
-import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.global.util.JwtUtil;
 
 import java.util.HashMap;
@@ -103,8 +101,17 @@ public class OpenviduService {
         return connection;
     }
 
+    private String extractFromToken(String token) {
+        String[] parts = token.split(" ");
+        if (parts.length == 2 && parts[0].equals("Bearer")) {
+            return parts[1];
+        } else {
+            throw new IllegalArgumentException("Invalid token");
+        }
+    }
+
     private Long getMemberIdFromToken(String token) {
-        return jwtUtil.getUserId(token);
+        return jwtUtil.getUserId(extractFromToken(token));
     }
 
     private boolean isShowHost(String sessionId, Long memberId){
@@ -127,4 +134,13 @@ public class OpenviduService {
         return openvidu.stopRecording(recordingId);
     }
 
+    // 녹화 삭제
+    public void deleteRecording(String recordingId) throws OpenViduJavaClientException, OpenViduHttpException {
+        List<Recording> recordings = this.openvidu.listRecordings();
+        for(Recording recording : recordings){
+            if(recording.getId().equals(recordingId)) {
+                openvidu.deleteRecording(recordingId);
+            }
+        }
+    }
 }
