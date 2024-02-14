@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onUpdated } from 'vue'
+import { ref, onMounted, onUpdated } from 'vue'
 
 defineProps({
   isCustomer: Boolean,
@@ -9,6 +9,10 @@ defineProps({
 
 let isChatbot = ref(false)
 const liveChat = ref(null)
+
+onMounted(() => {
+  scrollBottom()
+})
 
 onUpdated(() => {
   scrollBottom()
