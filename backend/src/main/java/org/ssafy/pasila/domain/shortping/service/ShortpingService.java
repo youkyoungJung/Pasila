@@ -128,27 +128,22 @@ public class ShortpingService {
 
     // 라이브 영상 & 썸네일
     public LiveThumbnailResponse getThumbnailList(String id) {
-        try {
-            Live live = liveRepository.findById(id)
-                    .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
 
-            // 라이브 영상 파일 이름 가져오기
-            String liveUrl = "https://i10p402.p.ssafy.io/download/live/" + live.getId() + "/" + live.getId() + ".mp4";
+        Live live = liveRepository.findById(id)
+                .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
 
-            byte[] liveVideo = fileStorageUtil.download("live/" + live.getId() + "/" + live.getId() + ".mp4");
+        // 라이브 영상 파일 이름 가져오기
+        String liveUrl = "https://i10a402.p.ssafy.io/download/live/" + live.getId() + "/" + live.getId() + ".mp4";
 
-            // 라이브 영상 썸네일 뽑기
-            List<String> thumbnails = ffmpegClient.convertImages(liveVideo);
+        byte[] liveVideo = fileStorageUtil.download("live/" + live.getId() + "/" + live.getId() + ".mp4");
 
-            return LiveThumbnailResponse.builder()
-                    .liveUrl(liveUrl)
-                    .thumbnails(thumbnails)
-                    .build();
+        // 라이브 영상 썸네일 뽑기
+        List<String> thumbnails = ffmpegClient.convertImages(liveVideo);
 
-        } catch (Exception e) {
-            log.error("{}", e.getMessage());
-            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        return LiveThumbnailResponse.builder()
+                .liveUrl(liveUrl)
+                .thumbnails(thumbnails)
+                .build();
 
     }
 
