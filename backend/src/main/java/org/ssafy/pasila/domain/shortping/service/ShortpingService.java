@@ -67,6 +67,7 @@ public class ShortpingService {
         }
 
         String url = fileStorageUtil.upload(video, live.getId() + ".mp4", "shortping");
+        url = "https://i10a402.p.ssafy.io/download/" + url;
 
         livelogService.deleteLivelogListByLiveId(live.getId());
 
@@ -89,7 +90,7 @@ public class ShortpingService {
     public void saveRecommandHighlight(String productId) throws IOException {
 
         Live live = liveQueryRepository.findByProductId(productId);
-        byte[] file = fileStorageUtil.download("live/" + live.getId() + "/" + live.getId() + ".mp4");
+        byte[] file = fileStorageUtil.liveDownloadUrl(live.getFullVideoUrl());
 
         // 영상에서 하이라이트 가져오기
         List<RecommendLivelogResponseDto> highlights = getHighlightList(file);
@@ -133,9 +134,8 @@ public class ShortpingService {
                 .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
 
         // 라이브 영상 파일 이름 가져오기
-        String liveUrl = "https://i10a402.p.ssafy.io/download/live/" + live.getId() + "/" + live.getId() + ".mp4";
-
-        byte[] liveVideo = fileStorageUtil.download("live/" + live.getId() + "/" + live.getId() + ".mp4");
+        String liveUrl = live.getFullVideoUrl();
+        byte[] liveVideo = fileStorageUtil.liveDownloadUrl(liveUrl);
 
         // 라이브 영상 썸네일 뽑기
         List<String> thumbnails = ffmpegClient.convertImages(liveVideo);
