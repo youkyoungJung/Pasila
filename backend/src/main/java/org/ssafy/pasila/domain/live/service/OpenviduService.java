@@ -13,6 +13,7 @@ import org.ssafy.pasila.domain.live.utils.RetryOptions;
 import org.ssafy.pasila.global.util.JwtUtil;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -133,4 +134,13 @@ public class OpenviduService {
         return openvidu.stopRecording(recordingId);
     }
 
+    // 녹화 삭제
+    public void deleteRecording(String recordingId) throws OpenViduJavaClientException, OpenViduHttpException {
+        List<Recording> recordings = this.openvidu.listRecordings();
+        for(Recording recording : recordings){
+            if(recording.getId().equals(recordingId)) {
+                openvidu.deleteRecording(recordingId);
+            }
+        }
+    }
 }
