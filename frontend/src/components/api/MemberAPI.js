@@ -106,8 +106,6 @@ const changeMyInfo = async (data) => {
 }
 
 const updatePw = async (myEmail, myPassword) => {
-  console.log(myEmail)
-  console.log(myPassword)
   try {
     const res = await local.post(`${url}/updatePw`, {
       email: myEmail,

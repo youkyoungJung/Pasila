@@ -3,9 +3,10 @@ import ReadySteps from '@/components/ready/ReadySteps.vue'
 import ScheduleCalendar from '@/components/ready/ScheduleCalendar.vue'
 import ScheduleTime from '@/components/ready/ScheduleTime.vue'
 import { useReadyLiveStore } from '@/stores/readyLive'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { sendLiveSchedule } from '@/components/api/LiveAPI'
 import { useMemberStore } from '@/stores/member'
+import router from '@/router'
 
 const step = ref('schedule')
 const store = useReadyLiveStore()
@@ -22,6 +23,13 @@ const liveTime = ref({
   script: store.liveScript
 })
 
+watch(hour, () => {
+  if (hour.value > 12) {
+    hour.value -= 12
+    if (apm.value == '오후') apm.value = '오전'
+    else apm.value = '오후'
+  }
+})
 const liveFormData = new FormData()
 const file = ref()
 const reserveLive = async () => {
@@ -77,15 +85,14 @@ const reserveLive = async () => {
       while (n--) {
         u8arr[n] = bstr.charCodeAt(n)
       }
-      console.log(u8arr)
-      return new File([u8arr], filename, { type: 'image/jpeg' })
+      return new File([u8arr], filename, { type: mime })
     }
   }
   searchSrc(store.productDesc).map((v, i) => {
     if (v?.length > 1000) {
       //  "data:image/png;base64~~~"는 1000자를 넘어가기 때문에 + base64만 가져오기 위해서
       const imgBase64 = v
-      file.value = base64toFile(imgBase64, 'fileName')
+      file.value = base64toFile(imgBase64, 'fileName.jpg')
       store.productImage = file
 
       liveFormData.set('image', file.value)
@@ -101,16 +108,10 @@ const reserveLive = async () => {
   await sendData()
 }
 const sendData = async () => {
-  console.log(JSON.stringify(store.liveSchedule))
-  console.log(JSON.stringify(store.liveProduct.value))
-  console.log(JSON.stringify(store.liveChatbot))
-  console.log(store.productImage)
-  console.log(userStore.member.id)
   const memberId = {
     memberId: userStore.member.id
   }
-  console.log(JSON.stringify(memberId))
-  // liveFormData.append('image', '')
+
   liveFormData.set(
     'live',
     new Blob([JSON.stringify(store.liveSchedule)], {
@@ -133,7 +134,8 @@ const sendData = async () => {
   liveFormData.set('memberId', new Blob([JSON.stringify(memberId)], { type: 'application/json' }))
 
   const res = await sendLiveSchedule(liveFormData)
-  console.log(res)
+  alert('라이브 예약이 완료되었습니다!')
+  router.push('/')
 }
 </script>
 
