@@ -31,6 +31,8 @@ let subscribers = ref([])
 
 let ws
 let chatmsg = ref('')
+let isChatbot = ref(false)
+const chatList = ref([])
 
 let userRole = ref('')
 let isStart = ref(false)
@@ -52,23 +54,26 @@ onMounted(async () => {
     userRole.value = 'SUB'
   }
 
-  const stockEvent = getLiveStockApi(props.liveId)
+  if (userRole.value === 'PUB') {
+    const stockEvent = getLiveStockApi(props.liveId)
 
-  stockEvent.addEventListener('sse', (e) => {
-    const data = JSON.parse(e.data)
-    if (data.liveId) {
-      product.options = data.options
-    }
-  })
+    stockEvent.addEventListener('sse', (e) => {
+      const data = JSON.parse(e.data)
+      if (data.liveId) {
+        product.options = data.options
+      }
+    })
+    setInterval(async () => {
+      questionList.value = await getLiveQuestionApi(props.liveId)
+    }, 60000)
+  }
 
+  connectChat()
   joinSession()
-
-  setInterval(async () => {
-    questionList.value = await getLiveQuestionApi(props.liveId)
-  }, 300000)
 })
 
 onUnmounted(() => {
+  ws.disconnect()
   leaveSession()
 })
 
@@ -195,44 +200,55 @@ watch(
   }
 )
 
-const sendChat = async (isChatbot) => {
-  if (isChatbot) {
-    const data = {
+const clickChatbot = () => {
+  isChatbot.value = !isChatbot.value
+}
+
+const sendChat = async () => {
+  if (chatmsg.value.length <= 0) {
+    alert('내용을 입력하세요')
+    return
+  }
+  if (ws && ws.connected) {
+    const msg = {
       liveId: props.liveId,
+      memberId: 11,
       message: chatmsg.value
     }
+    ws.send(`/send/chatting`, JSON.stringify(msg), {})
+  }
+  const msg = chatmsg.value
+  chatmsg.value = ''
+  if (isChatbot.value) {
+    const data = {
+      liveId: props.liveId,
+      message: msg
+    }
     const res = await sendChatToChatbot(data)
-    //TODO: res 받아서 chatlist에 넣기
-  } else {
-    if (ws && ws.connected) {
-      //TODO: send할 data 가공 필요
-      const chat = {}
-      //TODO: 채팅 받을 곳 필요
-      ws.send(`/receive/`, JSON.stringify(chat), {})
+    if (res) {
+      chatList.value.push({
+        memberId: 'PASILA',
+        message: res
+      })
     }
   }
-  chatmsg.value = ''
 }
 
 const connectChat = () => {
-  //TODO: 서버 주소로 변경필요
-  const serverURL = 'https://i10a402.p.ssafy.io/chat'
+  const serverURL = 'https://i10a402.p.ssafy.io/stomp/pasila'
   const socket = new SockJs(serverURL)
-  ws = Stomp.over(socket)
-
-  //TODO: 토큰 저장 장소 localStorage 맞는지?, 채팅할 때 authorization 헤더 필요한거 맞는지
-  const headers = { Authorization: localStorage.getItem('token') }
+  ws = Stomp.over(socket, { debug: false })
 
   ws.connect(
-    headers,
-    (frame) => {
-      window.connected = true
-      //TODO: subscribe 주소 확인, res 처리
-      ws.subscribe(`/send`, (res) => {})
+    { Authorization: localStorage.getItem('token') },
+    () => {
+      ws.subscribe(`/id/${props.liveId}`, (res) => {
+        console.log('구독으로 받은 메시지 입니다.', JSON.parse(res.body))
+        chatList.value.push(JSON.parse(res.body))
+      })
     },
-    (err) => {
-      console.error(err)
-      window.connected = false
+    (error) => {
+      console.log('소켓 연결 실패', error)
     }
   )
 }
@@ -248,10 +264,14 @@ const connectChat = () => {
 
       <section class="col-2" v-if="pubToolBar[1].isActive">
         <live-chat
-          :is-customer="false"
+          :is-customer="userRole === 'SUB'"
+          :is-chatbot="isChatbot"
           :chatmsg="chatmsg"
-          @change-msg="(e) => (chatmsg = e.target.value)"
+          @change-msg="(e) => (chatmsg = e)"
           @send-msg="sendChat"
+          @send="sendChat"
+          @click-chatbot="clickChatbot"
+          :chat-list="chatList"
         />
       </section>
 
@@ -278,10 +298,14 @@ const connectChat = () => {
 
       <section class="col-2" v-if="subToolBar[0].isActive">
         <live-chat
-          :is-customer="true"
+          :is-customer="userRole === 'SUB'"
+          :is-chatbot="isChatbot"
           :chatmsg="chatmsg"
           @change-msg="(e) => (chatmsg = e)"
           @send-msg="sendChat"
+          @send="sendChat"
+          @click-chatbot="clickChatbot"
+          :chat-list="chatList"
         />
       </section>
 

@@ -57,7 +57,7 @@ const stopLiveApi = async (liveId) => {
 const getLiveQuestionApi = async (liveId) => {
   try {
     const res = await local.get(`${url}/question?liveId=${liveId}`)
-    return res.data
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
     return null
