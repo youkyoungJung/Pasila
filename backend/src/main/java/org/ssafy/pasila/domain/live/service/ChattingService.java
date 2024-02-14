@@ -22,8 +22,7 @@ public class ChattingService {
     private final MemberService memberService;
 
     public void saveChat(ChatLogDto chatLog) {
-        Member member = memberService.getMemberById(chatLog.getMemberId());
-        ChatRedis chatRedis = new ChatRedis(chatLog.getLiveId(), member.getName(), chatLog.getMessage(), LocalDateTime.now());
+        ChatRedis chatRedis = new ChatRedis(chatLog.getLiveId(), chatLog.getName(), chatLog.getMessage(), LocalDateTime.now());
         chatRedisService.saveChat(chatRedis);
 
     }
