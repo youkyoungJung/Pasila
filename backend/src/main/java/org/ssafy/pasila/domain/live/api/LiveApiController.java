@@ -136,6 +136,9 @@ public class LiveApiController {
         // 1. Live 정보 업데이트
         liveService.updateLiveOn(liveId);
         // 2. 화면 녹화 시작
+        if(mapRecordings.containsKey(liveId)){
+            openviduService.deleteRecording(mapRecordings.get(liveId));
+        }
         Recording recording = openviduService.startRecording(liveId);
         mapRecordings.put(liveId, recording.getId());
         // 3. Redis
