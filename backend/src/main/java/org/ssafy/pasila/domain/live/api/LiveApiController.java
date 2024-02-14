@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -245,7 +246,7 @@ public class LiveApiController {
     @MessageMapping("/join")
     @PreAuthorize("isAuthenticated()")
     public void joinLive(@RequestBody ChatLogDto chatLogDto,
-                         @RequestHeader("Authorization") String data) {
+                         @Header("Authorization") String data) {
 
         String token = data.substring(7);
         Long userId = jwtUtil.getUserId(token);
@@ -261,7 +262,7 @@ public class LiveApiController {
     })
     @MessageMapping("/exit")
     public void exitLive(@RequestBody ChatLogDto chatLogDto,
-                         @RequestHeader("Authorization") String data){
+                         @Header("Authorization") String data){
 
         String token = data.substring(7);
         Long userId = jwtUtil.getUserId(token);
