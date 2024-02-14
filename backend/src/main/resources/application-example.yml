@@ -5,6 +5,13 @@ spring:
     password: ssafy
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+      enabled: true
+      location: /download/
+
   jpa:
     hibernate:
       ddl-auto: create # create / none

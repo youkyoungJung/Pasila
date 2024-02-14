@@ -24,6 +24,7 @@ import org.ssafy.pasila.global.infra.FFmpeg.FFmpegClient;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.gpt3.model.Script;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
+import org.ssafy.pasila.global.util.FileStorageUtil;
 
 import java.io.IOException;
 import java.util.List;
@@ -50,8 +51,11 @@ public class ShortpingService {
 
     private final S3Uploader s3Uploader;
 
+    private final FileStorageUtil fileStorageUtil;
+
+
     @Transactional
-    public Shortping saveShortping(ShortpingRequestDto shortpingRequest, MultipartFile video) {
+    public String saveShortping(ShortpingRequestDto shortpingRequest, MultipartFile video) {
         String productId = shortpingRequest.getProductId();
         Live live = liveQueryRepository.findByProductId(productId);
 
@@ -59,9 +63,7 @@ public class ShortpingService {
             throw new RestApiException(ErrorCode.BAD_REQUEST);
         }
 
-        // TODO: 영상 저장
-        String url = "test";
-        // url = s3Uploader.upload("test", video, "shortping");
+        String url = fileStorageUtil.upload(video, live.getId() + ".mp4", "shortping");
 
         livelogService.deleteLivelogListByLiveId(live.getId());
 
@@ -72,7 +74,7 @@ public class ShortpingService {
         Shortping shortping = shortpingRequest.toEntity(url, product);
         shortpingQueryService.save(shortping);
 
-        return shortping;
+        return shortping.getId();
     }
 
     public ShortpingResponseDto getShortpingById(String id) {
@@ -82,21 +84,21 @@ public class ShortpingService {
 
     // 추천 하이라이트 저장
     public void saveRecommandHighlight(String productId) throws IOException {
-        // TODO: 영상 가져오기
-        MultipartFile file = null;
+
+        Live live = liveQueryRepository.findByProductId(productId);
+        byte[] file = fileStorageUtil.download("live/" + live.getId() + ".mp4");
 
         // 영상에서 하이라이트 가져오기
         List<RecommendLivelogResponseDto> highlights = getHighlightList(file);
 
         // 하이라이트 저장
-        Live live = liveQueryRepository.findByProductId(productId);
         livelogService.saveRecommandLivelogList(highlights, live);
     }
 
 
 
     // 영상에서 하이라이트 뽑기
-    public List<RecommendLivelogResponseDto> getHighlightList(MultipartFile file) {
+    public List<RecommendLivelogResponseDto> getHighlightList(byte[] file) {
 
         byte[] audioFilebytes = ffmpegClient.convertAudio(file);
         List<Script> segments = gptService.speechToText(audioFilebytes).getSegments();
@@ -129,8 +131,7 @@ public class ShortpingService {
             // 라이브 영상 파일 이름 가져오기
             String liveUrl = live.getFullVideoUrl();
 
-            // TODO: 라이브 영상 가져오기
-            byte[] liveVideo = null;
+            byte[] liveVideo = fileStorageUtil.download("live/" + live.getId() + ".mp4");
 
             // 라이브 영상 썸네일 뽑기
             List<String> thumbnails = ffmpegClient.convertImages(liveVideo);

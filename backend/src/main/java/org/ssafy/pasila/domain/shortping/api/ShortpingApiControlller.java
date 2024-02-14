@@ -44,9 +44,11 @@ public class ShortpingApiControlller {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = String.class))})
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ApiCommonResponse<?> shortpingList(@RequestPart(value = "video", required = false) MultipartFile video, @RequestPart ShortpingRequestDto shortpingRequest) {
-        shortpingService.saveShortping(shortpingRequest, video);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), "");
+    public ApiCommonResponse<?> shortpingList(@RequestPart(value = "video") MultipartFile video, @RequestPart(value = "shortping") ShortpingRequestDto shortpingRequest) {
+
+        String shortpingId = shortpingService.saveShortping(shortpingRequest, video);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), "create success: " + shortpingId);
+
     }
 
     @Operation(summary = "Get Shortping Detail", description = "Id에 해당하는 숏핑 상세 정보를 가져옵니다.")

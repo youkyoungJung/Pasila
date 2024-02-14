@@ -31,12 +31,15 @@ public class FFmpegClient {
     @Value("${ffmpeg.url}")
     private String url;
 
-    public byte[] convertAudio(MultipartFile file) {
+    public byte[] convertAudio(byte[] file) {
 
         try {
-            FilenameAwareInputStreamResource fileResource = new FilenameAwareInputStreamResource(
-                    file.getInputStream(), file.getSize(), "test"
-            );
+            ByteArrayResource fileResource = new ByteArrayResource(file) {
+                @Override
+                public String getFilename() {
+                    return "test.mp4";
+                }
+            };
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -46,7 +49,7 @@ public class FFmpegClient {
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             return restTemplate.postForObject(url + "/convert/audio/to/mp3", requestEntity, byte[].class);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("FFmpeg - {}", e.getMessage());
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
