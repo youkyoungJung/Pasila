@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 
-const props = defineProps(['data'])
+const props = defineProps(['data', 'inputData'])
 defineEmits(['getData'])
 
 const ph = ref(props.data.title + ' 입력하세요.')
@@ -9,12 +9,14 @@ const ph = ref(props.data.title + ' 입력하세요.')
 
 <template>
   <div class="long-body">
-    <label for="input" class="label">{{ props.data.title }}</label>
+    <label for="longInput" class="label">{{ props.data.title }}</label>
     <input
+      id="longInput"
       :type="props.data.type"
       :placeholder="ph"
       @input="$emit('getData', $event.target.value)"
-      :value="props.data.value"
+      :value="props.inputData"
+      :class="[props.data.title == '이메일 ' ? 'email-readonly' : 'long-input']"
     />
   </div>
 </template>
@@ -26,7 +28,13 @@ const ph = ref(props.data.title + ' 입력하세요.')
   flex-direction: column;
   align-items: center;
   margin-bottom: 0.2rem;
-
+  .email-readonly {
+    pointer-events: none;
+    @include box(90%, 2.5rem, whitesmoke, 0, 0, 0);
+    border: none;
+    padding-left: 0.5rem;
+    outline: none;
+  }
   .label {
     width: 90%;
     display: flex;
@@ -34,7 +42,7 @@ const ph = ref(props.data.title + ' 입력하세요.')
     text-align: flex-start;
   }
 
-  input {
+  .long-input {
     @include box(90%, 2.5rem, whitesmoke, 0, 0, 0);
     border: none;
     margin-top: 0.2rem;

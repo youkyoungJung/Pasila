@@ -2,11 +2,14 @@
 import router from '@/router'
 import { ref } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
+import { emailLogin } from '@/components/api/AuthAPI'
+import { useMemberStore } from '@/stores/member'
 
 const user = ref({
   userEmail: '',
   userPassword: ''
 })
+const store = useMemberStore()
 
 const findPassword = () => {
   router.push('/findpw')
@@ -23,21 +26,30 @@ const inputData = ref({
   }
 })
 
-const login = () => {
-  //이메일로 로그인하기
+const login = async () => {
+  const res = await emailLogin(user.value.userEmail, user.value.userPassword)
+  if (res) {
+    store.member = res
+    router.push('/')
+  } else {
+    alert('비밀번호가 틀렸습니다. 다시 입력해주세요!')
+  }
 }
 
 const join = () => {
   router.push('/join')
 }
 
-//소셜 로그인 당시 필수나 선택으로 가져온 정보를 회원가입 페이지에 넣어주기
-//그리고 필수적으로 이메일을 받아서 이메일로 로그인 가능!
-const googleLogin = () => {}
-
-const kakaoLogin = () => {}
-
-const naverLogin = () => {}
+// const kakaoLogin = () => {
+//   const url =
+//     'https://kauth.kakao.com/oauth/authorize?client_id=' +
+//     'a63ab4b378ad27ff5bf2096393db8ca2' +
+//     '&redirect_uri=' +
+//     'https://localhost:5173' +
+//     '&response_type=code&' +
+//     'scope=profile_nickname profile_image'
+//   kakao(url)
+// }
 </script>
 
 <template>
@@ -56,17 +68,10 @@ const naverLogin = () => {}
       <button @click="login" class="login">로그인</button>
       <button @click="join" class="join">회원가입</button>
       <hr />
-      <div class="social-login" @click="googleLogin">
-        <img src="@/assets/img/google-logo.png" />
-        <button class="social-btn">구글로 시작하기</button>
-      </div>
+
       <div class="social-login" @click="kakaoLogin">
         <img src="@/assets/img/kakao-logo.png" />
         <button class="social-btn">카카오로 시작하기</button>
-      </div>
-      <div class="social-login" @click="naverLogin">
-        <img src="@/assets/img/naver-logo.png" />
-        <button class="social-btn">네이버로 시작하기</button>
       </div>
     </div>
   </div>
@@ -104,6 +109,7 @@ const naverLogin = () => {}
       margin-top: 30px;
       border: none;
       color: white;
+      cursor: pointer;
     }
 
     .forget-pw {
@@ -128,7 +134,7 @@ const naverLogin = () => {}
 
   hr {
     width: 90%;
-    margin: 35px 0px;
+    margin: 20px 0px;
   }
 
   .social-login {

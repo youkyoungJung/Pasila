@@ -115,7 +115,7 @@ const router = createRouter({
       component: ReadyScheduleView
     },
     {
-      path: '/setpw/:id',
+      path: '/setpw',
       name: 'setpw',
       component: SetPwView
     },
