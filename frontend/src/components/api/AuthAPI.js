@@ -13,7 +13,6 @@ const emailLogin = async (myEmail, myPassword) => {
     alert(`${res.data.data.name}님! 반갑습니다 ><`)
     let token = res.data.data.token
     localStorage.setItem('token', token)
-
     return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
@@ -81,7 +80,6 @@ const checkPhoneAuthNumber = async (phone, certi) => {
 
 export {
   emailLogin,
-  kakao,
   getEmailAuthNumber,
   checkEmailAuthNumber,
   getPhoneAuthNumber,

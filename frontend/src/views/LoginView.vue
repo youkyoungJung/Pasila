@@ -2,7 +2,7 @@
 import router from '@/router'
 import { ref } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
-import { emailLogin, kakao } from '@/components/api/AuthAPI'
+import { emailLogin } from '@/components/api/AuthAPI'
 import { useMemberStore } from '@/stores/member'
 
 const user = ref({
@@ -28,8 +28,12 @@ const inputData = ref({
 
 const login = async () => {
   const res = await emailLogin(user.value.userEmail, user.value.userPassword)
-  store.member = res
-  router.push('/')
+  if (res) {
+    store.member = res
+    router.push('/')
+  } else {
+    alert('비밀번호가 틀렸습니다. 다시 입력해주세요!')
+  }
 }
 
 const join = () => {

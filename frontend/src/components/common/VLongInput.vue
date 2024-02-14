@@ -16,7 +16,7 @@ const ph = ref(props.data.title + ' 입력하세요.')
       :placeholder="ph"
       @input="$emit('getData', $event.target.value)"
       :value="props.inputData"
-      :class="[props.data.title == '이메일' ? 'email-readonly' : 'long-input']"
+      :class="[props.data.title == '이메일 ' ? 'email-readonly' : 'long-input']"
     />
   </div>
 </template>

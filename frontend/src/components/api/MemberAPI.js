@@ -104,6 +104,20 @@ const changeMyInfo = async (data) => {
     console.error('localAxios error', err)
   }
 }
+
+const updatePw = async (myEmail, myPassword) => {
+  console.log(myEmail)
+  console.log(myPassword)
+  try {
+    const res = await local.post(`${url}/updatePw`, {
+      email: myEmail,
+      password: myPassword
+    })
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+  }
+}
 export {
   joinUser,
   checkPassword,
@@ -113,5 +127,6 @@ export {
   changeMyInfo,
   getMemberApi,
   getChannelApi,
-  updateChannelDescApi
+  updateChannelDescApi,
+  updatePw
 }

@@ -40,7 +40,7 @@ const getUser = async () => {
 
 const longData = reactive({
   email: {
-    title: '이메일',
+    title: '이메일 ',
     type: 'email',
     value: user.value.email
   },
