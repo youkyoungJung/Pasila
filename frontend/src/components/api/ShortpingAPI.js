@@ -4,7 +4,7 @@ const local = localAxios()
 const formData = formDataAxios()
 const url = '/shortping'
 
-const getHighlight = async (liveId) => {
+const getHighlightApi = async (liveId) => {
   try {
     const res = await local.get('highlight', {
       params: {
@@ -17,7 +17,7 @@ const getHighlight = async (liveId) => {
   }
 }
 
-const getThumbnail = async (id) => {
+const getThumbnailApi = async (id) => {
   try {
     const res = await local.get(`${url}/thumbnail`, {
       params: {
@@ -30,7 +30,7 @@ const getThumbnail = async (id) => {
   }
 }
 
-const sendShortping = async (data) => {
+const sendShortpingApi = async (data) => {
   try {
     const res = await formData.post(`${url}`, data)
     return res.data.data
@@ -38,4 +38,4 @@ const sendShortping = async (data) => {
     console.error('localAxios error', err)
   }
 }
-export { getHighlight, getThumbnail, sendShortping }
+export { getHighlightApi, getThumbnailApi, sendShortpingApi }

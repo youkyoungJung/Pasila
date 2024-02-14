@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getHighlight, sendShortping } from '@/components/api/ShortpingAPI'
+import { getHighlightApi, sendShortpingApi } from '@/components/api/ShortpingAPI'
 
 import ShortpingVideo from '@/components/shortping/ShortpingVideo.vue'
 import ShortpingHighlight from '@/components/shortping/ShortpingHighlight.vue'
@@ -39,7 +39,7 @@ onMounted(() => {
 
 const getHighlightDatas = () => {
   //하이라이트 추천받기(라이브아이디)
-  // const res = getHighlight(id)
+  // const res = getHighlightApi(id)
   //console.log(res)
   //highlightTitle == title
   //highlightStartTime == start
@@ -81,7 +81,7 @@ const complete = () => {
     'shortpingRequest',
     new Blob([JSON.stringify(sendData.value)], { type: 'application/json' })
   )
-  const res = sendShortping(formData)
+  const res = sendShortpingApi(formData)
   console.log(res)
 }
 </script>
