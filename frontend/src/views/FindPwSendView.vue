@@ -17,10 +17,7 @@ const inputData = ref({
 })
 
 const goPassword = async (e) => {
-  console.log(e)
-  console.log(store.checkPwEmail)
   const res = await checkEmailAuthNumber(store.checkPwEmail, e)
-  console.log(res)
   if (res) {
     router.push('/setpw')
   } else {
