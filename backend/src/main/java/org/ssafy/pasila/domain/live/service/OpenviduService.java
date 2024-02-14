@@ -12,6 +12,7 @@ import org.ssafy.pasila.domain.live.utils.RetryException;
 import org.ssafy.pasila.domain.live.utils.RetryOptions;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
+import org.ssafy.pasila.global.util.JwtUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,7 @@ public class OpenviduService {
 
     OpenVidu openvidu;
 
-    private final MemberRepository memberRepository;
+    private final JwtUtil jwtUtil;
 
     private final LiveRepository liveRepository;
 
@@ -103,7 +104,7 @@ public class OpenviduService {
     }
 
     private Long getMemberIdFromToken(String token) {
-        return memberRepository.findByToken(token).getId();
+        return jwtUtil.getUserId(token);
     }
 
     private boolean isShowHost(String sessionId, Long memberId){
