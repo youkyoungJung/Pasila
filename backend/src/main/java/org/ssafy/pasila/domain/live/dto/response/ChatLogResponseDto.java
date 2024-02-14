@@ -19,14 +19,14 @@ public class ChatLogResponseDto {
     @Schema(description = "사용자 이름")
     private  String name;
 
-    @Schema(description = "사용자 프로필 사진")
-    private String profile;
+//    @Schema(description = "사용자 프로필 사진")
+//    private String profile;
 
-    public ChatLogResponseDto(String liveId, String message, String name, String profile){
+    public ChatLogResponseDto(String liveId, String message, String name){
         this.liveId = liveId;
         this.message = message;
         this.name = name;
-        this.profile = profile;
+
     }
 
 }
