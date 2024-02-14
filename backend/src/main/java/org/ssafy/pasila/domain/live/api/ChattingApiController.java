@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,7 +41,7 @@ public class ChattingApiController {
     @PreAuthorize("isAuthenticated()")
     @MessageMapping("/chatting")
     public void sendChat(@RequestBody ChatLogDto chatLog,
-                         @RequestHeader("Authorization") String data){
+                         @Header("Authorization") String data){
 
         String token = data.substring(7);
         Long userId = jwtUtil.getUserId(token);
