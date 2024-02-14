@@ -85,11 +85,11 @@ public class LiveApiController {
                                             @RequestPart(value = "image") MultipartFile image,
                                             @RequestPart(value = "chatbot") List<Chatbot> chatbotList,
                                             // 로그인 완료후 @RequestHeader로 변경 예정
-                                            @RequestPart(value = "member") Long memberId) throws IOException {
+                                            @RequestPart("memberId") Map<String, Long> memberIdMap) throws IOException {
         // 1. Product
         String productId = productService.saveProduct(productRequestDto, image);
         // 2. Live
-        String liveId = liveService.saveLive(createLiveRequestDto, memberId, productId);
+        String liveId = liveService.saveLive(createLiveRequestDto, memberIdMap.get("memberId"), productId);
         // 3. Chatbot
         chatbotService.save(chatbotList, liveId);
 
