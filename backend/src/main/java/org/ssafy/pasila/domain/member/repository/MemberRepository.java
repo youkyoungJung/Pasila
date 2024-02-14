@@ -13,5 +13,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Member findByChannel(String channel);
 
+    Member findByToken(String token);
+
 }
 
