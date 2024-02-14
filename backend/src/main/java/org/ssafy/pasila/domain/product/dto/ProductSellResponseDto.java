@@ -68,4 +68,8 @@ public class ProductSellResponseDto {
         this.script = script;
 
     }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
 }
