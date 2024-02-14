@@ -66,9 +66,9 @@ public class OpenviduService {
     public String createConnection(String sessionId, String token, Map<String, Object> params)
             throws OpenViduHttpException, InterruptedException, OpenViduJavaClientException {
         if(!token.isEmpty() && isShowHost(sessionId, getMemberIdFromToken(token))){
-            params.put("role", "PUBLISHER");
+            params.put("role", OpenViduRole.PUBLISHER);
         }else {
-            params.put("role", "SUBSCRIBER");
+            params.put("role", OpenViduRole.SUBSCRIBER);
         }
         Session session = openvidu.getActiveSession(sessionId);
         return createConnection(session, params, new RetryOptions()).getToken();
@@ -115,16 +115,13 @@ public class OpenviduService {
 
     // 녹화 시작
     public Recording startRecording(String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {
+
         return openvidu.startRecording(sessionId);
     }
-    // 녹화 종료
 
+    // 녹화 종료
     public Recording stopRecording(String recordingId) throws OpenViduJavaClientException, OpenViduHttpException {
         return openvidu.stopRecording(recordingId);
     }
-    // 녹화 삭제
 
-    public void deleteRecording(String recordingId) throws OpenViduJavaClientException, OpenViduHttpException {
-        openvidu.deleteRecording(recordingId);
-    }
 }
