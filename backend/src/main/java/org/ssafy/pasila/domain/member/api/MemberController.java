@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.auth.dto.request.LoginRequestDto;
+import org.ssafy.pasila.domain.auth.service.EncryptService;
 import org.ssafy.pasila.domain.member.dto.ChannelDto;
 import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
 import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
@@ -36,6 +37,8 @@ public class MemberController {
     private final ChannelRepository channelRepository;
 
     private final MemberService memberService;
+
+    private final EncryptService encryptService;
 
     @Operation(summary = "Check Emmail", description = "중복 이메일 확인")
     @GetMapping("/email")
@@ -89,6 +92,9 @@ public class MemberController {
     @GetMapping("/{id}")
     public ApiCommonResponse<PersonalInfoDto> getMember(@PathVariable("id") Long id) {
         PersonalInfoDto result = personalInfoRepository.findById(id);
+        if(result.getAccount() != null && !result.getAccount().equals("")){
+            result.setAccount(encryptService.decryptAccount(result.getAccount()));
+        }
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
     }
 
