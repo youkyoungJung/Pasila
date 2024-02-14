@@ -15,11 +15,20 @@ export const useReadyLiveStore = defineStore('readyLive', () => {
   const liveSchedule = ref({})
 
   const sendData = async () => {
-    console.log(liveProduct.value)
+    console.log(liveSchedule.value)
     liveFormData.append('image', productImage.value)
-    liveFormData.append('product', liveProduct.value)
-    liveFormData.append('live', liveSchedule.value)
-    liveFormData.append('chatbot', liveChatbot.value)
+    liveFormData.append(
+      'product',
+      new Blob([JSON.stringify(liveProduct.value)], { type: 'application/json' })
+    )
+    liveFormData.append(
+      'live',
+      new Blob([JSON.stringify(liveSchedule.value)], { type: 'application/json' })
+    )
+    liveFormData.append(
+      'chatbot',
+      new Blob([JSON.stringify(liveChatbot.value)], { type: 'application/json' })
+    )
     //로그인되면 아래것은 헤더로
     liveFormData.append('member', store.member.id)
 
@@ -33,7 +42,7 @@ export const useReadyLiveStore = defineStore('readyLive', () => {
     liveProduct,
     liveScript,
     liveChatbot,
-    liveSchedule,
-    sendData
+    sendData,
+    liveSchedule
   }
 })

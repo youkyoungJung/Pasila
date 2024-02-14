@@ -1,5 +1,4 @@
 <script setup>
-import { sendLiveSchedule } from '@/components/api/LiveAPI'
 import ReadySteps from '@/components/ready/ReadySteps.vue'
 import ScheduleCalendar from '@/components/ready/ScheduleCalendar.vue'
 import ScheduleTime from '@/components/ready/ScheduleTime.vue'

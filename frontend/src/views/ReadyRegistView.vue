@@ -25,7 +25,7 @@ const sendProduct = async () => {
     return arr2.map((v) => v && v[0].slice(1, v[0]?.length - 1)).filter((v) => v !== false)
   } // "data:image/png;base64~~~"
   const DataURIToBlob = (dataURI) => {
-    const splitDataURI = dataURI.split(',')
+    let splitDataURI = dataURI.split(',')
     let byteString =
       splitDataURI[0].indexOf('base64') >= 0 ? atob(splitDataURI[1]) : decodeURI(splitDataURI[1])
     let mimeString = splitDataURI[0].split(':')[1].split(';')[0]
@@ -61,7 +61,6 @@ const sendProduct = async () => {
       const nameMaking = `${Math.floor(Math.random() * 3000)}` + '_' + `${new Date().getTime()}`
       store.productImage = file
       store.imageName = nameMaking
-      // store.liveFormData.append('image', file, nameMaking) //3번째는 filename
     }
   })
   searchSrc(preview.value).map((v, i) => {
