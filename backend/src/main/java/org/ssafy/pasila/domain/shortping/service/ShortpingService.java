@@ -86,7 +86,7 @@ public class ShortpingService {
     public void saveRecommandHighlight(String productId) throws IOException {
 
         Live live = liveQueryRepository.findByProductId(productId);
-        byte[] file = fileStorageUtil.download("live/" + live.getId() + ".mp4");
+        byte[] file = fileStorageUtil.download("live/" + live.getId() + "/" + live.getId() + ".mp4");
 
         // 영상에서 하이라이트 가져오기
         List<RecommendLivelogResponseDto> highlights = getHighlightList(file);
