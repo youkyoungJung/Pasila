@@ -2,16 +2,21 @@ package org.ssafy.pasila.domain.live.service;
 
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
+import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.live.repository.LiveRepository;
 import org.ssafy.pasila.domain.live.utils.RetryException;
 import org.ssafy.pasila.domain.live.utils.RetryOptions;
+import org.ssafy.pasila.domain.member.entity.Member;
+import org.ssafy.pasila.domain.member.repository.MemberRepository;
 
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class OpenviduService {
 
     @Value("${openvidu.openvidu_url}")
@@ -21,6 +26,10 @@ public class OpenviduService {
     public String OPENVIDU_SECRET;
 
     OpenVidu openvidu;
+
+    private final MemberRepository memberRepository;
+
+    private final LiveRepository liveRepository;
 
     @PostConstruct
     public void init() {
@@ -54,8 +63,13 @@ public class OpenviduService {
         throw new RetryException(ErrorCode.MAX_RETRIES_EXCEEDED);
     }
 
-    public String createConnection(String sessionId, Map<String, Object> params)
+    public String createConnection(String sessionId, String token, Map<String, Object> params)
             throws OpenViduHttpException, InterruptedException, OpenViduJavaClientException {
+        if(!token.isEmpty() && isShowHost(sessionId, getMemberIdFromToken(token))){
+            params.put("role", OpenViduRole.PUBLISHER);
+        }else {
+            params.put("role", OpenViduRole.SUBSCRIBER);
+        }
         Session session = openvidu.getActiveSession(sessionId);
         return createConnection(session, params, new RetryOptions()).getToken();
     }
@@ -85,12 +99,23 @@ public class OpenviduService {
         return connection;
     }
 
+    private Long getMemberIdFromToken(String token) {
+        return memberRepository.findByToken(token).getId();
+    }
+
+    private boolean isShowHost(String sessionId, Long memberId){
+        Live live = liveRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디에 대한 라이브 정보가 없습니다."));
+        return live.getMember().getId().equals(memberId);
+    }
+
     /**
      * RECORDING
      **/
 
     // 녹화 시작
     public Recording startRecording(String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {
+
         return openvidu.startRecording(sessionId);
     }
 
