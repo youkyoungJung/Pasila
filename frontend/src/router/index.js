@@ -4,7 +4,6 @@ import LoginView from '@/views/LoginView.vue'
 import JoinView from '@/views/JoinView.vue'
 import FindPwView from '@/views/FindPwView.vue'
 import FindPwSendView from '@/views/FindPwSendView.vue'
-import LiveView from '@/views/LiveView.vue'
 import OpenviduView from '@/views/OpenviduView.vue'
 import OrderView from '@/views/OrderView.vue'
 import OrderSuccessView from '@/views/OrderSuccessView.vue'
@@ -12,7 +11,7 @@ import LiveEndView from '@/views/LiveEndView.vue'
 import ScheduleView from '@/views/ScheduleView.vue'
 import ChannelView from '@/views/ChannelView.vue'
 import EditView from '@/views/EditView.vue'
-import ChannelOrders from '@/views/ChannelOrders.vue'
+import ChannelOrdersView from '@/views/ChannelOrdersView.vue'
 import ReadyRegistView from '@/views/ReadyRegistView.vue'
 import ReadyScriptView from '@/views/ReadyScriptView.vue'
 import ReadyChatbotView from '@/views/ReadyChatbotView.vue'
@@ -89,9 +88,10 @@ const router = createRouter({
       component: EditView
     },
     {
-      path: '/channel/:id/orders',
+      path: '/channel/:channelId/orders',
       name: 'orders',
-      component: ChannelOrders
+      component: ChannelOrdersView,
+      props: true
     },
     {
       path: '/ready/regist',
@@ -114,7 +114,7 @@ const router = createRouter({
       component: ReadyScheduleView
     },
     {
-      path: '/setpw/:id',
+      path: '/setpw',
       name: 'setpw',
       component: SetPwView
     },

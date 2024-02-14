@@ -2,6 +2,7 @@
 import router from '@/router'
 import { ref } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
+import { emailLoginApi } from '@/components/api/AuthAPI'
 
 const user = ref({
   userEmail: '',
@@ -23,21 +24,18 @@ const inputData = ref({
   }
 })
 
-const login = () => {
-  //이메일로 로그인하기
+const login = async () => {
+  const res = await emailLoginApi(user.value.userEmail, user.value.userPassword)
+  if (res) {
+    router.go()
+  } else {
+    alert('비밀번호가 틀렸습니다. 다시 입력해주세요!')
+  }
 }
 
 const join = () => {
   router.push('/join')
 }
-
-//소셜 로그인 당시 필수나 선택으로 가져온 정보를 회원가입 페이지에 넣어주기
-//그리고 필수적으로 이메일을 받아서 이메일로 로그인 가능!
-const googleLogin = () => {}
-
-const kakaoLogin = () => {}
-
-const naverLogin = () => {}
 </script>
 
 <template>
@@ -55,19 +53,6 @@ const naverLogin = () => {}
       </section>
       <button @click="login" class="login">로그인</button>
       <button @click="join" class="join">회원가입</button>
-      <hr />
-      <div class="social-login" @click="googleLogin">
-        <img src="@/assets/img/google-logo.png" />
-        <button class="social-btn">구글로 시작하기</button>
-      </div>
-      <div class="social-login" @click="kakaoLogin">
-        <img src="@/assets/img/kakao-logo.png" />
-        <button class="social-btn">카카오로 시작하기</button>
-      </div>
-      <div class="social-login" @click="naverLogin">
-        <img src="@/assets/img/naver-logo.png" />
-        <button class="social-btn">네이버로 시작하기</button>
-      </div>
     </div>
   </div>
 </template>
@@ -80,6 +65,7 @@ const naverLogin = () => {}
   border: 2px solid #d9d9d9;
   margin-left: auto;
   margin-right: auto;
+  padding: 1rem 0;
 
   .header {
     margin: 2rem 0;
@@ -104,6 +90,7 @@ const naverLogin = () => {}
       margin-top: 30px;
       border: none;
       color: white;
+      cursor: pointer;
     }
 
     .forget-pw {
@@ -128,24 +115,7 @@ const naverLogin = () => {}
 
   hr {
     width: 90%;
-    margin: 35px 0px;
-  }
-
-  .social-login {
-    @include box(85%, 2.5rem, whitesmoke, 0, 0.5rem, 0);
-    @include flex-box();
-    cursor: pointer;
-
-    img {
-      width: 1rem;
-      height: 1rem;
-      vertical-align: middle;
-    }
-    .social-btn {
-      cursor: pointer;
-      background-color: whitesmoke;
-      border: none;
-    }
+    margin: 20px 0px;
   }
 }
 </style>

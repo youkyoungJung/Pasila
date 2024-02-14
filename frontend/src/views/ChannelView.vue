@@ -16,7 +16,7 @@ onMounted(async () => {
 
 <template>
   <div class="channel">
-    <channel-profile v-if="member" :member="member" />
+    <channel-profile v-if="member" :member="member" :channel-id="channelId" />
     <toggle-button />
   </div>
 </template>

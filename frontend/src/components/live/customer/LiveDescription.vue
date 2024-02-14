@@ -39,7 +39,6 @@ const goPay = () => {
   if (myOrderList.value.length > 0) {
     orderListStore.orderList = myOrderList
     orderListStore.product = props.product
-    //TODO: 나갈 때 session 제거 필요!
     router.push(`/live/${props.liveId}/order`)
   } else {
     alert('상품 옵션을 하나 이상 선택해주세요.')
