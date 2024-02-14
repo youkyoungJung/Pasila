@@ -180,6 +180,7 @@ public class MemberService {
 
     }
 
+    @Transactional
     public void updatePassword(LoginRequestDto dto){
         Member member = memberRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));

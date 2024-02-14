@@ -149,7 +149,7 @@ public class Member {
     }
 
     public void updatePassword(String password){
-        this.password = null;
+        this.password = password;
     }
 
 }
