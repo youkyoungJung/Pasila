@@ -10,7 +10,6 @@ import { useMemberStore } from '@/stores/member'
 const step = ref('schedule')
 const store = useReadyLiveStore()
 const userStore = useMemberStore()
-const liveFormData = new FormData()
 
 const liveTitle = ref('')
 const date = ref(new Date())
@@ -19,16 +18,18 @@ const hour = ref(date.value.getHours() > 12 ? date.value.getHours() - 12 : date.
 const minute = ref(new Date().getMinutes())
 const liveTime = ref({
   title: '',
-  liveScheduleAt: '',
+  liveScheduledAt: '',
   script: store.liveScript
 })
 
+const liveFormData = new FormData()
+const file = ref()
 const reserveLive = async () => {
   liveTime.value.title = liveTitle.value
   if (apm.value == '오후') {
     hour.value = parseInt(hour.value) + 12
   }
-  liveTime.value.liveScheduleAt =
+  liveTime.value.liveScheduledAt =
     date.value.getFullYear() +
     '-' +
     (date.value.getMonth() + 1).toString().padStart(2, '0') +
@@ -65,25 +66,29 @@ const reserveLive = async () => {
 
     return changeStr
   } // <p><img ~~~/></p> => <p></p>
-  const base64toFile = (base_data, filename) => {
-    let arr = base_data.split(','),
-      mime = arr[0].match(/:(.*?);/)[1],
-      bstr = atob(arr[1]),
-      n = bstr.length,
-      u8arr = new Uint8Array(n)
+  let base64toFile = (base_data, filename) => {
+    let arr = base_data.split(',')
+    let mime = arr[0].match(/:(.*?);/)[1]
 
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n)
+    if (arr[1]) {
+      let bstr = atob(arr[1])
+      let n = bstr.length
+      let u8arr = new Uint8Array(n)
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n)
+      }
+      console.log(u8arr)
+      return new File([u8arr], filename, { type: 'image/jpeg' })
     }
-
-    return new File([u8arr], filename, { type: mime })
   }
   searchSrc(store.productDesc).map((v, i) => {
     if (v?.length > 1000) {
       //  "data:image/png;base64~~~"는 1000자를 넘어가기 때문에 + base64만 가져오기 위해서
       const imgBase64 = v
-      const file = base64toFile(imgBase64, 'newFile')
+      file.value = base64toFile(imgBase64, 'fileName')
       store.productImage = file
+
+      liveFormData.set('image', file.value)
     }
   })
   searchSrc(store.productDesc).map((v, i) => {
@@ -101,12 +106,31 @@ const sendData = async () => {
   console.log(JSON.stringify(store.liveChatbot))
   console.log(store.productImage)
   console.log(userStore.member.id)
+  const memberId = {
+    memberId: userStore.member.id
+  }
+  console.log(JSON.stringify(memberId))
+  // liveFormData.append('image', '')
+  liveFormData.set(
+    'live',
+    new Blob([JSON.stringify(store.liveSchedule)], {
+      type: 'application/json'
+    })
+  )
+  liveFormData.set(
+    'product',
+    new Blob([JSON.stringify(store.liveProduct.value)], {
+      type: 'application/json'
+    })
+  )
 
-  liveFormData.append('live', JSON.stringify(store.liveSchedule))
-  liveFormData.append('product', JSON.stringify(store.liveProduct.value))
-  liveFormData.append('chatbot', JSON.stringify(store.liveChatbot))
-  liveFormData.append('image', store.pruductImage)
-  liveFormData.append('member', userStore.member.id)
+  liveFormData.set(
+    'chatbot',
+    new Blob([JSON.stringify(store.liveChatbot)], {
+      type: 'application/json'
+    })
+  )
+  liveFormData.set('memberId', new Blob([JSON.stringify(memberId)], { type: 'application/json' }))
 
   const res = await sendLiveSchedule(liveFormData)
   console.log(res)
