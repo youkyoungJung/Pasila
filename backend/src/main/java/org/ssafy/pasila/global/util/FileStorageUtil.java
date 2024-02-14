@@ -2,16 +2,23 @@ package org.ssafy.pasila.global.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -59,6 +66,25 @@ public class FileStorageUtil {
         }
     }
 
+    public byte[] liveDownloadUrl(String url) {
+        try {
+            String[] split = url.split("/");
+            String filename = split[split.length - 1];
+            String path = "live/" + split[split.length - 2];
+            log.info("fileStorage - {}", uploadDirectory + path + "/" + filename);
+            Path downloadPath = Paths.get(uploadDirectory + path + "/" + filename);
+
+            if (!Files.exists(downloadPath)) {
+                throw new RestApiException(ErrorCode.RESOURCE_NOT_FOUND);
+            }
+
+            return Files.readAllBytes(downloadPath);
+        } catch (IOException e) {
+            log.error("fileStorage - {}", e.getMessage());
+            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public void delete(Path filepath) {
         try {
             Files.delete(filepath);
@@ -67,4 +93,5 @@ public class FileStorageUtil {
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
+
 }
