@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getHighlightApi, sendShortpingApi } from '@/components/api/ShortpingAPI'
+import router from '@/router'
 
 import ShortpingVideo from '@/components/shortping/ShortpingVideo.vue'
 import ShortpingHighlight from '@/components/shortping/ShortpingHighlight.vue'
@@ -83,6 +84,7 @@ const complete = () => {
   )
   const res = sendShortpingApi(formData)
   console.log(res)
+  router.push('/')
 }
 </script>
 
