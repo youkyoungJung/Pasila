@@ -68,7 +68,7 @@ const clickChatbot = () => {
         <!-- <img :src="item.profile" :alt="item.memberId" class="profile" /> -->
         <div class="chat-box">
           <span class="name">{{ item.memberId }}</span>
-          <div class="content">{{ item.massage }}</div>
+          <div class="content">{{ item.message }}</div>
         </div>
       </div>
     </div>
@@ -94,11 +94,13 @@ const clickChatbot = () => {
 
 <style lang="scss" scoped>
 .live-chat-box {
-  @include box(null, calc(78vh - 5px), none, 20px, 0, 0);
+  @include box(null, calc(78vh - 6px), none, 20px, 0, 0);
   @include flex-box(center, space-between, column);
   border: 3px solid $main;
 
   .live-chat {
+    width: calc(100% - 2rem);
+    height: 100%;
     padding: 1rem;
     overflow-y: scroll;
     box-shadow: 0px -4px 10px 0px rgba(0, 0, 0, 0.25) inset;

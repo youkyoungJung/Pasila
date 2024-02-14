@@ -207,14 +207,12 @@ const sendChat = async (isChatbot) => {
     const res = await sendChatToChatbot(data)
     //TODO: res 받아서 chatlist에 넣기
   } else {
-    console.log('나 웹소켓으로 보낸다.')
     if (ws && ws.connected) {
       const msg = {
         liveId: props.liveId,
-        memberId: 1,
+        memberId: 11,
         message: chatmsg.value
       }
-      console.log('내가 보낸거', msg)
       ws.send(`/send/chatting`, JSON.stringify(msg), {})
     }
   }
@@ -222,16 +220,16 @@ const sendChat = async (isChatbot) => {
 }
 
 const connectChat = () => {
-  const serverURL = 'http://localhost:80/stomp/pasila'
+  const serverURL = 'https://i10a402.p.ssafy.io/stomp/pasila'
   const socket = new SockJs(serverURL)
   ws = Stomp.over(socket, { debug: false })
 
   ws.connect(
-    {},
+    { Authorization: localStorage.getItem('token') },
     () => {
-      ws.subscribe(`/send/${props.liveId}`, (res) => {
-        console.log('구독으로 받은 메시지 입니다.', JSON.parse(res.body).body.data)
-        chatList.value.push(JSON.parse(res.body).body.data)
+      ws.subscribe(`/id/${props.liveId}`, (res) => {
+        console.log('구독으로 받은 메시지 입니다.', JSON.parse(res.body))
+        chatList.value.push(JSON.parse(res.body))
       })
     },
     (error) => {
@@ -255,6 +253,7 @@ const connectChat = () => {
           :chatmsg="chatmsg"
           @change-msg="(e) => (chatmsg = e)"
           @send-msg="sendChat"
+          :chat-list="chatList"
         />
       </section>
 
@@ -285,6 +284,7 @@ const connectChat = () => {
           :chatmsg="chatmsg"
           @change-msg="(e) => (chatmsg = e)"
           @send-msg="sendChat"
+          :chat-list="chatList"
         />
       </section>
 
