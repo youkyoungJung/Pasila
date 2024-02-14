@@ -79,13 +79,13 @@ public class LiveApiController {
     private final EncryptService encryptService;
 
     @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브)")
-    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiCommonResponse<?> reserveLive(@RequestPart(value = "live") CreateLiveRequestDto createLiveRequestDto,
                                             @RequestPart(value = "product") ProductRequestDto productRequestDto,
                                             @RequestPart(value = "image") MultipartFile image,
                                             @RequestPart(value = "chatbot") List<Chatbot> chatbotList,
                                             // 로그인 완료후 @RequestHeader로 변경 예정
-                                            @RequestPart(value = "member") Long memberId) throws IOException {
+                                            @PathVariable("memberid") Long memberId) throws IOException {
         // 1. Product
         String productId = productService.saveProduct(productRequestDto, image);
         // 2. Live
