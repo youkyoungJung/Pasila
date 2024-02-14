@@ -1,11 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getHighlight } from '@/components/api/ShortpingAPI'
+import { getHighlightApi, sendShortpingApi } from '@/components/api/ShortpingAPI'
 
 import ShortpingVideo from '@/components/shortping/ShortpingVideo.vue'
 import ShortpingHighlight from '@/components/shortping/ShortpingHighlight.vue'
 
 const video = ref('')
+const formData = new FormData()
+const sendData = ref({})
 
 const shortping = ref({
   title: ''
@@ -29,12 +31,6 @@ const highlights = ref([
     highlightStartTime: '00:00:10',
     highlightEndTime: '00:00:13'
   }
-  // {
-  //   isEnroll: true,
-  //   highlightTitle: '앙고라 니트 - 블랙 컬러',
-  //   highlightStartTime: '00:00:11',
-  //   highlightEndTime: '00:00:12'
-  // }
 ])
 
 onMounted(() => {
@@ -43,7 +39,7 @@ onMounted(() => {
 
 const getHighlightDatas = () => {
   //하이라이트 추천받기(라이브아이디)
-  // const res = getHighlight(id)
+  // const res = getHighlightApi(id)
   //console.log(res)
   //highlightTitle == title
   //highlightStartTime == start
@@ -64,7 +60,29 @@ const sortHighlight = (e) => {
   })
 }
 const complete = () => {
-  //제작 완료버튼
+  console.log(video.value)
+  formData.append('video', video.value)
+  sendData.value = {
+    title: shortping.value.title,
+    productId: '20FD88R7Y5XM',
+    livelogs: []
+  }
+  for (let i = 0; i < highlights.value.length; i++) {
+    if (highlights.value[i].isEnroll) {
+      sendData.value.livelogs[i] = {
+        title: highlights.value[i].highlightTitle,
+        start: highlights.value[i].highlightStartTime,
+        end: highlights.value[i].highlightEndTime
+      }
+    }
+  }
+  console.log(JSON.stringify(sendData.value))
+  formData.append(
+    'shortpingRequest',
+    new Blob([JSON.stringify(sendData.value)], { type: 'application/json' })
+  )
+  const res = sendShortpingApi(formData)
+  console.log(res)
 }
 </script>
 

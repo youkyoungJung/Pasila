@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { getThumbnail } from '@/components/api/ShortpingAPI'
+import { getThumbnailApi } from '@/components/api/ShortpingAPI'
 
 const vi = ref(null)
 const currentTime = ref(0)
@@ -14,7 +14,7 @@ onMounted(() => {
 
 const getPictures = () => {
   //이미지 가져오기(상품아이디)
-  // const res = getThumbnail(1)
+  // const res = getThumbnailApi(1)
   // console.log(res)
   // videoURL.value = res.liveURL
   // videoImages.value = res.thumbnails
@@ -29,8 +29,8 @@ watch(currentTime, (newTime) => {
 })
 
 watch(props, () => {
-  vi.value = props.video
-  videoURL.value = props.video
+  vi.value = URL.createObjectURL(props.video)
+  videoURL.value = URL.createObjectURL(props.video)
   colorList()
 })
 
