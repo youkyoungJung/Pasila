@@ -232,8 +232,6 @@ const join = async () => {
 
   formData.append('member', new Blob([JSON.stringify(user.value)], { type: 'application/json' }))
 
-  console.log(user.value)
-
   const res = await joinUser(formData)
   if (res) {
     alert('회원가입이 완료 되었습니다.')

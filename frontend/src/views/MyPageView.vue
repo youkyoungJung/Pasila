@@ -212,7 +212,7 @@ const modify = async () => {
   if (user.value.gender == '여성') user.value.gender = 'F'
   else if (user.value.gender == '남성') user.value.gender = 'M'
   else user.value.gender = ''
-  console.log(user.value)
+
   formData.append(
     'personal_info',
     new Blob([JSON.stringify(user.value)], { type: 'application/json' })

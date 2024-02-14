@@ -20,21 +20,21 @@ const emailLogin = async (myEmail, myPassword) => {
   }
 }
 
-const kakao = async (url) => {
-  try {
-    const res = await local.get('https://kauth.kakao.com/oauth/authorize', {
-      params: {
-        url: url
-      }
-    })
-    alert(`${res.data.data.name}님! 반갑습니다 ><`)
-    let token = res.data.data.token
-    localStorage.setItem('token', token)
-    return res.data.data
-  } catch (err) {
-    console.error('localAxios error', err)
-  }
-}
+// const kakao = async (url) => {
+//   try {
+//     const res = await local.get('https://kauth.kakao.com/oauth/authorize', {
+//       params: {
+//         url: url
+//       }
+//     })
+//     alert(`${res.data.data.name}님! 반갑습니다 ><`)
+//     let token = res.data.data.token
+//     localStorage.setItem('token', token)
+//     return res.data.data
+//   } catch (err) {
+//     console.error('localAxios error', err)
+//   }
+// }
 
 const getEmailAuthNumber = async (myEmail) => {
   const newEmail = { email: myEmail }
@@ -59,7 +59,6 @@ const checkEmailAuthNumber = async (myEmail, certiNum) => {
 }
 const getPhoneAuthNumber = async (phone) => {
   const newPhone = { phoneNum: phone }
-  console.log(newPhone)
   try {
     const res = await local.post(`${url}/sms`, newPhone)
     return res.data.data

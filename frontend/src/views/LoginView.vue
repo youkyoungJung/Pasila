@@ -27,11 +27,8 @@ const inputData = ref({
 })
 
 const login = async () => {
-  console.log(user.value)
   const res = await emailLogin(user.value.userEmail, user.value.userPassword)
-  console.log(res)
   store.member = res
-  console.log(store.member)
   router.push('/')
 }
 
@@ -39,16 +36,16 @@ const join = () => {
   router.push('/join')
 }
 
-const kakaoLogin = () => {
-  const url =
-    'https://kauth.kakao.com/oauth/authorize?client_id=' +
-    'a63ab4b378ad27ff5bf2096393db8ca2' +
-    '&redirect_uri=' +
-    'https://localhost:5173' +
-    '&response_type=code&' +
-    'scope=profile_nickname profile_image'
-  kakao(url)
-}
+// const kakaoLogin = () => {
+//   const url =
+//     'https://kauth.kakao.com/oauth/authorize?client_id=' +
+//     'a63ab4b378ad27ff5bf2096393db8ca2' +
+//     '&redirect_uri=' +
+//     'https://localhost:5173' +
+//     '&response_type=code&' +
+//     'scope=profile_nickname profile_image'
+//   kakao(url)
+// }
 </script>
 
 <template>
