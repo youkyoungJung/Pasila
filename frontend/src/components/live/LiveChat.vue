@@ -80,10 +80,15 @@ const clickChatbot = () => {
         </span>
       </div>
       <div class="bottom">
-        <span class="chatbot" @click="clickChatbot">
+        <span class="chatbot" @click="clickChatbot" v-if="isCustomer">
           <font-awesome-icon icon="robot" class="icon" />
         </span>
-        <input type="text" @input="$emit('changeMsg', $event.target.value)" :value="chatmsg" />
+        <input
+          type="text"
+          @input="$emit('changeMsg', $event.target.value)"
+          :value="chatmsg"
+          @keyup.enter="$emit('send')"
+        />
         <span class="plane" @click="$emit('sendMsg', isChatbot)">
           <font-awesome-icon icon="fa-solid fa-paper-plane" class="icon" />
         </span>
@@ -124,6 +129,7 @@ const clickChatbot = () => {
         .content {
           @include box(fit-content, fit-content, $gray, 30px, 0, 0.5rem 1rem);
           @include font-factory($fs-1, 600);
+          word-break: break-all;
         }
       }
     }
@@ -134,6 +140,7 @@ const clickChatbot = () => {
 }
 
 .chat-input {
+  width: 90%;
   padding: 0 0.5rem;
 
   .top {

@@ -199,6 +199,9 @@ watch(
 )
 
 const sendChat = async (isChatbot) => {
+  if (chatmsg.value.length <= 0) {
+    alert('내용을 입력하세요')
+  }
   if (isChatbot) {
     const data = {
       liveId: props.liveId,
@@ -253,6 +256,7 @@ const connectChat = () => {
           :chatmsg="chatmsg"
           @change-msg="(e) => (chatmsg = e)"
           @send-msg="sendChat"
+          @send="sendChat"
           :chat-list="chatList"
         />
       </section>
@@ -284,6 +288,7 @@ const connectChat = () => {
           :chatmsg="chatmsg"
           @change-msg="(e) => (chatmsg = e)"
           @send-msg="sendChat"
+          @send="sendChat"
           :chat-list="chatList"
         />
       </section>
