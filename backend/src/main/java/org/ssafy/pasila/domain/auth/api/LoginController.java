@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.auth.dto.TokenDto;
@@ -33,10 +34,12 @@ public class LoginController {
 
     @Operation(summary = "Logout", description = "로그아웃")
     @PostMapping("/logout")
+    @PreAuthorize("isAuthenticated()")
     public ApiCommonResponse<?> logout(
-            @RequestBody TokenDto tokenDTO
+            @RequestHeader("Authorization") String data
     ) {
-        loginService.logout(tokenDTO.getAccessToken());
+        String token = data.substring(7);
+        loginService.logout(token);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), true);
     }
 
