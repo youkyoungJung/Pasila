@@ -2,7 +2,11 @@
 import { ref } from 'vue'
 import FormInput from '@/components/login/FormInput.vue'
 import router from '@/router'
+import { checkMyEmail } from '@/components/api/MemberAPI'
+import { useMemberStore } from '@/stores/member'
+import { getEmailAuthNumber } from '@/components/api/AuthAPI'
 
+const store = useMemberStore()
 const inputData = ref({
   title: '비밀번호 찾기',
   data: {
@@ -13,9 +17,23 @@ const inputData = ref({
   button2: '로그인으로 돌아가기'
 })
 
-const goEmail = (e) => {
-  //이메일 확인 후 이메일 보내주기
-  router.push('/findpw/send')
+const strongEmail = (str) => {
+  return /^[A-Za-z0-9_.-]+@[A-Za-z0-9-]+\.[A-Za-z0-9-]/.test(str)
+}
+
+const goEmail = async (e) => {
+  if (!strongEmail(e)) {
+    alert('이메일 형식을 확인해주세요!')
+    return
+  }
+  const res = await checkMyEmail(e)
+  if (!res) {
+    store.checkPwEmail = e
+    await getEmailAuthNumber(e)
+    router.push('/findpw/send')
+  } else {
+    alert('존재하지 않는 이메일입니다. 다시 작성해주세요.')
+  }
 }
 
 const goLogin = () => {
