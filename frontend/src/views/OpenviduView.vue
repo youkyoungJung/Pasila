@@ -31,6 +31,7 @@ let subscribers = ref([])
 
 let ws
 let chatmsg = ref('')
+const chatList = ref([])
 
 let userRole = ref('')
 let isStart = ref(false)
@@ -66,9 +67,11 @@ onMounted(async () => {
   setInterval(async () => {
     questionList.value = await getLiveQuestionApi(props.liveId)
   }, 60000)
+  connectChat()
 })
 
 onUnmounted(() => {
+  ws.disconnect()
   leaveSession()
 })
 
@@ -204,35 +207,35 @@ const sendChat = async (isChatbot) => {
     const res = await sendChatToChatbot(data)
     //TODO: res 받아서 chatlist에 넣기
   } else {
+    console.log('나 웹소켓으로 보낸다.')
     if (ws && ws.connected) {
-      //TODO: send할 data 가공 필요
-      const chat = {}
-      //TODO: 채팅 받을 곳 필요
-      ws.send(`/receive/`, JSON.stringify(chat), {})
+      const msg = {
+        liveId: props.liveId,
+        memberId: 1,
+        message: chatmsg.value
+      }
+      console.log('내가 보낸거', msg)
+      ws.send(`/send/chatting`, JSON.stringify(msg), {})
     }
   }
   chatmsg.value = ''
 }
 
 const connectChat = () => {
-  //TODO: 서버 주소로 변경필요
-  const serverURL = 'https://i10a402.p.ssafy.io/chat'
+  const serverURL = 'http://localhost:80/stomp/pasila'
   const socket = new SockJs(serverURL)
-  ws = Stomp.over(socket)
-
-  //TODO: 토큰 저장 장소 localStorage 맞는지?, 채팅할 때 authorization 헤더 필요한거 맞는지
-  const headers = { Authorization: localStorage.getItem('token') }
+  ws = Stomp.over(socket, { debug: false })
 
   ws.connect(
-    headers,
-    (frame) => {
-      window.connected = true
-      //TODO: subscribe 주소 확인, res 처리
-      ws.subscribe(`/send`, (res) => {})
+    {},
+    () => {
+      ws.subscribe(`/send/${props.liveId}`, (res) => {
+        console.log('구독으로 받은 메시지 입니다.', JSON.parse(res.body).body.data)
+        chatList.value.push(JSON.parse(res.body).body.data)
+      })
     },
-    (err) => {
-      console.error(err)
-      window.connected = false
+    (error) => {
+      console.log('소켓 연결 실패', error)
     }
   )
 }
@@ -250,7 +253,7 @@ const connectChat = () => {
         <live-chat
           :is-customer="false"
           :chatmsg="chatmsg"
-          @change-msg="(e) => (chatmsg = e.target.value)"
+          @change-msg="(e) => (chatmsg = e)"
           @send-msg="sendChat"
         />
       </section>
