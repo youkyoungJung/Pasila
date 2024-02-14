@@ -19,10 +19,8 @@ import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
-import org.ssafy.pasila.global.infra.gpt3.GptClient;
-import org.ssafy.pasila.global.infra.redis.service.ChatRedisService;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -132,14 +130,14 @@ public class LiveService {
         return live;
     }
 
-    public List<ChannelLiveDto> findAllByCategory(Long categoryId, String sort) {
-        return liveQueryRepository.findAllByCategory(categoryId, sort);
-    }
-
     @Transactional
     public String deleteLive(String id) {
         Live live = getLiveById(id);
         live.setActive(false);
         return live.getId();
+    }
+
+    public List<ChannelLiveDto> getScheduledLiveByDate(LocalDate date) {
+        return liveQueryRepository.findScheduledLiveByDate(date);
     }
 }

@@ -173,7 +173,7 @@ public class MemberService {
         member.encodePassword(encoder.encode(member.getPassword()));
         memberRepository.save(member);
 
-        if (!profileFile.isEmpty()) {
+        if (profileFile != null && !profileFile.isEmpty()) {
             String url = s3Uploader.upload(member.getId().toString(), profileFile, "member");
             member.addProfile(url);
         }
