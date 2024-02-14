@@ -3,13 +3,8 @@ import router from '@/router'
 import { ref, onMounted, reactive } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
-import { getMyPage, changeMyInfo, checkMyEmail, checkMyChannel } from '@/components/api/MemberAPI'
-import {
-  getEmailAuthNumber,
-  checkEmailAuthNumber,
-  checkPhoneAuthNumber,
-  getPhoneAuthNumber
-} from '@/components/api/AuthAPI'
+import { getMyPage, changeMyInfo, checkMyChannel } from '@/components/api/MemberAPI'
+import { checkPhoneAuthNumber, getPhoneAuthNumber } from '@/components/api/AuthAPI'
 
 const user = ref({
   email: '',
@@ -44,6 +39,11 @@ const getUser = async () => {
 }
 
 const longData = reactive({
+  email: {
+    title: '이메일',
+    type: 'email',
+    value: user.value.email
+  },
   name: {
     title: '이름',
     type: 'text',
@@ -80,18 +80,6 @@ const longData = reactive({
 })
 
 const shortData = reactive({
-  email: {
-    title: '이메일',
-    type: 'email',
-    text: '중복확인',
-    value: user.value.email
-  },
-  emailCerti: {
-    title: '이메일 인증',
-    type: 'text',
-    text: '인증하기',
-    value: ''
-  },
   channel: {
     title: '채널명',
     type: 'text',
@@ -117,12 +105,6 @@ const shortData = reactive({
   }
 })
 
-//이메일 중복확인
-const emailCerti = ref(0)
-//이메일 인증번호
-const emailCertiNum = ref('')
-//이메일 인증확인
-const resultCheckEmail = ref(0)
 //채널명 중복확인
 const channelCerti = ref(0)
 //핸드폰 인증번호
@@ -130,10 +112,7 @@ const phoneCerti = ref(0)
 const formData = new FormData()
 formData.append('new_image', '')
 
-//이메일, 비밀번호 유효성검사
-const strongEmail = (str) => {
-  return /^[A-Za-z0-9_.-]+@[A-Za-z0-9-]+\.[A-Za-z0-9-]/.test(str)
-}
+//비밀번호 유효성검사
 const strongPassword = (str) => {
   return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(str)
 }
@@ -153,40 +132,9 @@ const uploadImg = (e) => {
   }
 }
 
-const checkEmail = async () => {
-  if (user.value.email == '') {
-    alert('이메일을 입력해주세요')
-    return
-  }
-  if (!strongEmail(user.value.email)) {
-    alert('이메일 형식을 확인해주세요.')
-    return
-  }
-  const res = await checkMyEmail(user.value.email)
-  if (res == 0) {
-    emailCerti.value = 0
-  } else if (res) {
-    emailCerti.value = 1
-    const res = await getEmailAuthNumber(user.value.email)
-    console.log(res)
-  } else {
-    emailCerti.value = 2
-  }
-}
-
-const checkEmailCerti = async () => {
-  const res = await checkEmailAuthNumber(user.value.email, emailCertiNum.value)
-  if (res == 0) {
-    resultCheckEmail.value = 0
-  } else if (res) {
-    resultCheckEmail.value = 1
-  } else {
-    resultCheckEmail.value = 2
-  }
-}
 const checkChannel = async () => {
   const res = await checkMyChannel(user.value.channel)
-  if (res == 0) {
+  if (res == -1) {
     channelCerti.value = 0
   } else if (res) {
     channelCerti.value = 1
@@ -200,13 +148,12 @@ const sendPhoneNum = async () => {
 }
 
 const checkCertiNum = async () => {
-  const res = await checkPhoneAuthNumber(user.value.phone, user.value.phoneCheck)
-  console.log(res.data)
-  if (res === 0) {
+  const res = await checkPhoneAuthNumber(user.value.phone, phoneCerti.value)
+  if (res === -1) {
     phoneCerti.value = 0
-  } else if (res.data) {
+  } else if (res) {
     phoneCerti.value = 1
-  } else if (!res.data) {
+  } else {
     phoneCerti.value = 2
   }
 }
@@ -251,10 +198,6 @@ const openPostCode = async () => {
 
 //수정완료
 const modify = async () => {
-  if (!strongEmail) {
-    alert('이메일 확인해주세요.')
-    return
-  }
   if (user.value.password != '' && user.value.password != user.value.passwordCheck) {
     alert('비밀번호를 확인해주세요.')
     return
@@ -305,27 +248,7 @@ const modify = async () => {
         />
       </section>
       <section class="userInfo">
-        <v-short-input
-          :data="shortData.email"
-          :inputData="user.email"
-          @getData="(e) => (user.email = e)"
-          @sendData="(e) => checkEmail(e)"
-        />
-        <div v-if="emailCerti == 1" class="check-text">
-          사용가능한 이메일입니다. 인증을 위해 이메일을 확인해주세요.
-        </div>
-        <v-short-input
-          :data="shortData.emailCerti"
-          @getdata="(e) => (emailCertiNum = e)"
-          @sendData="(e) => checkEmailCerti(e)"
-        />
-        <div v-if="resultCheckEmail == 1" class="check-text">이메일 인증이 완료되었습니다.</div>
-        <div v-else-if="resultCheckEmail == 2" class="wrong-text">
-          인증번호를 다시 입력해주세요.
-        </div>
-        <div v-else-if="emailCerti == 2" class="wrong-text">
-          중복된 이메일입니다. 다른 이메일을 사용해 주세요.
-        </div>
+        <v-long-input :data="longData.email" :inputData="user.email" />
       </section>
       <section class="userInfo">
         <v-long-input
@@ -377,7 +300,7 @@ const modify = async () => {
       <section class="userInfo">
         <v-short-input
           :data="shortData.phoneCheck"
-          @getData="(e) => (user.phoneCheck = e)"
+          @getData="(e) => (phoneCerti = e)"
           @sendData="(e) => checkCertiNum(e)"
         />
         <div v-if="phoneCerti == 1" class="check-text">인증번호가 일치합니다.</div>
