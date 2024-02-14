@@ -85,7 +85,7 @@ public class LiveApiController {
                                             @RequestPart(value = "image") MultipartFile image,
                                             @RequestPart(value = "chatbot") List<Chatbot> chatbotList,
                                             // 로그인 완료후 @RequestHeader로 변경 예정
-                                            @PathVariable("memberid") Long memberId) throws IOException {
+                                            @PathVariable("memberId") Long memberId) throws IOException {
         // 1. Product
         String productId = productService.saveProduct(productRequestDto, image);
         // 2. Live
