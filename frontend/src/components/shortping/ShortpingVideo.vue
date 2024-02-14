@@ -6,7 +6,7 @@ const vi = ref(null)
 const currentTime = ref(0)
 const props = defineProps(['data', 'video'])
 const videoURL = ref(
-  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
 )
 
 onMounted(() => {
@@ -15,7 +15,7 @@ onMounted(() => {
 })
 
 const getPictures = () => {
-  //이미지 가져오기(상품아이디)
+  // 이미지 가져오기(상품아이디->라이브아이디될수도!)
   // const res = getThumbnailApi(1)
   // console.log(res)
   // videoURL.value = res.liveURL
