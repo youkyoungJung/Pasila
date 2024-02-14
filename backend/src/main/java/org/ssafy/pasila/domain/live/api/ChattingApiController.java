@@ -40,7 +40,7 @@ public class ChattingApiController {
     @MessageMapping("/chatting")
     public void sendChat(@RequestBody ChatLogDto chatLog){
         Member member = memberService.getMemberById(chatLog.getMemberId());
-        ChatLogResponseDto responseDto = new ChatLogResponseDto(chatLog.getLiveId(), chatLog.getMessage(), member.getName() , member.getProfile());
+        ChatLogResponseDto responseDto = new ChatLogResponseDto(chatLog.getLiveId(), chatLog.getMessage(), member.getName() );
         chattingService.saveChat(chatLog);
         template.convertAndSend("/id/" + chatLog.getLiveId(), responseDto);
 
