@@ -13,6 +13,9 @@ public class SearchLiveResponseDto {
     @Schema(description = "라이브 제목")
     private String title;
 
+    @Schema(description = "라이브 진행중 여부")
+    private boolean isOn;
+
     @Schema(description = "판매자 id")
     private Long sellerId;
 
