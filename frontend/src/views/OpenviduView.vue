@@ -201,6 +201,7 @@ watch(
 const sendChat = async (isChatbot) => {
   if (chatmsg.value.length <= 0) {
     alert('내용을 입력하세요')
+    return
   }
   if (isChatbot) {
     const data = {
