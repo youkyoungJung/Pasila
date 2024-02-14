@@ -37,6 +37,7 @@ import org.ssafy.pasila.domain.search.dto.LiveByCategoryResponseDto;
 import org.ssafy.pasila.domain.search.service.SearchService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
+import org.ssafy.pasila.global.util.JwtUtil;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -71,6 +72,8 @@ public class LiveApiController {
     private final Map<String, String> mapRecordings = new ConcurrentHashMap<>();
 
     private final SimpMessagingTemplate template;
+
+    private final JwtUtil jwtUtil;
 
     @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브)")
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -234,9 +237,13 @@ public class LiveApiController {
     })
     @MessageMapping("/join")
     @PreAuthorize("isAuthenticated()")
-    public void joinLive(@RequestBody ChatLogDto chatLogDto) {
+    public void joinLive(@RequestBody ChatLogDto chatLogDto,
+                         @RequestHeader("Authorization") String data) {
 
-        int participantNum = liveService.joinLive(chatLogDto.getLiveId() , chatLogDto.getMemberId());
+        String token = data.substring(7);
+        Long userId = jwtUtil.getUserId(token);
+
+        int participantNum = liveService.joinLive(chatLogDto.getLiveId() , userId);
         template.convertAndSend("/num/" + chatLogDto.getLiveId(), participantNum);
 
     }
@@ -246,9 +253,13 @@ public class LiveApiController {
             @ApiResponse(responseCode = "200", description = "성공")
     })
     @MessageMapping("/exit")
-    public void exitLive(@RequestBody ChatLogDto chatLogDto){
+    public void exitLive(@RequestBody ChatLogDto chatLogDto,
+                         @RequestHeader("Authorization") String data){
 
-        int participantNum = liveService.exitLive(chatLogDto.getLiveId() , chatLogDto.getMemberId());
+        String token = data.substring(7);
+        Long userId = jwtUtil.getUserId(token);
+
+        int participantNum = liveService.exitLive(chatLogDto.getLiveId() , userId);
         template.convertAndSend("/num/" + chatLogDto.getLiveId(), participantNum);
 
     }
