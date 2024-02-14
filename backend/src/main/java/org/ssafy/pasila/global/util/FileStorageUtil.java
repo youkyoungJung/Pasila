@@ -49,6 +49,9 @@ public class FileStorageUtil {
     public byte[] download(String filepath) {
         try {
             Path downloadPath = Paths.get(uploadDirectory + filepath);
+            if (!Files.exists(downloadPath)) {
+                throw new RestApiException(ErrorCode.RESOURCE_NOT_FOUND);
+            }
             return Files.readAllBytes(downloadPath);
         } catch (IOException e) {
             log.error("fileStorage - {}", e.getMessage());

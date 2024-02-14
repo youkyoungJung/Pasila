@@ -96,9 +96,9 @@ public class ShortpingApiControlller {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LiveThumbnailResponse.class))})
     })
     @GetMapping("/thumbnail")
-    public ApiCommonResponse<?> getThumbnailList(@RequestParam String productId) {
+    public ApiCommonResponse<?> getThumbnailList(@RequestParam String liveId) {
 
-        LiveThumbnailResponse liveThumbnailResponse = shortpingService.getThumbnailList(productId);
+        LiveThumbnailResponse liveThumbnailResponse = shortpingService.getThumbnailList(liveId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveThumbnailResponse);
 
     }
