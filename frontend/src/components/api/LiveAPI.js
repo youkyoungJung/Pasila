@@ -20,7 +20,8 @@ const getScript = async (deal, success, fail) => {
 const sendLiveSchedule = async (data) => {
   try {
     const res = await formData.post(`${url}`, data)
-    return res.data
+    console.log(res.data.data)
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
     return null

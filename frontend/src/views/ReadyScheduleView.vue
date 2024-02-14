@@ -4,9 +4,13 @@ import ScheduleCalendar from '@/components/ready/ScheduleCalendar.vue'
 import ScheduleTime from '@/components/ready/ScheduleTime.vue'
 import { useReadyLiveStore } from '@/stores/readyLive'
 import { ref } from 'vue'
+import { sendLiveSchedule } from '@/components/api/LiveAPI'
+import { useMemberStore } from '@/stores/member'
 
 const step = ref('schedule')
 const store = useReadyLiveStore()
+const userStore = useMemberStore()
+const liveFormData = new FormData()
 
 const liveTitle = ref('')
 const date = ref(new Date())
@@ -20,22 +24,40 @@ const liveTime = ref({
 })
 
 const reserveLive = async () => {
-  store.liveFormData.append('image', 'hi')
   liveTime.value.title = liveTitle.value
+  if (apm.value == '오후') {
+    hour.value = parseInt(hour.value) + 12
+  }
   liveTime.value.liveScheduleAt =
     date.value.getFullYear() +
     '-' +
-    (date.value.getMonth() + 1) +
+    (date.value.getMonth() + 1).toString().padStart(2, '0') +
     '-' +
-    date.value.getDate() +
+    date.value.getDate().toString().padStart(2, '0') +
     'T' +
-    hour.value +
+    hour.value.toString().padStart(2, '0') +
     ':' +
-    minute.value +
+    minute.value.toString().padStart(2, '0') +
     ':00'
   store.liveSchedule = liveTime.value
 
-  const res = await store.sendData()
+  await sendData()
+}
+const sendData = async () => {
+  console.log(JSON.stringify(store.liveSchedule))
+  console.log(JSON.stringify(store.liveProduct))
+  console.log(JSON.stringify(store.liveChatbot))
+  console.log(store.productImage)
+  console.log(userStore.member.id)
+  const realFile = new File([store.productImage], 'productImage')
+  console.log(realFile)
+  liveFormData.append('image', realFile)
+  liveFormData.append('product', JSON.stringify(store.liveProduct))
+  liveFormData.append('live', JSON.stringify(store.liveSchedule))
+  liveFormData.append('chatbot', JSON.stringify(store.liveChatbot))
+  liveFormData.append('member', userStore.member.id)
+
+  const res = await sendLiveSchedule(liveFormData)
   console.log(res)
 }
 </script>

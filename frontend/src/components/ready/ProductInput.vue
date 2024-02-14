@@ -61,7 +61,6 @@ watch(product.value, () => {
 
 const discount = (per, index) => {
   options.value[index].per = per
-  console.log(product.value.options)
   product.value.options[index].discountPrice = Math.round(
     ((100 - per) / 100) * product.value.options[index].price
   )

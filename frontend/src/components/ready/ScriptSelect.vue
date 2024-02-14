@@ -2,12 +2,16 @@
 import { ref } from 'vue'
 import ScriptSelectButton from '@/components/ready/ScriptSelectButton.vue'
 import { getScript } from '@/components/api/LiveAPI.js'
+import { useMemberStore } from '@/stores/member'
+import { useReadyLiveStore } from '@/stores/readyLive'
 
+const userStore = useMemberStore()
+const liveStore = useReadyLiveStore()
 const emits = defineEmits(['script'])
 const data = ref({
   style: '',
-  userName: '재즈박',
-  productName: '빅파이',
+  userName: userStore.member.name,
+  productName: liveStore.liveProduct.name,
   description: ''
 })
 

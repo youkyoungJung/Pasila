@@ -31,8 +31,8 @@ const sendProduct = async () => {
     let mimeString = splitDataURI[0].split(':')[1].split(';')[0]
     const ia = new Uint8Array(byteString.length)
     for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i)
-
-    return new Blob([ia], { type: mimeString })
+    return ia
+    // return new Blob([ia], { type: mimeString })
   }
   const Base64toServerImage = (fullstring) => {
     const changeStr = fullstring
