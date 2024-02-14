@@ -44,19 +44,19 @@ public class LiveService {
     private final ProductRepository productRepository;
 
     @Transactional
-    public int joinLive(String liveId , Long memberId) {
+    public int joinLive(String liveId , String name) {
 
         SetOperations<String, String> setOperations = redisTemplate.opsForSet();
-        setOperations.add("participant : " + liveId, memberId.toString());
+        setOperations.add("participant : " + liveId, name);
         return setOperations.size("participant : " + liveId).intValue();
 
     }
 
     @Transactional
-    public int exitLive(String liveId ,Long memberId) {
+    public int exitLive(String liveId ,String name) {
 
         SetOperations<String, String> setOperations = redisTemplate.opsForSet();
-        setOperations.remove("participant : " + liveId, memberId.toString());
+        setOperations.remove("participant : " + liveId, name);
         return setOperations.size("participant : " + liveId).intValue();
 
     }
