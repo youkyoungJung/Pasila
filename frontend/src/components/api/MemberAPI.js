@@ -16,7 +16,9 @@ const joinUserApi = async (data) => {
 
 const checkPasswordApi = async (user) => {
   try {
-    const res = await local.post(`${url}/${localStorage.id}/pw`, { password: user.password })
+    const res = await local.post(`${url}/${localStorage.getItem('id')}/pw`, {
+      password: user.password
+    })
     if (res.data.data) {
       return res.data
     } else {
@@ -29,7 +31,7 @@ const checkPasswordApi = async (user) => {
 
 const getMyPageApi = async () => {
   try {
-    const res = await local.get(`${url}/${localStorage.id}`)
+    const res = await local.get(`${url}/${localStorage.getItem('id')}`)
     return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
@@ -90,7 +92,7 @@ const updateChannelDescApi = async (memberId, data) => {
 }
 const changeMyInfoApi = async (data) => {
   try {
-    const res = await formData.put(`${url}/${localStorage.id}`, data)
+    const res = await formData.put(`${url}/${localStorage.getItem('id')}`, data)
     return res.data
   } catch (err) {
     console.error('localAxios error', err)

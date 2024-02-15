@@ -29,7 +29,7 @@ const options = ref([
 const product = ref({
   name: '',
   description: '',
-  memberId: localStorage.id,
+  memberId: localStorage.getItem('id'),
   categoryId: '',
   options: [
     {

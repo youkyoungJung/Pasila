@@ -107,7 +107,7 @@ const reserveLive = async () => {
 }
 const sendData = async () => {
   const memberId = {
-    memberId: localStorage.id
+    memberId: localStorage.getItem('id')
   }
 
   liveFormData.set(
