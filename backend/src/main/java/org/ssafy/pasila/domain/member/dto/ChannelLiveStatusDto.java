@@ -5,23 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ssafy.pasila.domain.live.entity.LiveStatus;
 
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChannelLiveStatusDto {
+
     /* LIVE */
     @Schema(description = "라이브 정보")
     private ChannelLiveDto live;
 
-    /* STATUS */
-    @Schema(description = "예약된 라이브")
-    private boolean isReserve;
+    private LiveStatus status;
 
-    @Schema(description = "진행중 라이브")
-    private boolean isProgress;
-
-    @Schema(description = "종료된 라이브")
-    private boolean isEnd;
 }

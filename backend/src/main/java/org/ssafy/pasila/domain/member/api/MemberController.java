@@ -1,6 +1,11 @@
 package org.ssafy.pasila.domain.member.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +21,7 @@ import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.ChannelRepository;
 import org.ssafy.pasila.domain.member.repository.PersonalInfoRepository;
 import org.ssafy.pasila.domain.member.service.MemberService;
+import org.ssafy.pasila.domain.product.dto.ProductResponseDto;
 
 import java.io.IOException;
 import java.util.List;
@@ -144,9 +150,22 @@ public class MemberController {
     }
 
     // 채널별 Live 정보 조회 by id
+//    @Operation(summary = "Get channel live by id", description = "id로 채널별 라이브 조회")
+//    @GetMapping("/channel/{id}/live")
+//    public ApiCommonResponse<List<ChannelLiveStatusDto>> getChannelLive(@PathVariable("id") Long id) {
+//        List<ChannelLiveStatusDto> results = memberService.getChannelLiveStatusById(id);
+//        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), results);
+//    }
+
+    //채널별 Live 정보 조회
     @Operation(summary = "Get channel live by id", description = "id로 채널별 라이브 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {
+                            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ChannelLiveStatusDto.class)))
+                    })})
     @GetMapping("/channel/{id}/live")
-    public ApiCommonResponse<List<ChannelLiveStatusDto>> getChannelLive(@PathVariable("id") Long id) {
+    public ApiCommonResponse<List<ChannelLiveStatusDto>> getLiveForChannel(@PathVariable("id") Long id) {
         List<ChannelLiveStatusDto> results = memberService.getChannelLiveStatusById(id);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), results);
     }

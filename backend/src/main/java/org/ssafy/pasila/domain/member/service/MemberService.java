@@ -10,6 +10,8 @@ import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.auth.dto.request.LoginRequestDto;
 import org.ssafy.pasila.domain.auth.service.EncryptService;
+import org.ssafy.pasila.domain.live.entity.LiveStatus;
+import org.ssafy.pasila.domain.live.repository.LiveRepository;
 import org.ssafy.pasila.domain.member.dto.ChannelLiveStatusDto;
 import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
 import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
@@ -20,6 +22,7 @@ import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +42,8 @@ public class MemberService {
     private final PasswordEncoder encoder;
 
     private final EncryptService encryptService;
+
+    private final LiveRepository liveRepository;
 
     /**
      * 사용자 정보 수정 메서드
@@ -97,42 +102,42 @@ public class MemberService {
     /**
      * 채널별 라이브 조회 메서드
      */
-    private List<ChannelLiveDto> getChannelLiveById(Long id) {
-        return channelRepository.findLiveById(id);
-    }
+//    private List<ChannelLiveDto> getChannelLiveById(Long id) {
+//        return channelRepository.findLiveById(id);
+//    }
 
     /**
      * 채널별 라이브 & 상태 조회 메서드
      */
-    public List<ChannelLiveStatusDto> getChannelLiveStatusById(Long id) {
-        List<ChannelLiveStatusDto> results = new ArrayList<>();
-        List<ChannelLiveDto> lives = getChannelLiveById(id);
-
-        for(ChannelLiveDto live: lives){
-            boolean isReserve = false;
-            boolean isProgress = false;
-            boolean isEnd = false;
-
-            if(live.getLiveOffAt() != null){
-                isEnd = true;
-            } else if (live.getLiveOnAt() != null) {
-                isProgress = true;
-            }else {
-                isEnd = true;
-            }
-
-            ChannelLiveStatusDto result =ChannelLiveStatusDto.builder()
-                    .live(live)
-                    .isReserve(isReserve)
-                    .isProgress(isProgress)
-                    .isEnd(isEnd)
-                    .build();
-
-            results.add(result);
-        }
-
-        return results;
-    }
+//    public List<ChannelLiveStatusDto> getChannelLiveStatusById(Long id) {
+//        List<ChannelLiveStatusDto> results = new ArrayList<>();
+//        List<ChannelLiveDto> lives = getChannelLiveById(id);
+//
+//        for(ChannelLiveDto live: lives){
+//            boolean isReserve = false;
+//            boolean isProgress = false;
+//            boolean isEnd = false;
+//
+//            if(live.getLiveOffAt() != null){
+//                isEnd = true;
+//            } else if (live.getLiveOnAt() != null) {
+//                isProgress = true;
+//            }else {
+//                isEnd = true;
+//            }
+//
+//            ChannelLiveStatusDto result =ChannelLiveStatusDto.builder()
+//                    .live(live)
+//                    .isReserve(isReserve)
+//                    .isProgress(isProgress)
+//                    .isEnd(isEnd)
+//                    .build();
+//
+//            results.add(result);
+//        }
+//
+//        return results;
+//    }
 
     /**
      * 이미지가 있을 경우 S3Upload에 접근, upload
@@ -222,5 +227,50 @@ public class MemberService {
         member.updatePassword(encoder.encode(dto.getPassword()));
 
     }
+
+    /**
+     * 채널별 라이브 조회 메서드
+     */
+    private List<ChannelLiveDto> getLiveInMyChannel(Long id) {
+
+        //채널별 라이브 조회
+        return liveRepository.findByMember_Id(id)
+                .stream()
+                .map(ChannelLiveDto::new)
+                .toList();
+
+    }
+
+    public List<ChannelLiveStatusDto> getChannelLiveStatusById(Long id) {
+        List<ChannelLiveDto> lives = getLiveInMyChannel(id);
+        List<ChannelLiveStatusDto> channelLiveStatusDtos = new ArrayList<>();
+
+        for (ChannelLiveDto live : lives) {
+            LocalDateTime currentDateTime = LocalDateTime.now();
+
+            ChannelLiveStatusDto channelLiveStatusDto = ChannelLiveStatusDto.builder()
+                    .live(live)
+                    .status(calculateStatus(live, currentDateTime))
+                    .build();
+
+            channelLiveStatusDtos.add(channelLiveStatusDto);
+        }
+
+        return channelLiveStatusDtos;
+    }
+
+    private LiveStatus calculateStatus(ChannelLiveDto live, LocalDateTime currentDateTime) {
+
+        if (live.getLiveOnAt() != null && live.getLiveOnAt().isBefore(currentDateTime)
+                && (live.getLiveOffAt() == null || live.getLiveOffAt().isAfter(currentDateTime))) {
+            return LiveStatus.IN_PROGRESS;
+        } else if (live.getLiveOffAt() != null && live.getLiveOffAt().isBefore(currentDateTime)) {
+            return LiveStatus.ENDED;
+        } else if (live.getLiveOnAt() != null && live.getLiveOnAt().isAfter(currentDateTime)) {
+            return LiveStatus.RESERVED;
+        }
+        return null; // 예외 처리 등을 위해 기본값 반환
+    }
+
 
 }
