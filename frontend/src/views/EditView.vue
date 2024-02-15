@@ -62,7 +62,7 @@ const sortHighlight = (e) => {
 }
 const complete = () => {
   console.log(video.value)
-  formData.append('video', video.value)
+  formData.set('video', video.value)
   sendData.value = {
     title: shortping.value.title,
     productId: '20FD88R7Y5XM',
@@ -78,7 +78,7 @@ const complete = () => {
     }
   }
   console.log(JSON.stringify(sendData.value))
-  formData.append(
+  formData.set(
     'shortping',
     new Blob([JSON.stringify(sendData.value)], { type: 'application/json' })
   )
