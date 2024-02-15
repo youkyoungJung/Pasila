@@ -7,7 +7,7 @@ const orderList = ref([])
 const orderStatus = ref([])
 
 onMounted(async () => {
-  orderList.value = await getOrderListApi(2)
+  orderList.value = await getOrderListApi(localStorage.getItem('id'))
   orderStatus.value = await getOrderStatusApi()
 })
 </script>

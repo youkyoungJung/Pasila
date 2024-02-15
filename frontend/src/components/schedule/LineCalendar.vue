@@ -1,7 +1,10 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 
-const selectedDate = ref(0)
+defineProps({
+  selectedDate: String
+})
+
 const today = reactive(new Date())
 const weeks = ['일', '월', '화', '수', '목', '금', '토']
 const DateList = reactive([])
@@ -17,11 +20,9 @@ onMounted(() => {
 
 const makeDateList = () => {
   for (let index = 0; index < 14; index++) {
-    DateList.push({
-      date: today.getMonth() + 1 + ' / ' + today.getDate(),
-      day: weeks[today.getDay()]
-    })
-    today.setDate(today.getDate() + 1)
+    const date = new Date(today)
+    date.setDate(today.getDate() + index)
+    DateList.push(date)
   }
 }
 
@@ -68,14 +69,29 @@ const controlMove = (e) => {
       v-for="(item, index) in DateList"
       :key="index"
       class="calendar-card"
-      :class="{ selected: selectedDate === index }"
-      @click="selectedDate = index"
+      :class="{
+        selected:
+          selectedDate ==
+          item.getFullYear() + '-' + ('0' + (item.getMonth() + 1)).slice(-2) + '-' + item.getDate()
+      }"
+      @click="
+        $emit(
+          'changeDate',
+          item.getFullYear() + '-' + ('0' + (item.getMonth() + 1)).slice(-2) + '-' + item.getDate()
+        )
+      "
     >
-      <div class="date" :class="{ saturday: item.day === '토', sunday: item.day === '일' }">
-        {{ item.date }}
+      <div
+        class="date"
+        :class="{ saturday: weeks[item.getDay()] === '토', sunday: weeks[item.getDay()] === '일' }"
+      >
+        {{ item.getMonth() + 1 + ' / ' + item.getDate() }}
       </div>
-      <div class="day" :class="{ saturday: item.day === '토', sunday: item.day === '일' }">
-        {{ item.day }}
+      <div
+        class="day"
+        :class="{ saturday: weeks[item.getDay()] === '토', sunday: weeks[item.getDay()] === '일' }"
+      >
+        {{ weeks[item.getDay()] }}
       </div>
     </div>
   </div>

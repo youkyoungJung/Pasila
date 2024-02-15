@@ -46,9 +46,10 @@ const logout = () => {
       <div class="dropdown" v-else>
         <span class="dropbtn" :style="{ backgroundImage: profile }"></span>
         <div class="dropdown-content">
-          <router-link to="/my" class="profile-menu-line">마이페이지</router-link>
+          <router-link to="/ready/regist" class="profile-menu-line">라이브 예약</router-link>
           <div @click="goChannel" class="profile-menu-line">내 채널</div>
           <router-link to="/my/orders" class="profile-menu-line">주문내역</router-link>
+          <router-link to="/my" class="profile-menu-line">마이페이지</router-link>
           <div @click="logout" class="profile-menu-line">로그아웃</div>
         </div>
       </div>
