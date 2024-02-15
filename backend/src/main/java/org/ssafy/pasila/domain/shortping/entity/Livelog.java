@@ -14,7 +14,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @SequenceGenerator(name = "livelog_seq_generator",
         sequenceName = "livelog_seq",
-        initialValue = 21,
+        initialValue = 61,
         allocationSize = 1 )
 @Entity
 @Table(name = "livelog")

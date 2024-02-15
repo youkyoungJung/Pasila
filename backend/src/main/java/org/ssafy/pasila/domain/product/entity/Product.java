@@ -43,7 +43,7 @@ public class Product {
         this.id = newId;
     }
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 50, nullable = false)
     private String name;
 
     @Lob
