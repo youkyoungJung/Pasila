@@ -56,6 +56,7 @@ public class Live {
     private LocalDateTime liveOffAt;
 
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String script;
 
     @Column(name = "full_video_url", length = 2083)
@@ -97,6 +98,8 @@ public class Live {
                 .script(createLiveRequestDto.getScript())
                 .member(member)
                 .product(product)
+                .isActive(true)
+                .likeCnt(0)
                 .build();
         live.setChatbots();
         return live;
