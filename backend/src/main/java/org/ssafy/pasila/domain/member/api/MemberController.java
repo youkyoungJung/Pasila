@@ -108,9 +108,17 @@ public class MemberController {
     @Operation(summary = "Update member", description = "회원 정보 수정")
     @PutMapping("/{id}")
     public ApiCommonResponse<?> updateMember(@PathVariable("id") Long id,
-                                             @RequestPart(value = "personal_info") PersonalInfoDto request,
-                                             @RequestPart(value = "new_image", required = false) MultipartFile newImageName) throws IOException {
-        Long updatedId = memberService.updateMember(id, request, newImageName);
+                                             @RequestPart(value = "personal_info") PersonalInfoDto request) {
+        Long updatedId = memberService.updateMember(id, request);
+        return ApiCommonResponse.successResponse(HttpStatus.CREATED.value(), updatedId);
+    }
+
+    // 회원 프로필 수정
+    @Operation(summary = "Update profile", description = "회원 프로필 수정")
+    @PutMapping("/{id}/profile")
+    public ApiCommonResponse<?> updateProfile(@PathVariable("id") Long id,
+                                             @RequestPart(value = "new_image", required = false) MultipartFile newImage) throws IOException {
+        Long updatedId = memberService.updateProfile(id, newImage);
         return ApiCommonResponse.successResponse(HttpStatus.CREATED.value(), updatedId);
     }
 

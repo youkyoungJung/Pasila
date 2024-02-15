@@ -118,7 +118,6 @@ public class Member {
         this.birth = request.getBirth();
         this.bank = request.getBank();
         this.account = request.getAccount();
-        this.profile = request.getProfile();
     }
 
     public void updateMemberWithPw(PersonalInfoDto request) {
@@ -132,7 +131,6 @@ public class Member {
         this.birth = request.getBirth();
         this.bank = request.getBank();
         this.account = request.getAccount();
-        this.profile = request.getProfile();
     }
 
     // 채널 설명 수정
