@@ -98,6 +98,8 @@ public class Live {
                 .script(createLiveRequestDto.getScript())
                 .member(member)
                 .product(product)
+                .isActive(true)
+                .likeCnt(0)
                 .build();
         live.setChatbots();
         return live;
