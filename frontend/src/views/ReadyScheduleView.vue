@@ -105,9 +105,10 @@ const reserveLive = async () => {
 
   await sendData()
 }
+
 const sendData = async () => {
   const memberId = {
-    memberId: localStorage.getItem('id')
+    memberId: parseInt(localStorage.getItem('id'))
   }
 
   liveFormData.set(
@@ -132,8 +133,12 @@ const sendData = async () => {
   liveFormData.set('memberId', new Blob([JSON.stringify(memberId)], { type: 'application/json' }))
 
   const res = await sendLiveScheduleApi(liveFormData)
-  alert('라이브 예약이 완료되었습니다!')
-  router.push('/')
+  if (res) {
+    alert('라이브 예약이 완료되었습니다!')
+    router.push('/')
+  } else {
+    alert('다시 예약을 진행해주세요.')
+  }
 }
 </script>
 

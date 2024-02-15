@@ -9,7 +9,7 @@ const emits = defineEmits(['script'])
 const data = ref({
   style: '',
   userName: localStorage.getItem('name'),
-  productName: store.liveProduct.name,
+  productName: '',
   description: ''
 })
 
@@ -20,6 +20,7 @@ const selectedTone = ref('')
 const selectTone = (i) => {
   data.value.style = i
   selectedTone.value = i
+  
 }
 
 const selectedAccent = ref('')
@@ -30,7 +31,11 @@ const selectAccent = (i) => {
 
 const script = ref('')
 const makeScript = () => {
+  data.value.productName = store.liveProduct.value.name
   data.value.description = script.value.replaceAll('\n', '')
+  store.userScript = script.value
+  let realScript = store.userScript + store.onlyScript
+  data.value.description = realScript
   getScriptApi(data.value, sendData, failLog)
 }
 
