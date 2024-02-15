@@ -108,9 +108,21 @@ const addOrder = async () => {
       </div>
 
       <div class="p-top">
-        <v-long-input :data="inputData[0]" @get-data="(e) => console.log(e.target.value)" />
-        <v-short-input :data="inputData[1]" />
-        <v-long-input :data="inputData[2]" @get-data="(e) => console.log(e.target.value)" />
+        <v-long-input
+          :input-data="inputData[0].value"
+          :data="inputData[0]"
+          @get-data="(e) => (inputData[0].value = e)"
+        />
+        <v-short-input
+          :input-data="inputData[1].value"
+          :data="inputData[1]"
+          @get-data="(e) => (inputData[1].value = e)"
+        />
+        <v-long-input
+          :input-data="inputData[2].value"
+          :data="inputData[2]"
+          @get-data="(e) => (inputData[2].value = e)"
+        />
       </div>
 
       <div class="title-box sub-box">

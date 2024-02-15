@@ -22,9 +22,13 @@ onMounted(async () => {
       <h3 class="subtitle">내 판매 상품의 주문, 배송 상태를 확인하고 관리하세요.</h3>
     </section>
     <section class="bottom">
-      <product-table v-if="myProductList" :products="myProductList" :status-list="statusList" />
+      <product-table
+        v-if="myProductList.length > 0"
+        :products="myProductList"
+        :status-list="statusList"
+      />
       <div v-else class="no-order">
-        아직 판매한 상품이 없습니다. 쉬운 방송 준비로 파는게 쉬워지는 파시라 방송을 시작해보세요!
+        아직 관리할 주문 내역이 없네요. 파시라 라이브를 통해 내 채널을 키워보세요!
       </div>
     </section>
   </div>
