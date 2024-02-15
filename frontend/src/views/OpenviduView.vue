@@ -91,23 +91,10 @@ onMounted(async () => {
 
   connectChat()
   joinSession()
-
-  if (ws && ws.connected) {
-    const msg = {
-      liveId: props.liveId
-    }
-    ws.send(`/send/join`, JSON.stringify(msg), {})
-  }
 })
 
 onUnmounted(() => {
   clearInterval(interval)
-  if (ws && ws.connected) {
-    const msg = {
-      liveId: props.liveId
-    }
-    ws.send(`/send/exit`, JSON.stringify(msg), {})
-  }
   ws.disconnect()
   leaveSession()
 })
@@ -178,8 +165,6 @@ const joinSession = async () => {
   }
 
   window.addEventListener('beforeunload', leaveSession)
-
-  location.href
 }
 
 const startLive = async () => {
@@ -211,6 +196,8 @@ const leaveSession = async () => {
       session.value.disconnect()
       router.push('/')
     }
+  } else {
+    router.push('/')
   }
 
   session.value = undefined
@@ -291,10 +278,6 @@ const connectChat = () => {
     () => {
       ws.subscribe(`/id/${props.liveId}`, (res) => {
         chatList.value.push(JSON.parse(res.body))
-      })
-      ws.subscribe(`/num/${props.liveId}`, (res) => {
-        console.log(JSON.parse(res.body))
-        customerCnt.value = JSON.parse(res.body)
       })
     },
     (error) => {
