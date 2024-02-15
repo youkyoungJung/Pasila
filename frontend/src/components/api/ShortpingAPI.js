@@ -38,4 +38,24 @@ const sendShortpingApi = async (data) => {
     console.error('localAxios error', err)
   }
 }
-export { getHighlightApi, getThumbnailApi, sendShortpingApi }
+
+const getShortpingApi = async (shortpingId) => {
+  try {
+    const res = await local.get(`${url}/${shortpingId}`)
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+
+const deleteShortpingApi = async (shortpingId) => {
+  try {
+    const res = await local.delete(`${url}/${shortpingId}`)
+    return res
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+export { getHighlightApi, getThumbnailApi, sendShortpingApi, getShortpingApi, deleteShortpingApi }

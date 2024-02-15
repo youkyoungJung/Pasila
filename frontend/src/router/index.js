@@ -8,6 +8,8 @@ import OpenviduView from '@/views/OpenviduView.vue'
 import OrderView from '@/views/OrderView.vue'
 import OrderSuccessView from '@/views/OrderSuccessView.vue'
 import LiveEndView from '@/views/LiveEndView.vue'
+import ReplayView from '@/views/ReplayView.vue'
+import ShortpingView from '@/views/ShortpingView.vue'
 import ScheduleView from '@/views/ScheduleView.vue'
 import ChannelView from '@/views/ChannelView.vue'
 import EditView from '@/views/EditView.vue'
@@ -70,6 +72,18 @@ const router = createRouter({
       path: '/live/:id/end',
       name: 'liveend',
       component: LiveEndView,
+      props: true
+    },
+    {
+      path: '/replay/:liveId',
+      name: 'replay',
+      component: ReplayView,
+      props: true
+    },
+    {
+      path: '/shortping/:shortpingId',
+      name: 'shortping',
+      component: ShortpingView,
       props: true
     },
     {

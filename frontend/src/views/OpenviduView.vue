@@ -13,7 +13,9 @@ import {
   getLiveQuestionApi,
   sendChatToChatbot
 } from '@/components/api/OpenviduAPI.js'
+
 import { getLiveStockApi } from '@/components/api/RealTimeAPI'
+import { useLiveendStore } from '@/stores/liveend'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
 import LiveScript from '@/components/live/seller/LiveScript.vue'
 import LiveStock from '@/components/live/seller/LiveStock.vue'
@@ -40,6 +42,9 @@ let product = reactive({})
 let questionList = ref([])
 
 const props = defineProps(['liveId'])
+const liveendStore = useLiveendStore()
+
+let interval
 
 onMounted(async () => {
   await getProduct()
@@ -62,7 +67,7 @@ onMounted(async () => {
         product.options = data.options
       }
     })
-    setInterval(async () => {
+    interval = setInterval(async () => {
       questionList.value = await getLiveQuestionApi(props.liveId)
     }, 60000)
   }
@@ -72,6 +77,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+  clearInterval(interval)
   ws.disconnect()
   leaveSession()
 })
@@ -151,7 +157,9 @@ const startLive = async () => {
 }
 
 const stopLive = async () => {
-  await stopLiveApi(props.liveId)
+  const res = await stopLiveApi(props.liveId)
+  console.log(res)
+  liveendStore.liveendInfo = res
 }
 
 const leaveSession = async () => {
@@ -160,6 +168,7 @@ const leaveSession = async () => {
       await stopLive()
       session.value.disconnect()
       router.push(`/live/${props.liveId}/end`)
+      return
     }
   } else {
     session.value.disconnect()
@@ -265,7 +274,7 @@ const connectChat = () => {
     <div class="session" v-if="session">
       <section class="col-1">
         <user-video :stream-manager="mainStreamManager" :is-start="isStart" />
-        <live-script v-if="pubToolBar[0].isActive" :script="props.script" />
+        <live-script v-if="pubToolBar[0].isActive" :script="product.script" />
       </section>
 
       <section class="col-2" v-if="pubToolBar[1].isActive">
