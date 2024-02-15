@@ -2,8 +2,8 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 export const useShortpingStore = defineStore('shortping', () => {
-  const videoURL = ref('')
-  const shortpingURL = ref('')
+  const videoURL = ''
+  const shortpingURL = ''
 
   return { videoURL, shortpingURL }
 })

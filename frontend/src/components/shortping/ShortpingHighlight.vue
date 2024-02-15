@@ -27,7 +27,7 @@ const preview = async () => {
     wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
     workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript')
   })
-  console.log(videoURL)
+
   const outputs = []
   const inputFileName = 'test.mp4'
   await ffmpeg.writeFile(inputFileName, await fetchFile(videoURL))
@@ -61,7 +61,7 @@ const preview = async () => {
 
   const finalOutput = await ffmpeg.readFile('output.mp4')
   video.value = URL.createObjectURL(new Blob([finalOutput.buffer], { type: 'video/mp4' }))
-  store.shortpingURL = new File([finalOutput.buffer], 'file.mp4', { type: 'video/mp4' })
+  store.shortpingURL = video.value
   console.log(store.shortpingURL)
   emit('video', new File([finalOutput.buffer], 'file.mp4', { type: 'video/mp4' }))
 }

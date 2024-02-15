@@ -49,7 +49,7 @@ const complete = () => {
   formData.set('video', video.value)
   sendData.value = {
     title: shortping.value.title,
-    productId: '20FD88R7Y5XM',
+    liveId: props.liveId,
     livelogs: []
   }
   for (let i = 0; i < highlights.value.length; i++) {
