@@ -221,6 +221,7 @@ public class ProductService {
                 .bank(product.getMember().getBank())
                 .account(product.getMember().getAccount())
                 .script(live.getScript())
+                .title(live.getTitle())
                 .fullVideoUrl(live.getFullVideoUrl())
                 .build();
 
