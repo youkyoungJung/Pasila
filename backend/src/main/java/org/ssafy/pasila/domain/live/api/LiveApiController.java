@@ -44,6 +44,7 @@ import org.ssafy.pasila.global.util.JwtUtil;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -122,12 +123,12 @@ public class LiveApiController {
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
     }
 
-    @Operation(summary = "Get Live Schedule", description = "일자별 라이브 목록 조회")
-    @GetMapping("/{date}")
-    public ApiCommonResponse<?> findLiveList(@PathVariable("date") LocalDate date) {
-        List<ChannelLiveDto> results = liveService.getScheduledLiveByDate(date);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), results);
-    }
+//    @Operation(summary = "Get Live Schedule", description = "일자별 라이브 목록 조회")
+//    @GetMapping("/{date}")
+//    public ApiCommonResponse<?> findLiveList(@PathVariable("date") LocalDate date) {
+//        List<ChannelLiveDto> results = liveService.getScheduledLiveByDate(date);
+//        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), results);
+//    }
 
     @Operation(summary = "Live List In Home", description = "메인화면에서 카테고리별 라이브 목록")
     @GetMapping("/summary")
@@ -276,6 +277,14 @@ public class LiveApiController {
         List<String> result = liveService.getTop5Question(liveId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
 
+    }
+
+    @Operation(summary = "Get Live Schedule", description = "일자별 라이브 목록 조회")
+    @GetMapping("/{date}")
+    public ApiCommonResponse<?> findLiveList(@PathVariable("date") LocalDate date) {
+
+        List<ChannelLiveDto> results = liveService.getScheduledLive(date);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), results);
     }
 
 }

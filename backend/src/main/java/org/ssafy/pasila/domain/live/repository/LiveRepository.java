@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.ssafy.pasila.domain.live.entity.Live;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.List;
 
@@ -17,5 +18,9 @@ public interface LiveRepository extends JpaRepository<Live, String> {
     Optional<Live> findByProduct_IdAndIsOnTrue(String id);
 
     List<Live> findByMember_Id(Long id);
+
+    List<Live>findByIsActiveTrueAndLiveScheduledAtBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
+
+    List<Live>findByIsActiveTrueAndLiveScheduledAtGreaterThanEqualAndLiveScheduledAtLessThan(LocalDateTime startOfDay, LocalDateTime endOfDay);
 
 }

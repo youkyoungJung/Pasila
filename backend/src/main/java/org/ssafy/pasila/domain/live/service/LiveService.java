@@ -21,8 +21,10 @@ import org.ssafy.pasila.domain.product.entity.Product;
 import org.ssafy.pasila.domain.product.repository.ProductRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
-
+import java.util.stream.Collectors;
 
 
 @Service
@@ -137,7 +139,18 @@ public class LiveService {
         return live.getId();
     }
 
-    public List<ChannelLiveDto> getScheduledLiveByDate(LocalDate date) {
-        return liveQueryRepository.findScheduledLiveByDate(date);
+//    public List<ChannelLiveDto> getScheduledLiveByDate(LocalDate date) {
+//
+//        return liveQueryRepository.findScheduledLiveByDate(date);
+//    }
+    public List<ChannelLiveDto> getScheduledLive(LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
+        List<Live> scheduledLives = liveRepository.findByIsActiveTrueAndLiveScheduledAtGreaterThanEqualAndLiveScheduledAtLessThan(startOfDay, endOfDay);
+
+        return scheduledLives.stream()
+                .map(ChannelLiveDto::new)
+                .collect(Collectors.toList());
     }
 }
