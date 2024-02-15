@@ -91,11 +91,14 @@ public class ShortpingService {
 
     public ShortpingResponseDto getShortpingById(String id) {
         ShortpingResponseDto shortpingResponseDto = shortpingQueryService.findWithProductMember(id);
+        Live live = liveRepository.findByProduct_Id(shortpingResponseDto.getId())
+                .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
         List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(shortpingResponseDto.getId())
                 .stream()
                 .map(ProductOptionDto::new)
                 .toList();
         shortpingResponseDto.setOptions(options);
+        shortpingResponseDto.setLiveId(live.getId());
         shortpingResponseDto.setAccount(encryptService.decryptAccount(shortpingResponseDto.getAccount()));
         return shortpingResponseDto;
     }

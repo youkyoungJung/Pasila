@@ -57,6 +57,9 @@ public class ShortpingResponseDto {
     @Schema(description = "숏핑 아이디")
     private String shortpingId;
 
+    @Schema(description = "라이브 아이디")
+    private String liveId;
+
     public ShortpingResponseDto(String id, Long sellerId, String sellerChannelName, String name, String description, LocalDateTime createdAt, String thumbnail, Long categoryId, String bank, String account, String title, String videoUrl, Integer likeCnt, String shortpingId) {
         this.id = id;
         this.sellerId = sellerId;
