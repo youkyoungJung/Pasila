@@ -151,7 +151,6 @@ public class SearchRepository {
         if(categoryId != null && categoryId != 0) {
             jpql += "WHERE p.category.id = :categoryId " +
                     "AND l.isActive = true " +
-                    "AND l.liveOnAt IS NOT NULL " +
                     "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) ";
 
         } else if(keyword != null && !keyword.isEmpty()) {
@@ -159,11 +158,11 @@ public class SearchRepository {
                     "OR p.name LIKE :keyword " +
                     "OR m.channel LIKE :keyword) " +
                     "AND l.isActive = true " +
-                    "AND l.liveOnAt IS NOT NULL " +
                     "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) ";
         }
 
-        jpql += "GROUP BY l.id, l.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
+        jpql += "AND l.liveOnAt IS NOT NULL " +
+                "GROUP BY l.id, l.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
                 orderByClause;
 
         TypedQuery<SearchLiveResponseDto> query = em.createQuery(jpql, SearchLiveResponseDto.class);
