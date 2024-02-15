@@ -10,6 +10,7 @@ import org.ssafy.pasila.domain.shortping.entity.Livelog;
 import org.ssafy.pasila.domain.shortping.repository.LivelogRepository;
 import org.ssafy.pasila.domain.shortping.service.query.LivelogQueryService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,9 +47,16 @@ public class LivelogService {
         livelogQueryService.deleteAllByLiveId(liveId);
     }
 
+
     // Live 아이디로 하이라이트 리스트 조회
     public List<LivelogResponseDto> getLivelogListByLiveId(String liveId) {
-        return livelogQueryService.findByLiveId(liveId).stream()
+        List<Livelog> livelogList =  livelogQueryService.findByLiveId(liveId);
+
+        if(livelogList.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return livelogList.stream()
                 .map(livelog -> LivelogResponseDto.of(livelog))
                 .collect(Collectors.toList());
     }
