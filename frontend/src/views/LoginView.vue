@@ -32,7 +32,7 @@ const inputData = ref({
 const login = async () => {
   const res = await emailLoginApi(user.value.userEmail, user.value.userPassword)
   if (res) {
-    router.push('/')
+    router.go()
   } else {
     alert('비밀번호가 틀렸습니다. 다시 입력해주세요!')
   }
@@ -47,13 +47,13 @@ const join = () => {
   <div class="container">
     <div class="header">로그인</div>
     <div class="content">
-      <section class="long-type">
+      <section id="section" class="long-type">
         <v-long-input :data="inputData.email" @getData="(e) => (user.userEmail = e)" />
       </section>
-      <section class="long-type">
+      <section id="section" class="long-type">
         <v-long-input :data="inputData.password" @getData="(e) => (user.userPassword = e)" />
       </section>
-      <section class="forget-pw">
+      <section id="section" class="forget-pw">
         <button @click="findPassword" class="find-pw">비밀번호를 잊으셨나요?</button>
       </section>
       <button @click="login" class="login">로그인</button>
@@ -83,6 +83,9 @@ const join = () => {
     flex-direction: column;
     align-items: center;
 
+    #section {
+      margin: 0.3rem 0;
+    }
     .long-type {
       @include box(95%, 10%, null, 0, 0, 0);
       display: flex;

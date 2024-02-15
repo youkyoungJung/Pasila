@@ -1,7 +1,9 @@
 <script setup>
+
 defineProps({
   isLive: Boolean
 })
+
 </script>
 
 <template>
