@@ -23,6 +23,7 @@ import LiveQuestion from '@/components/live/seller/LiveQuestion.vue'
 import LiveChat from '@/components/live/LiveChat.vue'
 import LiveDescription from '@/components/live/customer/LiveDescription.vue'
 import ToolBarBtn from '@/components/live/ToolBarBtn.vue'
+import { likeUpApi } from '@/components/api/RedisAPI'
 
 let OV = ref(undefined)
 let session = ref(undefined)
@@ -183,6 +184,8 @@ const leaveSession = async () => {
       session.value.disconnect()
       router.push(`/live/${props.liveId}/end`)
       return
+    } else {
+      session.value.disconnect()
     }
   } else {
     session.value.disconnect()
@@ -202,6 +205,10 @@ const getToken = async (liveId) => {
   return await createTokenApi(res)
 }
 
+const likeCntUp = async () => {
+  await likeUpApi(props.liveId)
+}
+
 const pubToolBar = reactive([
   { isActive: true, iconName: 'fa-regular fa-file-lines', click: clickToolBarBtn },
   { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
@@ -211,6 +218,7 @@ const pubToolBar = reactive([
 ])
 
 const subToolBar = reactive([
+  { isActive: true, iconName: 'fa-regular fa-heart', click: likeCntUp },
   { isActive: true, iconName: 'fa-regular fa-comments', click: clickToolBarBtn },
   { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
   { isActive: true, iconName: 'fa-regular fa-circle-xmark', click: leaveSession }
@@ -330,7 +338,7 @@ const connectChat = () => {
         <user-video :stream-manager="subscribers[0]" :is-start="true" :cnt="customerCnt" />
       </section>
 
-      <section class="col-2" v-if="subToolBar[0].isActive">
+      <section class="col-2" v-if="subToolBar[1].isActive">
         <live-chat
           :is-customer="userRole === 'SUB'"
           :is-chatbot="isChatbot"
@@ -343,7 +351,7 @@ const connectChat = () => {
         />
       </section>
 
-      <section class="col-3" v-if="subToolBar[1].isActive">
+      <section class="col-3" v-if="subToolBar[2].isActive">
         <live-description :product="product" :live-id="props.liveId" />
       </section>
     </div>

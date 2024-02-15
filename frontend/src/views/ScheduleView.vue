@@ -19,35 +19,19 @@ const changeDate = async (e) => {
   selectedDate.value = e
   products.value = await getLiveScheduleApi(selectedDate.value)
 }
-
-const Products = ref([
-  {
-    on: '2024-01-19 11:00:00',
-    title: '따끈따끈 붕어빵>.<',
-    price: 20000,
-    discountPrice: 12000,
-    thumbnail: new URL('@/assets/img/test/fishbread.png', import.meta.url).href,
-    member: 'JEENIE',
-    profile: new URL('@/assets/img/test/jenny.jpg', import.meta.url).href
-  },
-  {
-    on: '2024-01-19 11:10:00',
-    title: '베트남으로 떠나는 3박 5일 여행!',
-    price: 2000000,
-    discountPrice: 1560000,
-    thumbnail: new URL('@/assets/img/test/vietnam.jpg', import.meta.url).href,
-    member: 'ROSE',
-    profile: new URL('@/assets/img/test/rose.jpg', import.meta.url).href
-  }
-])
 </script>
 
 <template>
   <div class="schedule">
     <line-calendar :selected-date="selectedDate" @change-date="changeDate" />
-    <div v-for="(item, index) in products" :key="index" class="product-channel">
-      <product-card :product="item" />
-      <channel-card :member="{ member: item.member, profile: item.profile }" />
+    <div v-for="(item, index) in products" :key="index">
+      <div class="row">
+        <span class="date">{{ item.liveScheduledAt.substring(11, 16) }}</span>
+        <div class="product-channel">
+          <channel-card :member="{ member: item.channel, profile: item.profileUrl }" />
+          <product-card :product="item" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -55,9 +39,22 @@ const Products = ref([
 <style lang="scss" scoped>
 .schedule {
   padding: 2rem;
-  .product-channel {
-    @include flex-box(center, space-between);
-    padding: 0 10%;
+  .row {
+    padding: 2% 10%;
+    .date {
+      @include font-factory($fs-3, bold, $orange);
+      &::after {
+        display: inline-block;
+        content: '';
+        width: 90%;
+        height: 1px;
+        margin-left: 1rem;
+        background-color: $light-dark;
+      }
+    }
+    .product-channel {
+      @include flex-box(center, space-between);
+    }
   }
 }
 </style>
