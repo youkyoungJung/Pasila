@@ -37,8 +37,8 @@ watch(currentTime, (newTime) => {
 })
 
 watchEffect(async () => {
-  videoURL.value = await props.video
-  vi.value = await props.video
+  videoURL.value = URL.createObjectURL(props.video)
+  vi.value = URL.createObjectURL(props.video)
   console.log(props.video)
   colorList()
 })
