@@ -3,54 +3,22 @@ import ProductOption from '@/components/ready/ProductOption.vue'
 import { ref, watch } from 'vue'
 
 const emit = defineEmits(['getProduct'])
-const options = ref([
+const products = ref([
   {
-    name: '구성1',
-    stock: '',
-    price: '',
-    discountPrice: '',
-    per: ''
-  },
-  {
-    name: '구성2',
-    stock: '',
-    price: '',
-    discountPrice: '',
-    per: ''
-  },
-  {
-    name: '구성3',
+    name: '',
     stock: '',
     price: '',
     discountPrice: '',
     per: ''
   }
 ])
+
 const product = ref({
   name: '',
   description: '',
   memberId: localStorage.getItem('id'),
   categoryId: '',
-  options: [
-    {
-      name: 'option1',
-      stock: 0,
-      price: 0,
-      discountPrice: 0
-    },
-    {
-      name: 'option2',
-      stock: 0,
-      price: 0,
-      discountPrice: 0
-    },
-    {
-      name: 'option3',
-      stock: 0,
-      price: 0,
-      discountPrice: 0
-    }
-  ]
+  options: []
 })
 const selectedCategory = ref('')
 const category = ref(['뷰티', '음식', '패션', '라이프', '여행', '테크', '유아', '레저', '티켓'])
@@ -61,37 +29,25 @@ watch(product.value, () => {
   emit('getProduct', product.value)
 })
 
-const discount = (per, index) => {
-  options.value[index].per = per
-  product.value.options[index].discountPrice = Math.round(
-    ((100 - per) / 100) * product.value.options[index].price
-  )
-  options.value[index].price = product.value.options[index].price.toLocaleString('ko-KR')
-  options.value[index].discountPrice =
-    product.value.options[index].discountPrice.toLocaleString('ko-KR')
+watch(products.value, () => {
+  for (let i = 0; i < products.value.length; i++) {
+    product.value.options[i] = products.value[i]
+  }
+  product.value.options.splice(products.value.length)
+})
+
+const addOption = () => {
+  products.value.push({
+    name: '',
+    stock: '',
+    price: '',
+    discountPrice: '',
+    per: ''
+  })
 }
 
-const changeNumber = (field) => {
-  const num = parseFloat(field)
-  const str = num.toLocaleString('ko-KR')
-  return str
-}
-const changeRegular = (field, index) => {
-  const str = field.replaceAll(',', '')
-  options.value[index].price = changeNumber(str)
-  product.value.options[index].price = parseFloat(str)
-}
-
-const changeDiscount = (field, index) => {
-  const str = field.replaceAll(',', '')
-  options.value[index].discountPrice = changeNumber(str)
-  product.value.options[index].discountPrice = parseFloat(str)
-}
-
-const changeStock = (field, index) => {
-  const str = field.replaceAll(',', '')
-  options.value[index].stock = changeNumber(str)
-  product.value.options[index].stock = parseFloat(str)
+const removeOption = (index) => {
+  products.value.splice(index, 1)
 }
 </script>
 
@@ -116,31 +72,29 @@ const changeStock = (field, index) => {
           v-model="product.name"
         />
       </div>
-
       <div class="product-stock">
         <label for="stock">구성</label>
         <div id="stock" class="stocks">
-          <product-option
-            :data="options[0]"
-            @formatOption="(e) => changeStock(e, 0)"
-            @formatRegular="(e) => changeRegular(e, 0)"
-            @formatDiscPrice="(e) => changeDiscount(e, 0)"
-            @discount="(e) => discount(e, 0)"
-          />
-          <product-option
-            :data="options[1]"
-            @formatOption="(e) => changeStock(e, 1)"
-            @formatRegular="(e) => changeRegular(e, 1)"
-            @formatDiscPrice="(e) => changeDiscount(e, 1)"
-            @discount="(e) => discount(e, 1)"
-          />
-          <product-option
-            :data="options[2]"
-            @formatOption="(e) => changeStock(e, 2)"
-            @formatRegular="(e) => changeRegular(e, 2)"
-            @formatDiscPrice="(e) => changeDiscount(e, 2)"
-            @discount="(e) => discount(e, 2)"
-          />
+          <div v-for="(product, i) in products" :key="i" class="card">
+            <div class="option-part">
+              <product-option
+                :name="product.name"
+                :stock="product.stock"
+                :price="product.price"
+                :discountPrice="product.discountPrice"
+                :per="product.per"
+                @name="(e) => (product.name = e)"
+                @stock="(e) => (product.stock = e)"
+                @price="(e) => (product.price = e)"
+                @discountPrice="(e) => (product.discountPrice = e)"
+                @per="(e) => (product.per = e)"
+              />
+            </div>
+            <div class="remove-part">
+              <button class="remove-btn" @click="removeOption(i)">ㅡ</button>
+            </div>
+          </div>
+          <button @click="addOption" class="add-btn">옵션 추가</button>
         </div>
       </div>
     </div>
@@ -208,6 +162,39 @@ const changeStock = (field, index) => {
       .stocks {
         width: 100%;
         height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        .card {
+          @include box(100%, 100%, white, 0.625rem, 0.3rem, 0);
+          @include drop-shadow;
+          display: flex;
+          justify-content: center;
+          .option-part {
+            display: flex;
+            width: 100%;
+          }
+
+          .remove-part {
+            width: 8%;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            .remove-btn {
+              @include box(2rem, 2rem, white, 50%, 0.1rem, 0.2rem);
+              cursor: pointer;
+              color: $main;
+              border: 1px solid $main;
+            }
+          }
+        }
+        .add-btn {
+          @include box(100%, 100%, white, 0.3rem, 0.1rem, 0.1rem);
+          cursor: pointer;
+          border: 1px solid #d9d9d9;
+          color: #ababab;
+          font-weight: 500;
+        }
       }
     }
   }
