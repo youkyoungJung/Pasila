@@ -75,7 +75,7 @@ public class Live {
     @Setter
     @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     @ColumnDefault("true")
-    private boolean isActive;
+    private boolean isActive = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
