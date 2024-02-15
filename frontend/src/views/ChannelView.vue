@@ -118,7 +118,7 @@ const goShortping = () => {
 
 .video-container {
   @include box(100%, 90%, null, 0, 5px, 0);
-  @include flex-box(flex-start, null);
+  @include flex-box(flex-start, center);
   overflow: hidden;
   flex-wrap: wrap;
 
