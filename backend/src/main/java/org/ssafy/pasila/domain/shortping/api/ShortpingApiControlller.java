@@ -118,4 +118,13 @@ public class ShortpingApiControlller {
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), "success");
 
     }
+
+    @PutMapping("/addLike")
+    public ApiCommonResponse<?> LikeCntUp(@RequestParam String shortpingId) {
+
+        int likeCnt = shortpingService.updateLikeCnt(shortpingId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), likeCnt);
+
+
+    }
 }

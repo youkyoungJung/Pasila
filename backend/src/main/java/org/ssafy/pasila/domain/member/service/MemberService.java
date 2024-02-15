@@ -238,7 +238,7 @@ public class MemberService {
     private List<ChannelLiveDto> getLiveInMyChannel(Long id) {
 
         //채널별 라이브 조회
-        return liveRepository.findByMember_Id(id)
+        return liveRepository.findByIsActiveTrueAndMember_Id(id)
                 .stream()
                 .map(ChannelLiveDto::new)
                 .toList();

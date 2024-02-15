@@ -75,4 +75,5 @@ public class Shortping {
         setProduct(product);
     }
 
+    public void addLike(){this.likeCnt++;}
 }

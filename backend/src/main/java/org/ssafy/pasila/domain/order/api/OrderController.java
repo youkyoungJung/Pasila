@@ -39,8 +39,8 @@ public class OrderController {
     @PostMapping
     public ApiCommonResponse<?> createOrder(@RequestBody OrderFormDto orderFormDto) throws InterruptedException {
 
-        List<Long> orderId = orderService.saveOrder(orderFormDto);
-//        List<Long> orderId = optimisticLockStockFacade.saveTrade(orderFormDto);
+//        List<Long> orderId = orderService.saveOrder(orderFormDto);
+        List<Long> orderId = optimisticLockStockFacade.saveTrade(orderFormDto);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), orderId);
 
     }

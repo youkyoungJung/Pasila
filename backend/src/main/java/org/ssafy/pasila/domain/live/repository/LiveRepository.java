@@ -17,7 +17,7 @@ public interface LiveRepository extends JpaRepository<Live, String> {
 
     Optional<Live> findByProduct_IdAndIsOnTrue(String id);
 
-    List<Live> findByMember_Id(Long id);
+    List<Live> findByIsActiveTrueAndMember_Id(Long id);
 
     List<Live>findByIsActiveTrueAndLiveScheduledAtBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
 

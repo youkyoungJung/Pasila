@@ -126,7 +126,7 @@ public class Live {
 
     public LiveStatsResponseDto liveStats(int participant) {
         // 방송 시간 계산
-        Duration duration = Duration.between(this.liveOffAt, this.liveOnAt);
+        Duration duration = Duration.between(this.liveOnAt, this.liveOffAt);
         long hours = duration.toHours();
         long mins = duration.minusHours(hours).toMinutes();
         long secs = duration.minusHours(hours).minusMinutes(mins).getSeconds();
