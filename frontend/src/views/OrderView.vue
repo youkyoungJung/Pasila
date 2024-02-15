@@ -1,16 +1,16 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import router from '@/router'
 import { useOrderListStore } from '@/stores/orderList'
-import { useMemberStore } from '@/stores/member'
 import OrderProduct from '@/components/order/OrderProduct.vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
 import { addOrderApi } from '@/components/api/OrderAPI'
+import { getMyPageApi } from '@/components/api/MemberAPI'
 
 const props = defineProps(['id'])
-const { member } = useMemberStore()
 const { orderList, product, resetOrderList, resetProduct } = useOrderListStore()
+const member = ref({ name: '', address: '', addressDetail: '' })
 
 const inputData = ref([
   {
@@ -31,11 +31,15 @@ const inputData = ref([
   }
 ])
 
+onMounted(async () => {
+  member.value = await getMyPageApi()
+})
+
 const isEqual = (e) => {
   if (e.target.checked) {
-    inputData.value[0].value = member.name
-    inputData.value[1].value = member.address
-    inputData.value[2].value = member.addressDetail
+    inputData.value[0].value = member.value.name
+    inputData.value[1].value = member.value.address
+    inputData.value[2].value = member.value.addressDetail
   }
 }
 
@@ -69,7 +73,7 @@ const addOrder = async () => {
 
   const data = {
     options: options,
-    memberId: member.id,
+    memberId: member.value.id,
     name: inputData.value[0].value,
     address: inputData.value[1].value + ' ' + inputData.value[2].value
   }
