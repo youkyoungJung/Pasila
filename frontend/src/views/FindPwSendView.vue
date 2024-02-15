@@ -1,27 +1,37 @@
 <script setup>
 import router from '@/router'
+import { ref } from 'vue'
+import FormInput from '@/components/login/FormInput.vue'
+import { checkEmailAuthNumberApi } from '@/components/api/AuthAPI'
+import { useMemberStore } from '@/stores/member'
+
+const store = useMemberStore()
+const inputData = ref({
+  title: '인증번호를 확인해주세요',
+  data: {
+    title: '인증번호',
+    type: 'text'
+  },
+  button1: '비밀번호 재설정하기',
+  button2: '로그인으로 돌아가기'
+})
+
+const goPassword = async (e) => {
+  const res = await checkEmailAuthNumberApi(store.checkPwEmail, e)
+  if (res) {
+    router.push('/setpw')
+  } else {
+    alert('인증번호가 틀렸습니다. 다시 입력해 주세요.')
+  }
+}
 
 const goLogin = () => {
   router.push('/login')
 }
-
-const goHome = () => {
-  router.push('/')
-}
 </script>
 
 <template>
-  <div class="container">
-    <div class="header">비밀번호 찾기</div>
-    <div class="content">
-      <div class="text-area">
-        이메일로 비밀번호 재설정 URL이 전송되었습니다. <br />
-        URL에서 비밀번호 변경 후 로그인해주세요.
-      </div>
-      <button @click="goLogin" class="login">로그인하기</button>
-      <button @click="goHome" class="home">홈으로 돌아가기</button>
-    </div>
-  </div>
+  <form-input :info="inputData" @btn1="(e) => goPassword(e)" @btn2="goLogin()" />
 </template>
 
 <style lang="scss" scoped>

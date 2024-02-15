@@ -1,21 +1,17 @@
 <script setup>
-import { ref } from 'vue'
 
-const isLive = ref(true)
+defineProps({
+  isLive: Boolean
+})
 
-const goLive = () => {
-  if (!isLive.value) isLive.value = !isLive.value
-}
-
-const goShortping = () => {
-  if (isLive.value) isLive.value = !isLive.value
-}
 </script>
 
 <template>
   <div class="live-short-btn">
-    <button :class="[isLive ? 'chosen-btn' : 'no-btn']" @click="goLive">라이브</button>
-    <button :class="[isLive ? 'no-btn' : 'chosen-btn']" @click="goShortping">숏핑</button>
+    <button :class="[isLive ? 'chosen-btn' : 'no-btn']" @click="$emit('clickLive')">라이브</button>
+    <button :class="[isLive ? 'no-btn' : 'chosen-btn']" @click="$emit('clickShortping')">
+      숏핑
+    </button>
   </div>
 </template>
 

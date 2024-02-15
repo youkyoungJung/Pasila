@@ -1,36 +1,47 @@
 <script setup>
-import router from '@/router'
 import { ref } from 'vue'
-import VLongInput from '@/components/common/VLongInput.vue'
+import FormInput from '@/components/login/FormInput.vue'
+import router from '@/router'
+import { checkMyEmailApi } from '@/components/api/MemberAPI'
+import { getEmailAuthNumberApi } from '@/components/api/AuthAPI'
+import { useMemberStore } from '@/stores/member'
 
 const inputData = ref({
-  email: {
+  title: '비밀번호 찾기',
+  data: {
     title: '이메일',
-    type: 'text'
-  }
+    type: 'email'
+  },
+  button1: '이메일로 비밀번호 찾기',
+  button2: '로그인으로 돌아가기'
 })
 
-const login = () => {
-  router.push('/login')
+const strongEmail = (str) => {
+  return /^[A-Za-z0-9_.-]+@[A-Za-z0-9-]+\.[A-Za-z0-9-]/.test(str)
+}
+const store = useMemberStore()
+const goEmail = async (e) => {
+  if (!strongEmail(e)) {
+    alert('이메일 형식을 확인해주세요!')
+    return
+  }
+  const res = await checkMyEmailApi(e)
+  if (!res) {
+    store.checkPwEmail = e
+    await getEmailAuthNumberApi(e)
+    router.push('/findpw/send')
+  } else {
+    alert('존재하지 않는 이메일입니다. 다시 작성해주세요.')
+  }
 }
 
-const findPw = () => {
-  //이메일 디비에 존재하면 진행하기
-  router.push('/findpw/send')
+const goLogin = () => {
+  router.push('/login')
 }
 </script>
 
 <template>
-  <div class="find-container">
-    <div class="header">비밀번호 찾기</div>
-    <div class="content">
-      <section class="long-type">
-        <v-long-input :data="inputData.email" />
-      </section>
-      <button @click="findPw" class="find-pw">이메일로 비밀번호 찾기</button>
-      <button @click="login" class="login">로그인으로 돌아가기</button>
-    </div>
-  </div>
+  <form-input :info="inputData" @btn1="(e) => goEmail(e)" @btn2="goLogin()" />
 </template>
 
 <style lang="scss" scoped>
@@ -60,13 +71,13 @@ const findPw = () => {
       align-items: center;
       margin-bottom: 2rem;
     }
-    .find-pw {
+    .check-pw {
       @include box(85%, 2.5rem, $main, 0, 0.5rem, 0);
       border: 1px solid $main;
       color: white;
       cursor: pointer;
     }
-    .login {
+    .home {
       @include box(85%, 2.5rem, white, 0, 0.5rem, 0);
       cursor: pointer;
       border: 1px solid $dark;

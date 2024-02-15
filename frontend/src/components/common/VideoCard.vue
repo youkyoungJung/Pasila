@@ -1,31 +1,57 @@
 <script setup>
+import { ref } from 'vue'
+
 defineProps({
-  video: Object
+  video: Object,
+  isMyChannel: Boolean
 })
+
+let isHover = ref(false)
 </script>
 
 <template>
   <div class="video-card">
-    <!-- <video :src="video.src" class="input-video" /> -->
-    <div class="input-video" :style="{ backgroundImage: `url(${video?.src})` }"></div>
+    <div
+      class="input-video"
+      :style="{ backgroundImage: `url(${video?.productThumbnailUrl})` }"
+      @click="$emit('clickVideo')"
+      @mouseover="() => (isHover = true)"
+      @mouseleave="() => (isHover = false)"
+    >
+      <template v-if="isMyChannel">
+        <div v-show="isHover" class="video-control">
+          <slot name="btn">
+            <!-- video 상태에 따른 버튼이 위치합니다. -->
+          </slot>
+        </div>
+      </template>
+    </div>
     <div class="user-info">
-      <div :style="{ backgroundImage: `url(${video?.profile}` }" class="user-profile"></div>
+      <div
+        :style="{ backgroundImage: `url(${video?.profileUrl}` }"
+        class="user-profile"
+        @click="$emit('clickChannel')"
+      ></div>
       <div class="user-name">
-        <div class="name">{{ video?.name }}</div>
+        <div class="name">{{ video?.channel }}</div>
         <div class="title">{{ video?.title }}</div>
       </div>
       <div class="price">
-        <div class="origin-price">{{ video?.price }}원</div>
-        <div class="discount-price">{{ video?.discountPrice }}원</div>
+        <div class="origin-price">{{ video?.price.toLocaleString('kr-KR') }}원</div>
+        <div class="discount-price">{{ video?.discountPrice.toLocaleString('kr-KR') }}원</div>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.video-card:hover .video-control {
+  display: block;
+}
 .video-card {
   margin: 0 1rem;
   padding: 1rem 2rem;
+  cursor: pointer;
   .input-video {
     background-size: cover;
     background-position: center;
@@ -34,6 +60,22 @@ defineProps({
     border-radius: 10px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
     margin-bottom: 0.5rem;
+
+    position: relative;
+
+    .video-control {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+
+      width: 400px;
+      height: 300px;
+      border-radius: 10px;
+      background-color: rgba(0, 0, 0, 0.473);
+
+      @include flex-box(center, space-around);
+    }
   }
   .user-info {
     @include flex-box($align: flex-start, $justify: space-evenly);

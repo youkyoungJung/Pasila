@@ -1,25 +1,53 @@
 <script setup>
 import router from '@/router'
-import { ref } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
+import { getMyPageApi, changeMyInfoApi, checkMyChannelApi } from '@/components/api/MemberAPI'
+import { checkPhoneAuthNumberApi, getPhoneAuthNumberApi } from '@/components/api/AuthAPI'
 
 const user = ref({
-  profile: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-  email: 'pasila@ssafy.com',
-  name: '파시라',
-  channelName: '라시파',
+  email: '',
+  name: '',
+  channel: '',
   password: '',
-  phone: '01012345678',
-  address: '서울시 행복구',
-  detailAddress: '사랑동',
-  bankName: '돈줘은행',
-  bankAccount: '3333333333',
-  gender: '선택안함',
-  birth: '2020-05-05'
+  phone: '',
+  address: '',
+  addressDetail: '',
+  bank: '',
+  account: '',
+  gender: '',
+  birth: ''
+})
+const userImage = ref(localStorage.getItem('profile'))
+
+onMounted(() => {
+  if (localStorage.getItem('id') == null || localStorage.getItem('id') == '') {
+    alert('로그인을 먼저 해주세요')
+    router.push('/login')
+  }
+  getUser()
 })
 
-const longData = ref({
+const getUser = async () => {
+  const userDetail = await getMyPageApi()
+  await Object.assign(user.value, userDetail)
+  if (userDetail.gender == 'F') {
+    user.value.gender = '여성'
+  } else if (userDetail.gender == 'M') {
+    user.value.gender = '남성'
+  } else {
+    user.value.gender = '선택안함'
+  }
+  userImage.value = localStorage.getItem('profile')
+}
+
+const longData = reactive({
+  email: {
+    title: '이메일 ',
+    type: 'email',
+    value: user.value.email
+  },
   name: {
     title: '이름',
     type: 'text',
@@ -33,40 +61,34 @@ const longData = ref({
     title: '비밀번호 확인',
     type: 'password'
   },
-  detailAddress: {
+  addressDetail: {
     title: '상세주소',
     type: 'text',
-    value: user.value.detailAddress
+    value: user.value.addressDetail
   },
   birth: {
     title: '생년월일',
     type: 'date',
     value: user.value.birth
   },
-  bankName: {
+  bank: {
     title: '은행명',
     type: 'text',
-    value: user.value.bankName
+    value: user.value.bank
   },
-  bankAccount: {
+  account: {
     title: '계좌번호',
-    type: 'number',
-    value: user.value.bankAccount
+    type: 'text',
+    value: user.value.account
   }
 })
 
-const shortData = ref({
-  email: {
-    title: '이메일',
-    type: 'email',
-    text: '중복확인',
-    value: user.value.email
-  },
+const shortData = reactive({
   channel: {
     title: '채널명',
     type: 'text',
     text: '중복확인',
-    value: user.value.channelName
+    value: user.value.channel
   },
   phone: {
     title: '휴대폰번호',
@@ -87,23 +109,123 @@ const shortData = ref({
   }
 })
 
-const certi = ref('')
+//채널명 중복확인
+const channelCerti = ref(0)
+//핸드폰 인증번호
+const phoneCerti = ref(0)
+const formData = new FormData()
+formData.set('new_image', '')
 
-const uploadImg = (e) => {
-  const file = e.target
-  const reader = new FileReader()
-  reader.onload = function (e) {
-    user.value.profile = e.target.result
-  }
-  reader.readAsDataURL(file.files[0])
+//비밀번호 유효성검사
+const strongPassword = (str) => {
+  return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(str)
 }
 
-const modify = () => {
-  //user.value 백에 넘겨주기
-  if (user.value.birth != '') {
-    user.value.birth += ' 00:00:00'
+const uploadImg = (e) => {
+  const fileInput = e.target
+  if (fileInput && fileInput.files && fileInput.files.length > 0) {
+    const file = fileInput.files[0]
+    const reader = new FileReader()
+
+    reader.onload = (event) => {
+      userImage.value = event.target.result
+      formData.set('new_image', file)
+    }
+
+    reader.readAsDataURL(file)
   }
-  router.push('/')
+}
+
+const checkChannel = async () => {
+  const res = await checkMyChannelApi(user.value.channel)
+  if (res) {
+    channelCerti.value = 1
+  } else {
+    channelCerti.value = 2
+  }
+}
+
+const sendPhoneNum = async () => {
+  await getPhoneAuthNumberApi(user.value.phone)
+}
+
+const checkCertiNum = async () => {
+  const res = await checkPhoneAuthNumberApi(user.value.phone, phoneCerti.value)
+  if (res) {
+    phoneCerti.value = 1
+  } else {
+    phoneCerti.value = 2
+  }
+}
+
+//주소검색
+const openPostCode = async () => {
+  new window.daum.Postcode({
+    oncomplete: (data) => {
+      if (user.value.addressDetail !== '') {
+        user.value.addressDetail = ''
+      }
+      if (data.userSelectedType === 'R') {
+        // 사용자가 도로명 주소를 선택했을 경우
+        user.value.address = data.roadAddress
+      } else {
+        // 사용자가 지번 주소를 선택했을 경우(J)
+        user.value.address = data.jibunAddress
+      }
+
+      // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+      if (data.userSelectedType === 'R') {
+        // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+        // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+        if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+          user.value.addressDetail = data.bname
+        }
+        // 건물명이 있고, 공동주택일 경우 추가한다.
+        if (data.buildingName !== '' && data.apartment === 'Y') {
+          user.value.addressDetail +=
+            user.value.addressDetail !== '' ? `, ${data.buildingName}` : data.buildingName
+        }
+        // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+        if (user.value.addressDetail !== '') {
+          user.value.addressDetail = `(${user.value.addressDetail})`
+        }
+      } else {
+        user.value.addressDetail = ''
+      }
+    }
+  }).open()
+}
+
+//수정완료
+const modify = async () => {
+  if (user.value.password != '' && user.value.password != user.value.passwordCheck) {
+    alert('비밀번호를 확인해주세요.')
+    return
+  }
+  if (phoneCerti.value == 2) {
+    alert('핸드폰 인증을 완료해주세요.')
+    return
+  }
+  if (user.value.bank == null) user.value.bank = ''
+  if (user.value.account == null) user.value.account = ''
+  if (user.value.password == null) user.value.password = ''
+  if (user.value.gender == '여성') user.value.gender = 'F'
+  else if (user.value.gender == '남성') user.value.gender = 'M'
+  else user.value.gender = ''
+
+  formData.append(
+    'personal_info',
+    new Blob([JSON.stringify(user.value)], { type: 'application/json' })
+  )
+  const res = await changeMyInfoApi(formData)
+  if (res) {
+    localStorage.removeItem('name')
+    localStorage.removeItem('profile')
+    localStorage.setItem('name', user.value.name)
+    localStorage.setItem('profile', userImage.value)
+    alert('수정 되었습니다.')
+    router.go()
+  } else alert('수정이 실패하였습니다. 정보를 확인해주세요.')
 }
 </script>
 
@@ -111,82 +233,141 @@ const modify = () => {
   <div class="container">
     <div class="header">마이페이지</div>
     <div class="content">
-      <section class="profile">
+      <section id="section" class="profile">
         <div>
-          <div v-if="user.profile != ''">
-            <img :src="user.profile" id="profileImg" class="profile-img" />
+          <div v-if="userImage != ''">
+            <img :src="userImage" class="profile-img" />
           </div>
           <div v-else>
             <font-awesome-icon icon="fa-regular fa-user" class="profile-img" />
           </div>
         </div>
-        <label for="file">프로필 사진 변경</label>
-        <input type="file" id="file" @change="uploadImg" accept="image/*" class="profile-choose" />
+        <label for="imageFile">프로필 사진 변경</label>
+        <input
+          type="file"
+          id="imageFile"
+          @change="uploadImg"
+          accept="image/*"
+          class="profile-choose"
+        />
       </section>
-      <section class="userInfo">
-        <v-short-input :data="shortData.email" @getData="(e) => (user.email = e)" />
+      <section id="section" class="userInfo">
+        <v-long-input :data="longData.email" :inputData="user.email" />
       </section>
-      <section class="userInfo">
-        <v-long-input :data="longData.name" @getData="(e) => (user.name = e)" />
+      <section id="section" class="userInfo">
+        <v-long-input
+          :data="longData.name"
+          :inputData="user.name"
+          @getData="(e) => (user.name = e)"
+        />
       </section>
-      <section class="userInfo">
-        <v-short-input :data="shortData.channel" @getData="(e) => (user.channelName = e)" />
+      <section id="section" class="userInfo">
+        <v-short-input
+          :data="shortData.channel"
+          :inputData="user.channel"
+          @getData="(e) => (user.channel = e)"
+          @sendData="(e) => checkChannel(e)"
+        />
+        <div v-if="channelCerti == 1" class="check-text">사용가능한 채널명입니다.</div>
+        <div v-else-if="channelCerti == 2" class="wrong-text">
+          중복된 채널명입니다. 다른 채널명을 사용해 주세요.
+        </div>
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-long-input :data="longData.password" @getData="(e) => (user.password = e)" />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-long-input :data="longData.passwordCheck" @getData="(e) => (user.passwordCheck = e)" />
-        <div v-if="user.password != '' && user.password === user.passwordCheck" class="check-text">
+        <div
+          v-if="
+            strongPassword(user.password) &&
+            user.password != '' &&
+            user.password === user.passwordCheck
+          "
+          class="check-text"
+        >
           비밀번호가 일치합니다.
+        </div>
+        <div v-else-if="!strongPassword(user.password)" class="wrong-text">
+          8글자 이상, 영문, 숫자, 특수문자(@$!%*#?&)를 포함해야 합니다.
         </div>
         <div v-else class="wrong-text">비밀번호가 일치하지 않습니다. 다시 입력해주세요.</div>
       </section>
-      <section class="userInfo">
-        <v-short-input :data="shortData.phone" @getData="(e) => (user.phone = e)" />
+      <section id="section" class="userInfo">
+        <v-short-input
+          :data="shortData.phone"
+          :inputData="user.phone"
+          @getData="(e) => (user.phone = e)"
+          @sendData="(e) => sendPhoneNum(e)"
+        />
       </section>
-      <section class="userInfo">
-        <v-short-input :data="shortData.phoneCheck" @getData="(e) => (certi = e)" />
-        <div v-if="certi != ''" class="check-text">인증번호가 일치합니다.</div>
-        <div v-else class="wrong-text">인증번호가 다릅니다. 다시 입력해주세요.</div>
-      </section>
-      <section class="userInfo">
-        <v-short-input :data="shortData.address" @getData="(e) => (user.address = e)" />
-      </section>
-      <section class="userInfo">
-        <v-long-input :data="longData.detailAddress" @getData="(e) => (user.detailAddress = e)" />
-      </section>
-      <section class="userInfo">
-        <v-long-input :data="longData.bankName" @getData="(e) => (user.bankName = e)" />
-      </section>
-      <section class="userInfo">
-        <v-long-input :data="longData.bankAccount" @getData="(e) => (user.bankAccount = e)" />
-      </section>
-      <section class="gender">
-        <label for="gender" class="gender-title">성별</label>
-        <div class="radio" id="gender">
-          <label class="gender-option"
-            ><input type="radio" name="성별" value="남성" v-model="user.gender" />남성</label
-          >
-          <label class="gender-option"
-            ><input type="radio" name="성별" value="여성" v-model="user.gender" />여성</label
-          >
-          <label class="gender-option"
-            ><input
-              type="radio"
-              name="성별"
-              value="선택안함"
-              v-model="user.gender"
-            />선택안함</label
-          >
+      <section id="section" class="userInfo">
+        <v-short-input
+          :data="shortData.phoneCheck"
+          @getData="(e) => (phoneCerti = e)"
+          @sendData="(e) => checkCertiNum(e)"
+        />
+        <div v-if="phoneCerti == 1" class="check-text">인증번호가 일치합니다.</div>
+        <div v-else-if="phoneCerti == 2" class="wrong-text">
+          인증번호가 다릅니다. 다시 입력해주세요.
         </div>
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
+        <v-short-input
+          :data="shortData.address"
+          :inputData="user.address"
+          @getData="(e) => (user.address = e)"
+          @sendData="(e) => openPostCode(e)"
+        />
+      </section>
+      <section id="section" class="userInfo">
+        <v-long-input
+          :data="longData.addressDetail"
+          :inputData="user.addressDetail"
+          @getData="(e) => (user.addressDetail = e)"
+        />
+      </section>
+      <section id="section" class="userInfo">
+        <v-long-input
+          :data="longData.bank"
+          :inputData="user.bank"
+          @getData="(e) => (user.bank = e)"
+        />
+      </section>
+      <section id="section" class="userInfo">
+        <v-long-input
+          :data="longData.account"
+          :inputData="user.account"
+          @getData="(e) => (user.account = e)"
+        />
+      </section>
+      <section id="section" class="userInfo">
+        <div class="gender">
+          <label for="gender" class="gender-title">성별</label>
+          <div class="radio" id="gender">
+            <label class="gender-option"
+              ><input type="radio" name="성별" value="남성" v-model="user.gender" />남성</label
+            >
+            <label class="gender-option"
+              ><input type="radio" name="성별" value="여성" v-model="user.gender" />여성</label
+            >
+            <label class="gender-option"
+              ><input
+                type="radio"
+                name="성별"
+                value="선택안함"
+                v-model="user.gender"
+              />선택안함</label
+            >
+          </div>
+        </div>
+      </section>
+      <section id="section" class="userInfo">
         <label for="input" class="label">생년월일</label>
         <input type="date" v-model="user.birth" class="birth" />
       </section>
       <div class="modify-btn">
-        <button @click="modify" class="modify">수정</button>
+        <button @click="modify" class="modify" type="submit">수정</button>
       </div>
     </div>
   </div>
@@ -212,6 +393,10 @@ const modify = () => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    
+    #section {
+      margin: 0.3rem 0;
+    }
     .profile {
       @include box(100%, 10%, white, 0, 0.2rem, 0.2rem);
       @include flex-box($direction: column);
@@ -282,37 +467,30 @@ const modify = () => {
     }
 
     .gender {
-      width: 95%;
+      width: 100%;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
+      align-items: center;
       margin-bottom: 0.2rem;
 
-      form {
+      .gender-title {
+        width: 90%;
+        display: flex;
+        justify-content: flex-start;
+      }
+      .radio {
+        @include font-factory(0.7rem, null);
         width: 100%;
         display: flex;
-        flex-direction: column;
+        justify-content: space-evenly;
+      }
+
+      .gender-option {
+        display: flex;
+        justify-content: flex-start;
         align-items: center;
-
-        .gender-title {
-          width: 90%;
-          display: flex;
-          justify-content: flex-start;
-        }
-        .radio {
-          @include font-factory(0.7rem, null);
-          width: 100%;
-          display: flex;
-          justify-content: space-evenly;
-        }
-
-        .gender-option {
-          display: flex;
-          justify-content: flex-start;
-          align-items: center;
-          margin-right: 0.3rem;
-          cursor: pointer;
-        }
+        margin-right: 0.3rem;
+        cursor: pointer;
       }
     }
     .modify-btn {

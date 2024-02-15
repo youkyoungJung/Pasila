@@ -7,7 +7,8 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   optimizeDeps: {
-    include: ['quill']
+    include: ['quill'],
+    exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util']
   },
   resolve: {
     alias: {

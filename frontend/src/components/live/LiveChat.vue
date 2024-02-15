@@ -1,73 +1,86 @@
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onUpdated, computed } from 'vue'
 
-const ChatList = reactive([
-  {
-    type: 'user',
-    user: '김빨강',
-    content: '그래서 기능이 먼데;',
-    profile: new URL('@/assets/img/test/rose.jpg', import.meta.url).href
-  },
-  { type: 'user', user: '김빨강', content: '!기능', profile: new URL('@/assets/img/test/rose.jpg', import.meta.url).href },
-  {
-    type: 'user',
-    user: '이제니',
-    content: '기대됩니다ㅏ',
-    profile: new URL('@/assets/img/test/jenny.jpg', import.meta.url).href
-  },
-  { type: 'user', user: '한보라', content: '!구성', profile: new URL('@/assets/img/test/karina.jpg', import.meta.url).href },
-  {
-    type: 'chatbot',
-    user: '챗봇',
-    content:
-      '안녕하세요 고객님. 해당 제품의 기능은 수분 충전, 피부 열감 완화, 노화 방지 등이 있습니다. 더 다양한 설명은 상품 상세 페이지를 참고해주시기 바랍니다.',
-    profile: new URL('@/assets/img/test/robot-solid 2.png', import.meta.url).href
-  }
-])
+defineProps({
+  isCustomer: Boolean,
+  isChatbot: Boolean,
+  chatmsg: String,
+  chatList: Array
+})
 
 const liveChat = ref(null)
 
 onMounted(() => {
-  nextTick(() => {
-    liveChat.value.scrollTop = 30 + liveChat.value.scrollHeight
-  })
+  scrollBottom()
 })
+
+onUpdated(() => {
+  scrollBottom()
+})
+
+const scrollBottom = () => {
+  liveChat.value.scrollTop = liveChat.value.scrollHeight
+}
 </script>
 
 <template>
   <div class="live-chat-box">
     <div class="live-chat" ref="liveChat">
-      <div class="chat-line" v-for="(item, index) in ChatList" :key="index">
-        <img :src="item.profile" :alt="item.user" class="profile" />
+      <div class="chat-line" v-for="(item, index) in chatList" :key="index">
+        <span class="profile" :style="{ backgroundImage: item.profile }"></span>
         <div class="chat-box">
-          <span class="name">{{ item.user }}</span>
-          <div class="content">{{ item.content }}</div>
+          <span class="name">{{ item.name }}</span>
+          <div class="content">{{ item.message }}</div>
         </div>
       </div>
     </div>
     <div class="chat-input">
-      <input type="text" />
-      <font-awesome-icon icon="fa-solid fa-paper-plane" size="2x" />
+      <div class="top" v-if="isChatbot">
+        <span class="chatbot-info">
+          챗봇에게 질문 중
+          <font-awesome-icon icon="ellipsis" />
+        </span>
+      </div>
+      <div class="bottom">
+        <span class="chatbot" @click="$emit('clickChatbot')" v-if="isCustomer">
+          <font-awesome-icon icon="robot" class="icon" />
+        </span>
+        <input
+          type="text"
+          @input="$emit('changeMsg', $event.target.value)"
+          :value="chatmsg"
+          @keyup.enter="$emit('send')"
+        />
+        <span class="plane" @click="$emit('sendMsg')">
+          <font-awesome-icon icon="fa-solid fa-paper-plane" class="icon" />
+        </span>
+      </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .live-chat-box {
-  @include box(null, 100%, none, 20px, 1rem 0 1rem 0, 0);
+  @include box(null, calc(78vh - 6px), none, 20px, 0, 0);
+  @include flex-box(center, space-between, column);
   border: 3px solid $main;
 
   .live-chat {
+    width: calc(100% - 2rem);
+    height: 100%;
     padding: 1rem;
-    max-height: 26rem;
     overflow-y: scroll;
+    box-shadow: 0px -4px 10px 0px rgba(0, 0, 0, 0.25) inset;
+    border-radius: 20px 20px 0 0;
 
     -ms-overflow-style: none;
     .chat-line {
       @include flex-box(flex-start, flex-start);
       margin-bottom: 1rem;
       .profile {
-        @include box(3rem, 3rem, none, 50px, 0, 0);
+        @include box(3rem, 3rem, $yellow, 50%, 0, 0);
+        background-size: cover;
+        display: inline-block;
       }
       .chat-box {
         margin-left: 0.5rem;
@@ -78,7 +91,8 @@ onMounted(() => {
         }
         .content {
           @include box(fit-content, fit-content, $gray, 30px, 0, 0.5rem 1rem);
-          @include font-factory($fs-2, 600);
+          @include font-factory($fs-1, 600);
+          word-break: break-all;
         }
       }
     }
@@ -89,14 +103,45 @@ onMounted(() => {
 }
 
 .chat-input {
-  @include flex-box(center, space-between, row);
-  padding: 1rem;
+  width: 90%;
+  padding: 0 0.5rem;
+
+  .top {
+    @include box(100%, calc(3vh - 0.4rem), white, 0 0 20px 20px, 0, 0.2rem 0);
+
+    .chatbot-info {
+      margin-right: 0.5rem;
+      @include font-factory($fs-1, normal, $orange);
+    }
+  }
+  .bottom {
+    @include flex-box(center, space-between, row);
+    @include box(100%, 10vh, white, 0 0 20px 20px, 0, 0);
+  }
+
+  .chatbot {
+    @include box(2.5rem, 2.5rem, $orange, 50%, 0.5rem, 0);
+    @include flex-box();
+    color: white;
+    cursor: pointer;
+  }
+
   input {
-    @include box(70%, null, $gray, 30px, 0, 1rem);
+    flex: 3;
+    @include box(100%, null, $gray, 30px, 0, 0.5rem 1rem);
     @include font-factory($fs-1, 500);
     outline: none;
     border: none;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25) inset;
+  }
+  .plane {
+    color: $dark;
+    margin: 0 0.5rem;
+  }
+  .icon {
+    flex: 1;
+    height: 1.3rem;
+    width: 2rem;
   }
 }
 </style>

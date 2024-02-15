@@ -3,23 +3,28 @@ import ReadySteps from '@/components/ready/ReadySteps.vue'
 import NextButton from '@/components/ready/NextButton.vue'
 import ChatbotInput from '@/components/ready/ChatbotInput.vue'
 import { ref } from 'vue'
+import { useReadyLiveStore } from '@/stores/readyLive'
 
 const step = ref('chatbot')
 const nextStep = ref('schedule')
-
+const store = useReadyLiveStore()
 const questions = ref([
   {
-    q: '',
-    a: ''
+    question: '',
+    answer: ''
   }
 ])
 
 const addQuestion = () => {
-  questions.value.push({ q: '', a: '' })
+  questions.value.push({ question: '', answer: '' })
 }
 
 const removeQuestion = (i) => {
   questions.value.splice(i, 1)
+}
+
+const saveChats = () => {
+  store.liveChatbot = questions.value
 }
 </script>
 
@@ -31,10 +36,10 @@ const removeQuestion = (i) => {
       <div v-for="(question, index) in questions" :key="index" class="chatbot-input">
         <div class="chatbot-part">
           <chatbot-input
-            @getQuestion="(v) => (question.q = v)"
-            @getAnswer="(v) => (question.a = v)"
-            :q="question.q"
-            :a="question.a"
+            @getQuestion="(v) => (question.question = v)"
+            @getAnswer="(v) => (question.answer = v)"
+            :question="question.question"
+            :answer="question.answer"
           />
         </div>
         <div class="remove-part">
@@ -43,7 +48,7 @@ const removeQuestion = (i) => {
       </div>
       <button @click="addQuestion" class="add-btn">+ 질문 추가하기</button>
     </div>
-    <next-button :data="nextStep" />
+    <next-button :data="nextStep" @click="saveChats" />
   </div>
 </template>
 
