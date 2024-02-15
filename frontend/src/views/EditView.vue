@@ -79,7 +79,7 @@ const complete = () => {
   }
   console.log(JSON.stringify(sendData.value))
   formData.append(
-    'shortpingRequest',
+    'shortping',
     new Blob([JSON.stringify(sendData.value)], { type: 'application/json' })
   )
   const res = sendShortpingApi(formData)
