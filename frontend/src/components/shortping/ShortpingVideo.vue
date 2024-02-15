@@ -38,9 +38,9 @@ watch(currentTime, (newTime) => {
 
 watch(
   () => props.video,
-  (newVideo) => {
-    videoURL.value = newVideo
-    vi.value = newVideo
+  async (newVideo) => {
+    videoURL.value = await newVideo
+    vi.value = await newVideo
   }
 )
 
