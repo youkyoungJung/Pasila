@@ -90,8 +90,8 @@ onUnmounted(() => {
     const msg = {
       liveId: props.liveId
     }
+    ws.send(`/send/exit`, JSON.stringify(msg), {})
   }
-  ws.send(`/send/exit`, JSON.stringify(msg), {})
   ws.disconnect()
   leaveSession()
 })
