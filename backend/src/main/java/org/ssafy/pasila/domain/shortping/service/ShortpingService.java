@@ -23,6 +23,7 @@ import org.ssafy.pasila.domain.shortping.dto.response.RecommendLivelogResponseDt
 import org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponseDto;
 import org.ssafy.pasila.domain.shortping.entity.Shortping;
 import org.ssafy.pasila.domain.shortping.repository.ShortpingQueryRepository;
+import org.ssafy.pasila.domain.shortping.repository.ShortpingRepository;
 import org.ssafy.pasila.domain.shortping.service.query.ShortpingQueryService;
 import org.ssafy.pasila.global.infra.FFmpeg.FFmpegClient;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
@@ -52,6 +53,8 @@ public class ShortpingService {
 
     private final ShortpingQueryRepository shortpingQueryRepository;
 
+    private final ShortpingRepository shortpingRepository;
+
     private final GptClient gptService;
 
     private final ProductOptionRepository productOptionRepository;
@@ -64,6 +67,17 @@ public class ShortpingService {
 
     private final FileStorageUtil fileStorageUtil;
 
+    @Transactional
+    public int updateLikeCnt(String shortpingId){
+
+        Shortping shortping = shortpingRepository.findById(shortpingId)
+                .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        shortping.addLike();
+
+        return shortping.getLikeCnt();
+
+    }
 
     @Transactional
     public String saveShortping(ShortpingRequestDto shortpingRequest, MultipartFile video) {
