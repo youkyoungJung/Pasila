@@ -150,7 +150,7 @@ const goVideo = (video) => {
 
     .video-container {
       @include box(100%, 90%, null, 0, 5px, 10px);
-      @include flex-box(flex-start, space-between);
+      @include flex-box(flex-start, null);
       overflow: hidden;
       flex-wrap: wrap;
     }

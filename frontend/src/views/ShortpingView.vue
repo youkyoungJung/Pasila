@@ -58,6 +58,7 @@ onMounted(async () => {
       @include flex-box(center, center, column);
 
       video {
+        width: 100%;
         height: 100%;
         border-radius: 20px;
       }

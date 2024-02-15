@@ -51,6 +51,7 @@ let isHover = ref(false)
 .video-card {
   margin: 0 1rem;
   padding: 1rem 2rem;
+  cursor: pointer;
   .input-video {
     background-size: cover;
     background-position: center;

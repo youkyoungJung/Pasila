@@ -78,6 +78,7 @@ const goPay = () => {
 
   .live-desc {
     width: calc(100% - 2rem);
+    height: 100%;
     padding: 1rem;
     overflow-y: scroll;
     box-shadow: 0px -4px 10px 0px rgba(0, 0, 0, 0.25) inset;

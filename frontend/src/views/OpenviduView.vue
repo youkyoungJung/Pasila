@@ -164,7 +164,7 @@ const stopLive = async () => {
 
 const leaveSession = async () => {
   if (session.value) {
-    if (userRole.value == 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
+    if (userRole.value == 'PUB' && isStart.value && confirm('라이브를 정말 종료하시겠습니까?')) {
       await stopLive()
       session.value.disconnect()
       router.push(`/live/${props.liveId}/end`)
@@ -228,8 +228,9 @@ const sendChat = async () => {
   if (ws && ws.connected) {
     const msg = {
       liveId: props.liveId,
-      memberId: 11,
-      message: chatmsg.value
+      message: chatmsg.value,
+      name: localStorage.getItem('name'),
+      profile: localStorage.getItem('profile')
     }
     ws.send(`/send/chatting`, JSON.stringify(msg), {})
   }
@@ -243,7 +244,7 @@ const sendChat = async () => {
     const res = await sendChatToChatbot(data)
     if (res) {
       chatList.value.push({
-        memberId: 'PASILA',
+        name: 'PASILA봇',
         message: res
       })
     }

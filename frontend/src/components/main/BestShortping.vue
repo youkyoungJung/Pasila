@@ -25,11 +25,6 @@ const goVideo = (id) => {
   router.push(`/shortping/${id}`)
 }
 
-const controlWheel = (e) => {
-  e.preventDefault()
-  calendar.value.scrollLeft += e.deltaY
-}
-
 const controlDown = (e) => {
   isMouseDown = true
   startX = e.pageX - calendar.value.offsetLeft
@@ -65,7 +60,6 @@ const controlMove = (e) => {
       <div
         class="video-container"
         ref="calendar"
-        @wheel="controlWheel"
         @mousedown="controlDown"
         @mouseleave="controlLeave"
         @mouseup="controlUp"
