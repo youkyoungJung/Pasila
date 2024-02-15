@@ -46,7 +46,7 @@ public class ChannelRepository {
     public List<ChannelLiveDto> findLiveById(Long id) {
         return em.createQuery("""
         SELECT new org.ssafy.pasila.domain.member.dto.ChannelLiveDto
-               (l.id, l.title, l.liveScheduledAt, l.liveOnAt, l.liveOffAt, m.id, m.channel, m.profile, p.id, p.thumbnail, po.discountPrice, po.price, s.id)
+               (l.id, l.title, l.liveScheduledAt, l.liveOnAt, l.liveOffAt, m.id, m.channel, m.profile, p.id, p.thumbnail, po.price, po.discountPrice, s.id)
           FROM Live l
                JOIN l.member m
                JOIN l.product p
