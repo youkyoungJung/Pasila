@@ -13,7 +13,9 @@ import {
   getLiveQuestionApi,
   sendChatToChatbot
 } from '@/components/api/OpenviduAPI.js'
+
 import { getLiveStockApi } from '@/components/api/RealTimeAPI'
+import { useLiveendStore } from '@/stores/liveend'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
 import LiveScript from '@/components/live/seller/LiveScript.vue'
 import LiveStock from '@/components/live/seller/LiveStock.vue'
@@ -32,6 +34,7 @@ let ws
 let chatmsg = ref('')
 let isChatbot = ref(false)
 const chatList = ref([])
+const customerCnt = ref(0)
 
 let userRole = ref('')
 let isStart = ref(false)
@@ -40,6 +43,9 @@ let product = reactive({})
 let questionList = ref([])
 
 const props = defineProps(['liveId'])
+const liveendStore = useLiveendStore()
+
+let interval
 
 onMounted(async () => {
   await getProduct()
@@ -62,16 +68,30 @@ onMounted(async () => {
         product.options = data.options
       }
     })
-    setInterval(async () => {
+    interval = setInterval(async () => {
       questionList.value = await getLiveQuestionApi(props.liveId)
     }, 60000)
   }
 
   connectChat()
   joinSession()
+
+  if (ws && ws.connected) {
+    const msg = {
+      liveId: props.liveId
+    }
+    ws.send(`/send/join`, JSON.stringify(msg), {})
+  }
 })
 
 onUnmounted(() => {
+  clearInterval(interval)
+  if (ws && ws.connected) {
+    const msg = {
+      liveId: props.liveId
+    }
+    ws.send(`/send/exit`, JSON.stringify(msg), {})
+  }
   ws.disconnect()
   leaveSession()
 })
@@ -151,15 +171,18 @@ const startLive = async () => {
 }
 
 const stopLive = async () => {
-  await stopLiveApi(props.liveId)
+  const res = await stopLiveApi(props.liveId)
+  console.log(res)
+  liveendStore.liveendInfo = res
 }
 
 const leaveSession = async () => {
   if (session.value) {
-    if (userRole.value == 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
+    if (userRole.value == 'PUB' && isStart.value && confirm('라이브를 정말 종료하시겠습니까?')) {
       await stopLive()
       session.value.disconnect()
       router.push(`/live/${props.liveId}/end`)
+      return
     }
   } else {
     session.value.disconnect()
@@ -219,8 +242,9 @@ const sendChat = async () => {
   if (ws && ws.connected) {
     const msg = {
       liveId: props.liveId,
-      memberId: 11,
-      message: chatmsg.value
+      message: chatmsg.value,
+      name: localStorage.getItem('name'),
+      profile: localStorage.getItem('profile')
     }
     ws.send(`/send/chatting`, JSON.stringify(msg), {})
   }
@@ -234,7 +258,7 @@ const sendChat = async () => {
     const res = await sendChatToChatbot(data)
     if (res) {
       chatList.value.push({
-        memberId: 'PASILA',
+        name: 'PASILA봇',
         message: res
       })
     }
@@ -252,6 +276,10 @@ const connectChat = () => {
       ws.subscribe(`/id/${props.liveId}`, (res) => {
         chatList.value.push(JSON.parse(res.body))
       })
+      ws.subscribe(`/num/${props.liveId}`, (res) => {
+        console.log(JSON.parse(res.body))
+        customerCnt.value = JSON.parse(res.body)
+      })
     },
     (error) => {
       console.log('소켓 연결 실패', error)
@@ -264,8 +292,8 @@ const connectChat = () => {
   <template v-if="userRole === 'PUB'">
     <div class="session" v-if="session">
       <section class="col-1">
-        <user-video :stream-manager="mainStreamManager" :is-start="isStart" />
-        <live-script v-if="pubToolBar[0].isActive" :script="props.script" />
+        <user-video :stream-manager="mainStreamManager" :is-start="isStart" :cnt="customerCnt" />
+        <live-script v-if="pubToolBar[0].isActive" :script="product.script" />
       </section>
 
       <section class="col-2" v-if="pubToolBar[1].isActive">
@@ -299,7 +327,7 @@ const connectChat = () => {
   <template v-else>
     <div class="session" v-if="session">
       <section class="col-1">
-        <user-video :stream-manager="subscribers[0]" :is-start="true" />
+        <user-video :stream-manager="subscribers[0]" :is-start="true" :cnt="customerCnt" />
       </section>
 
       <section class="col-2" v-if="subToolBar[0].isActive">

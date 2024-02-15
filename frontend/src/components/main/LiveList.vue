@@ -1,9 +1,9 @@
 <script setup>
 import { ref, watchEffect, watch, onMounted } from 'vue'
-import { getPopularLiveApi, getVideosApi  } from '@/components/api/SummaryAPI'
+import { getPopularLiveApi, getVideosApi } from '@/components/api/SummaryAPI'
 import VideoCard from '@/components/common/VideoCard.vue'
 import ToggleButton from '@/components/common/ToggleButton.vue'
-import router from '@/router';
+import router from '@/router'
 
 const latestShortping = ref([])
 const popularShortping = ref([])
@@ -39,7 +39,7 @@ watch(isLive, () => {
 })
 
 //카테고리 변경시
-watchEffect( async () => {
+watchEffect(async () => {
   categoryIndex.value = props.categoryIndex
   if (isLive.value) {
     const resp = await getPopularLiveApi(categoryIndex.value)
@@ -51,7 +51,6 @@ watchEffect( async () => {
     popularShortping.value = res.popularShortping
   }
   videoValue()
-
 })
 
 //최신순, 인기순
@@ -86,8 +85,8 @@ const goVideo = (video) => {
       <div class="order-type">
         <toggle-button
           :isLive="isLive"
-          @clickShortping="() => isLive = false"
-          @clickLive="() => isLive =true"
+          @clickShortping="() => (isLive = false)"
+          @clickLive="() => (isLive = true)"
         />
         <div>
           <form action="#">
@@ -114,17 +113,13 @@ const goVideo = (video) => {
 
   .running {
     @include box(90%, 100%, null, 0, 5px, 5px);
-    @include flex-box($align: center, $direction: column);
+    @include flex-box($align: flex-start, $direction: column);
 
     .title {
       @include font-factory($fs-4, bold);
-      @include box(100%, null, null, 0, 0, 0);
-      @include flex-box($align: flex-end, $justify: flex-start);
       .subtitle {
-        display: inline-block;
-        font-size: 13px;
+        @include font-factory($fs-1, 400);
         margin-left: 5px;
-        line-height: 28px;
       }
     }
 
@@ -155,7 +150,7 @@ const goVideo = (video) => {
 
     .video-container {
       @include box(100%, 90%, null, 0, 5px, 10px);
-      @include flex-box(flex-start);
+      @include flex-box(flex-start, null);
       overflow: hidden;
       flex-wrap: wrap;
     }

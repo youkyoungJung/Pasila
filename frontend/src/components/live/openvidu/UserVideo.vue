@@ -4,7 +4,8 @@ import OvVideo from '@/components/live/openvidu/OvVideo.vue'
 
 defineProps({
   streamManager: Object,
-  isStart: Boolean
+  isStart: Boolean,
+  cnt: Number
 })
 
 const liveCount = ref(1000)
@@ -16,7 +17,7 @@ const liveCount = ref(1000)
     <img v-else src="@/assets/img/disable-live-badge.png" alt="live" />
     <div class="live-count">
       <font-awesome-icon icon="fa-solid fa-user-group" />
-      <span>{{ liveCount.toLocaleString('kr-KR') }}명이 시청중입니다.</span>
+      <span>{{ cnt.toLocaleString('kr-KR') }}명이 시청중입니다.</span>
     </div>
   </div>
   <div class="camera-box">
