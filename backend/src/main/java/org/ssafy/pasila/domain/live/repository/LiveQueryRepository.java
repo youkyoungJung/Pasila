@@ -42,4 +42,5 @@ public class LiveQueryRepository {
 //               AND DATE(l.liveScheduledAt) = :scheduledAt""", ChannelLiveDto.class)
 //                .setParameter("scheduledAt", date).getResultList();
 //    }
+
 }

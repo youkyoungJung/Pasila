@@ -43,6 +43,7 @@ public class ChannelRepository {
                 .setParameter("memberId", id).getResultList();
     }
 
+
 //    public List<ChannelLiveDto> findLiveById(Long id) {
 //        return em.createQuery("""
 //        SELECT new org.ssafy.pasila.domain.member.dto.ChannelLiveDto

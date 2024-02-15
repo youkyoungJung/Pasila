@@ -43,7 +43,7 @@ public class Live {
 
     }
 
-    @Column(length = 30)
+    @Column(length = 50)
     private String title;
 
     @Column(name = "live_scheduled_at")
@@ -56,13 +56,15 @@ public class Live {
     private LocalDateTime liveOffAt;
 
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String script;
 
     @Column(name = "full_video_url", length = 2083)
     private String fullVideoUrl;
 
     @Column(name = "like_cnt")
-    private Integer likeCnt = 0;
+    @ColumnDefault("0")
+    private Integer likeCnt;
 
     @Column(name = "is_on", columnDefinition = "TINYINT(1)")
     @ColumnDefault("false")
@@ -97,6 +99,8 @@ public class Live {
                 .script(createLiveRequestDto.getScript())
                 .member(member)
                 .product(product)
+                .isActive(true)
+                .likeCnt(0)
                 .build();
         live.setChatbots();
         return live;
