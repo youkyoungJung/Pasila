@@ -8,7 +8,7 @@ const store = useReadyLiveStore()
 const emits = defineEmits(['script'])
 const data = ref({
   style: '',
-  userName: localStorage.name,
+  userName: localStorage.getItem('name'),
   productName: store.liveProduct.name,
   description: ''
 })

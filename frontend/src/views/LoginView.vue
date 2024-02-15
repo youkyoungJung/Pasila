@@ -5,7 +5,7 @@ import VLongInput from '@/components/common/VLongInput.vue'
 import { emailLoginApi } from '@/components/api/AuthAPI'
 
 onMounted(() => {
-  if (localStorage.id != '' || localStorage != null) {
+  if (localStorage.getItem('id')) {
     router.push('/')
   }
 })

@@ -19,10 +19,10 @@ const user = ref({
   gender: '',
   birth: ''
 })
-const userImage = ref('')
+const userImage = ref(localStorage.getItem('profile'))
 
 onMounted(() => {
-  if (localStorage.id == null || localStorage.id == '') {
+  if (localStorage.getItem('id') == null || localStorage.getItem('id') == '') {
     alert('로그인을 먼저 해주세요')
     router.push('/login')
   }
@@ -39,7 +39,7 @@ const getUser = async () => {
   } else {
     user.value.gender = '선택안함'
   }
-  userImage.value = await userDetail.profile
+  userImage.value = localStorage.getItem('profile')
 }
 
 const longData = reactive({
@@ -219,8 +219,13 @@ const modify = async () => {
   )
   const res = await changeMyInfoApi(formData)
   if (res) {
+    localStorage.removeItem('name')
+    localStorage.removeItem('profile')
+    localStorage.setItem('name', user.value.name)
+    localStorage.setItem('profile', userImage.value)
+    console.log(localStorage.getItem('profile'))
     alert('수정 되었습니다.')
-    router.push('/')
+    router.push({ path: '/', redirect: '/' })
   } else alert('수정이 실패하였습니다. 정보를 확인해주세요.')
 }
 </script>
