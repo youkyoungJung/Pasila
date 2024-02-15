@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { getHighlightApi, sendShortpingApi } from '@/components/api/ShortpingAPI'
 import router from '@/router'
 
@@ -22,7 +22,7 @@ onMounted(() => {
 
 const getHighlightDatas = async () => {
   // 하이라이트 추천받기(라이브아이디)
-  const res = await getHighlightApi(props.id)
+  const res = await getHighlightApi(props.liveId)
   for (let i = 0; i < res.length; i++) {
     highlights.value.push({
       isEnroll: true,
