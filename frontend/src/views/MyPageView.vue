@@ -223,9 +223,8 @@ const modify = async () => {
     localStorage.removeItem('profile')
     localStorage.setItem('name', user.value.name)
     localStorage.setItem('profile', userImage.value)
-    console.log(localStorage.getItem('profile'))
     alert('수정 되었습니다.')
-    router.push({ path: '/', redirect: '/' })
+    router.go()
   } else alert('수정이 실패하였습니다. 정보를 확인해주세요.')
 }
 </script>
@@ -234,7 +233,7 @@ const modify = async () => {
   <div class="container">
     <div class="header">마이페이지</div>
     <div class="content">
-      <section class="profile">
+      <section id="section" class="profile">
         <div>
           <div v-if="userImage != ''">
             <img :src="userImage" class="profile-img" />
@@ -252,17 +251,17 @@ const modify = async () => {
           class="profile-choose"
         />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-long-input :data="longData.email" :inputData="user.email" />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-long-input
           :data="longData.name"
           :inputData="user.name"
           @getData="(e) => (user.name = e)"
         />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-short-input
           :data="shortData.channel"
           :inputData="user.channel"
@@ -274,10 +273,10 @@ const modify = async () => {
           중복된 채널명입니다. 다른 채널명을 사용해 주세요.
         </div>
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-long-input :data="longData.password" @getData="(e) => (user.password = e)" />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-long-input :data="longData.passwordCheck" @getData="(e) => (user.passwordCheck = e)" />
         <div
           v-if="
@@ -294,7 +293,7 @@ const modify = async () => {
         </div>
         <div v-else class="wrong-text">비밀번호가 일치하지 않습니다. 다시 입력해주세요.</div>
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-short-input
           :data="shortData.phone"
           :inputData="user.phone"
@@ -302,7 +301,7 @@ const modify = async () => {
           @sendData="(e) => sendPhoneNum(e)"
         />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-short-input
           :data="shortData.phoneCheck"
           @getData="(e) => (phoneCerti = e)"
@@ -313,7 +312,7 @@ const modify = async () => {
           인증번호가 다릅니다. 다시 입력해주세요.
         </div>
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-short-input
           :data="shortData.address"
           :inputData="user.address"
@@ -321,28 +320,28 @@ const modify = async () => {
           @sendData="(e) => openPostCode(e)"
         />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-long-input
           :data="longData.addressDetail"
           :inputData="user.addressDetail"
           @getData="(e) => (user.addressDetail = e)"
         />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-long-input
           :data="longData.bank"
           :inputData="user.bank"
           @getData="(e) => (user.bank = e)"
         />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-long-input
           :data="longData.account"
           :inputData="user.account"
           @getData="(e) => (user.account = e)"
         />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <div class="gender">
           <label for="gender" class="gender-title">성별</label>
           <div class="radio" id="gender">
@@ -363,7 +362,7 @@ const modify = async () => {
           </div>
         </div>
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <label for="input" class="label">생년월일</label>
         <input type="date" v-model="user.birth" class="birth" />
       </section>
@@ -394,6 +393,10 @@ const modify = async () => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    
+    #section {
+      margin: 0.3rem 0;
+    }
     .profile {
       @include box(100%, 10%, white, 0, 0.2rem, 0.2rem);
       @include flex-box($direction: column);

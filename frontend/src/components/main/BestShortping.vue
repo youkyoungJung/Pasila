@@ -1,42 +1,25 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import VideoCard from '@/components/common/VideoCard.vue'
+import { getVideosApi } from '@/components/api/SummaryAPI'
+import router from '@/router';
 
-//숏핑 받아오면 숏핑의 제품 id로 판매자 id가져와서 판매자 정보 뿌리기
-const videos = ref([
-  {
-    src: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profile: new URL('@/assets/img/karina.jpg', import.meta.url).href,
-    name: '카리나나',
-    title: '겨울에 필수! 앙고라 니트',
-    price: '36,000',
-    discountPrice: '20,000'
-  },
-  {
-    src: new URL('@/assets/img/main-sample2.png', import.meta.url).href,
-    profile: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-    name: '김제니',
-    title: '제니도 쓴다는 그 스킨',
-    price: '18,000',
-    discountPrice: '15,000'
-  },
-  {
-    src: new URL('@/assets/img/main-sample3.png', import.meta.url).href,
-    profile: new URL('@/assets/img/rose.jpg', import.meta.url).href,
-    name: '로제제',
-    title: '꿀보이스 만들어 주는 배도라지 차',
-    price: '36,000',
-    discountPrice: '20,000'
-  },
-  {
-    src: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profile: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-    name: '김가을',
-    title: '겨울에 필수! 앙고라 니트',
-    price: '36,000',
-    discountPrice: '20,000'
-  }
-])
+const videos = ref([])
+const top5Shortping = ref([])
+onMounted(() => {
+  getDatas()
+})
+
+const getDatas = async () => {
+  const res = await getVideosApi(0)
+  top5Shortping.value = res.top5Shortping
+
+  videos.value = top5Shortping.value
+}
+
+const goVideo = (id) => {
+  router.push(`/shortping/${id}`)
+}
 </script>
 
 <template>
@@ -51,7 +34,7 @@ const videos = ref([
         <div v-for="(video, i) in videos" :key="i">
           <div class="numbering">
             <div>{{ i + 1 }}</div>
-            <video-card :video="video" />
+            <video-card :video="video" @click="goVideo(video.id)"/>
           </div>
         </div>
       </div>

@@ -52,7 +52,9 @@ const tabs = ref(['작성하기', '미리보기'])
           </ul>
         </div>
         <div v-show="currentTab == 0" class="show-body">
-          <desc-editor :message="preview" @preview-content="updateDesc" />
+          <desc-editor :message="preview" @preview-content="updateDesc" @only-script="(e) => {
+            store.onlyScript = e
+            }" />
         </div>
         <div v-show="currentTab == 1" class="show-body">
           <desc-preview :preview="preview" />
