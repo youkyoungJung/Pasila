@@ -2,7 +2,9 @@ package org.ssafy.pasila.domain.member.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @AllArgsConstructor
 public class ChannelLiveStatusDto {
     /* LIVE */
