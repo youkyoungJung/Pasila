@@ -21,7 +21,7 @@ import java.util.List;
 @Builder
 @SequenceGenerator(name = "member_seq_generator",
             sequenceName = "member_seq",
-        initialValue = 11,
+        initialValue = 31,
         allocationSize = 1 )
 @Entity
 @Table(name = "member")
@@ -149,7 +149,7 @@ public class Member {
     }
 
     public void updatePassword(String password){
-        this.password = null;
+        this.password = password;
     }
 
 }

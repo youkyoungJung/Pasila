@@ -23,13 +23,13 @@ public class ChannelShortpingDto {
 
     /* MEMBER */
     @Schema(description = "회원 Id")
-    private Long memberId;
+    private Long sellerId;
 
     @Schema(description = "채널명")
     private String channel;
 
     @Schema(description = "프로필")
-    private String profile;
+    private String profileUrl;
 
     /* PRODUCT */
 
@@ -37,7 +37,7 @@ public class ChannelShortpingDto {
     private String productId;
 
     @Schema(description = "썸네일")
-    private String thumbnail;
+    private String productThumbnailUrl;
 
     /* PRODUCTOPTION */
 

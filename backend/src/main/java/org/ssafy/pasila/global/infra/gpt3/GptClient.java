@@ -2,6 +2,7 @@ package org.ssafy.pasila.global.infra.gpt3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -25,7 +26,10 @@ import org.ssafy.pasila.global.infra.gpt3.model.TranscriptionResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GptClient {
@@ -42,16 +46,13 @@ public class GptClient {
     @Value("${openai.api.url}")
     private String apiUrl;
 
-    // TODO: 상품 정보 불러오기
     public String generateQsheet(String name, String productName, String productInfo) {
 
         double temperature = 0.3;
         double top_p = 1;
-        int price = 500000;
-        int discount = 420000;
 
         String system = "너의 이름은 " + name + "이고 인기있는 쇼호스트야.\n"
-                + "너가 판매해야하는 물건은" + productName + "이고 원래 가격은" + price + "원이지만 이벤트 기간 동안만 할인해서" + discount + "에 판매하고 있어. 숏핑은 상품에 대해 자세히 소개해줘. \n"
+                + "너가 판매해야하는 물건은" + productName + "이야. 너는 이 상품을 판매해야해. \n"
                 + "상품 설명은 아래와 같아.\n"
                 + productInfo + "\n";
 
@@ -64,7 +65,8 @@ public class GptClient {
                 "5. 제품을 활용할 수 있는 여러방법 / 사용하는 용도\n" +
                 "6. 제품 사용 방법 안내\n" +
                 "7. 타사와의 차별점 설명\n" +
-                "8. 다시한번 제품 구성과 가격 강조";
+                "8. 다시한번 제품 구성과 가격 강조\n" +
+                "큐시트 결과만 반환해줘.";
 
         return chatCompletions(model, system, user, temperature, top_p);
 
@@ -137,7 +139,7 @@ public class GptClient {
             String system = "넌 " + product.getName() + "를 판매하는 상담사야." +
                     "제품의 정보는 다음과 같아.\n" +
                     product.getDescription() +
-                    "\n상품에 대한 질문에만 답변해주고 상품 이외의 다른 정보는 말하지마.";
+                    "\n상품 이외의 다른 정보는 말하지마.";
 
             ChatRequest request = new ChatRequest(model, system, message, chatbotMessages, temperature, top_p);
             ChatResponse response = restTemplate.postForObject(apiUrl + "/chat/completions", request, ChatResponse.class);
@@ -149,11 +151,11 @@ public class GptClient {
             String result = response.getChoices().get(0).getMessage().getContent();
             return splitMessage(result);
         } catch (Exception e) {
+            log.error("{}", e.getMessage());
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // TODO: 채팅 질문 리스트업
     public String questionSummary(String chatlog) {
         double temperature = 0.5;
         double top_p = 0.3;
@@ -165,7 +167,7 @@ public class GptClient {
         String message = "채팅 기록에서 상품과 관련된 질문 중, 가장 많이 나왔던 질문들을 5개 이하로 리스트업 해줘.\n" +
                 "\n" +
                 "리스트 항목들은 '-'를 붙여서 구분해주고 " +
-                "다른 말은 덧붙이지말고 결과만 출력해줘.";
+                "리스트업한 결과만 출력해줘.";
         return chatCompletions(model, system, message, temperature, top_p);
 
     }
@@ -181,20 +183,26 @@ public class GptClient {
 
             return response.getChoices().get(0).getMessage().getContent();
         } catch (Exception e) {
+            log.error("{}", e.getMessage());
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
     public String splitMessage(String message) {
-        String[] tempArr = message.split("[.]");
-        String[] resultArr = new String[tempArr.length];
-        for (int i = 0; i < 2; i++) {
-            resultArr[i] = tempArr[i];
+        List<String> allMatches = new ArrayList<String>();
+        Matcher m = Pattern.compile("[^\\.\\!\\?]*[\\.\\!\\?]*\\s*")
+                .matcher(message);
+        
+        while (m.find()) {
+            allMatches.add(m.group());
         }
-        String res = String.join(".", resultArr);
-        String splitResult = res.replace(String.valueOf("null"), "");
-        String realSplitResult = splitResult.substring(0, splitResult.length() - 1);
-        return realSplitResult;
+        
+        String result = "";
+        for (int i = 0; i < 2 && i < allMatches.size(); i++) {
+            result += allMatches.get(i);
+        }
+
+        return result;
     }
 
 }

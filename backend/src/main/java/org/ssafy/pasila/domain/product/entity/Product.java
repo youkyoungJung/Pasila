@@ -43,10 +43,11 @@ public class Product {
         this.id = newId;
     }
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 50, nullable = false)
     private String name;
 
-    @Column(length = 10000)
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(length = 2083)
@@ -54,11 +55,11 @@ public class Product {
 
     @CreationTimestamp
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     @ColumnDefault("true")
@@ -122,6 +123,10 @@ public class Product {
                 .category(category)
                 .build();
 
+    }
+
+    public boolean hasShortping() {
+        return this.shortping != null;
     }
 
 }

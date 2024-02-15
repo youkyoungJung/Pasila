@@ -7,10 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
+import org.ssafy.pasila.domain.auth.service.EncryptService;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
+import org.ssafy.pasila.domain.live.repository.LiveRepository;
 import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
+import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 import org.ssafy.pasila.domain.product.entity.Product;
+import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
 import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.domain.shortping.dto.request.LivelogRequestDto;
 import org.ssafy.pasila.domain.shortping.dto.request.ShortpingRequestDto;
@@ -24,8 +28,10 @@ import org.ssafy.pasila.global.infra.FFmpeg.FFmpegClient;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.gpt3.model.Script;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
+import org.ssafy.pasila.global.util.FileStorageUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -42,16 +48,25 @@ public class ShortpingService {
 
     private final LiveQueryRepository liveQueryRepository;
 
+    private final LiveRepository liveRepository;
+
     private final ShortpingQueryRepository shortpingQueryRepository;
 
     private final GptClient gptService;
+
+    private final ProductOptionRepository productOptionRepository;
+
+    private final EncryptService encryptService;
 
     private final FFmpegClient ffmpegClient;
 
     private final S3Uploader s3Uploader;
 
+    private final FileStorageUtil fileStorageUtil;
+
+
     @Transactional
-    public Shortping saveShortping(ShortpingRequestDto shortpingRequest, MultipartFile video) {
+    public String saveShortping(ShortpingRequestDto shortpingRequest, MultipartFile video) {
         String productId = shortpingRequest.getProductId();
         Live live = liveQueryRepository.findByProductId(productId);
 
@@ -59,9 +74,8 @@ public class ShortpingService {
             throw new RestApiException(ErrorCode.BAD_REQUEST);
         }
 
-        // TODO: 영상 저장
-        String url = "test";
-        // url = s3Uploader.upload("test", video, "shortping");
+        String url = fileStorageUtil.upload(video, live.getId() + ".mp4", "shortping");
+        url = "https://i10a402.p.ssafy.io/download/" + url;
 
         livelogService.deleteLivelogListByLiveId(live.getId());
 
@@ -72,37 +86,49 @@ public class ShortpingService {
         Shortping shortping = shortpingRequest.toEntity(url, product);
         shortpingQueryService.save(shortping);
 
-        return shortping;
+        return shortping.getId();
     }
 
     public ShortpingResponseDto getShortpingById(String id) {
-        return shortpingQueryService.findWithProductMember(id);
+        ShortpingResponseDto shortpingResponseDto = shortpingQueryService.findWithProductMember(id);
+        Live live = liveRepository.findByProduct_Id(shortpingResponseDto.getId())
+                .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(shortpingResponseDto.getId())
+                .stream()
+                .map(ProductOptionDto::new)
+                .toList();
+        shortpingResponseDto.setOptions(options);
+        shortpingResponseDto.setLiveId(live.getId());
+        shortpingResponseDto.setAccount(encryptService.decryptAccount(shortpingResponseDto.getAccount()));
+        return shortpingResponseDto;
     }
 
 
     // 추천 하이라이트 저장
-    public void saveRecommandHighlight(String productId) throws IOException {
-        // TODO: 영상 가져오기
-        MultipartFile file = null;
+    public void saveRecommandHighlight(String liveId) {
+
+        Live live = liveRepository.findById(liveId)
+                .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+        byte[] file = fileStorageUtil.liveDownloadUrl(live.getFullVideoUrl());
 
         // 영상에서 하이라이트 가져오기
         List<RecommendLivelogResponseDto> highlights = getHighlightList(file);
 
         // 하이라이트 저장
-        Live live = liveQueryRepository.findByProductId(productId);
         livelogService.saveRecommandLivelogList(highlights, live);
     }
 
 
 
     // 영상에서 하이라이트 뽑기
-    public List<RecommendLivelogResponseDto> getHighlightList(MultipartFile file) {
+    public List<RecommendLivelogResponseDto> getHighlightList(byte[] file) {
 
         byte[] audioFilebytes = ffmpegClient.convertAudio(file);
         List<Script> segments = gptService.speechToText(audioFilebytes).getSegments();
 
         if(segments == null || segments.isEmpty()) {
-            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+            return new ArrayList<>();
+            // throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
         String result = "";
@@ -123,27 +149,21 @@ public class ShortpingService {
 
     // 라이브 영상 & 썸네일
     public LiveThumbnailResponse getThumbnailList(String id) {
-        try {
-            Live live = liveQueryRepository.findByProductId(id);
 
-            // 라이브 영상 파일 이름 가져오기
-            String liveUrl = live.getFullVideoUrl();
+        Live live = liveRepository.findById(id)
+                .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
 
-            // TODO: 라이브 영상 가져오기
-            byte[] liveVideo = null;
+        // 라이브 영상 파일 이름 가져오기
+        String liveUrl = live.getFullVideoUrl();
+        byte[] liveVideo = fileStorageUtil.liveDownloadUrl(liveUrl);
 
-            // 라이브 영상 썸네일 뽑기
-            List<String> thumbnails = ffmpegClient.convertImages(liveVideo);
+        // 라이브 영상 썸네일 뽑기
+        List<String> thumbnails = ffmpegClient.convertImages(liveVideo);
 
-            return LiveThumbnailResponse.builder()
-                    .liveUrl(liveUrl)
-                    .thumbnails(thumbnails)
-                    .build();
-
-        } catch (Exception e) {
-            log.error("{}", e.getMessage());
-            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        return LiveThumbnailResponse.builder()
+                .liveUrl(liveUrl)
+                .thumbnails(thumbnails)
+                .build();
 
     }
 

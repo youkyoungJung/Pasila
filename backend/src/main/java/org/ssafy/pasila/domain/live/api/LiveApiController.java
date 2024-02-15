@@ -13,13 +13,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
-import org.ssafy.pasila.domain.live.dto.ChatLogDto;
+import org.ssafy.pasila.domain.auth.service.EncryptService;
+import org.ssafy.pasila.domain.live.dto.chat.ChatLogDto;
 import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
 import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequestDto;
 import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
@@ -35,8 +37,10 @@ import org.ssafy.pasila.domain.product.dto.ProductSellResponseDto;
 import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.domain.search.dto.LiveByCategoryResponseDto;
 import org.ssafy.pasila.domain.search.service.SearchService;
+import org.ssafy.pasila.domain.shortping.service.ShortpingService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
+import org.ssafy.pasila.global.util.JwtUtil;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -67,10 +71,14 @@ public class LiveApiController {
 
     private final SearchService searchService;
 
+    private final ShortpingService shortpingService;
+
     // Pair - SessionId, RecordingId
     private final Map<String, String> mapRecordings = new ConcurrentHashMap<>();
 
     private final SimpMessagingTemplate template;
+
+    private final EncryptService encryptService;
 
     @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브)")
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -79,11 +87,11 @@ public class LiveApiController {
                                             @RequestPart(value = "image") MultipartFile image,
                                             @RequestPart(value = "chatbot") List<Chatbot> chatbotList,
                                             // 로그인 완료후 @RequestHeader로 변경 예정
-                                            @RequestPart(value = "member") Long memberId) throws IOException {
+                                            @RequestPart("memberId") Map<String, Long> memberIdMap) throws IOException {
         // 1. Product
         String productId = productService.saveProduct(productRequestDto, image);
         // 2. Live
-        String liveId = liveService.saveLive(createLiveRequestDto, memberId, productId);
+        String liveId = liveService.saveLive(createLiveRequestDto, memberIdMap.get("memberId"), productId);
         // 3. Chatbot
         chatbotService.save(chatbotList, liveId);
 
@@ -136,6 +144,9 @@ public class LiveApiController {
         // 1. Live 정보 업데이트
         liveService.updateLiveOn(liveId);
         // 2. 화면 녹화 시작
+        if(mapRecordings.containsKey(liveId)){
+            openviduService.deleteRecording(mapRecordings.get(liveId));
+        }
         Recording recording = openviduService.startRecording(liveId);
         mapRecordings.put(liveId, recording.getId());
         // 3. Redis
@@ -159,6 +170,8 @@ public class LiveApiController {
         mapRecordings.remove(liveId);
         // 5. 라이브 종료 정보(좋아요 수, 라이브 시작 시간, 라이브 종료 시간, 총 방송 시간, 시청자 수)
         LiveStatsResponseDto liveStats = liveService.calcLiveStats(liveId, participantCnt);
+        // 6. 추천 하이라이트 저장
+        shortpingService.saveRecommandHighlight(liveId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveStats);
     }
 
@@ -167,6 +180,7 @@ public class LiveApiController {
     public ApiCommonResponse<?> findSellProduct(@PathVariable("liveId") String liveId) {
         String productId = liveService.getProductId(liveId);
         ProductSellResponseDto product = productService.getProductSell(productId);
+        product.setAccount(encryptService.decryptAccount(product.getAccount()));
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), product);
     }
 
@@ -179,7 +193,7 @@ public class LiveApiController {
     public ApiCommonResponse<?> createQsheet(@RequestBody CreateQsheetRequestDto request) {
 
         String qsheet = gptService.generateQsheet(
-                "판매자",
+                request.getUserName(),
                 request.getProductName(),
                 request.getDescription()
         );
@@ -235,8 +249,7 @@ public class LiveApiController {
     @MessageMapping("/join")
     @PreAuthorize("isAuthenticated()")
     public void joinLive(@RequestBody ChatLogDto chatLogDto) {
-
-        int participantNum = liveService.joinLive(chatLogDto.getLiveId() , chatLogDto.getMemberId());
+        int participantNum = liveService.joinLive(chatLogDto.getLiveId() , chatLogDto.getName());
         template.convertAndSend("/num/" + chatLogDto.getLiveId(), participantNum);
 
     }
@@ -247,8 +260,7 @@ public class LiveApiController {
     })
     @MessageMapping("/exit")
     public void exitLive(@RequestBody ChatLogDto chatLogDto){
-
-        int participantNum = liveService.exitLive(chatLogDto.getLiveId() , chatLogDto.getMemberId());
+        int participantNum = liveService.exitLive(chatLogDto.getLiveId() , chatLogDto.getName());
         template.convertAndSend("/num/" + chatLogDto.getLiveId(), participantNum);
 
     }

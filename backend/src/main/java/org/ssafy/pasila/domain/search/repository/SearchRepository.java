@@ -142,7 +142,7 @@ public class SearchRepository {
         String likeParam = createLikeParam(keyword);
 
         String jpql = "SELECT new org.ssafy.pasila.domain.search.dto.SearchLiveResponseDto" +
-                "(l.id, l.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
+                "(l.id, l.title, l.isOn, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name, MIN(po.price), MIN(po.discountPrice)) " +
                 "FROM Live l " +
                 "LEFT JOIN l.product p " +
                 "LEFT JOIN p.productOptions po " +

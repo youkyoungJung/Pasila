@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import org.ssafy.pasila.domain.live.entity.Live;
 
 import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface LiveRepository extends JpaRepository<Live, String> {
@@ -14,5 +15,7 @@ public interface LiveRepository extends JpaRepository<Live, String> {
     Optional<Live> findByProduct_Id(String id);
 
     Optional<Live> findByProduct_IdAndIsOnTrue(String id);
+
+    List<Live> findByMember_Id(Long id);
 
 }

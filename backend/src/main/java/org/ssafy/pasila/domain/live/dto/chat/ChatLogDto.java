@@ -1,4 +1,4 @@
-package org.ssafy.pasila.domain.live.dto;
+package org.ssafy.pasila.domain.live.dto.chat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -14,11 +14,14 @@ public class ChatLogDto {
 
     @Schema(description = "라이브 방송 ID")
     private String liveId;
-    
-    @Schema(description = "시청자의 ID")
-    private Long memberId;
-    
+
     @Schema(description = "채팅 내용")
     private String message;
+
+    @Schema(description = "사용자 이름")
+    private  String name;
+
+    @Schema(description = "사용자 프로필 사진")
+    private String profile;
 
 }

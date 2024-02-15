@@ -10,10 +10,11 @@ spring:
       max-file-size: 1000MB
       max-request-size: 1000MB
       enabled: true
+      location: /download/
 
   jpa:
     hibernate:
-      ddl-auto: update # create / none
+      ddl-auto: ${DDL_AUTO} # create / none
     properties:
       hibernate:
         #        show_sql: true

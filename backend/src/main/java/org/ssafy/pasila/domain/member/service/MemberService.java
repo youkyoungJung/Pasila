@@ -10,15 +10,22 @@ import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.auth.dto.request.LoginRequestDto;
 import org.ssafy.pasila.domain.auth.service.EncryptService;
+import org.ssafy.pasila.domain.live.entity.LiveStatus;
+import org.ssafy.pasila.domain.live.repository.LiveRepository;
+import org.ssafy.pasila.domain.member.dto.ChannelLiveStatusDto;
 import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
 import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
 import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.ChannelRepository;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
+import org.ssafy.pasila.domain.product.entity.Product;
+import org.ssafy.pasila.domain.product.repository.ProductRepository;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,11 +39,15 @@ public class MemberService {
 
     private final ChannelRepository channelRepository;
 
+    private final ProductRepository productRepository;
+
     private final S3Uploader s3Uploader;
 
     private final PasswordEncoder encoder;
 
     private final EncryptService encryptService;
+
+    private final LiveRepository liveRepository;
 
     /**
      * 사용자 정보 수정 메서드
@@ -95,9 +106,42 @@ public class MemberService {
     /**
      * 채널별 라이브 조회 메서드
      */
-    public List<ChannelLiveDto> getChannelLiveById(Long id) {
-        return channelRepository.findLiveById(id);
-    }
+//    private List<ChannelLiveDto> getChannelLiveById(Long id) {
+//        return channelRepository.findLiveById(id);
+//    }
+
+    /**
+     * 채널별 라이브 & 상태 조회 메서드
+     */
+//    public List<ChannelLiveStatusDto> getChannelLiveStatusById(Long id) {
+//        List<ChannelLiveStatusDto> results = new ArrayList<>();
+//        List<ChannelLiveDto> lives = getChannelLiveById(id);
+//
+//        for(ChannelLiveDto live: lives){
+//            boolean isReserve = false;
+//            boolean isProgress = false;
+//            boolean isEnd = false;
+//
+//            if(live.getLiveOffAt() != null){
+//                isEnd = true;
+//            } else if (live.getLiveOnAt() != null) {
+//                isProgress = true;
+//            }else {
+//                isEnd = true;
+//            }
+//
+//            ChannelLiveStatusDto result =ChannelLiveStatusDto.builder()
+//                    .live(live)
+//                    .isReserve(isReserve)
+//                    .isProgress(isProgress)
+//                    .isEnd(isEnd)
+//                    .build();
+//
+//            results.add(result);
+//        }
+//
+//        return results;
+//    }
 
     /**
      * 이미지가 있을 경우 S3Upload에 접근, upload
@@ -173,17 +217,78 @@ public class MemberService {
         member.encodePassword(encoder.encode(member.getPassword()));
         memberRepository.save(member);
 
-        if (!profileFile.isEmpty()) {
+        if (profileFile != null && !profileFile.isEmpty()) {
             String url = s3Uploader.upload(member.getId().toString(), profileFile, "member");
             member.addProfile(url);
         }
 
     }
 
+    @Transactional
     public void updatePassword(LoginRequestDto dto){
         Member member = memberRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new RestApiException(ErrorCode.UNAUTHORIZED_REQUEST));
         member.updatePassword(encoder.encode(dto.getPassword()));
+
+    }
+
+    /**
+     * 채널별 라이브 조회 메서드
+     */
+    private List<ChannelLiveDto> getLiveInMyChannel(Long id) {
+
+        //채널별 라이브 조회
+        return liveRepository.findByMember_Id(id)
+                .stream()
+                .map(ChannelLiveDto::new)
+                .toList();
+
+    }
+
+    public List<ChannelLiveStatusDto> getChannelLiveStatusById(Long id) {
+        List<ChannelLiveDto> lives = getLiveInMyChannel(id);
+        List<ChannelLiveStatusDto> channelLiveStatusDtos = new ArrayList<>();
+
+        for (ChannelLiveDto live : lives) {
+
+            ChannelLiveStatusDto channelLiveStatusDto = ChannelLiveStatusDto.builder()
+                    .live(live)
+                    .status(calculateStatus(live))
+                    .build();
+
+            channelLiveStatusDtos.add(channelLiveStatusDto);
+        }
+
+        return channelLiveStatusDtos;
+    }
+
+    private LiveStatus calculateStatus(ChannelLiveDto live) {
+        LocalDateTime liveOnAt = live.getLiveOnAt();
+        LocalDateTime liveOffAt = live.getLiveOffAt();
+
+        if (liveOnAt != null && liveOffAt != null) {
+            // 라이브가 시작되었고, 종료되었을 경우
+            // 숏핑 여부 판별
+            Product product = productRepository.findById(live.getProductId())
+                    .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+            boolean hasShortping = product.hasShortping();
+
+            if(hasShortping){
+                return LiveStatus.IS_SHORTPING;
+            }else{
+                return LiveStatus.NOT_SHORTPING;
+            }
+
+        } else {
+            // 라이브가 진행되지 않았을 경우 (예약 상태)
+            if(liveOnAt == null){
+                return LiveStatus.RESERVED;
+            } else {
+                // 라이브가 진행된 경우, 종료되지 않았을 경우
+                    return LiveStatus.IN_PROGRESS; // 시작 시간 이후에 현재 시간이면 진행 중
+            }
+
+        }
 
     }
 
