@@ -17,6 +17,7 @@ const getPictures = async () => {
   // 이미지 가져오기(라이브아이디)
   const res = await getThumbnailApi(props.liveId)
   videoURL.value = res.liveUrl
+  store.videoURL = res.liveUrl
   vi.value = res.liveUrl
   for (let i = 0; i < res.thumbnails.length; i++) {
     let temp = ref('')
