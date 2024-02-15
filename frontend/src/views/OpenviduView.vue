@@ -48,8 +48,23 @@ const liveendStore = useLiveendStore()
 
 let interval
 
+watch(
+  () => isStart.value,
+  () => {
+    if (isStart.value) {
+      pubToolBar.pop()
+      pubToolBar.push({
+        isActive: true,
+        iconName: 'fa-regular fa-circle-xmark',
+        click: leaveSession
+      })
+    }
+  }
+)
+
 onMounted(async () => {
   await getProduct()
+  isStart.value = product.on
   const memberId = localStorage.getItem('id')
   if (!memberId) {
     alert('로그인 후 시청 가능합니다.')
@@ -76,23 +91,10 @@ onMounted(async () => {
 
   connectChat()
   joinSession()
-
-  if (ws && ws.connected) {
-    const msg = {
-      liveId: props.liveId
-    }
-    ws.send(`/send/join`, JSON.stringify(msg), {})
-  }
 })
 
 onUnmounted(() => {
   clearInterval(interval)
-  if (ws && ws.connected) {
-    const msg = {
-      liveId: props.liveId
-    }
-    ws.send(`/send/exit`, JSON.stringify(msg), {})
-  }
   ws.disconnect()
   leaveSession()
 })
@@ -169,6 +171,7 @@ const startLive = async () => {
   if (await startLiveApi(props.liveId)) {
     isStart.value = true
   }
+  router.go(0)
 }
 
 const stopLive = async () => {
@@ -179,16 +182,22 @@ const stopLive = async () => {
 
 const leaveSession = async () => {
   if (session.value) {
-    if (userRole.value == 'PUB' && isStart.value && confirm('라이브를 정말 종료하시겠습니까?')) {
-      await stopLive()
-      session.value.disconnect()
-      router.push(`/live/${props.liveId}/end`)
-      return
+    if (userRole.value == 'PUB') {
+      let isEnd = confirm('라이브를 정말 종료하시겠습니까?')
+      if (isEnd) {
+        await stopLive()
+        session.value.unpublish()
+        session.value.router.push(`/live/${props.liveId}/end`)
+        return
+      } else {
+        return
+      }
     } else {
       session.value.disconnect()
+      router.push('/')
     }
   } else {
-    session.value.disconnect()
+    router.push('/')
   }
 
   session.value = undefined
@@ -223,20 +232,6 @@ const subToolBar = reactive([
   { isActive: true, iconName: 'fa-regular fa-rectangle-list', click: clickToolBarBtn },
   { isActive: true, iconName: 'fa-regular fa-circle-xmark', click: leaveSession }
 ])
-
-watch(
-  () => isStart.value,
-  () => {
-    if (isStart.value) {
-      pubToolBar.pop()
-      pubToolBar.push({
-        isActive: true,
-        iconName: 'fa-regular fa-circle-xmark',
-        click: leaveSession
-      })
-    }
-  }
-)
 
 const clickChatbot = () => {
   isChatbot.value = !isChatbot.value
@@ -283,10 +278,6 @@ const connectChat = () => {
     () => {
       ws.subscribe(`/id/${props.liveId}`, (res) => {
         chatList.value.push(JSON.parse(res.body))
-      })
-      ws.subscribe(`/num/${props.liveId}`, (res) => {
-        console.log(JSON.parse(res.body))
-        customerCnt.value = JSON.parse(res.body)
       })
     },
     (error) => {
