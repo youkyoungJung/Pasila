@@ -6,9 +6,9 @@ const url = '/shortping'
 
 const getHighlightApi = async (liveId) => {
   try {
-    const res = await local.get('highlight', {
+    const res = await local.get(`${url}/highlight`, {
       params: {
-        id: liveId
+        live_id: liveId
       }
     })
     return res.data.data
@@ -21,7 +21,7 @@ const getThumbnailApi = async (id) => {
   try {
     const res = await local.get(`${url}/thumbnail`, {
       params: {
-        productId: id
+        liveId: id
       }
     })
     return res.data.data

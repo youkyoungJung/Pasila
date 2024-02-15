@@ -223,7 +223,6 @@ const modify = async () => {
     localStorage.removeItem('profile')
     localStorage.setItem('name', user.value.name)
     localStorage.setItem('profile', userImage.value)
-    console.log(localStorage.getItem('profile'))
     alert('수정 되었습니다.')
     router.push({ path: '/', redirect: '/' })
   } else alert('수정이 실패하였습니다. 정보를 확인해주세요.')
