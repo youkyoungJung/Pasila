@@ -5,11 +5,13 @@ import router from '@/router'
 
 import ShortpingVideo from '@/components/shortping/ShortpingVideo.vue'
 import ShortpingHighlight from '@/components/shortping/ShortpingHighlight.vue'
+import { useShortpingStore } from '@/stores/shortping'
 
 const video = ref('')
 const formData = new FormData()
 const sendData = ref({})
 const props = defineProps(['liveId'])
+const store = useShortpingStore()
 
 const shortping = ref({
   title: ''
@@ -92,6 +94,7 @@ const complete = () => {
       <div class="show-highlight">
         <shortping-highlight
           :data="highlights"
+          :liveId="props.liveId"
           @addEmptyData="(e) => highlights.push(e)"
           @deleteData="(e) => highlights.splice(e, 1)"
           @getData="(e) => sortHighlight(e)"
