@@ -37,6 +37,7 @@ import org.ssafy.pasila.domain.product.dto.ProductSellResponseDto;
 import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.domain.search.dto.LiveByCategoryResponseDto;
 import org.ssafy.pasila.domain.search.service.SearchService;
+import org.ssafy.pasila.domain.shortping.service.ShortpingService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
 import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
 import org.ssafy.pasila.global.util.JwtUtil;
@@ -69,6 +70,8 @@ public class LiveApiController {
     private final ChatbotService chatbotService;
 
     private final SearchService searchService;
+
+    private final ShortpingService shortpingService;
 
     // Pair - SessionId, RecordingId
     private final Map<String, String> mapRecordings = new ConcurrentHashMap<>();
@@ -167,6 +170,8 @@ public class LiveApiController {
         mapRecordings.remove(liveId);
         // 5. 라이브 종료 정보(좋아요 수, 라이브 시작 시간, 라이브 종료 시간, 총 방송 시간, 시청자 수)
         LiveStatsResponseDto liveStats = liveService.calcLiveStats(liveId, participantCnt);
+        // 6. 추천 하이라이트 저장
+        shortpingService.saveRecommandHighlight(liveId);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveStats);
     }
 

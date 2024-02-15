@@ -28,6 +28,7 @@ import org.ssafy.pasila.global.infra.s3.S3Uploader;
 import org.ssafy.pasila.global.util.FileStorageUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -87,9 +88,10 @@ public class ShortpingService {
 
 
     // 추천 하이라이트 저장
-    public void saveRecommandHighlight(String productId) throws IOException {
+    public void saveRecommandHighlight(String liveId) {
 
-        Live live = liveQueryRepository.findByProductId(productId);
+        Live live = liveRepository.findById(liveId)
+                .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
         byte[] file = fileStorageUtil.liveDownloadUrl(live.getFullVideoUrl());
 
         // 영상에서 하이라이트 가져오기
@@ -108,7 +110,8 @@ public class ShortpingService {
         List<Script> segments = gptService.speechToText(audioFilebytes).getSegments();
 
         if(segments == null || segments.isEmpty()) {
-            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+            return new ArrayList<>();
+            // throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
         String result = "";
