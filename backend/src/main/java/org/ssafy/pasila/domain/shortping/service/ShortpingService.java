@@ -81,10 +81,10 @@ public class ShortpingService {
 
     @Transactional
     public String saveShortping(ShortpingRequestDto shortpingRequest, MultipartFile video) {
-        String productId = shortpingRequest.getProductId();
-        Live live = liveQueryRepository.findByProductId(productId);
+        Live live = liveRepository.findById(shortpingRequest.getLiveId())
+                .orElseThrow(() -> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
 
-        if(shortpingQueryService.existByProductId(productId)) {
+        if(shortpingQueryService.existByProductId(live.getProduct().getId())) {
             throw new RestApiException(ErrorCode.BAD_REQUEST);
         }
 
@@ -96,7 +96,7 @@ public class ShortpingService {
         List<LivelogRequestDto> livelogRequestDtoList = shortpingRequest.getLivelogs();
         livelogService.saveLivelogList(livelogRequestDtoList, live);
 
-        Product product = productService.getProductById(productId);
+        Product product = live.getProduct();
         Shortping shortping = shortpingRequest.toEntity(url, product);
         shortpingQueryService.save(shortping);
 
