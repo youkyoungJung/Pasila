@@ -1,10 +1,8 @@
 package org.ssafy.pasila.domain.member.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.ssafy.pasila.domain.live.entity.Live;
 
 import java.time.LocalDateTime;
 
@@ -60,7 +58,24 @@ public class ChannelLiveDto {
 
     /* SHORTPING */
 
-    @Schema(description = "숏핑 Id")
-    private String shortpingId;
+//    @Schema(description = "숏핑 Id")
+//    @Setter
+//    private String shortpingId;
+
+    public ChannelLiveDto(Live live) {
+        this.liveId = live.getId();
+        this.title = live.getTitle();
+        this.liveScheduledAt = live.getLiveScheduledAt();
+        this.liveOnAt = live.getLiveOnAt();
+        this.liveOffAt = live.getLiveOffAt();
+        this.sellerId = live.getMember().getId();
+        this.channel = live.getMember().getChannel();
+        this.profileUrl = live.getMember().getProfile();
+        this.productId = live.getProduct().getId();
+        this.productThumbnailUrl = live.getProduct().getThumbnail();
+        this.price = live.getProduct().getProductOptions().get(0).getPrice();
+        this.discountPrice = live.getProduct().getProductOptions().get(0).getDiscountPrice();
+//        this.shortpingId = live.getProduct().getShortping().getId();
+    }
 
 }

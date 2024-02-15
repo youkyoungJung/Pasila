@@ -43,24 +43,24 @@ public class ChannelRepository {
                 .setParameter("memberId", id).getResultList();
     }
 
-    public List<ChannelLiveDto> findLiveById(Long id) {
-        return em.createQuery("""
-        SELECT new org.ssafy.pasila.domain.member.dto.ChannelLiveDto
-               (l.id, l.title, l.liveScheduledAt, l.liveOnAt, l.liveOffAt, m.id, m.channel, m.profile, p.id, p.thumbnail, po.discountPrice, po.price, s.id)
-          FROM Live l
-               JOIN l.member m
-               JOIN l.product p
-               JOIN p.productOptions po
-               JOIN p.shortping s
-         WHERE po.id = (SELECT MIN(po2.id)
-                          FROM ProductOption po2
-                         WHERE po2.product = p
-                                AND po2.discountPrice = (SELECT MIN(po3.discountPrice)
-                                     FROM ProductOption po3
-                                    WHERE po3.product = p))
-               AND l.isActive = true
-               AND l.member.id = :memberId""", ChannelLiveDto.class)
-                .setParameter("memberId", id).getResultList();
-    }
+//    public List<ChannelLiveDto> findLiveById(Long id) {
+//        return em.createQuery("""
+//        SELECT new org.ssafy.pasila.domain.member.dto.ChannelLiveDto
+//               (l.id, l.title, l.liveScheduledAt, l.liveOnAt, l.liveOffAt, m.id, m.channel, m.profile, p.id, p.thumbnail, po.discountPrice, po.price, s.id)
+//          FROM Live l
+//               JOIN l.member m
+//               JOIN l.product p
+//               JOIN p.productOptions po
+//               JOIN p.shortping s
+//         WHERE po.id = (SELECT MIN(po2.id)
+//                          FROM ProductOption po2
+//                         WHERE po2.product = p
+//                                AND po2.discountPrice = (SELECT MIN(po3.discountPrice)
+//                                     FROM ProductOption po3
+//                                    WHERE po3.product = p))
+//               AND l.isActive = true
+//               AND l.member.id = :memberId""", ChannelLiveDto.class)
+//                .setParameter("memberId", id).getResultList();
+//    }
     
 }
