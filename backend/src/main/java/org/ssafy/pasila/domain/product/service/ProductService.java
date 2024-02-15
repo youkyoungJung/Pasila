@@ -223,6 +223,7 @@ public class ProductService {
                 .script(live.getScript())
                 .title(live.getTitle())
                 .fullVideoUrl(live.getFullVideoUrl())
+                .isOn(live.isOn())
                 .build();
 
         return result;
