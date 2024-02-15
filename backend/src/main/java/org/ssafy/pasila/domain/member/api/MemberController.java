@@ -11,10 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
 import org.ssafy.pasila.domain.auth.dto.request.LoginRequestDto;
 import org.ssafy.pasila.domain.auth.service.EncryptService;
-import org.ssafy.pasila.domain.member.dto.ChannelDto;
-import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
-import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
-import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
+import org.ssafy.pasila.domain.member.dto.*;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.ChannelRepository;
 import org.ssafy.pasila.domain.member.repository.PersonalInfoRepository;
@@ -149,8 +146,8 @@ public class MemberController {
     // 채널별 Live 정보 조회 by id
     @Operation(summary = "Get channel live by id", description = "id로 채널별 라이브 조회")
     @GetMapping("/channel/{id}/live")
-    public ApiCommonResponse<List<ChannelLiveDto>> getChannelLive(@PathVariable("id") Long id) {
-        List<ChannelLiveDto> results = memberService.getChannelLiveById(id);
+    public ApiCommonResponse<List<ChannelLiveStatusDto>> getChannelLive(@PathVariable("id") Long id) {
+        List<ChannelLiveStatusDto> results = memberService.getChannelLiveStatusbyId(id);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), results);
     }
 

@@ -10,6 +10,7 @@ import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
 import org.ssafy.pasila.domain.auth.dto.request.LoginRequestDto;
 import org.ssafy.pasila.domain.auth.service.EncryptService;
+import org.ssafy.pasila.domain.member.dto.ChannelLiveStatusDto;
 import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
 import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
 import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
@@ -19,6 +20,7 @@ import org.ssafy.pasila.domain.member.repository.MemberRepository;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,8 +97,34 @@ public class MemberService {
     /**
      * 채널별 라이브 조회 메서드
      */
-    public List<ChannelLiveDto> getChannelLiveById(Long id) {
+    private List<ChannelLiveDto> getChannelLiveById(Long id) {
         return channelRepository.findLiveById(id);
+    }
+
+    /**
+     * 채널별 라이브 & 상태 조회 메서드
+     */
+    public List<ChannelLiveStatusDto> getChannelLiveStatusbyId(Long id) {
+        List<ChannelLiveStatusDto> liveStatus = new ArrayList<>();
+        List<ChannelLiveDto> lives = getChannelLiveById(id);
+
+        for(ChannelLiveDto live: lives){
+            boolean isReserve = false;
+            boolean isProgress = false;
+            boolean isEnd = false;
+
+            if(live.getLiveOffAt() != null){
+                isEnd = true;
+            } else if (live.getLiveOnAt() != null) {
+                isProgress = true;
+            }else {
+                isEnd = true;
+            }
+
+            liveStatus.add(new ChannelLiveStatusDto(live, isReserve, isProgress, isEnd));
+        }
+
+        return liveStatus;
     }
 
     /**
