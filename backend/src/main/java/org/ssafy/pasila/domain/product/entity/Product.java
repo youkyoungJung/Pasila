@@ -125,4 +125,8 @@ public class Product {
 
     }
 
+    public boolean hasShortping() {
+        return this.shortping != null;
+    }
+
 }
