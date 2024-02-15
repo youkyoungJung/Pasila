@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Builder
 @SequenceGenerator(name = "orders_seq_generator",
         sequenceName = "orders_seq",
-        initialValue = 11,
+        initialValue = 21,
         allocationSize = 1 )
 @Entity
 @Table(name = "orders")

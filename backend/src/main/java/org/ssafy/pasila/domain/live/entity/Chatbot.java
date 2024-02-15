@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @SequenceGenerator(name = "chatbot_seq_generator",
         sequenceName = "chatbot_seq",
-        initialValue = 11,
+        initialValue = 21,
         allocationSize = 1 )
 @Entity
 @Table(name = "chatbot")

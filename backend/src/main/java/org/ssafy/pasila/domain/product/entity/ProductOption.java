@@ -13,7 +13,7 @@ import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 @Builder
 @SequenceGenerator(name = "product_option_seq_generator",
         sequenceName = "product_option_seq",
-        initialValue = 15,
+        initialValue = 21,
         allocationSize = 1 )
 @Entity
 @Table(name = "product_option")
