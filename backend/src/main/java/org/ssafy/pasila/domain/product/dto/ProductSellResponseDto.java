@@ -50,10 +50,13 @@ public class ProductSellResponseDto {
     @Schema(description = "대본")
     private String script;
 
+    @Schema(description = "라이브 영상")
+    private String fullVideoUrl;
+
     @Builder
     public ProductSellResponseDto(String id, Long sellerId, String name, String description, LocalDateTime createdAt,
                                   String thumbnail, Long categoryId, List<ProductOptionDto> options, String bank,
-                                  String account, String script){
+                                  String account, String script, String fullVideoUrl){
 
         this.id = id;
         this.sellerId = sellerId;
@@ -66,7 +69,7 @@ public class ProductSellResponseDto {
         this.bank = bank;
         this.account = account;
         this.script = script;
-
+        this.fullVideoUrl = fullVideoUrl;
     }
 
     public void setAccount(String account) {
