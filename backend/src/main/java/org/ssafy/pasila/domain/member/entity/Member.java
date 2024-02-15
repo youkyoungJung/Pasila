@@ -21,7 +21,7 @@ import java.util.List;
 @Builder
 @SequenceGenerator(name = "member_seq_generator",
             sequenceName = "member_seq",
-        initialValue = 11,
+        initialValue = 21,
         allocationSize = 1 )
 @Entity
 @Table(name = "member")

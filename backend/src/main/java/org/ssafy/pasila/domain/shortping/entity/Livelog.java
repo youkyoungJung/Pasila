@@ -12,10 +12,15 @@ import java.time.LocalTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@SequenceGenerator(name = "livelog_seq_generator",
+        sequenceName = "livelog_seq",
+        initialValue = 21,
+        allocationSize = 1 )
 @Entity
 @Table(name = "livelog")
 public class Livelog {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "livelog_seq_generator")
     private Long id;
 
     private LocalTime start;

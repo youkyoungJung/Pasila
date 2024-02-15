@@ -10,9 +10,15 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
+@SequenceGenerator(name = "chatbot_seq_generator",
+        sequenceName = "chatbot_seq",
+        initialValue = 21,
+        allocationSize = 1 )
 @Entity
+@Table(name = "chatbot")
 public class Chatbot {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "chatbot_seq_generator")
     private Long id;
 
     @Column(length = 300)
