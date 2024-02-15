@@ -5,7 +5,7 @@ import { useShortpingStore } from '@/stores/shortping'
 
 const currentTime = ref(0)
 const props = defineProps(['data', 'video', 'liveId'])
-const videoURL = ref('')
+const videoURL = ref(props.video)
 const vi = ref('')
 const store = useShortpingStore()
 onMounted(() => {
@@ -36,12 +36,13 @@ watch(currentTime, (newTime) => {
   }
 })
 
-watchEffect(async () => {
-  videoURL.value = URL.createObjectURL(props.video)
-  vi.value = URL.createObjectURL(props.video)
-  console.log(props.video)
-  colorList()
-})
+watch(
+  () => props.video,
+  (newVideo) => {
+    videoURL.value = newVideo
+    vi.value = newVideo
+  }
+)
 
 const videoImages = ref([])
 const times = ref([])
