@@ -61,7 +61,7 @@ const preview = async () => {
     await ffmpeg.exec([...convertArgs])
     outputs.push(`output${i}.ts`)
   }
-  const concatArgs = ['-i', `concat:${outputs.join('|')}`, '-c', 'copy', 'output.mp4']
+  const concatArgs = ['-f', `concat:${outputs.join('|')}`, '-c', 'copy', 'output.mp4']
   const result = await ffmpeg.exec([...concatArgs])
 
   if (result.error) {
