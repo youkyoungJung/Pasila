@@ -2,11 +2,21 @@ package org.ssafy.pasila.global.infra.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.amazonaws.util.IOUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.ssafy.pasila.domain.apihandler.ErrorCode;
+import org.ssafy.pasila.domain.apihandler.RestApiException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -62,7 +72,7 @@ public class S3Uploader {
 
         amazonS3Client.putObject(
                 new PutObjectRequest(bucket, fileName, uploadFile)
-                        .withCannedAcl(CannedAccessControlList.PublicRead)	// PublicRead 권한으로 업로드 됨
+                        .withCannedAcl(CannedAccessControlList.PublicRead)    // PublicRead 권한으로 업로드 됨
         );
         return amazonS3Client.getUrl(bucket, fileName).toString();
 
@@ -120,9 +130,9 @@ public class S3Uploader {
         ListObjectsV2Result result = amazonS3Client.listObjectsV2(listObjectsV2Request);
         List<S3ObjectSummary> objectSummaries = result.getObjectSummaries();
 
-        for(S3ObjectSummary objectSummary : objectSummaries){
+        for (S3ObjectSummary objectSummary : objectSummaries) {
             String key = objectSummary.getKey();
-            if(!key.equals(directory + "/")){
+            if (!key.equals(directory + "/")) {
                 fileList.add("https://" + bucket + ".s3"
                         + region + ".amazonaws.com/" + key);
             }

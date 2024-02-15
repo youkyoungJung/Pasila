@@ -5,20 +5,26 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.NotEnoughStockException;
+import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@SequenceGenerator(name = "product_option_seq_generator",
+        sequenceName = "product_option_seq",
+        initialValue = 61,
+        allocationSize = 1 )
 @Entity
 @Table(name = "product_option")
 @ToString(exclude = "product")
 public class ProductOption {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "product_option_seq_generator")
     private Long id;
 
-    @Column(length = 20)
+    @Column(length = 40)
     private String name;
 
     private Integer stock;
@@ -33,14 +39,13 @@ public class ProductOption {
     @JsonIgnore
     private Product product;
 
+    //버전 컬럼 추가
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version;
+
     //== 연관메서드==//
-    public void addProduct(Product product){
-
-        this.product = product;
-
-    }
-
-    public void updateProductOption(ProductOption productOption){
+    public void updateProductOption(ProductOptionDto productOption){
 
         this.id = productOption.getId();
         this.name = productOption.getName();
@@ -51,7 +56,9 @@ public class ProductOption {
     }
 
     //== 재고 관련 메서드 ==//
-    public void removeStock(int quantity){
+
+    //재고 증가 메서드
+    public void removeStock(final int quantity){
 
         int restStock = this.stock - quantity;
         if (restStock < 0) {
@@ -61,9 +68,23 @@ public class ProductOption {
 
     }
 
-    public void addStock(int quantity){
+    public void addStock(final int quantity){
 
         this.stock += quantity;
+
+
+    }
+
+    //== 생성 메서드 ==//
+    public static ProductOption createProductOption(Product product, ProductOptionDto productOptionDto){
+
+        return ProductOption.builder()
+                .name(productOptionDto.getName())
+                .stock(productOptionDto.getStock())
+                .price(productOptionDto.getPrice())
+                .discountPrice(productOptionDto.getDiscountPrice())
+                .product(product)
+                .build();
 
     }
 

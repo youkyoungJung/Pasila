@@ -19,13 +19,18 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Builder
+@SequenceGenerator(name = "member_seq_generator",
+            sequenceName = "member_seq",
+        initialValue = 31,
+        allocationSize = 1 )
 @Entity
 @Table(name = "member")
 @ToString(exclude = {"orders", "liveList", "products"})
 public class Member {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "member_seq_generator")
     private Long id;
 
     @Column(length = 320, nullable = false)
@@ -61,7 +66,7 @@ public class Member {
     @Column(length = 10)
     private String bank;
 
-    @Column(length = 20)
+    @Column(length = 64)
     private String account;
 
     @Column(length = 2083)
@@ -73,7 +78,7 @@ public class Member {
 
     @CreationTimestamp
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
@@ -106,6 +111,19 @@ public class Member {
     public void updateMember(PersonalInfoDto request) {
         this.name = request.getName();
         this.channel = request.getChannel();
+        this.phone = request.getPhone();
+        this.address = request.getAddress();
+        this.addressDetail = request.getAddressDetail();
+        this.gender = request.getGender();
+        this.birth = request.getBirth();
+        this.bank = request.getBank();
+        this.account = request.getAccount();
+        this.profile = request.getProfile();
+    }
+
+    public void updateMemberWithPw(PersonalInfoDto request) {
+        this.name = request.getName();
+        this.channel = request.getChannel();
         this.password = request.getPassword();
         this.phone = request.getPhone();
         this.address = request.getAddress();
@@ -120,6 +138,18 @@ public class Member {
     // 채널 설명 수정
     public void updateChannel(String description) {
         this.description = description;
+    }
+
+    public void encodePassword(String password){
+        this.password = password;
+    }
+
+    public void addToken(String token){
+        this.token = token;
+    }
+
+    public void updatePassword(String password){
+        this.password = password;
     }
 
 }

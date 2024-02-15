@@ -9,12 +9,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+import org.ssafy.pasila.domain.auth.dto.MsgDto;
 
 import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
-public class SendMsgService{
+public class MsgService {
 
     @Value("${coolsms.apiKey}")
     private String apiKey ;
@@ -37,8 +38,6 @@ public class SendMsgService{
 
         Message message = new Message();
 
-        int randomNum = randomNum();
-
         message.setFrom(fromNumber);
         message.setTo(phoneNum);
         message.setText(Integer.toString(authNum));
@@ -47,6 +46,15 @@ public class SendMsgService{
 
         ValueOperations<String , String > setOperations = redisTemplate.opsForValue();
         setOperations.set("AUTH_PHONE : " + phoneNum, Integer.toString(authNum) , Duration.ofMinutes(3L) );
+    }
+
+    public boolean checkMsgCode(MsgDto msgDto){
+        String authNum = redisTemplate.opsForValue().get("AUTH_PHONE : " + msgDto.getPhoneNum()).toString();
+        if(authNum.equals(msgDto.getAuthNum())){
+            return true;
+        }else {
+            return false;
+        }
     }
 
     public static int randomNum() {

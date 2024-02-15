@@ -1,20 +1,54 @@
 package org.ssafy.pasila.domain.live.api;
 
+import io.openvidu.java.client.OpenViduHttpException;
+import io.openvidu.java.client.OpenViduJavaClientException;
+import io.openvidu.java.client.Recording;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ApiCommonResponse;
+import org.ssafy.pasila.domain.auth.service.EncryptService;
+import org.ssafy.pasila.domain.live.dto.chat.ChatLogDto;
+import org.ssafy.pasila.domain.live.dto.request.CreateLiveRequestDto;
 import org.ssafy.pasila.domain.live.dto.request.CreateQsheetRequestDto;
 import org.ssafy.pasila.domain.live.dto.response.CreateQsheetResponseDto;
+import org.ssafy.pasila.domain.live.dto.response.LiveStatsResponseDto;
+import org.ssafy.pasila.domain.live.entity.Chatbot;
+import org.ssafy.pasila.domain.live.entity.Live;
+import org.ssafy.pasila.domain.live.service.ChatbotService;
 import org.ssafy.pasila.domain.live.service.LiveService;
+import org.ssafy.pasila.domain.live.service.OpenviduService;
+import org.ssafy.pasila.domain.member.dto.ChannelLiveDto;
+import org.ssafy.pasila.domain.product.dto.ProductRequestDto;
+import org.ssafy.pasila.domain.product.dto.ProductSellResponseDto;
+import org.ssafy.pasila.domain.product.service.ProductService;
+import org.ssafy.pasila.domain.search.dto.LiveByCategoryResponseDto;
+import org.ssafy.pasila.domain.search.service.SearchService;
+import org.ssafy.pasila.domain.shortping.service.ShortpingService;
 import org.ssafy.pasila.global.infra.gpt3.GptClient;
+import org.ssafy.pasila.global.infra.redis.service.LiveRedisService;
+import org.ssafy.pasila.global.util.JwtUtil;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -23,9 +57,133 @@ import org.ssafy.pasila.global.infra.gpt3.GptClient;
 @Tag(name = "Live", description = "Live API")
 public class LiveApiController {
 
+    @Autowired
+    private OpenviduService openviduService;
+
     private final GptClient gptService;
 
     private final LiveService liveService;
+
+    private final LiveRedisService liveRedisService;
+
+    private final ProductService productService;
+
+    private final ChatbotService chatbotService;
+
+    private final SearchService searchService;
+
+    private final ShortpingService shortpingService;
+
+    // Pair - SessionId, RecordingId
+    private final Map<String, String> mapRecordings = new ConcurrentHashMap<>();
+
+    private final SimpMessagingTemplate template;
+
+    private final EncryptService encryptService;
+
+    @Operation(summary = "Reserve Live", description = "라이브 예약(제품, 챗봇, 라이브)")
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiCommonResponse<?> reserveLive(@RequestPart(value = "live") CreateLiveRequestDto createLiveRequestDto,
+                                            @RequestPart(value = "product") ProductRequestDto productRequestDto,
+                                            @RequestPart(value = "image") MultipartFile image,
+                                            @RequestPart(value = "chatbot") List<Chatbot> chatbotList,
+                                            // 로그인 완료후 @RequestHeader로 변경 예정
+                                            @RequestPart("memberId") Map<String, Long> memberIdMap) throws IOException {
+        // 1. Product
+        String productId = productService.saveProduct(productRequestDto, image);
+        // 2. Live
+        String liveId = liveService.saveLive(createLiveRequestDto, memberIdMap.get("memberId"), productId);
+        // 3. Chatbot
+        chatbotService.save(chatbotList, liveId);
+
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+    }
+
+    @Operation(summary = "Update Reserved Live", description = "예약된 라이브 정보 업데이트(제품, 챗봇, 라이브)")
+    @PutMapping(value = "/{liveId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiCommonResponse<?> updateLive(@PathVariable("liveId") String liveId,
+                                           @RequestPart(value = "live") CreateLiveRequestDto createLiveRequestDto,
+                                           @RequestPart(value = "product") ProductRequestDto productRequestDto,
+                                           @RequestPart(value = "image", required = false) MultipartFile image,
+                                           @RequestPart(value = "chatbot") List<Chatbot> chatbotList) throws IOException {
+        // 1. Live
+        Live live = liveService.updateLive(liveId, createLiveRequestDto);
+        // 2. Product
+        String productId = productService.updateProduct(live.getProduct().getId(), productRequestDto, image);
+        // 3. Chatbot
+        chatbotService.updateChatbot(liveId, chatbotList);
+
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), live.getId());
+    }
+
+    @Operation(summary = "Delete Live", description = "라이브 삭제")
+    @DeleteMapping("/{liveId}")
+    public ApiCommonResponse<?> deleteLive(@PathVariable("liveId")String id) {
+        String liveId = liveService.deleteLive(id);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+    }
+
+//    @Operation(summary = "Get Live Schedule", description = "일자별 라이브 목록 조회")
+//    @GetMapping("/{date}")
+//    public ApiCommonResponse<?> findLiveList(@PathVariable("date") LocalDate date) {
+//        List<ChannelLiveDto> results = liveService.getScheduledLiveByDate(date);
+//        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), results);
+//    }
+
+    @Operation(summary = "Live List In Home", description = "메인화면에서 카테고리별 라이브 목록")
+    @GetMapping("/summary")
+    public ApiCommonResponse<?> findLiveByCategory(@RequestParam(defaultValue = "0") Long categoryId) {
+        LiveByCategoryResponseDto result = searchService.serachLiveByCategory(categoryId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
+    }
+
+
+    @Operation(summary = "Live On", description = "라이브 방송 시작")
+    @PutMapping("/{liveId}/on")
+    public ApiCommonResponse<?> liveOn(@PathVariable("liveId") String liveId)
+            throws OpenViduJavaClientException, OpenViduHttpException {
+        // 1. Live 정보 업데이트
+        liveService.updateLiveOn(liveId);
+        // 2. 화면 녹화 시작
+        if(mapRecordings.containsKey(liveId)){
+            openviduService.deleteRecording(mapRecordings.get(liveId));
+        }
+        Recording recording = openviduService.startRecording(liveId);
+        mapRecordings.put(liveId, recording.getId());
+        // 3. Redis
+        liveRedisService.addLive(liveId, liveService.getLiveById(liveId).getTitle());
+
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveId);
+    }
+
+    @Operation(summary = "Live Off", description = "라이브 방송 종료")
+    @PutMapping("/{liveId}/off")
+    public ApiCommonResponse<?> liveOff(@PathVariable("liveId") String liveId)
+            throws OpenViduJavaClientException, OpenViduHttpException {
+        // 1. 화면 녹화 중단
+        Recording recording = openviduService.stopRecording(mapRecordings.get(liveId));
+        // 2. Live 정보 업데이트
+        liveService.updateLiveOff(liveId, recording.getUrl(), liveRedisService.getLikeCnt(liveId));
+        // 3. Redis
+        liveRedisService.deleteLiveInRedis(liveId); // 좋아요 수
+        int participantCnt = liveService.deleteParticipantInRedis(liveId); // 참여자
+        // 4. mapRecording 삭제
+        mapRecordings.remove(liveId);
+        // 5. 라이브 종료 정보(좋아요 수, 라이브 시작 시간, 라이브 종료 시간, 총 방송 시간, 시청자 수)
+        LiveStatsResponseDto liveStats = liveService.calcLiveStats(liveId, participantCnt);
+        // 6. 추천 하이라이트 저장
+        shortpingService.saveRecommandHighlight(liveId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), liveStats);
+    }
+
+    @Operation(summary = "Get ProductInfo", description = "라이브 방송시 필요한 정보를 반환합니다.")
+    @GetMapping("/{liveId}/product")
+    public ApiCommonResponse<?> findSellProduct(@PathVariable("liveId") String liveId) {
+        String productId = liveService.getProductId(liveId);
+        ProductSellResponseDto product = productService.getProductSell(productId);
+        product.setAccount(encryptService.decryptAccount(product.getAccount()));
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), product);
+    }
 
     @Operation(summary = "Create Qsheet", description = "큐시트를 생성합니다.")
     @ApiResponses(value = {
@@ -36,7 +194,7 @@ public class LiveApiController {
     public ApiCommonResponse<?> createQsheet(@RequestBody CreateQsheetRequestDto request) {
 
         String qsheet = gptService.generateQsheet(
-                "판매자",
+                request.getUserName(),
                 request.getProductName(),
                 request.getDescription()
         );
@@ -89,11 +247,11 @@ public class LiveApiController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공")
     })
-    @GetMapping("/join")
-    public ApiCommonResponse<?> joinLive(@RequestParam String roomId , @RequestParam String memberId) {
-
-        int participantNum = liveService.joinLive(roomId , memberId);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), participantNum);
+    @MessageMapping("/join")
+    @PreAuthorize("isAuthenticated()")
+    public void joinLive(@RequestBody ChatLogDto chatLogDto) {
+        int participantNum = liveService.joinLive(chatLogDto.getLiveId() , chatLogDto.getName());
+        template.convertAndSend("/num/" + chatLogDto.getLiveId(), participantNum);
 
     }
 
@@ -101,12 +259,32 @@ public class LiveApiController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공")
     })
-    @DeleteMapping("/exit")
-    public ApiCommonResponse<?> exitLive(@RequestParam String roomId , @RequestParam String memberId){
+    @MessageMapping("/exit")
+    public void exitLive(@RequestBody ChatLogDto chatLogDto){
+        int participantNum = liveService.exitLive(chatLogDto.getLiveId() , chatLogDto.getName());
+        template.convertAndSend("/num/" + chatLogDto.getLiveId(), participantNum);
 
-        int participantNum = liveService.exitLive(roomId , memberId);
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), participantNum);
-        
+    }
+
+    @Operation(summary = "Get Top5 Question", description = "라이브 방송 중 상위 5개의 질문을 가져옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = List.class))})
+    })
+    @GetMapping("/question")
+    public ApiCommonResponse<?> getTop5Question(@RequestParam String liveId) {
+
+        List<String> result = liveService.getTop5Question(liveId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
+
+    }
+
+    @Operation(summary = "Get Live Schedule", description = "일자별 라이브 목록 조회")
+    @GetMapping("/{date}")
+    public ApiCommonResponse<?> findLiveList(@PathVariable("date") LocalDate date) {
+
+        List<ChannelLiveDto> results = liveService.getScheduledLive(date);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), results);
     }
 
 }
