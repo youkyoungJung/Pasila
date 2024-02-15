@@ -36,11 +36,12 @@ watch(currentTime, (newTime) => {
   }
 })
 
-watch(
+watchEffect(
   () => props.video,
   async (newVideo) => {
     videoURL.value = await newVideo
     vi.value = await newVideo
+    console.log(videoURL.value)
   }
 )
 
