@@ -21,16 +21,22 @@ public class ChannelLiveDto {
     @Schema(description = "라이브 예정일")
     private LocalDateTime liveScheduledAt;
 
+    @Schema(description = "라이브 시작일")
+    private LocalDateTime liveOnAt;
+
+    @Schema(description = "라이브 종료일")
+    private LocalDateTime liveOffAt;
+
     /* MEMBER */
 
     @Schema(description = "회원 Id")
-    private Long memberId;
+    private Long sellerId;
 
     @Schema(description = "채널명")
     private String channel;
 
     @Schema(description = "프로필")
-    private String profile;
+    private String profileUrl;
 
     /* PRODUCT */
 
@@ -38,7 +44,7 @@ public class ChannelLiveDto {
     private String productId;
 
     @Schema(description = "썸네일")
-    private String thumbnail;
+    private String productThumbnailUrl;
 
     /* PRODUCTOPTION */
 
