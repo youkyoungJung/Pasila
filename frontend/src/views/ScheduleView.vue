@@ -1,8 +1,24 @@
 <script setup>
+import { ref, reactive, onMounted } from 'vue'
 import LineCalendar from '@/components/schedule/LineCalendar.vue'
 import ProductCard from '@/components/live/ProductCard.vue'
 import ChannelCard from '@/components/schedule/ChannelCard.vue'
-import { ref } from 'vue'
+import { getLiveScheduleApi } from '@/components/api/OpenviduAPI'
+
+const products = ref()
+const today = reactive(new Date())
+let selectedDate = ref(
+  today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + today.getDate()
+)
+
+onMounted(async () => {
+  products.value = await getLiveScheduleApi(selectedDate.value)
+})
+
+const changeDate = async (e) => {
+  selectedDate.value = e
+  products.value = await getLiveScheduleApi(selectedDate.value)
+}
 
 const Products = ref([
   {
@@ -28,8 +44,8 @@ const Products = ref([
 
 <template>
   <div class="schedule">
-    <line-calendar />
-    <div v-for="(item, index) in Products" :key="index" class="product-channel">
+    <line-calendar :selected-date="selectedDate" @change-date="changeDate" />
+    <div v-for="(item, index) in products" :key="index" class="product-channel">
       <product-card :product="item" />
       <channel-card :member="{ member: item.member, profile: item.profile }" />
     </div>

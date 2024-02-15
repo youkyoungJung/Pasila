@@ -19,6 +19,7 @@ import ReadyScheduleView from '@/views/ReadyScheduleView.vue'
 import SetPwView from '@/views/SetPwView.vue'
 import CheckPasswordView from '@/views/CheckPasswordView.vue'
 import MyPageView from '@/views/MyPageView.vue'
+import MyOrdersView from '@/views/MyOrdersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -128,6 +129,11 @@ const router = createRouter({
       path: '/my',
       name: 'mypage',
       component: MyPageView
+    },
+    {
+      path: '/my/orders',
+      name: 'myorders',
+      component: MyOrdersView
     }
   ]
 })

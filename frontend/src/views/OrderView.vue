@@ -1,16 +1,16 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import router from '@/router'
 import { useOrderListStore } from '@/stores/orderList'
-import { useMemberStore } from '@/stores/member'
 import OrderProduct from '@/components/order/OrderProduct.vue'
 import VLongInput from '@/components/common/VLongInput.vue'
 import VShortInput from '@/components/common/VShortInput.vue'
 import { addOrderApi } from '@/components/api/OrderAPI'
+import { getMyPageApi } from '@/components/api/MemberAPI'
 
 const props = defineProps(['id'])
-const { member } = useMemberStore()
 const { orderList, product, resetOrderList, resetProduct } = useOrderListStore()
+const member = ref({ name: '', address: '', addressDetail: '' })
 
 const inputData = ref([
   {
@@ -31,11 +31,15 @@ const inputData = ref([
   }
 ])
 
+onMounted(async () => {
+  member.value = await getMyPageApi()
+})
+
 const isEqual = (e) => {
   if (e.target.checked) {
-    inputData.value[0].value = member.name
-    inputData.value[1].value = member.address
-    inputData.value[2].value = member.addressDetail
+    inputData.value[0].value = member.value.name
+    inputData.value[1].value = member.value.address
+    inputData.value[2].value = member.value.addressDetail
   }
 }
 
@@ -69,7 +73,7 @@ const addOrder = async () => {
 
   const data = {
     options: options,
-    memberId: member.id,
+    memberId: localStorage.getItem('id'),
     name: inputData.value[0].value,
     address: inputData.value[1].value + ' ' + inputData.value[2].value
   }
@@ -82,6 +86,43 @@ const addOrder = async () => {
   } else {
     alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
   }
+}
+
+const openPostCode = async () => {
+  new window.daum.Postcode({
+    oncomplete: (data) => {
+      if (inputData.value[2].value !== '') {
+        inputData.value[2].value = ''
+      }
+      if (data.userSelectedType === 'R') {
+        // 사용자가 도로명 주소를 선택했을 경우
+        inputData.value[1].value = data.roadAddress
+      } else {
+        // 사용자가 지번 주소를 선택했을 경우(J)
+        inputData.value[1].value = data.jibunAddress
+      }
+
+      // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+      if (data.userSelectedType === 'R') {
+        // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+        // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+        if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+          inputData.value[2].value = data.bname
+        }
+        // 건물명이 있고, 공동주택일 경우 추가한다.
+        if (data.buildingName !== '' && data.apartment === 'Y') {
+          inputData.value[2].value +=
+            inputData.value[2].value !== '' ? `, ${data.buildingName}` : data.buildingName
+        }
+        // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+        if (inputData.value[2].value !== '') {
+          inputData.value[2].value = `(${inputData.value[2].value})`
+        }
+      } else {
+        inputData.value[2].value = ''
+      }
+    }
+  }).open()
 }
 </script>
 
@@ -108,9 +149,22 @@ const addOrder = async () => {
       </div>
 
       <div class="p-top">
-        <v-long-input :data="inputData[0]" @get-data="(e) => console.log(e.target.value)" />
-        <v-short-input :data="inputData[1]" />
-        <v-long-input :data="inputData[2]" @get-data="(e) => console.log(e.target.value)" />
+        <v-long-input
+          :input-data="inputData[0].value"
+          :data="inputData[0]"
+          @get-data="(e) => (inputData[0].value = e)"
+        />
+        <v-short-input
+          :input-data="inputData[1].value"
+          :data="inputData[1]"
+          @get-data="(e) => (inputData[1].value = e)"
+          @sendData="(e) => openPostCode(e)"
+        />
+        <v-long-input
+          :input-data="inputData[2].value"
+          :data="inputData[2]"
+          @get-data="(e) => (inputData[2].value = e)"
+        />
       </div>
 
       <div class="title-box sub-box">

@@ -1,4 +1,6 @@
-<script setup></script>
+<script setup>
+import router from '@/router'
+</script>
 
 <template>
   <div class="container">
@@ -6,8 +8,8 @@
     <h2>주문이 완료되었습니다!</h2>
     <h3>상품을 주문해주셔서 감사합니다.</h3>
     <h3>입금 완료 시 배송이 시작됩니다.</h3>
-    <button class="home">다른 상품 더 구경하기</button>
-    <button class="order-list">주문내역 확인하기</button>
+    <button class="home" @click="() => router.push('/')">다른 상품 더 구경하기</button>
+    <button class="order-list" @click="() => router.push('/my/orders')">주문내역 확인하기</button>
   </div>
 </template>
 

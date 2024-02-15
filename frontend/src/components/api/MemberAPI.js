@@ -110,6 +110,25 @@ const updatePwApi = async (myEmail, myPassword) => {
     console.error('localAxios error', err)
   }
 }
+
+const getChannelLiveApi = async (memberId) => {
+  try {
+    const res = await local.get(`${url}/channel/${memberId}/live`)
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+  }
+}
+
+const getChannelShortpingApi = async (memberId) => {
+  try {
+    const res = await local.get(`${url}/channel/${memberId}/shortping`)
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+  }
+}
+
 export {
   joinUserApi,
   checkPasswordApi,
@@ -120,5 +139,7 @@ export {
   getMemberApi,
   getChannelApi,
   updateChannelDescApi,
-  updatePwApi
+  updatePwApi,
+  getChannelLiveApi,
+  getChannelShortpingApi
 }

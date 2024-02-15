@@ -5,7 +5,8 @@ import { updateChannelDescApi } from '@/components/api/MemberAPI'
 
 const props = defineProps({
   member: Object,
-  channelId: String
+  channelId: String,
+  isMyChannel: Boolean
 })
 const textArea = ref(null)
 const isFocus = ref(false)
@@ -51,23 +52,29 @@ const undoDesc = () => {
     <div>
       <div class="name-line">
         <span class="name">{{ member?.channel }}</span>
-        <!-- TODO: 마이페이지 경로 연결 필요 -->
-        <button class="profile-btn gray">내 정보 수정</button>
-        <button class="profile-btn red" @click="() => router.push(`${channelId}/orders`)">
-          주문 관리
-        </button>
+        <template v-if="isMyChannel">
+          <button class="profile-btn gray" @click="() => router.push('/my')">내 정보 수정</button>
+          <button class="profile-btn red" @click="() => router.push(`${channelId}/orders`)">
+            주문 관리
+          </button>
+        </template>
       </div>
-      <textarea
-        class="desc"
-        @input="controlSize"
-        @focus="focusDesc"
-        @blur="blurDesc"
-        ref="textArea"
-        v-model="channelDesc"
-      ></textarea>
-      <template v-if="isFocus">
-        <button @click="saveDesc" class="save">수정</button>
-        <button @click="undoDesc" class="undo">취소</button>
+      <template v-if="isMyChannel">
+        <textarea
+          class="desc"
+          @input="controlSize"
+          @focus="focusDesc"
+          @blur="blurDesc"
+          ref="textArea"
+          v-model="channelDesc"
+        ></textarea>
+        <template v-if="isFocus">
+          <button @click="saveDesc" class="save">수정</button>
+          <button @click="undoDesc" class="undo">취소</button>
+        </template>
+      </template>
+      <template v-else>
+        <div class="desc">{{ channelDesc }}</div>
       </template>
     </div>
   </div>
@@ -104,6 +111,10 @@ const undoDesc = () => {
     // &::-webkit-scrollbar-thumb {
     //   display: none;
     // }
+
+    &:focus {
+      outline: 1px solid $gray;
+    }
   }
   .name,
   .desc {
