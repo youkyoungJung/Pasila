@@ -37,8 +37,9 @@ watch(currentTime, (newTime) => {
 
 watch(props, () => {
   if (store.shortpingURL) {
-    vi.value = store.shortpingURL
-    videoURL.value = store.shortpingURL
+    console.log(URL.createObjectURL(store.shortpingURL))
+    vi.value = URL.createObjectURL(store.shortpingURL)
+    videoURL.value = URL.createObjectURL(store.shortpingURL)
   }
   colorList()
 })
