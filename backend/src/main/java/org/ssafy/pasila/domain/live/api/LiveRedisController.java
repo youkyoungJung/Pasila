@@ -35,8 +35,8 @@ public class LiveRedisController {
     public ApiCommonResponse<?> likeCntUp(@PathVariable String id) {
 
         int likeCnt = liveRedisService.addLike(id);
-        String value = "현재 좋아요 수: " + likeCnt;
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), value);
+//        String value = "현재 좋아요 수: " + likeCnt;
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), likeCnt);
 
     }
 
@@ -45,8 +45,8 @@ public class LiveRedisController {
     public ApiCommonResponse<?> getLikeCnt(@PathVariable String id) {
 
         int likeCnt = liveRedisService.getLikeCnt(id);
-        String value = "현재 좋아요 수: " + likeCnt;
-        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), value);
+//        String value = "현재 좋아요 수: " + likeCnt;
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), likeCnt);
 
     }
 
