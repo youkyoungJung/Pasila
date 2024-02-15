@@ -61,7 +61,7 @@ const preview = async () => {
 
   const finalOutput = await ffmpeg.readFile('output.mp4')
   video.value = URL.createObjectURL(new Blob([finalOutput.buffer], { type: 'video/mp4' }))
-  emit('video', new File([finalOutput.buffer], { type: 'video/mp4' }))
+  emit('video', new File([finalOutput.buffer], 'file.mp4', { type: 'video/mp4' }))
 }
 
 const addHighlight = () => {
