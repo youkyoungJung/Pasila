@@ -1,24 +1,93 @@
-div
 <script setup>
-const props = defineProps(['data'])
+import { ref } from 'vue'
+const props = defineProps(['name', 'stock', 'price', 'discountPrice', 'per'])
+const emit = defineEmits(['name', 'stock', 'price', 'discountPrice'])
+
+const options = ref({
+  name: '',
+  stock: '',
+  price: '',
+  discountPrice: '',
+  per: ''
+})
+
+const product = ref({
+  name: '',
+  stock: 0,
+  price: 0,
+  discountPrice: 0
+})
+
+const discount = (per) => {
+  options.value.per = per
+  product.value.discountPrice = Math.round(((100 - per) / 100) * product.value.price)
+  options.value.price = product.value.price.toLocaleString('ko-KR')
+  options.value.discountPrice = product.value.discountPrice.toLocaleString('ko-KR')
+  emit('discountPrice', product.value.discountPrice)
+  emit('per', per)
+}
+
+const changeNumber = (field) => {
+  const num = parseFloat(field)
+  const str = num.toLocaleString('ko-KR')
+  return str
+}
+
+const changeRegular = (field) => {
+  const str = field.replaceAll(',', '')
+  options.value.price = changeNumber(str)
+  product.value.price = parseFloat(str)
+}
+
+const changeDiscount = (field) => {
+  const str = field.replaceAll(',', '')
+  options.value.discountPrice = changeNumber(str)
+  product.value.discountPrice = parseFloat(str)
+}
+
+const changeStock = (field) => {
+  const str = field.replaceAll(',', '')
+  options.value.stock = changeNumber(str)
+  product.value.stock = parseFloat(str)
+  return options.value.stock
+}
 </script>
 
 <template>
   <div class="options">
     <div class="stock-option">
-      <label for="options">{{ props.data.name }}</label>
-      <input
-        type="text"
-        id="options"
-        placeholder="개수 입력"
-        class="product-price-input"
-        :value="props.data.stock"
-        @input="
-          (e) => {
-            $emit('formatOption', e.target.value)
-          }
-        "
-      />개
+      <div class="option-part">
+        <label for="optionName">옵션명</label>
+        <input
+          type="text"
+          id="optionName"
+          placeholder="옵션명 입력"
+          class="product-price-input"
+          :value="props.name"
+          @input="
+            (e) => {
+              $emit('name', e.target.value)
+            }
+          "
+        />
+      </div>
+      <div class="option-part">
+        <label for="options">재고</label>
+        <input
+          type="text"
+          id="options"
+          placeholder="개수 입력"
+          class="product-price-input"
+          :value="props.stock"
+          @input="
+            (e) => {
+              options.stock = e.target.value
+              changeStock(options.stock)
+              $emit('stock', parseFloat(e.target.value))
+            }
+          "
+        />
+      </div>
     </div>
     <div class="product-price">
       <div id="price">
@@ -30,10 +99,12 @@ const props = defineProps(['data'])
               id="regularPrice"
               placeholder="정가를 입력하세요"
               class="product-price-input"
-              :value="props.data.price"
+              :value="props.price"
               @input="
                 (e) => {
-                  $emit('formatRegular', e.target.value)
+                  options.price = e.target.value
+                  changeRegular(e.target.value)
+                  $emit('price', parseFloat(e.target.value))
                 }
               "
             />
@@ -42,30 +113,38 @@ const props = defineProps(['data'])
         </div>
 
         <div class="price">
-          <label for="discountPrice">할인가</label>
+          <label for="discountPrice">할인율</label>
           <input
             type="number"
             class="product-percent-input"
-            :value="props.data.per"
-            @input="(e) => $emit('discount', e.target.value)"
+            :value="props.per"
+            @input="
+              (e) => {
+                options.per = e.target.value
+                discount(e.target.value)
+                $emit('per', e.target.value)
+              }
+            "
           />%
           <input
             type="text"
             id="discountPrice"
             placeholder="할인가를 입력하세요"
             class="product-price-input"
-            :value="props.data.discountPrice"
+            :value="props.discountPrice"
             @input="
               (e) => {
-                $emit('formatDiscPrice', e.target.value)
+                options.discountPrice = e.target.value
+                changeDiscount(e.target.value)
+                $emit('discountPrice', parseFloat(e.target.value))
               }
             "
           />원
         </div>
         <div class="discount-btn">
-          <button @click="(e) => $emit('discount', 5)" class="price-btn">5%</button>
-          <button @click="$emit('discount', 10)" class="price-btn">10%</button>
-          <button @click="$emit('discount', 15)" class="price-btn">15%</button>
+          <button @click="discount(5)" class="price-btn">5%</button>
+          <button @click="discount(10)" class="price-btn">10%</button>
+          <button @click="discount(15)" class="price-btn">15%</button>
         </div>
       </div>
     </div>
@@ -74,30 +153,35 @@ const props = defineProps(['data'])
 
 <style lang="scss" scoped>
 .options {
+  width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
-  border-bottom: 2px solid $main;
+  align-items: flex-start;
   padding: 1rem 0;
 
   .stock-option {
-    @include box(40%, 100%, none, 0, 0.1rem, 0.3rem);
-    @include flex-box();
-    label {
-      width: 30%;
-      font-size: $fs-1;
-      font-weight: normal;
+    @include box(43%, 100%, none, 0, 0, 0);
+    @include flex-box($align: flex-end, $justify: flex-start, $direction: column);
+    margin-right: 0.5rem;
+
+    .option-part {
+      label {
+        width: 30%;
+        margin-right: 0.5rem;
+        font-size: $fs-1;
+        font-weight: normal;
+      }
+      padding: 0.2rem 0;
     }
   }
   .product-price {
-    @include box(55%, 100%, none, 0, 0.1rem, 0.3rem);
-    @include flex-box();
+    @include box(55%, 100%, none, 0, 0, 0);
+    @include flex-box($align: flex-start, $justify: flex-start, $direction: column);
 
     .price {
       @include box(100%, null, none, 0, 0, 0);
       @include flex-box(center, space-between);
       padding: 0.2rem 0;
-      border-bottom: 1px solid $main;
       margin-right: 1rem;
 
       span {

@@ -18,6 +18,12 @@ const updateDesc = (message) => {
 }
 
 const sendProduct = async () => {
+  for (let i = product.value.length - 1; i >= 0; i--) {
+    if (product.value.options[i].name == '') {
+      product.value.options.splice(i, 1)
+    }
+  }
+
   store.liveProduct = product.value
   store.productDesc = preview.value
 }
@@ -52,9 +58,15 @@ const tabs = ref(['작성하기', '미리보기'])
           </ul>
         </div>
         <div v-show="currentTab == 0" class="show-body">
-          <desc-editor :message="preview" @preview-content="updateDesc" @only-script="(e) => {
-            store.onlyScript = e
-            }" />
+          <desc-editor
+            :message="preview"
+            @preview-content="updateDesc"
+            @only-script="
+              (e) => {
+                store.onlyScript = e
+              }
+            "
+          />
         </div>
         <div v-show="currentTab == 1" class="show-body">
           <desc-preview :preview="preview" />
