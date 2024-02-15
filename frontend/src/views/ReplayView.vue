@@ -18,8 +18,7 @@ onMounted(async () => {
         <div class="live-title">{{ product.title }}</div>
       </div>
       <div class="camera-box">
-        <!-- <video :src="product.fullVideoUrl" autoplay controls /> -->
-        <video src="" />
+        <video :src="product.fullVideoUrl" autoplay controls />
       </div>
     </section>
 
