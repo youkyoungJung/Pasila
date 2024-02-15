@@ -1,14 +1,13 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { getThumbnailApi } from '@/components/api/ShortpingAPI'
+import { useShortpingStore } from '@/stores/shortping'
 
-const vi = ref(null)
 const currentTime = ref(0)
 const props = defineProps(['data', 'video', 'liveId'])
-const videoURL = ref(
-  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
-)
-
+const videoURL = ref('')
+const vi = ref('')
+const store = useShortpingStore()
 onMounted(() => {
   getPictures()
   colorList()
@@ -18,6 +17,7 @@ const getPictures = async () => {
   // 이미지 가져오기(라이브아이디)
   const res = await getThumbnailApi(props.liveId)
   videoURL.value = res.liveUrl
+  vi.value = res.liveUrl
   for (let i = 0; i < res.thumbnails.length; i++) {
     let temp = ref('')
     let temp2 = ref('')
@@ -36,10 +36,10 @@ watch(currentTime, (newTime) => {
 })
 
 watch(props, () => {
-  // vi.value = URL.createObjectURL(props.video)
-  vi.value = props.video
-  // videoURL.value = URL.createObjectURL(props.video)
-  videoURL.value = props.video
+  if (store.shortpingURL) {
+    vi.value = store.shortpingURL
+    videoURL.value = store.shortpingURL
+  }
   colorList()
 })
 

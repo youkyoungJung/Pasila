@@ -4,6 +4,7 @@ import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile, toBlobURL } from '@ffmpeg/util'
 import NewHighlight from '@/components/shortping/NewHighlight.vue'
 import SavedHighlight from '@/components/shortping/SavedHighlight.vue'
+import { useShortpingStore } from '@/stores/shortping'
 
 const props = defineProps(['data'])
 const emit = defineEmits(['getData', 'deleteData', 'addEmptyData', 'video'])
@@ -13,7 +14,7 @@ let emptyData = ref({
   highlightStartTime: '',
   highlightEndTime: ''
 })
-
+const store = useShortpingStore()
 const ffmpeg = new FFmpeg()
 const baseURL = 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm'
 const videoURL =
@@ -61,6 +62,8 @@ const preview = async () => {
 
   const finalOutput = await ffmpeg.readFile('output.mp4')
   video.value = URL.createObjectURL(new Blob([finalOutput.buffer], { type: 'video/mp4' }))
+  store.shortpingURL = video.value
+  console.log(store.shortpingURL)
   emit('video', new File([finalOutput.buffer], 'file.mp4', { type: 'video/mp4' }))
 }
 
@@ -70,8 +73,7 @@ const addHighlight = () => {
     isEnroll: false,
     highlightTitle: '',
     highlightStartTime: '',
-    highlightEndTime: '',
-    highlightSubtitle: ''
+    highlightEndTime: ''
   })
 }
 </script>
