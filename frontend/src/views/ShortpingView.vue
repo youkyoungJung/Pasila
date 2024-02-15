@@ -1,7 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getShortpingApi } from '@/components/api/ShortpingAPI'
+import { getShortpingApi, addLikeCntApi } from '@/components/api/ShortpingAPI'
 import LiveDescription from '@/components/live/customer/LiveDescription.vue'
+import ToolBarBtn from '@/components/live/ToolBarBtn.vue'
 
 const props = defineProps(['shortpingId'])
 const shortping = ref(null)
@@ -25,6 +26,18 @@ onMounted(async () => {
     <section class="col-2">
       <live-description :product="shortping" :live-id="shortping.liveId" />
     </section>
+
+    <div class="tool-bar">
+      <tool-bar-btn
+        :is-active="true"
+        :icon-name="'fa-regular fa-heart'"
+        @click-btn="
+          async () => {
+            await addLikeCntApi(props.shortpingId)
+          }
+        "
+      />
+    </div>
   </div>
 </template>
 
@@ -70,6 +83,13 @@ onMounted(async () => {
 
     display: flex;
     flex-direction: column;
+  }
+
+  .tool-bar {
+    position: fixed;
+    bottom: 0;
+    @include box(100%, 10vh, white, 0, 0, 0);
+    @include flex-box();
   }
 }
 </style>
