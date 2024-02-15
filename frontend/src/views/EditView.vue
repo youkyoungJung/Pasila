@@ -20,18 +20,15 @@ onMounted(() => {
   getHighlightDatas()
 })
 
-watch(highlights, () => {
-})
-
 const getHighlightDatas = async () => {
   // 하이라이트 추천받기(라이브아이디)
   const res = await getHighlightApi(props.id)
   for (let i = 0; i < res.length; i++) {
     highlights.value.push({
       isEnroll: true,
-    highlightTitle: res[i].title,
-    highlightStartTime: res[i].start,
-    highlightEndTime: res[i].end
+      highlightTitle: res[i].title,
+      highlightStartTime: res[i].start,
+      highlightEndTime: res[i].end
     })
   }
 }

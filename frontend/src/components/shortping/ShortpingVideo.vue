@@ -19,9 +19,12 @@ const getPictures = async () => {
   const res = await getThumbnailApi(props.liveId)
   videoURL.value = res.liveUrl
   for (let i = 0; i < res.thumbnails.length; i++) {
-    videoImages.value.push({src: new URL(`${res.thumbnails[i]}`, import.meta.url).href})
+    let temp = ref('')
+    let temp2 = ref('')
+    temp.value = res.thumbnails[i].substring(0, 25)
+    temp2.value = res.thumbnails[i].substring(30)
+    videoImages.value.push({ src: new URL(`${temp.value + temp2.value}`, import.meta.url).href })
   }
-
 }
 watch(currentTime, (newTime) => {
   // currentTime이 바뀔 때마다 스크롤 위치 업데이트
@@ -61,8 +64,6 @@ const colorList = () => {
   }
   times.value = newTimes.value
 }
-
-
 
 //마우스로 스크롤이동하기
 let isMouseDown = ref(false)
