@@ -47,7 +47,7 @@ const startLiveApi = async (liveId) => {
 const stopLiveApi = async (liveId) => {
   try {
     const res = await local.put(`${url}/${liveId}/off`)
-    return res.data
+    return res.data.data
   } catch (err) {
     console.error('localAxios error', err)
     return null
@@ -84,6 +84,15 @@ const getLiveScheduleApi = async (date) => {
   }
 }
 
+const deleteLiveApi = async (liveId) => {
+  try {
+    const res = await local.delete(`${url}/${liveId}`)
+    return res
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
 export {
   createSessionApi,
   createTokenApi,
@@ -92,5 +101,6 @@ export {
   stopLiveApi,
   getLiveQuestionApi,
   sendChatToChatbot,
-  getLiveScheduleApi
+  getLiveScheduleApi,
+  deleteLiveApi
 }

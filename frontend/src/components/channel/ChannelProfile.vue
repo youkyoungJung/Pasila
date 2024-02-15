@@ -69,8 +69,10 @@ const undoDesc = () => {
           v-model="channelDesc"
         ></textarea>
         <template v-if="isFocus">
-          <button @click="saveDesc" class="save">수정</button>
-          <button @click="undoDesc" class="undo">취소</button>
+          <div class="btn-set">
+            <button @click="saveDesc" class="save">수정</button>
+            <button @click="undoDesc" class="undo">취소</button>
+          </div>
         </template>
       </template>
       <template v-else>
@@ -157,5 +159,10 @@ const undoDesc = () => {
     background-color: $main;
     color: white;
   }
+}
+
+.btn-set {
+  width: 100%;
+  @include flex-box(flex-start, flex-end);
 }
 </style>

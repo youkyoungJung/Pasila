@@ -1,8 +1,8 @@
 <script setup>
 import router from '@/router'
-import { useMemberStore } from '@/stores/member'
+import { useLiveendStore } from '@/stores/liveend'
 
-const { member } = useMemberStore()
+const { liveendInfo } = useLiveendStore()
 </script>
 
 <template>
@@ -10,9 +10,9 @@ const { member } = useMemberStore()
     <img src="@/assets/img/disable-live-badge.png" alt="live-end" />
     <h1>라이브가 종료되었습니다.</h1>
     <div class="report-box">
-      <p>라이브 진행 시간: 1:23:11</p>
-      <p>좋아요 수: 1,300개</p>
-      <p>시청자 수: 230명</p>
+      <p>라이브 진행 시간: {{ liveendInfo.totalBroadcastTime }}</p>
+      <p>좋아요 수: {{ liveendInfo.likeCnt }}개</p>
+      <p>시청자 수: {{ liveendInfo.participant }}명</p>
     </div>
     <button @click="() => router.push('/')" class="home">홈 화면</button>
     <button @click="() => router.push(`/channel/${member.id}`)" class="channel">내 채널</button>

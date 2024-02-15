@@ -43,6 +43,16 @@ defineProps({
     :nth-child(odd) {
       background-color: $yellow;
     }
+
+    &::-webkit-scrollbar {
+      width: 0.3rem;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      height: 30%; /* 스크롤바의 길이 */
+      background: $light-dark; /* 스크롤바의 색상 */
+      border-radius: 10px;
+    }
   }
 }
 </style>

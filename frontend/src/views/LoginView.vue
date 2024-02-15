@@ -32,7 +32,7 @@ const inputData = ref({
 const login = async () => {
   const res = await emailLoginApi(user.value.userEmail, user.value.userPassword)
   if (res) {
-    router.push('/')
+    router.go('/')
   } else {
     alert('비밀번호가 틀렸습니다. 다시 입력해주세요!')
   }
