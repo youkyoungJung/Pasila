@@ -1,99 +1,71 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
-import { getPopularLive } from '@/components/api/SearchAPI'
+import { ref, watchEffect, watch, onMounted } from 'vue'
+import { getPopularLiveApi, getVideosApi  } from '@/components/api/SummaryAPI'
 import VideoCard from '@/components/common/VideoCard.vue'
 import ToggleButton from '@/components/common/ToggleButton.vue'
 
-const props = defineProps(['popularLive', 'latestLive', 'popularShortping', 'latestShortping'])
+const latestShortping = ref([])
+const popularShortping = ref([])
+const latestLive = ref([])
+const popularLive = ref([])
+const top5Shortping = ref([])
+
+const props = defineProps(['categoryIndex'])
 const selected = ref('popular')
 const isLive = ref(true)
+const categoryIndex = ref(props.categoryIndex)
+const videos = ref([])
 
 onMounted(() => {
   getDatas()
 })
 
 const getDatas = async () => {
-  const resp = await getPopularLive(0)
-  videos.value = resp.popularLives
-  for (let i = 0; i < videos.value.length; i++) {
-    const videoURL = videos.value[i].productThumbnailUrl
-    videos.value[i].productThumbnailUrl = new URL(`${videoURL}`, import.meta.url).href
+  const res = await getVideosApi(0)
+  top5Shortping.value = res.top5Shortping
+  latestShortping.value = res.latestShortping
+  popularShortping.value = res.popularShortping
+  const resp = await getPopularLiveApi(0)
+  latestLive.value = resp.latestLives
+  popularLive.value = resp.popularLives
 
-    const profileURL = videos.value[i].profileUrl
-    videos.value[i].profileUrl = new URL(`${profileURL}`, import.meta.url).href
-  }
+  videos.value = popularLive.value
 }
+
+//라이브, 쇼핑 토글
 watch(isLive, () => {
-  if (!isLive.value && selected.value == 'popular') videos.value = props.popularShortping
-  else if (!isLive.value && selected.value == 'new') videos.value = props.latestShortping
-  else if (isLive.value && selected.value == 'popular') videos.value = props.popularLive
-  else if (isLive.value && selected.value == 'new') videos.value = props.latestLive
-
-  for (let i = 0; i < videos.value.length; i++) {
-    const videoURL = videos.value[i].productThumbnailUrl
-    videos.value[i].productThumbnailUrl = new URL(`${videoURL}`, import.meta.url).href
-
-    const profileURL = videos.value[i].profileUrl
-    videos.value[i].profileUrl = new URL(`${profileURL}`, import.meta.url).href
-  }
+  videoValue()
 })
+
+//카테고리 변경시
+watchEffect( async () => {
+  categoryIndex.value = props.categoryIndex
+  if (isLive.value) {
+    const resp = await getPopularLiveApi(categoryIndex.value)
+    latestLive.value = resp.latestLives
+    popularLive.value = resp.popularLives
+  } else {
+    const res = await getVideosApi(categoryIndex.value)
+    latestShortping.value = res.latestShortping
+    popularShortping.value = res.popularShortping
+  }
+  videoValue()
+
+})
+
+//최신순, 인기순
 const toggle = async (e) => {
   selected.value = e.target.value
-  if (!isLive.value && selected.value == 'popular') videos.value = props.popularShortping
-  else if (!isLive.value && selected.value == 'new') videos.value = props.latestShortping
-  else if (isLive.value && selected.value == 'popular') videos.value = props.popularLive
-  else if (isLive.value && selected.value == 'new') videos.value = props.latestLive
+  videoValue()
 }
-const videos = ref([
-  {
-    productThumbnailUrl: new URL('@/assets/img/main-sample3.png', import.meta.url).href,
-    profileUrl: new URL('@/assets/img/rose.jpg', import.meta.url).href,
-    channel: '로제제',
-    title: '꿀보이스 만들어 주는 배 도라지 차',
-    price: '36,000',
-    discountPrice: '20,000'
-  },
-  {
-    productThumbnailUrl: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profileUrl: new URL('@/assets/img/karina.jpg', import.meta.url).href,
-    channel: '카리나나',
-    title: '겨울에 필수! 앙고라 니트',
-    price: '36,000',
-    discountPrice: '20,000'
-  },
-  {
-    productThumbnailUrl: new URL('@/assets/img/main-sample2.png', import.meta.url).href,
-    profileUrl: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-    channel: '김제니',
-    title: '제니도 쓴다는 그 스킨',
-    price: '18,000',
-    discountPrice: '15,000'
-  },
-  {
-    productThumbnailUrl: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profileUrl: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-    channel: '김가을',
-    title: '겨울에 필수! 앙고라 니트',
-    price: '36,000',
-    discountPrice: '20,000'
-  },
-  {
-    productThumbnailUrl: new URL('@/assets/img/main-sample3.png', import.meta.url).href,
-    profileUrl: new URL('@/assets/img/rose.jpg', import.meta.url).href,
-    channel: '로제제',
-    title: '꿀보이스 만들어 주는 배 도라지 차',
-    price: '36,000',
-    discountPrice: '20,000'
-  },
-  {
-    productThumbnailUrl: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profileUrl: new URL('@/assets/img/karina.jpg', import.meta.url).href,
-    channel: '카리나나',
-    title: '겨울에 필수! 앙고라 니트',
-    price: '36,000',
-    discountPrice: '20,000'
-  }
-])
+
+const videoValue = () => {
+  if (!isLive.value && selected.value == 'popular') videos.value = popularShortping.value
+  else if (!isLive.value && selected.value == 'new') videos.value = latestShortping.value
+  else if (isLive.value && selected.value == 'popular') videos.value = popularLive.value
+  else if (isLive.value && selected.value == 'new') videos.value = latestLive.value
+}
+
 </script>
 
 <template>
@@ -105,12 +77,9 @@ const videos = ref([
       </div>
       <div class="order-type">
         <toggle-button
-          @isLive="
-            (e) => {
-              isLive = e
-              $emit('isLive', e)
-            }
-          "
+          :isLive="isLive"
+          @clickShortping="() => isLive = false"
+          @clickLive="() => isLive =true"
         />
         <div>
           <form action="#">

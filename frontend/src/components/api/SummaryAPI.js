@@ -4,10 +4,10 @@ const local = localAxios()
 
 const url = '/summary'
 
-const getPopularLive = async (id) => {
+const getPopularLiveApi = async (id) => {
   try {
     const res = await local.get(`live${url}`, {
-      parmas: {
+      params: {
         categoryId: id
       }
     })
@@ -17,10 +17,10 @@ const getPopularLive = async (id) => {
   }
 }
 
-const getVideos = async (id) => {
+const getVideosApi = async (id) => {
   try {
     const res = await local.get(`shortping${url}`, {
-      parmas: {
+      params: {
         categoryId: id
       }
     })
@@ -30,4 +30,4 @@ const getVideos = async (id) => {
   }
 }
 
-export { getPopularLive, getVideos }
+export { getPopularLiveApi , getVideosApi  }

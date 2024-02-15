@@ -1,51 +1,20 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import VideoCard from '@/components/common/VideoCard.vue'
+import { getVideosApi } from '@/components/api/SummaryAPI'
 
-const props = defineProps(['data'])
-
+const videos = ref([])
+const top5Shortping = ref([])
 onMounted(() => {
   getDatas()
 })
 
 const getDatas = async () => {
-  videos.value = props.data
-  console.log(videos.value)
+  const res = await getVideosApi(0)
+  top5Shortping.value = res.top5Shortping
+
+  videos.value = top5Shortping.value
 }
-const videos = ref([
-  {
-    productThumbnailUrl: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profileUrl: new URL('@/assets/img/karina.jpg', import.meta.url).href,
-    channel: '카리나나',
-    title: '겨울에 필수! 앙고라 니트',
-    price: '36,000',
-    discountPrice: '20,000'
-  },
-  {
-    productThumbnailUrl: new URL('@/assets/img/main-sample2.png', import.meta.url).href,
-    profileUrl: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-    channel: '김제니',
-    title: '제니도 쓴다는 그 스킨',
-    price: '18,000',
-    discountPrice: '15,000'
-  },
-  {
-    productThumbnailUrl: new URL('@/assets/img/main-sample3.png', import.meta.url).href,
-    profileUrl: new URL('@/assets/img/rose.jpg', import.meta.url).href,
-    channel: '로제제',
-    title: '꿀보이스 만들어 주는 배도라지 차',
-    price: '36,000',
-    discountPrice: '20,000'
-  },
-  {
-    productThumbnailUrl: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profileUrl: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-    channel: '김가을',
-    title: '겨울에 필수! 앙고라 니트',
-    price: '36,000',
-    discountPrice: '20,000'
-  }
-])
 </script>
 
 <template>
