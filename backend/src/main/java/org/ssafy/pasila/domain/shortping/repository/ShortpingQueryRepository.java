@@ -41,7 +41,7 @@ public class ShortpingQueryRepository {
 
         return em.createQuery(
                 "select new org.ssafy.pasila.domain.shortping.dto.response.ShortpingResponseDto" +
-                        "(s.id, s.title, s.videoUrl, s.likeCnt, s.createdAt, p.id, p.name, p.thumbnail, p.description, c.id, m.id, m.channel)" +
+                        "(p.id, m.id, m.channel, p.name, p.description, s.createdAt, p.thumbnail, c.id, m.bank, m.account, s.title, s.videoUrl, s.likeCnt, s.id)" +
                         " from Shortping s" +
                         " join s.product p" +
                         " join p.category c" +

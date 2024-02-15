@@ -7,11 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.ssafy.pasila.domain.apihandler.ErrorCode;
 import org.ssafy.pasila.domain.apihandler.RestApiException;
+import org.ssafy.pasila.domain.auth.service.EncryptService;
 import org.ssafy.pasila.domain.live.entity.Live;
 import org.ssafy.pasila.domain.live.repository.LiveQueryRepository;
 import org.ssafy.pasila.domain.live.repository.LiveRepository;
 import org.ssafy.pasila.domain.member.dto.ChannelShortpingDto;
+import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 import org.ssafy.pasila.domain.product.entity.Product;
+import org.ssafy.pasila.domain.product.repository.ProductOptionRepository;
 import org.ssafy.pasila.domain.product.service.ProductService;
 import org.ssafy.pasila.domain.shortping.dto.request.LivelogRequestDto;
 import org.ssafy.pasila.domain.shortping.dto.request.ShortpingRequestDto;
@@ -51,6 +54,10 @@ public class ShortpingService {
 
     private final GptClient gptService;
 
+    private final ProductOptionRepository productOptionRepository;
+
+    private final EncryptService encryptService;
+
     private final FFmpegClient ffmpegClient;
 
     private final S3Uploader s3Uploader;
@@ -83,7 +90,14 @@ public class ShortpingService {
     }
 
     public ShortpingResponseDto getShortpingById(String id) {
-        return shortpingQueryService.findWithProductMember(id);
+        ShortpingResponseDto shortpingResponseDto = shortpingQueryService.findWithProductMember(id);
+        List<ProductOptionDto> options = productOptionRepository.findAllByProduct_Id(shortpingResponseDto.getId())
+                .stream()
+                .map(ProductOptionDto::new)
+                .toList();
+        shortpingResponseDto.setOptions(options);
+        shortpingResponseDto.setAccount(encryptService.decryptAccount(shortpingResponseDto.getAccount()));
+        return shortpingResponseDto;
     }
 
 
