@@ -268,7 +268,7 @@ const sendChat = async () => {
 const connectChat = () => {
   const serverURL = 'https://i10a402.p.ssafy.io/stomp/pasila'
   const socket = new SockJs(serverURL)
-  ws = Stomp.over(socket)
+  ws = Stomp.over(socket, { debug: false })
 
   ws.connect(
     { Authorization: `Bearer ${localStorage.getItem('token')}` },
