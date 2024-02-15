@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { getHighlightApi, sendShortpingApi } from '@/components/api/ShortpingAPI'
 import router from '@/router'
 
@@ -13,39 +13,26 @@ const sendData = ref({})
 const shortping = ref({
   title: ''
 })
-const highlights = ref([
-  {
-    isEnroll: true,
-    highlightTitle: '첫 인사',
-    highlightStartTime: '00:00:01',
-    highlightEndTime: '00:00:03'
-  },
-  {
-    isEnroll: true,
-    highlightTitle: '앙고라 니트 - 핑크 컬러',
-    highlightStartTime: '00:00:05',
-    highlightEndTime: '00:00:08'
-  },
-  {
-    isEnroll: true,
-    highlightTitle: '앙고라 니트 - 블루 컬러',
-    highlightStartTime: '00:00:10',
-    highlightEndTime: '00:00:13'
-  }
-])
+const highlights = ref([])
 
 onMounted(() => {
   getHighlightDatas()
 })
 
-const getHighlightDatas = () => {
-  //하이라이트 추천받기(라이브아이디)
-  // const res = getHighlightApi(id)
-  //console.log(res)
-  //highlightTitle == title
-  //highlightStartTime == start
-  //highlightEndTime == end
-  //isEnroll = true로 해주기
+watch(highlights, () => {
+})
+
+const getHighlightDatas = async () => {
+  // 하이라이트 추천받기(라이브아이디)
+  const res = await getHighlightApi(1)
+  for (let i = 0; i < res.length; i++) {
+    highlights.value.push({
+      isEnroll: true,
+    highlightTitle: res[i].title,
+    highlightStartTime: res[i].start,
+    highlightEndTime: res[i].end
+    })
+  }
 }
 const sortHighlight = (e) => {
   highlights.value[e].isEnroll = true
@@ -61,7 +48,6 @@ const sortHighlight = (e) => {
   })
 }
 const complete = () => {
-  console.log(video.value)
   formData.set('video', video.value)
   sendData.value = {
     title: shortping.value.title,
@@ -77,13 +63,11 @@ const complete = () => {
       }
     }
   }
-  console.log(JSON.stringify(sendData.value))
   formData.set(
     'shortping',
     new Blob([JSON.stringify(sendData.value)], { type: 'application/json' })
   )
   const res = sendShortpingApi(formData)
-  console.log(res)
   router.push('/')
 }
 </script>
