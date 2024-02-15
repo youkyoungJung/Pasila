@@ -16,12 +16,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@SequenceGenerator(name = "orders_seq_generator",
+        sequenceName = "orders_seq",
+        initialValue = 11,
+        allocationSize = 1 )
 @Entity
 @Table(name = "orders")
 public class Order {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "orders_seq_generator")
     private Long id;
 
     @Column(name = "order_cnt")

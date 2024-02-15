@@ -11,12 +11,17 @@ import org.ssafy.pasila.domain.product.dto.ProductOptionDto;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@SequenceGenerator(name = "product_option_seq_generator",
+        sequenceName = "product_option_seq",
+        initialValue = 15,
+        allocationSize = 1 )
 @Entity
 @Table(name = "product_option")
 @ToString(exclude = "product")
 public class ProductOption {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "product_option_seq_generator")
     private Long id;
 
     @Column(length = 20)
