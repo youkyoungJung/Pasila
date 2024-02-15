@@ -3,29 +3,15 @@ import ProductOption from '@/components/ready/ProductOption.vue'
 import { ref, watch } from 'vue'
 
 const emit = defineEmits(['getProduct'])
-const options = ref([
-  {
-    name: '구성1',
-    stock: '',
-    price: '',
-    discountPrice: '',
-    per: ''
-  },
-  {
-    name: '구성2',
-    stock: '',
-    price: '',
-    discountPrice: '',
-    per: ''
-  },
-  {
-    name: '구성3',
+const products = ref([{
+    name: '',
     stock: '',
     price: '',
     discountPrice: '',
     per: ''
   }
 ])
+
 const product = ref({
   name: '',
   description: '',
@@ -33,19 +19,19 @@ const product = ref({
   categoryId: '',
   options: [
     {
-      name: 'option1',
+      name: '',
       stock: 0,
       price: 0,
       discountPrice: 0
     },
     {
-      name: 'option2',
+      name: '',
       stock: 0,
       price: 0,
       discountPrice: 0
     },
     {
-      name: 'option3',
+      name: '',
       stock: 0,
       price: 0,
       discountPrice: 0
@@ -61,38 +47,20 @@ watch(product.value, () => {
   emit('getProduct', product.value)
 })
 
-const discount = (per, index) => {
-  options.value[index].per = per
-  product.value.options[index].discountPrice = Math.round(
-    ((100 - per) / 100) * product.value.options[index].price
-  )
-  options.value[index].price = product.value.options[index].price.toLocaleString('ko-KR')
-  options.value[index].discountPrice =
-    product.value.options[index].discountPrice.toLocaleString('ko-KR')
+const addOption = () => {
+  products.value.push({
+    name: '',
+    stock: '',
+    price: '',
+    discountPrice: '',
+    per: ''
+  })
 }
 
-const changeNumber = (field) => {
-  const num = parseFloat(field)
-  const str = num.toLocaleString('ko-KR')
-  return str
-}
-const changeRegular = (field, index) => {
-  const str = field.replaceAll(',', '')
-  options.value[index].price = changeNumber(str)
-  product.value.options[index].price = parseFloat(str)
+const removeOption = (index) => {
+  products.value.splice(index, 1)
 }
 
-const changeDiscount = (field, index) => {
-  const str = field.replaceAll(',', '')
-  options.value[index].discountPrice = changeNumber(str)
-  product.value.options[index].discountPrice = parseFloat(str)
-}
-
-const changeStock = (field, index) => {
-  const str = field.replaceAll(',', '')
-  options.value[index].stock = changeNumber(str)
-  product.value.options[index].stock = parseFloat(str)
-}
 </script>
 
 <template>
@@ -116,31 +84,20 @@ const changeStock = (field, index) => {
           v-model="product.name"
         />
       </div>
-
       <div class="product-stock">
         <label for="stock">구성</label>
         <div id="stock" class="stocks">
-          <product-option
-            :data="options[0]"
-            @formatOption="(e) => changeStock(e, 0)"
-            @formatRegular="(e) => changeRegular(e, 0)"
-            @formatDiscPrice="(e) => changeDiscount(e, 0)"
-            @discount="(e) => discount(e, 0)"
-          />
-          <product-option
-            :data="options[1]"
-            @formatOption="(e) => changeStock(e, 1)"
-            @formatRegular="(e) => changeRegular(e, 1)"
-            @formatDiscPrice="(e) => changeDiscount(e, 1)"
-            @discount="(e) => discount(e, 1)"
-          />
-          <product-option
-            :data="options[2]"
-            @formatOption="(e) => changeStock(e, 2)"
-            @formatRegular="(e) => changeRegular(e, 2)"
-            @formatDiscPrice="(e) => changeDiscount(e, 2)"
-            @discount="(e) => discount(e, 2)"
-          />
+          <div v-for="(product, i) in products" :key="i">
+            <div class="option-part">
+              <product-option
+              @product="(e) => product[i] = e"
+              />
+            </div>
+            <div class="remove-part">
+          <button class="remove-btn" @click="removeOption(index)">ㅡ</button>
+        </div>
+          </div>
+          <button @click="addOption">옵션 추가</button>
         </div>
       </div>
     </div>

@@ -1,23 +1,82 @@
-div
 <script setup>
-const props = defineProps(['data'])
+import { ref, watch } from 'vue'
+const emit = defineEmits(['product'])
+
+
+
+const options = ref({
+    name: '',
+    stock: '',
+    price: '',
+    discountPrice: '',
+    per: ''
+})
+
+const product = ref([{
+      name: '',
+      stock: 0,
+      price: 0,
+      discountPrice: 0
+}])
+
+watch(product, () => {
+  emit('product', product.value)
+  console.log(product.value)
+})
+
+const discount = (per) => {
+  options.value.per = per
+  product.value.discountPrice = Math.round(
+    ((100 - per) / 100) * product.value.price
+  )
+  options.value.price = product.value.price.toLocaleString('ko-KR')
+  options.value.discountPrice =
+    product.value.discountPrice.toLocaleString('ko-KR')
+}
+
+const changeNumber = (field) => {
+  const num = parseFloat(field)
+  const str = num.toLocaleString('ko-KR')
+  return str
+}
+
+
+const changeRegular = (field) => {
+  const str = field.replaceAll(',', '')
+  options.value.price = changeNumber(str)
+  product.value.price = parseFloat(str)
+}
+
+const changeDiscount = (field) => {
+  const str = field.replaceAll(',', '')
+  options.value.discountPrice = changeNumber(str)
+  product.value.discountPrice = parseFloat(str)
+}
+
+const changeStock = (field) => {
+  const str = field.replaceAll(',', '')
+  options.value.stock = changeNumber(str)
+  product.value.stock = parseFloat(str)
+}
+
+
 </script>
 
 <template>
   <div class="options">
     <div class="stock-option">
-      <label for="options">{{ props.data.name }}</label>
+      <input type="text" id="options" placeholder="옵션명 입력" class="product-price-input" v-model="product.name" />
       <input
         type="text"
         id="options"
         placeholder="개수 입력"
         class="product-price-input"
-        :value="props.data.stock"
-        @input="
-          (e) => {
-            $emit('formatOption', e.target.value)
-          }
-        "
+        :value="options.stock"
+        @input="(e) => {
+          options.stock = e.target.value
+          changeStock(options.stock)
+          }"
+        
       />개
     </div>
     <div class="product-price">
@@ -30,10 +89,11 @@ const props = defineProps(['data'])
               id="regularPrice"
               placeholder="정가를 입력하세요"
               class="product-price-input"
-              :value="props.data.price"
+              :value="options.price"
               @input="
                 (e) => {
-                  $emit('formatRegular', e.target.value)
+                  options.price = e.target.value
+                  changeRegular(e.target.value)
                 }
               "
             />
@@ -42,30 +102,34 @@ const props = defineProps(['data'])
         </div>
 
         <div class="price">
-          <label for="discountPrice">할인가</label>
+          <label for="discountPrice">할인율</label>
           <input
             type="number"
             class="product-percent-input"
-            :value="props.data.per"
-            @input="(e) => $emit('discount', e.target.value)"
+            :value="options.per"
+            @input="(e) => {
+              options.per = e.target.value
+              discount(e.target.value)
+            }"
           />%
           <input
             type="text"
             id="discountPrice"
             placeholder="할인가를 입력하세요"
             class="product-price-input"
-            :value="props.data.discountPrice"
+            :value="options.discountPrice"
             @input="
               (e) => {
-                $emit('formatDiscPrice', e.target.value)
+                options.discountPrice = e.target.value
+                changeDiscount(e.target.value)
               }
             "
           />원
         </div>
         <div class="discount-btn">
-          <button @click="(e) => $emit('discount', 5)" class="price-btn">5%</button>
-          <button @click="$emit('discount', 10)" class="price-btn">10%</button>
-          <button @click="$emit('discount', 15)" class="price-btn">15%</button>
+          <button @click="discount(5)" class="price-btn">5%</button>
+          <button @click="discount(10)" class="price-btn">10%</button>
+          <button @click="discount(15)" class="price-btn">15%</button>
         </div>
       </div>
     </div>
@@ -82,7 +146,7 @@ const props = defineProps(['data'])
 
   .stock-option {
     @include box(40%, 100%, none, 0, 0.1rem, 0.3rem);
-    @include flex-box();
+    @include flex-box($direction: column);
     label {
       width: 30%;
       font-size: $fs-1;
