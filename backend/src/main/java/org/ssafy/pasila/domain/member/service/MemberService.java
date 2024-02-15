@@ -19,6 +19,8 @@ import org.ssafy.pasila.domain.member.dto.PersonalInfoDto;
 import org.ssafy.pasila.domain.member.entity.Member;
 import org.ssafy.pasila.domain.member.repository.ChannelRepository;
 import org.ssafy.pasila.domain.member.repository.MemberRepository;
+import org.ssafy.pasila.domain.product.entity.Product;
+import org.ssafy.pasila.domain.product.repository.ProductRepository;
 import org.ssafy.pasila.global.infra.s3.S3Uploader;
 
 import java.io.IOException;
@@ -36,6 +38,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     private final ChannelRepository channelRepository;
+
+    private final ProductRepository productRepository;
 
     private final S3Uploader s3Uploader;
 
@@ -246,11 +250,10 @@ public class MemberService {
         List<ChannelLiveStatusDto> channelLiveStatusDtos = new ArrayList<>();
 
         for (ChannelLiveDto live : lives) {
-            LocalDateTime currentDateTime = LocalDateTime.now();
 
             ChannelLiveStatusDto channelLiveStatusDto = ChannelLiveStatusDto.builder()
                     .live(live)
-                    .status(calculateStatus(live, currentDateTime))
+                    .status(calculateStatus(live))
                     .build();
 
             channelLiveStatusDtos.add(channelLiveStatusDto);
@@ -259,18 +262,34 @@ public class MemberService {
         return channelLiveStatusDtos;
     }
 
-    private LiveStatus calculateStatus(ChannelLiveDto live, LocalDateTime currentDateTime) {
+    private LiveStatus calculateStatus(ChannelLiveDto live) {
+        LocalDateTime liveOnAt = live.getLiveOnAt();
+        LocalDateTime liveOffAt = live.getLiveOffAt();
 
-        if (live.getLiveOnAt() != null && live.getLiveOnAt().isBefore(currentDateTime)
-                && (live.getLiveOffAt() == null || live.getLiveOffAt().isAfter(currentDateTime))) {
-            return LiveStatus.IN_PROGRESS;
-        } else if (live.getLiveOffAt() != null && live.getLiveOffAt().isBefore(currentDateTime)) {
-            return LiveStatus.ENDED;
-        } else if (live.getLiveOnAt() != null && live.getLiveOnAt().isAfter(currentDateTime)) {
-            return LiveStatus.RESERVED;
+        if (liveOnAt != null && liveOffAt != null) {
+            // 라이브가 시작되었고, 종료되었을 경우
+            // 숏핑 여부 판별
+            Product product = productRepository.findById(live.getProductId())
+                    .orElseThrow(()-> new RestApiException(ErrorCode.RESOURCE_NOT_FOUND));
+            boolean hasShortping = product.hasShortping();
+
+            if(hasShortping){
+                return LiveStatus.IS_SHORTPING;
+            }else{
+                return LiveStatus.NOT_SHORTPING;
+            }
+
+        } else {
+            // 라이브가 진행되지 않았을 경우 (예약 상태)
+            if(liveOnAt == null){
+                return LiveStatus.RESERVED;
+            } else {
+                // 라이브가 진행된 경우, 종료되지 않았을 경우
+                    return LiveStatus.IN_PROGRESS; // 시작 시간 이후에 현재 시간이면 진행 중
+            }
+
         }
-        return null; // 예외 처리 등을 위해 기본값 반환
-    }
 
+    }
 
 }
