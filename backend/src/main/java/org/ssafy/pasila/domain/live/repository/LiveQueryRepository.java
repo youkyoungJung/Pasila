@@ -22,7 +22,7 @@ public class LiveQueryRepository {
                 .getSingleResult();
 
     }
-    
+
 //    public List<ChannelLiveDto> findScheduledLiveByDate(LocalDate date) {
 //        return em.createQuery("""
 //        SELECT new org.ssafy.pasila.domain.member.dto.ChannelLiveDto

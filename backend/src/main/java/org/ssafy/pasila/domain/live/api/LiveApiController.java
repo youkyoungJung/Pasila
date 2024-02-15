@@ -44,6 +44,7 @@ import org.ssafy.pasila.global.util.JwtUtil;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -281,6 +282,7 @@ public class LiveApiController {
     @Operation(summary = "Get Live Schedule", description = "일자별 라이브 목록 조회")
     @GetMapping("/{date}")
     public ApiCommonResponse<?> findLiveList(@PathVariable("date") LocalDate date) {
+
         List<ChannelLiveDto> results = liveService.getScheduledLive(date);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), results);
     }

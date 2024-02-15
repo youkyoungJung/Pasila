@@ -21,4 +21,6 @@ public interface LiveRepository extends JpaRepository<Live, String> {
 
     List<Live>findByIsActiveTrueAndLiveScheduledAtBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
 
+    List<Live>findByIsActiveTrueAndLiveScheduledAtGreaterThanEqualAndLiveScheduledAtLessThan(LocalDateTime startOfDay, LocalDateTime endOfDay);
+
 }

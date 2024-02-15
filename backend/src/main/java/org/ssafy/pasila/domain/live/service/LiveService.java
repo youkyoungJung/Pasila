@@ -145,9 +145,9 @@ public class LiveService {
 //    }
     public List<ChannelLiveDto> getScheduledLive(LocalDate date) {
         LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX).minusSeconds(1);;
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
 
-        List<Live> scheduledLives = liveRepository.findByIsActiveTrueAndLiveScheduledAtBetween(startOfDay, endOfDay);
+        List<Live> scheduledLives = liveRepository.findByIsActiveTrueAndLiveScheduledAtGreaterThanEqualAndLiveScheduledAtLessThan(startOfDay, endOfDay);
 
         return scheduledLives.stream()
                 .map(ChannelLiveDto::new)
