@@ -77,6 +77,7 @@ public class FileStorageUtil {
             Path downloadPath = Paths.get(uploadDirectory + path + "/" + filename);
 
             if (!Files.exists(downloadPath)) {
+                log.error("fileStorage - file not found - {}", uploadDirectory + path + "/" + filename);
                 throw new RestApiException(ErrorCode.RESOURCE_NOT_FOUND);
             }
 

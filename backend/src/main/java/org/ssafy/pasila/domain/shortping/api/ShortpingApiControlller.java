@@ -110,4 +110,12 @@ public class ShortpingApiControlller {
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), result);
 
     }
+
+    @GetMapping("/highlight/recommand")
+    public ApiCommonResponse<?> getShortpingByCategory(@RequestParam String liveId) {
+
+        shortpingService.saveRecommandHighlight(liveId);
+        return ApiCommonResponse.successResponse(HttpStatus.OK.value(), "success");
+
+    }
 }

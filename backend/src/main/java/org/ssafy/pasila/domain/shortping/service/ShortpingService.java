@@ -37,7 +37,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class ShortpingService {
 
     private final LivelogService livelogService;
@@ -128,7 +128,6 @@ public class ShortpingService {
 
         if(segments == null || segments.isEmpty()) {
             return new ArrayList<>();
-            // throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
         String result = "";
