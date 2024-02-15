@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import FormInput from '@/components/login/FormInput.vue'
 import router from '@/router'
+import { checkPasswordApi } from '@/components/api/MemberAPI.js'
 
 const inputData = ref({
   title: '비밀번호 확인',
@@ -13,9 +14,19 @@ const inputData = ref({
   button2: '홈으로 돌아가기'
 })
 
-const goMypage = (e) => {
-  //비밀번호 확인 후 정보수정페이지 가기
-  router.push('/my')
+const goMypage = async (e) => {
+  const user = {
+    id: 1,
+    password: e
+  }
+
+  const res = await checkPasswordApi(user)
+
+  if (res) {
+    router.push(`/my`)
+  } else {
+    alert('비밀번호가 틀렸습니다. 다시 입력해주세요.')
+  }
 }
 
 const goHome = () => {

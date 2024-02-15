@@ -1,23 +1,27 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { getThumbnail } from '@/components/api/ShortpingAPI'
+import { getThumbnailApi } from '@/components/api/ShortpingAPI'
 
 const vi = ref(null)
 const currentTime = ref(0)
-const props = defineProps(['data', 'video'])
-const videoURL = ref('http://localhost:5173/src/assets/video/test/test.mp4')
+const props = defineProps(['data', 'video', 'liveId'])
+const videoURL = ref(
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+)
 
 onMounted(() => {
   getPictures()
   colorList()
 })
 
-const getPictures = () => {
-  //이미지 가져오기(상품아이디)
-  // const res = getThumbnail(1)
-  // console.log(res)
-  // videoURL.value = res.liveURL
-  // videoImages.value = res.thumbnails
+const getPictures = async () => {
+  // 이미지 가져오기(라이브아이디)
+  const res = await getThumbnailApi(props.liveId)
+  videoURL.value = res.liveUrl
+  for (let i = 0; i < res.thumbnails.length; i++) {
+    videoImages.value.push({src: new URL(`${res.thumbnails[i]}`, import.meta.url).href})
+  }
+
 }
 watch(currentTime, (newTime) => {
   // currentTime이 바뀔 때마다 스크롤 위치 업데이트
@@ -29,11 +33,14 @@ watch(currentTime, (newTime) => {
 })
 
 watch(props, () => {
+  // vi.value = URL.createObjectURL(props.video)
   vi.value = props.video
+  // videoURL.value = URL.createObjectURL(props.video)
   videoURL.value = props.video
   colorList()
 })
 
+const videoImages = ref([])
 const times = ref([])
 const colorList = () => {
   let newTimes = ref([])
@@ -55,56 +62,7 @@ const colorList = () => {
   times.value = newTimes.value
 }
 
-const videoImages = ref([
-  {
-    src: new URL('@/assets/video/test/0second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/1second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/2second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/3second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/4second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/5second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/6second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/7second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/8second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/9second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/10second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/11second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/12second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/13second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/14second.png', import.meta.url).href
-  },
-  {
-    src: new URL('@/assets/video/test/15second.png', import.meta.url).href
-  }
-])
+
 
 //마우스로 스크롤이동하기
 let isMouseDown = ref(false)

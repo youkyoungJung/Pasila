@@ -14,7 +14,6 @@ import {
   sendChatToChatbot
 } from '@/components/api/OpenviduAPI.js'
 import { getLiveStockApi } from '@/components/api/RealTimeAPI'
-import { useMemberStore } from '@/stores/member'
 import UserVideo from '@/components/live/openvidu/UserVideo.vue'
 import LiveScript from '@/components/live/seller/LiveScript.vue'
 import LiveStock from '@/components/live/seller/LiveStock.vue'
@@ -31,6 +30,8 @@ let subscribers = ref([])
 
 let ws
 let chatmsg = ref('')
+let isChatbot = ref(false)
+const chatList = ref([])
 
 let userRole = ref('')
 let isStart = ref(false)
@@ -39,36 +40,39 @@ let product = reactive({})
 let questionList = ref([])
 
 const props = defineProps(['liveId'])
-const { member } = useMemberStore()
 
 onMounted(async () => {
   await getProduct()
-  if (!member.id) {
+  const memberId = localStorage.getItem('id')
+  if (!memberId) {
     alert('로그인 후 시청 가능합니다.')
     router.push('/login')
-  } else if (product.sellerId === member.id) {
+  } else if (product.sellerId == memberId) {
     userRole.value = 'PUB'
   } else {
     userRole.value = 'SUB'
   }
 
-  const stockEvent = getLiveStockApi(props.liveId)
+  if (userRole.value === 'PUB') {
+    const stockEvent = getLiveStockApi(props.liveId)
 
-  stockEvent.addEventListener('sse', (e) => {
-    const data = JSON.parse(e.data)
-    if (data.liveId) {
-      product.options = data.options
-    }
-  })
+    stockEvent.addEventListener('sse', (e) => {
+      const data = JSON.parse(e.data)
+      if (data.liveId) {
+        product.options = data.options
+      }
+    })
+    setInterval(async () => {
+      questionList.value = await getLiveQuestionApi(props.liveId)
+    }, 60000)
+  }
 
+  connectChat()
   joinSession()
-
-  setInterval(async () => {
-    questionList.value = await getLiveQuestionApi(props.liveId)
-  }, 300000)
 })
 
 onUnmounted(() => {
+  ws.disconnect()
   leaveSession()
 })
 
@@ -89,7 +93,7 @@ const joinSession = async () => {
   session.value = OV.value.initSession()
 
   session.value.on('streamCreated', ({ stream }) => {
-    const subscriber = session.value.subscribe(stream)
+    const subscriber = session.value.subscribe(stream, undefined)
     subscribers.value.push(subscriber)
   })
 
@@ -100,33 +104,41 @@ const joinSession = async () => {
     }
   })
 
-  session.value.on('exception', ({ exception }) => {
-    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
+  session.value.on('exception', () => {
+    alert('진행중인 라이브가 아닙니다.')
     router.push('/')
   })
 
-  const res = await getToken(props.liveId)
-  const token = res
+  let token
+  if (userRole.value === 'PUB') {
+    const res = await getToken(props.liveId)
+    token = res
+  } else {
+    const res = await createTokenApi(props.liveId)
+    token = res
+  }
+  // const token = await getToken(props.liveId)
 
   try {
-    await session.value.connect(token, { clientData: member.name })
+    await session.value.connect(token)
+    if (userRole.value === 'PUB') {
+      const publisherInfo = OV.value.initPublisher(undefined, {
+        audioSource: undefined,
+        videoSource: undefined,
+        publishAudio: true,
+        publishVideo: true,
+        frameRate: 30,
+        insertMode: 'APPEND',
+        mirror: false
+      })
 
-    const publisherInfo = OV.value.initPublisher(undefined, {
-      audioSource: undefined,
-      videoSource: undefined,
-      publishAudio: true,
-      publishVideo: true,
-      frameRate: 30,
-      insertMode: 'APPEND',
-      mirror: false
-    })
-
-    mainStreamManager.value = publisherInfo
-    publisher.value = publisherInfo
-
-    session.value.publish(publisher.value)
+      mainStreamManager.value = publisherInfo
+      publisher.value = publisherInfo
+      session.value.publish(publisher.value)
+    }
   } catch (error) {
-    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
+    alert('진행중인 라이브가 아닙니다.')
+    router.push('/')
   }
 
   window.addEventListener('beforeunload', leaveSession)
@@ -144,7 +156,7 @@ const stopLive = async () => {
 
 const leaveSession = async () => {
   if (session.value) {
-    if (userRole.value === 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
+    if (userRole.value == 'PUB' && confirm('라이브를 정말 종료하시겠습니까?')) {
       await stopLive()
       session.value.disconnect()
       router.push(`/live/${props.liveId}/end`)
@@ -195,44 +207,54 @@ watch(
   }
 )
 
-const sendChat = async (isChatbot) => {
-  if (isChatbot) {
-    const data = {
+const clickChatbot = () => {
+  isChatbot.value = !isChatbot.value
+}
+
+const sendChat = async () => {
+  if (chatmsg.value.length <= 0) {
+    alert('내용을 입력하세요')
+    return
+  }
+  if (ws && ws.connected) {
+    const msg = {
       liveId: props.liveId,
+      memberId: 11,
       message: chatmsg.value
     }
+    ws.send(`/send/chatting`, JSON.stringify(msg), {})
+  }
+  const msg = chatmsg.value
+  chatmsg.value = ''
+  if (isChatbot.value) {
+    const data = {
+      liveId: props.liveId,
+      message: msg
+    }
     const res = await sendChatToChatbot(data)
-    //TODO: res 받아서 chatlist에 넣기
-  } else {
-    if (ws && ws.connected) {
-      //TODO: send할 data 가공 필요
-      const chat = {}
-      //TODO: 채팅 받을 곳 필요
-      ws.send(`/receive/`, JSON.stringify(chat), {})
+    if (res) {
+      chatList.value.push({
+        memberId: 'PASILA',
+        message: res
+      })
     }
   }
-  chatmsg.value = ''
 }
 
 const connectChat = () => {
-  //TODO: 서버 주소로 변경필요
-  const serverURL = 'https://i10a402.p.ssafy.io/chat'
+  const serverURL = 'https://i10a402.p.ssafy.io/stomp/pasila'
   const socket = new SockJs(serverURL)
-  ws = Stomp.over(socket)
-
-  //TODO: 토큰 저장 장소 localStorage 맞는지?, 채팅할 때 authorization 헤더 필요한거 맞는지
-  const headers = { Authorization: localStorage.getItem('token') }
+  ws = Stomp.over(socket, { debug: false })
 
   ws.connect(
-    headers,
-    (frame) => {
-      window.connected = true
-      //TODO: subscribe 주소 확인, res 처리
-      ws.subscribe(`/send`, (res) => {})
+    { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    () => {
+      ws.subscribe(`/id/${props.liveId}`, (res) => {
+        chatList.value.push(JSON.parse(res.body))
+      })
     },
-    (err) => {
-      console.error(err)
-      window.connected = false
+    (error) => {
+      console.log('소켓 연결 실패', error)
     }
   )
 }
@@ -248,10 +270,14 @@ const connectChat = () => {
 
       <section class="col-2" v-if="pubToolBar[1].isActive">
         <live-chat
-          :is-customer="false"
+          :is-customer="userRole === 'SUB'"
+          :is-chatbot="isChatbot"
           :chatmsg="chatmsg"
-          @change-msg="(e) => (chatmsg = e.target.value)"
+          @change-msg="(e) => (chatmsg = e)"
           @send-msg="sendChat"
+          @send="sendChat"
+          @click-chatbot="clickChatbot"
+          :chat-list="chatList"
         />
       </section>
 
@@ -273,15 +299,19 @@ const connectChat = () => {
   <template v-else>
     <div class="session" v-if="session">
       <section class="col-1">
-        <user-video :stream-manager="mainStreamManager" :is-start="true" />
+        <user-video :stream-manager="subscribers[0]" :is-start="true" />
       </section>
 
       <section class="col-2" v-if="subToolBar[0].isActive">
         <live-chat
-          :is-customer="ture"
+          :is-customer="userRole === 'SUB'"
+          :is-chatbot="isChatbot"
           :chatmsg="chatmsg"
           @change-msg="(e) => (chatmsg = e)"
           @send-msg="sendChat"
+          @send="sendChat"
+          @click-chatbot="clickChatbot"
+          :chat-list="chatList"
         />
       </section>
 

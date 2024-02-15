@@ -2,21 +2,144 @@
 import ReadySteps from '@/components/ready/ReadySteps.vue'
 import ScheduleCalendar from '@/components/ready/ScheduleCalendar.vue'
 import ScheduleTime from '@/components/ready/ScheduleTime.vue'
-import { ref } from 'vue'
+import { useReadyLiveStore } from '@/stores/readyLive'
+import { ref, watch } from 'vue'
+import { sendLiveScheduleApi } from '@/components/api/LiveAPI'
+import router from '@/router'
 
 const step = ref('schedule')
+const store = useReadyLiveStore()
 
 const liveTitle = ref('')
 const date = ref(new Date())
 const apm = ref(new Date().getHours() >= 12 ? '오후' : '오전')
 const hour = ref(date.value.getHours() > 12 ? date.value.getHours() - 12 : date.value.getHours())
 const minute = ref(new Date().getMinutes())
+const liveTime = ref({
+  title: '',
+  liveScheduledAt: '',
+  script: store.liveScript
+})
 
-/**
- * 라이브 예약 완료 버튼 추가하기
- *
- */
-const reserveLive = () => {}
+watch(hour, () => {
+  if (hour.value > 12) {
+    hour.value -= 12
+    if (apm.value == '오후') apm.value = '오전'
+    else apm.value = '오후'
+  }
+})
+const liveFormData = new FormData()
+const file = ref()
+const reserveLive = async () => {
+  liveTime.value.title = liveTitle.value
+  if (apm.value == '오후') {
+    hour.value = parseInt(hour.value) + 12
+  }
+  liveTime.value.liveScheduledAt =
+    date.value.getFullYear() +
+    '-' +
+    (date.value.getMonth() + 1).toString().padStart(2, '0') +
+    '-' +
+    date.value.getDate().toString().padStart(2, '0') +
+    'T' +
+    hour.value.toString().padStart(2, '0') +
+    ':' +
+    minute.value.toString().padStart(2, '0') +
+    ':00'
+  store.liveSchedule = liveTime.value
+
+  const searchSrc = (root) => {
+    const arr1 = root.split('img').map((v) => v.includes('src') === true && v.split('src='))
+    const arr2 = arr1.map((v) => v && v[1]?.split('></p'))
+    return arr2.map((v) => v && v[0].slice(1, v[0]?.length - 1)).filter((v) => v !== false)
+  }
+  const Base64toServerImage = (fullstring) => {
+    const changeStr = fullstring
+      .split('>')
+      .map((v) => {
+        if (v.includes('<p')) {
+          return v + '>'
+        } else if (v.includes('</p')) {
+          return v + '>'
+        } else if (v.includes('<img')) {
+          return false
+        } else {
+          return false
+        }
+      })
+      .filter((v) => v !== false)
+      .join('')
+
+    return changeStr
+  } // <p><img ~~~/></p> => <p></p>
+  let base64toFile = (base_data, filename) => {
+    let arr = base_data.split(',')
+    let mime = arr[0].match(/:(.*?);/)[1]
+
+    if (arr[1]) {
+      let bstr = atob(arr[1])
+      let n = bstr.length
+      let u8arr = new Uint8Array(n)
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n)
+      }
+      return new File([u8arr], filename, { type: mime })
+    }
+  }
+  searchSrc(store.productDesc).map((v, i) => {
+    if (v?.length > 1000) {
+      //  "data:image/png;base64~~~"는 1000자를 넘어가기 때문에 + base64만 가져오기 위해서
+      const imgBase64 = v
+      file.value = base64toFile(imgBase64, 'fileName.jpg')
+      store.productImage = file
+
+      liveFormData.set('image', file.value)
+    }
+  })
+  searchSrc(store.productDesc).map((v, i) => {
+    if (v?.length > 1000) {
+      const innerHTML = Base64toServerImage(store.productDesc)
+      store.liveProduct.value.description = innerHTML
+    }
+  })
+
+  await sendData()
+}
+
+const sendData = async () => {
+  const memberId = {
+    memberId: parseInt(localStorage.getItem('id'))
+  }
+
+  liveFormData.set(
+    'live',
+    new Blob([JSON.stringify(store.liveSchedule)], {
+      type: 'application/json'
+    })
+  )
+  liveFormData.set(
+    'product',
+    new Blob([JSON.stringify(store.liveProduct.value)], {
+      type: 'application/json'
+    })
+  )
+
+  liveFormData.set(
+    'chatbot',
+    new Blob([JSON.stringify(store.liveChatbot)], {
+      type: 'application/json'
+    })
+  )
+  liveFormData.set('memberId', new Blob([JSON.stringify(memberId)], { type: 'application/json' }))
+
+  const res = await sendLiveScheduleApi(liveFormData)
+  if (res) {
+    alert('라이브 예약이 완료되었습니다!')
+    router.push('/')
+  } else {
+    alert('다시 예약을 진행해주세요.')
+  }
+}
 </script>
 
 <template>

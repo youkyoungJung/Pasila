@@ -1,8 +1,12 @@
 <script setup>
 import { ref } from 'vue'
 import router from '@/router'
+import { updateChannelDescApi } from '@/components/api/MemberAPI'
+
 const props = defineProps({
-  member: Object
+  member: Object,
+  channelId: String,
+  isMyChannel: Boolean
 })
 const textArea = ref(null)
 const isFocus = ref(false)
@@ -28,8 +32,12 @@ const blurDesc = (e) => {
   }
 }
 
-const saveDesc = () => {
-  isFocus.value = false
+const saveDesc = async () => {
+  if (await updateChannelDescApi(props.channelId, { description: channelDesc.value })) {
+    isFocus.value = false
+  } else {
+    alert('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.')
+  }
 }
 
 const undoDesc = () => {
@@ -44,21 +52,29 @@ const undoDesc = () => {
     <div>
       <div class="name-line">
         <span class="name">{{ member?.channel }}</span>
-        <button class="profile-btn gray">내 정보 수정</button>
-        <!-- TODO: router 실제 url로 변경하기 -->
-        <button class="profile-btn red" @click="() => router.push('1/orders')">주문 관리</button>
+        <template v-if="isMyChannel">
+          <button class="profile-btn gray" @click="() => router.push('/my')">내 정보 수정</button>
+          <button class="profile-btn red" @click="() => router.push(`${channelId}/orders`)">
+            주문 관리
+          </button>
+        </template>
       </div>
-      <textarea
-        class="desc"
-        @input="controlSize"
-        @focus="focusDesc"
-        @blur="blurDesc"
-        ref="textArea"
-        v-model="channelDesc"
-      ></textarea>
-      <template v-if="isFocus">
-        <button @click="saveDesc">확인</button>
-        <button @click="undoDesc">취소</button>
+      <template v-if="isMyChannel">
+        <textarea
+          class="desc"
+          @input="controlSize"
+          @focus="focusDesc"
+          @blur="blurDesc"
+          ref="textArea"
+          v-model="channelDesc"
+        ></textarea>
+        <template v-if="isFocus">
+          <button @click="saveDesc" class="save">수정</button>
+          <button @click="undoDesc" class="undo">취소</button>
+        </template>
+      </template>
+      <template v-else>
+        <div class="desc">{{ channelDesc }}</div>
       </template>
     </div>
   </div>
@@ -95,6 +111,10 @@ const undoDesc = () => {
     // &::-webkit-scrollbar-thumb {
     //   display: none;
     // }
+
+    &:focus {
+      outline: 1px solid $gray;
+    }
   }
   .name,
   .desc {
@@ -125,6 +145,17 @@ const undoDesc = () => {
         color: white;
       }
     }
+  }
+  button {
+    @include box(fit-content, 100%, none, 5px, 0 0.3rem, 0.5rem);
+    border: none;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .save {
+    background-color: $main;
+    color: white;
   }
 }
 </style>

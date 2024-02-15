@@ -1,7 +1,7 @@
 <script setup>
 import { reactive } from 'vue'
 
-const emits = defineEmits(['preview-content'])
+const emits = defineEmits(['preview-content', 'only-script'])
 
 const state = reactive({
   content: '',
@@ -32,6 +32,7 @@ const state = reactive({
 const onEditorChange = ({ quill, html, text }) => {
   state._content = html
   emits('preview-content', state._content)
+  emits('only-script', text)
 }
 
 setTimeout(() => {

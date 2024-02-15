@@ -6,20 +6,24 @@ defineProps({
 
 <template>
   <div class="video-card">
-    <!-- <video :src="video.src" class="input-video" /> -->
     <div
       class="input-video"
       :style="{ backgroundImage: `url(${video?.productThumbnailUrl})` }"
+      @click="$emit('clickVideo')"
     ></div>
     <div class="user-info">
-      <div :style="{ backgroundImage: `url(${video?.profileUrl}` }" class="user-profile"></div>
+      <div
+        :style="{ backgroundImage: `url(${video?.profileUrl}` }"
+        class="user-profile"
+        @click="$emit('clickChannel')"
+      ></div>
       <div class="user-name">
         <div class="name">{{ video?.channel }}</div>
         <div class="title">{{ video?.title }}</div>
       </div>
       <div class="price">
-        <div class="origin-price">{{ video?.price }}원</div>
-        <div class="discount-price">{{ video?.discountPrice }}원</div>
+        <div class="origin-price">{{ video?.price.toLocaleString('kr-KR') }}원</div>
+        <div class="discount-price">{{ video?.discountPrice.toLocaleString('kr-KR') }}원</div>
       </div>
     </div>
   </div>

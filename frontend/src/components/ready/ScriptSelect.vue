@@ -1,13 +1,15 @@
 <script setup>
 import { ref } from 'vue'
 import ScriptSelectButton from '@/components/ready/ScriptSelectButton.vue'
-import { getScript } from '@/components/api/ScriptAPI.js'
+import { getScriptApi } from '@/components/api/LiveAPI.js'
+import { useReadyLiveStore } from '@/stores/readyLive'
 
+const store = useReadyLiveStore()
 const emits = defineEmits(['script'])
 const data = ref({
   style: '',
-  userName: '재즈박',
-  productName: '빅파이',
+  userName: localStorage.getItem('name'),
+  productName: '',
   description: ''
 })
 
@@ -18,6 +20,7 @@ const selectedTone = ref('')
 const selectTone = (i) => {
   data.value.style = i
   selectedTone.value = i
+  
 }
 
 const selectedAccent = ref('')
@@ -28,8 +31,12 @@ const selectAccent = (i) => {
 
 const script = ref('')
 const makeScript = () => {
+  data.value.productName = store.liveProduct.value.name
   data.value.description = script.value.replaceAll('\n', '')
-  getScript(data.value, sendData, failLog)
+  store.userScript = script.value
+  let realScript = store.userScript + store.onlyScript
+  data.value.description = realScript
+  getScriptApi(data.value, sendData, failLog)
 }
 
 const sendData = (e) => {

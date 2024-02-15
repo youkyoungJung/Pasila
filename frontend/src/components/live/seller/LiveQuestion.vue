@@ -18,7 +18,7 @@ defineProps({
 .live-question {
   flex: 1;
 
-  @include box(null, calc(52vh - 4rem - 4px), none, 20px, 0, 1rem);
+  @include box(null, calc(52vh - 6rem - 4px), none, 20px, 0, 1rem);
   border: 3px solid $main;
   h1 {
     @include font-factory($fs-2, bold);
