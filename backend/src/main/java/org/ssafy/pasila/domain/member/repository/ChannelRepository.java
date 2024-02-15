@@ -56,8 +56,8 @@ public class ChannelRepository {
                           FROM ProductOption po2
                          WHERE po2.product = p
                                 AND po2.discountPrice = (SELECT MIN(po3.discountPrice)
-                                     FROM ProductOption po3
-                                    WHERE po3.product = p))
+                                                           FROM ProductOption po3
+                                                          WHERE po3.product = p))
                AND l.isActive = true
                AND l.member.id = :memberId""", ChannelLiveDto.class)
                 .setParameter("memberId", id).getResultList();
