@@ -3,7 +3,8 @@ import ProductOption from '@/components/ready/ProductOption.vue'
 import { ref, watch } from 'vue'
 
 const emit = defineEmits(['getProduct'])
-const products = ref([{
+const products = ref([
+  {
     name: '',
     stock: '',
     price: '',
@@ -17,26 +18,7 @@ const product = ref({
   description: '',
   memberId: localStorage.getItem('id'),
   categoryId: '',
-  options: [
-    {
-      name: '',
-      stock: 0,
-      price: 0,
-      discountPrice: 0
-    },
-    {
-      name: '',
-      stock: 0,
-      price: 0,
-      discountPrice: 0
-    },
-    {
-      name: '',
-      stock: 0,
-      price: 0,
-      discountPrice: 0
-    }
-  ]
+  options: []
 })
 const selectedCategory = ref('')
 const category = ref(['뷰티', '음식', '패션', '라이프', '여행', '테크', '유아', '레저', '티켓'])
@@ -45,6 +27,13 @@ watch(product.value, () => {
   const idx = category.value.indexOf(selectedCategory.value) + 1
   product.value.categoryId = idx
   emit('getProduct', product.value)
+})
+
+watch(products.value, () => {
+  for (let i = 0; i < products.value.length; i++) {
+    product.value.options[i] = products.value[i]
+  }
+  product.value.options.splice(products.value.length)
 })
 
 const addOption = () => {
@@ -60,7 +49,6 @@ const addOption = () => {
 const removeOption = (index) => {
   products.value.splice(index, 1)
 }
-
 </script>
 
 <template>
@@ -87,17 +75,26 @@ const removeOption = (index) => {
       <div class="product-stock">
         <label for="stock">구성</label>
         <div id="stock" class="stocks">
-          <div v-for="(product, i) in products" :key="i">
+          <div v-for="(product, i) in products" :key="i" class="card">
             <div class="option-part">
               <product-option
-              @product="(e) => product[i] = e"
+                :name="product.name"
+                :stock="product.stock"
+                :price="product.price"
+                :discountPrice="product.discountPrice"
+                :per="product.per"
+                @name="(e) => (product.name = e)"
+                @stock="(e) => (product.stock = e)"
+                @price="(e) => (product.price = e)"
+                @discountPrice="(e) => (product.discountPrice = e)"
+                @per="(e) => (product.per = e)"
               />
             </div>
             <div class="remove-part">
-          <button class="remove-btn" @click="removeOption(index)">ㅡ</button>
-        </div>
+              <button class="remove-btn" @click="removeOption(i)">ㅡ</button>
+            </div>
           </div>
-          <button @click="addOption">옵션 추가</button>
+          <button @click="addOption" class="add-btn">옵션 추가</button>
         </div>
       </div>
     </div>
@@ -165,6 +162,39 @@ const removeOption = (index) => {
       .stocks {
         width: 100%;
         height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        .card {
+          @include box(100%, 100%, white, 0.625rem, 0.3rem, 0);
+          @include drop-shadow;
+          display: flex;
+          justify-content: center;
+          .option-part {
+            display: flex;
+            width: 100%;
+          }
+
+          .remove-part {
+            width: 8%;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            .remove-btn {
+              @include box(2rem, 2rem, white, 50%, 0.1rem, 0.2rem);
+              cursor: pointer;
+              color: $main;
+              border: 1px solid $main;
+            }
+          }
+        }
+        .add-btn {
+          @include box(100%, 100%, white, 0.3rem, 0.1rem, 0.1rem);
+          cursor: pointer;
+          border: 1px solid #d9d9d9;
+          color: #ababab;
+          font-weight: 500;
+        }
       }
     }
   }

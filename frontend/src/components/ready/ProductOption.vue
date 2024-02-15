@@ -1,37 +1,30 @@
 <script setup>
-import { ref, watch } from 'vue'
-const emit = defineEmits(['product'])
-
-
+import { ref } from 'vue'
+const props = defineProps(['name', 'stock', 'price', 'discountPrice', 'per'])
+const emit = defineEmits(['name', 'stock', 'price', 'discountPrice'])
 
 const options = ref({
-    name: '',
-    stock: '',
-    price: '',
-    discountPrice: '',
-    per: ''
+  name: '',
+  stock: '',
+  price: '',
+  discountPrice: '',
+  per: ''
 })
 
-const product = ref([{
-      name: '',
-      stock: 0,
-      price: 0,
-      discountPrice: 0
-}])
-
-watch(product, () => {
-  emit('product', product.value)
-  console.log(product.value)
+const product = ref({
+  name: '',
+  stock: 0,
+  price: 0,
+  discountPrice: 0
 })
 
 const discount = (per) => {
   options.value.per = per
-  product.value.discountPrice = Math.round(
-    ((100 - per) / 100) * product.value.price
-  )
+  product.value.discountPrice = Math.round(((100 - per) / 100) * product.value.price)
   options.value.price = product.value.price.toLocaleString('ko-KR')
-  options.value.discountPrice =
-    product.value.discountPrice.toLocaleString('ko-KR')
+  options.value.discountPrice = product.value.discountPrice.toLocaleString('ko-KR')
+  emit('discountPrice', product.value.discountPrice)
+  emit('per', per)
 }
 
 const changeNumber = (field) => {
@@ -39,7 +32,6 @@ const changeNumber = (field) => {
   const str = num.toLocaleString('ko-KR')
   return str
 }
-
 
 const changeRegular = (field) => {
   const str = field.replaceAll(',', '')
@@ -57,27 +49,45 @@ const changeStock = (field) => {
   const str = field.replaceAll(',', '')
   options.value.stock = changeNumber(str)
   product.value.stock = parseFloat(str)
+  return options.value.stock
 }
-
-
 </script>
 
 <template>
   <div class="options">
     <div class="stock-option">
-      <input type="text" id="options" placeholder="옵션명 입력" class="product-price-input" v-model="product.name" />
-      <input
-        type="text"
-        id="options"
-        placeholder="개수 입력"
-        class="product-price-input"
-        :value="options.stock"
-        @input="(e) => {
-          options.stock = e.target.value
-          changeStock(options.stock)
-          }"
-        
-      />개
+      <div class="option-part">
+        <label for="optionName">옵션명</label>
+        <input
+          type="text"
+          id="optionName"
+          placeholder="옵션명 입력"
+          class="product-price-input"
+          :value="props.name"
+          @input="
+            (e) => {
+              $emit('name', e.target.value)
+            }
+          "
+        />
+      </div>
+      <div class="option-part">
+        <label for="options">재고</label>
+        <input
+          type="text"
+          id="options"
+          placeholder="개수 입력"
+          class="product-price-input"
+          :value="props.stock"
+          @input="
+            (e) => {
+              options.stock = e.target.value
+              changeStock(options.stock)
+              $emit('stock', parseFloat(e.target.value))
+            }
+          "
+        />
+      </div>
     </div>
     <div class="product-price">
       <div id="price">
@@ -89,11 +99,12 @@ const changeStock = (field) => {
               id="regularPrice"
               placeholder="정가를 입력하세요"
               class="product-price-input"
-              :value="options.price"
+              :value="props.price"
               @input="
                 (e) => {
                   options.price = e.target.value
                   changeRegular(e.target.value)
+                  $emit('price', parseFloat(e.target.value))
                 }
               "
             />
@@ -106,22 +117,26 @@ const changeStock = (field) => {
           <input
             type="number"
             class="product-percent-input"
-            :value="options.per"
-            @input="(e) => {
-              options.per = e.target.value
-              discount(e.target.value)
-            }"
+            :value="props.per"
+            @input="
+              (e) => {
+                options.per = e.target.value
+                discount(e.target.value)
+                $emit('per', e.target.value)
+              }
+            "
           />%
           <input
             type="text"
             id="discountPrice"
             placeholder="할인가를 입력하세요"
             class="product-price-input"
-            :value="options.discountPrice"
+            :value="props.discountPrice"
             @input="
               (e) => {
                 options.discountPrice = e.target.value
                 changeDiscount(e.target.value)
+                $emit('discountPrice', parseFloat(e.target.value))
               }
             "
           />원
@@ -138,30 +153,35 @@ const changeStock = (field) => {
 
 <style lang="scss" scoped>
 .options {
+  width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
-  border-bottom: 2px solid $main;
+  align-items: flex-start;
   padding: 1rem 0;
 
   .stock-option {
-    @include box(40%, 100%, none, 0, 0.1rem, 0.3rem);
-    @include flex-box($direction: column);
-    label {
-      width: 30%;
-      font-size: $fs-1;
-      font-weight: normal;
+    @include box(43%, 100%, none, 0, 0, 0);
+    @include flex-box($align: flex-end, $justify: flex-start, $direction: column);
+    margin-right: 0.5rem;
+
+    .option-part {
+      label {
+        width: 30%;
+        margin-right: 0.5rem;
+        font-size: $fs-1;
+        font-weight: normal;
+      }
+      padding: 0.2rem 0;
     }
   }
   .product-price {
-    @include box(55%, 100%, none, 0, 0.1rem, 0.3rem);
-    @include flex-box();
+    @include box(55%, 100%, none, 0, 0, 0);
+    @include flex-box($align: flex-start, $justify: flex-start, $direction: column);
 
     .price {
       @include box(100%, null, none, 0, 0, 0);
       @include flex-box(center, space-between);
       padding: 0.2rem 0;
-      border-bottom: 1px solid $main;
       margin-right: 1rem;
 
       span {
