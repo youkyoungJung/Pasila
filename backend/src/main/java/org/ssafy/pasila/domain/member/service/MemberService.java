@@ -104,8 +104,8 @@ public class MemberService {
     /**
      * 채널별 라이브 & 상태 조회 메서드
      */
-    public List<ChannelLiveStatusDto> getChannelLiveStatusbyId(Long id) {
-        List<ChannelLiveStatusDto> liveStatus = new ArrayList<>();
+    public List<ChannelLiveStatusDto> getChannelLiveStatusById(Long id) {
+        List<ChannelLiveStatusDto> results = new ArrayList<>();
         List<ChannelLiveDto> lives = getChannelLiveById(id);
 
         for(ChannelLiveDto live: lives){
@@ -121,10 +121,17 @@ public class MemberService {
                 isEnd = true;
             }
 
-            liveStatus.add(new ChannelLiveStatusDto(live, isReserve, isProgress, isEnd));
+            ChannelLiveStatusDto result =ChannelLiveStatusDto.builder()
+                    .live(live)
+                    .isReserve(isReserve)
+                    .isProgress(isProgress)
+                    .isEnd(isEnd)
+                    .build();
+
+            results.add(result);
         }
 
-        return liveStatus;
+        return results;
     }
 
     /**
