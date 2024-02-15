@@ -151,7 +151,7 @@ public class SearchRepository {
         if(categoryId != null && categoryId != 0) {
             jpql += "WHERE p.category.id = :categoryId " +
                     "AND l.isActive = true " +
-                    "AND l.liveOnAt IS NOT NULL" +
+                    "AND l.liveOnAt IS NOT NULL " +
                     "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) ";
 
         } else if(keyword != null && !keyword.isEmpty()) {
