@@ -36,14 +36,14 @@ watch(currentTime, (newTime) => {
   }
 })
 
-watchEffect(
-  () => props.video,
-  async (newVideo) => {
-    videoURL.value = await newVideo
-    vi.value = await newVideo
-    console.log(videoURL.value)
-  }
-)
+// watch(
+//   () => props.video,
+//   async (newVideo) => {
+//     videoURL.value = await newVideo
+//     vi.value = await newVideo
+//     console.log(videoURL.value)
+//   }
+// )
 
 const videoImages = ref([])
 const times = ref([])
