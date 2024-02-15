@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, watchEffect } from 'vue'
 import { getThumbnailApi } from '@/components/api/ShortpingAPI'
 import { useShortpingStore } from '@/stores/shortping'
 
@@ -36,13 +36,10 @@ watch(currentTime, (newTime) => {
   }
 })
 
-watch(props, () => {
-  if (store.shortpingURL) {
-    vi.value = store.shortpingURL
-    videoURL.value = store.shortpingURL
-    console.log(store.shortpingURL)
-    console.log(store.videoURL)
-  }
+watchEffect(async () => {
+  videoURL.value = await props.video
+  vi.value = await props.video
+  console.log(props.video)
   colorList()
 })
 

@@ -1,12 +1,13 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile, toBlobURL } from '@ffmpeg/util'
 import NewHighlight from '@/components/shortping/NewHighlight.vue'
 import SavedHighlight from '@/components/shortping/SavedHighlight.vue'
 import { useShortpingStore } from '@/stores/shortping'
+import { getThumbnailApi } from '@/components/api/ShortpingAPI'
 
-const props = defineProps(['data'])
+const props = defineProps(['data', 'liveId'])
 const emit = defineEmits(['getData', 'deleteData', 'addEmptyData', 'video'])
 let emptyData = ref({
   isEnroll: false,
@@ -17,8 +18,17 @@ let emptyData = ref({
 const store = useShortpingStore()
 const ffmpeg = new FFmpeg()
 const baseURL = 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm'
-const videoURL = store.videoURL
+const videoURL = ref('')
+onMounted(() => {
+  getPictures()
+})
 
+const getPictures = async () => {
+  // 이미지 가져오기(라이브아이디)
+  const res = await getThumbnailApi(props.liveId)
+  videoURL.value = res.liveUrl
+  store.videoURL = res.liveUrl
+}
 let video = ref('')
 
 const preview = async () => {
@@ -30,7 +40,7 @@ const preview = async () => {
 
   const outputs = []
   const inputFileName = 'test.mp4'
-  await ffmpeg.writeFile(inputFileName, await fetchFile(videoURL))
+  await ffmpeg.writeFile(inputFileName, await fetchFile(videoURL.value))
 
   for (let i = 0; i < props.data.length; i++) {
     const start = props.data[i].highlightStartTime
@@ -61,8 +71,6 @@ const preview = async () => {
 
   const finalOutput = await ffmpeg.readFile('output.mp4')
   video.value = URL.createObjectURL(new Blob([finalOutput.buffer], { type: 'video/mp4' }))
-  store.shortpingURL = video.value
-  console.log(store.shortpingURL)
   emit('video', new File([finalOutput.buffer], 'file.mp4', { type: 'video/mp4' }))
 }
 
