@@ -147,19 +147,17 @@ public class SearchRepository {
                 "LEFT JOIN l.product p " +
                 "LEFT JOIN p.productOptions po " +
                 "LEFT JOIN l.member m " +
-                "WHERE l.liveOnAt IS NOT NULL ";
+                "WHERE l.liveOnAt IS NOT NULL " +
+                "AND l.isActive = true " +
+                "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) ";
 
         if(categoryId != null && categoryId != 0) {
-            jpql += "AND p.category.id = :categoryId " +
-                    "AND l.isActive = true " +
-                    "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) ";
+            jpql += "AND p.category.id = :categoryId ";
 
         } else if(keyword != null && !keyword.isEmpty()) {
             jpql += "AND (l.title LIKE :keyword " +
                     "OR p.name LIKE :keyword " +
-                    "OR m.channel LIKE :keyword) " +
-                    "AND l.isActive = true " +
-                    "AND po.discountPrice = (SELECT MIN(po2.discountPrice) FROM ProductOption po2 WHERE po2.product.id = p.id) ";
+                    "OR m.channel LIKE :keyword) ";
         }
 
         jpql += "GROUP BY l.id, l.title, m.id, m.channel, m.profile, p.id, p.thumbnail, p.name " +
