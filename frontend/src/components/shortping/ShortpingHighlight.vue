@@ -61,7 +61,7 @@ const preview = async () => {
     await ffmpeg.exec([...convertArgs])
     outputs.push(`output${i}.ts`)
   }
-  const concatArgs = ['-f', `concat:${outputs.join('|')}`, '-c', 'copy', 'output.mp4']
+  const concatArgs = ['-i', `concat:${outputs.join('|')}`, '-c', 'copy', 'output.mp4']
   const result = await ffmpeg.exec([...concatArgs])
 
   if (result.error) {
@@ -123,6 +123,9 @@ const addHighlight = () => {
         </div>
       </div>
     </div>
+    <video controls width="400" height="300" :src="video">
+      <source :src="video" type="video/mp4" id="test" />
+    </video>
   </div>
 </template>
 
