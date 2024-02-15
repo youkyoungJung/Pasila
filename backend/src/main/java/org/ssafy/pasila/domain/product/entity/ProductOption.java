@@ -24,7 +24,7 @@ public class ProductOption {
             generator = "product_option_seq_generator")
     private Long id;
 
-    @Column(length = 20)
+    @Column(length = 40)
     private String name;
 
     private Integer stock;
