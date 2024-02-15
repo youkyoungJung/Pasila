@@ -35,4 +35,14 @@ const changeOrderStatusApi = async (orderId, status) => {
   }
 }
 
-export { addOrderApi, getOrderStatusApi, changeOrderStatusApi }
+const getOrderListApi = async (memberId) => {
+  try {
+    const res = await local.get(`${url}?id=${memberId}`)
+    return res.data.data
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+
+export { addOrderApi, getOrderStatusApi, changeOrderStatusApi, getOrderListApi }
