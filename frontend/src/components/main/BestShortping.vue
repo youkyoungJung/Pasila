@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import VideoCard from '@/components/common/VideoCard.vue'
 import { getVideosApi } from '@/components/api/SummaryAPI'
+import router from '@/router';
 
 const videos = ref([])
 const top5Shortping = ref([])
@@ -14,6 +15,10 @@ const getDatas = async () => {
   top5Shortping.value = res.top5Shortping
 
   videos.value = top5Shortping.value
+}
+
+const goVideo = (id) => {
+  router.push(`/shortping/${id}`)
 }
 </script>
 
@@ -29,7 +34,7 @@ const getDatas = async () => {
         <div v-for="(video, i) in videos" :key="i">
           <div class="numbering">
             <div>{{ i + 1 }}</div>
-            <video-card :video="video" />
+            <video-card :video="video" @click="goVideo(video.id)"/>
           </div>
         </div>
       </div>

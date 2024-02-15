@@ -3,6 +3,7 @@ import { ref, watchEffect, watch, onMounted } from 'vue'
 import { getPopularLiveApi, getVideosApi  } from '@/components/api/SummaryAPI'
 import VideoCard from '@/components/common/VideoCard.vue'
 import ToggleButton from '@/components/common/ToggleButton.vue'
+import router from '@/router';
 
 const latestShortping = ref([])
 const popularShortping = ref([])
@@ -66,6 +67,13 @@ const videoValue = () => {
   else if (isLive.value && selected.value == 'new') videos.value = latestLive.value
 }
 
+const goVideo = (video) => {
+  if (video.on) {
+    router.push(`/live/${video.liveId}`)
+  } else {
+    router.push(`/replay/${video.liveId}`)
+  }
+}
 </script>
 
 <template>
@@ -92,7 +100,7 @@ const videoValue = () => {
       </div>
       <div class="video-container">
         <template v-for="(video, i) in videos" :key="i">
-          <video-card :video="video" />
+          <video-card :video="video" @click="goVideo(video)" />
         </template>
       </div>
     </div>
