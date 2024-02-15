@@ -46,7 +46,8 @@ public class Product {
     @Column(length = 30, nullable = false)
     private String name;
 
-    @Column(length = 10000)
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(length = 2083)

@@ -56,6 +56,7 @@ public class Live {
     private LocalDateTime liveOffAt;
 
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String script;
 
     @Column(name = "full_video_url", length = 2083)
