@@ -244,7 +244,7 @@ const join = async () => {
   <div class="container">
     <div class="header">회원가입</div>
     <div class="content">
-      <section class="profile">
+      <section id="section" class="profile">
         <div>
           <div v-if="userImage != ''">
             <img :src="userImage" class="profile-img" />
@@ -262,7 +262,7 @@ const join = async () => {
           class="profile-choose"
         />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-short-input
           :data="shortData.email"
           @getData="(e) => (user.email = e)"
@@ -274,6 +274,8 @@ const join = async () => {
         <div v-else-if="emailCerti == 2" class="wrong-text">
           중복된 이메일입니다. 다른 이메일을 사용해 주세요.
         </div>
+        </section>
+        <section id="section" class="userInfo">
         <v-short-input
           :data="shortData.emailCerti"
           @getData="
@@ -288,10 +290,10 @@ const join = async () => {
           인증번호를 다시 입력해주세요.
         </div>
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-long-input :data="longData.name" @getData="(e) => (user.name = e)" />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-short-input
           :data="shortData.channel"
           @getData="(e) => (user.channel = e)"
@@ -302,10 +304,10 @@ const join = async () => {
           중복된 채널명입니다. 다른 채널명을 사용해 주세요.
         </div>
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-long-input :data="longData.password" @getData="(e) => (user.password = e)" />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-long-input :data="longData.passwordCheck" @getData="(e) => (user.passwordCheck = e)" />
         <div
           v-if="
@@ -322,14 +324,14 @@ const join = async () => {
         </div>
         <div v-else class="wrong-text">비밀번호가 일치하지 않습니다. 다시 입력해주세요.</div>
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-short-input
           :data="shortData.phone"
           @getData="(e) => (user.phone = e)"
           @sendData="(e) => sendPhoneNum(e)"
         />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-short-input
           :data="shortData.phoneCheck"
           @getData="(e) => (phoneCerti = e)"
@@ -340,7 +342,7 @@ const join = async () => {
           인증번호가 다릅니다. 다시 입력해주세요.
         </div>
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-short-input
           :data="shortData.address"
           :inputData="user.address"
@@ -348,14 +350,14 @@ const join = async () => {
           @sendData="(e) => openPostCode(e)"
         />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <v-long-input
           :data="longData.addressDetail"
           :inputData="user.addressDetail"
           @getData="(e) => (user.addressDetail = e)"
         />
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <div class="gender">
           <label for="gender" class="gender-title">성별</label>
           <div class="radio" id="gender">
@@ -376,7 +378,7 @@ const join = async () => {
           </div>
         </div>
       </section>
-      <section class="userInfo">
+      <section id="section" class="userInfo">
         <label for="input" class="label">생년월일</label>
         <input type="date" v-model="user.birth" class="birth" />
       </section>
@@ -407,6 +409,10 @@ const join = async () => {
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    #section {
+      margin: 0.3rem 0;
+    }
     .profile {
       @include box(100%, 10%, white, 0, 0.2rem, 0.2rem);
       @include flex-box($direction: column);

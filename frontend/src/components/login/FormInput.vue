@@ -20,7 +20,7 @@ const button2 = () => {
   <div class="find-container">
     <div class="header">{{ props.info.title }}</div>
     <div class="content">
-      <section class="long-type">
+      <section id="section" class="long-type">
         <v-long-input :data="props.info.data" @getData="(e) => (inputData = e)" />
       </section>
       <button @click="button1" class="btn1">{{ props.info.button1 }}</button>
@@ -48,7 +48,9 @@ const button2 = () => {
     @include flex-box($direction: column, $justify: center);
     @include font-factory(13px, bold);
     margin-bottom: 2rem;
-
+    #section {
+      margin: 0.3rem 0;
+    }
     .long-type {
       @include box(95%, 10%, null, 0, 0, 0);
       display: flex;
