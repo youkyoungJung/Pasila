@@ -34,6 +34,7 @@ let ws
 let chatmsg = ref('')
 let isChatbot = ref(false)
 const chatList = ref([])
+const customerCnt = ref(0)
 
 let userRole = ref('')
 let isStart = ref(false)
@@ -74,10 +75,23 @@ onMounted(async () => {
 
   connectChat()
   joinSession()
+
+  if (ws && ws.connected) {
+    const msg = {
+      liveId: props.liveId
+    }
+    ws.send(`/send/join`, JSON.stringify(msg), {})
+  }
 })
 
 onUnmounted(() => {
   clearInterval(interval)
+  if (ws && ws.connected) {
+    const msg = {
+      liveId: props.liveId
+    }
+  }
+  ws.send(`/send/exit`, JSON.stringify(msg), {})
   ws.disconnect()
   leaveSession()
 })
@@ -262,6 +276,10 @@ const connectChat = () => {
       ws.subscribe(`/id/${props.liveId}`, (res) => {
         chatList.value.push(JSON.parse(res.body))
       })
+      ws.subscribe(`/num/${props.liveId}`, (res) => {
+        console.log(JSON.parse(res.body))
+        customerCnt.value = JSON.parse(res.body)
+      })
     },
     (error) => {
       console.log('소켓 연결 실패', error)
@@ -274,7 +292,7 @@ const connectChat = () => {
   <template v-if="userRole === 'PUB'">
     <div class="session" v-if="session">
       <section class="col-1">
-        <user-video :stream-manager="mainStreamManager" :is-start="isStart" />
+        <user-video :stream-manager="mainStreamManager" :is-start="isStart" :cnt="customerCnt" />
         <live-script v-if="pubToolBar[0].isActive" :script="product.script" />
       </section>
 
@@ -309,7 +327,7 @@ const connectChat = () => {
   <template v-else>
     <div class="session" v-if="session">
       <section class="col-1">
-        <user-video :stream-manager="subscribers[0]" :is-start="true" />
+        <user-video :stream-manager="subscribers[0]" :is-start="true" :cnt="customerCnt" />
       </section>
 
       <section class="col-2" v-if="subToolBar[0].isActive">
