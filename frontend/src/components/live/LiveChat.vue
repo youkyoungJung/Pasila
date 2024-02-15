@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUpdated } from 'vue'
+import { ref, onMounted, onUpdated, computed } from 'vue'
 
 defineProps({
   isCustomer: Boolean,
@@ -27,9 +27,9 @@ const scrollBottom = () => {
   <div class="live-chat-box">
     <div class="live-chat" ref="liveChat">
       <div class="chat-line" v-for="(item, index) in chatList" :key="index">
-        <!-- <img :src="item.profile" :alt="item.memberId" class="profile" /> -->
+        <span class="profile" :style="{ backgroundImage: item.profile }"></span>
         <div class="chat-box">
-          <span class="name">{{ item.memberId }}</span>
+          <span class="name">{{ item.name }}</span>
           <div class="content">{{ item.message }}</div>
         </div>
       </div>
@@ -78,8 +78,9 @@ const scrollBottom = () => {
       @include flex-box(flex-start, flex-start);
       margin-bottom: 1rem;
       .profile {
-        @include box(3rem, 3rem, none, 50px, 0, 0);
-        object-fit: cover;
+        @include box(3rem, 3rem, $yellow, 50%, 0, 0);
+        background-size: cover;
+        display: inline-block;
       }
       .chat-box {
         margin-left: 0.5rem;

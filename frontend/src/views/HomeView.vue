@@ -4,7 +4,6 @@ import BestShortping from '@/components/main/BestShortping.vue'
 import LiveList from '@/components/main/LiveList.vue'
 import { ref } from 'vue'
 const categoryIndex = ref(0)
-
 </script>
 
 <template>
@@ -15,10 +14,8 @@ const categoryIndex = ref(0)
       }
     "
   />
-  <best-shortping />
-  <live-list
-    :categoryIndex="categoryIndex"
-  />
+  <best-shortping v-if="categoryIndex == 0" />
+  <live-list :categoryIndex="categoryIndex" />
 </template>
 
 <style lang="scss">

@@ -2,10 +2,14 @@
 import { ref, onMounted } from 'vue'
 import VideoCard from '@/components/common/VideoCard.vue'
 import { getVideosApi } from '@/components/api/SummaryAPI'
-import router from '@/router';
+import router from '@/router'
 
 const videos = ref([])
 const top5Shortping = ref([])
+const calendar = ref(null)
+let isMouseDown = false
+let startX = 0
+let scrollLeft = 0
 onMounted(() => {
   getDatas()
 })
@@ -20,6 +24,29 @@ const getDatas = async () => {
 const goVideo = (id) => {
   router.push(`/shortping/${id}`)
 }
+
+const controlDown = (e) => {
+  isMouseDown = true
+  startX = e.pageX - calendar.value.offsetLeft
+  scrollLeft = calendar.value.scrollLeft
+}
+
+const controlLeave = () => {
+  isMouseDown = false
+}
+
+const controlUp = () => {
+  isMouseDown = false
+}
+
+const controlMove = (e) => {
+  if (!isMouseDown) return
+
+  e.preventDefault()
+  const x = e.pageX - calendar.value.offsetLeft
+  const beforeScrollLeft = (x - startX) * 1
+  calendar.value.scrollLeft = scrollLeft - beforeScrollLeft
+}
 </script>
 
 <template>
@@ -30,11 +57,18 @@ const goVideo = (id) => {
         <span style="color: #ff495c">숏</span>핑
         <span class="subtitle">지금 가장 인기있는 숏핑을 확인해보세요.</span>
       </div>
-      <div class="video-container">
+      <div
+        class="video-container"
+        ref="calendar"
+        @mousedown="controlDown"
+        @mouseleave="controlLeave"
+        @mouseup="controlUp"
+        @mousemove="controlMove"
+      >
         <div v-for="(video, i) in videos" :key="i">
           <div class="numbering">
             <div>{{ i + 1 }}</div>
-            <video-card :video="video" @click="goVideo(video.id)"/>
+            <video-card :video="video" @click="goVideo(video.id)" />
           </div>
         </div>
       </div>
@@ -68,6 +102,14 @@ const goVideo = (id) => {
       .numbering {
         @include flex-box($align: flex-start);
         @include font-factory($fs-4, bold);
+      }
+
+      &::-webkit-scrollbar {
+        background: none;
+        height: 9px;
+      }
+      &::-webkit-scrollbar-thumb {
+        @include box(null, 8px, $light-dark, 30px, 0, 0);
       }
     }
   }

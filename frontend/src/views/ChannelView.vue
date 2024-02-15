@@ -59,14 +59,14 @@ const goShortping = () => {
           <template #btn>
             <button
               class="video-btn"
-              v-if="item.reserve && !item.progress"
+              v-if="item.status === 'RESERVED'"
               @click.stop="() => router.push(`/live/${item.live.liveId}`)"
             >
               라이브 시작
             </button>
             <button
               class="video-btn"
-              v-if="item.end && item.live.shortpingId == null"
+              v-if="item.status === 'NOT_SHORTPING'"
               @click.stop="() => router.push(`/edit/${item.live.liveId}`)"
             >
               숏핑 제작
@@ -118,7 +118,7 @@ const goShortping = () => {
 
 .video-container {
   @include box(100%, 90%, null, 0, 5px, 0);
-  @include flex-box(flex-start, space-between);
+  @include flex-box(flex-start, center);
   overflow: hidden;
   flex-wrap: wrap;
 
