@@ -184,6 +184,8 @@ const leaveSession = async () => {
       session.value.disconnect()
       router.push(`/live/${props.liveId}/end`)
       return
+    } else {
+      session.value.disconnect()
     }
   } else {
     session.value.disconnect()
