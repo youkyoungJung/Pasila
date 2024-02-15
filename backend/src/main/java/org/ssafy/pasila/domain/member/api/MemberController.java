@@ -147,7 +147,7 @@ public class MemberController {
     @Operation(summary = "Get channel live by id", description = "id로 채널별 라이브 조회")
     @GetMapping("/channel/{id}/live")
     public ApiCommonResponse<List<ChannelLiveStatusDto>> getChannelLive(@PathVariable("id") Long id) {
-        List<ChannelLiveStatusDto> results = memberService.getChannelLiveStatusbyId(id);
+        List<ChannelLiveStatusDto> results = memberService.getChannelLiveStatusById(id);
         return ApiCommonResponse.successResponse(HttpStatus.OK.value(), results);
     }
 
