@@ -4,7 +4,7 @@ import { getThumbnailApi } from '@/components/api/ShortpingAPI'
 
 const vi = ref(null)
 const currentTime = ref(0)
-const props = defineProps(['data', 'video'])
+const props = defineProps(['data', 'video', 'liveId'])
 const videoURL = ref(
   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
 )
@@ -16,7 +16,7 @@ onMounted(() => {
 
 const getPictures = async () => {
   // 이미지 가져오기(라이브아이디)
-  const res = await getThumbnailApi(1)
+  const res = await getThumbnailApi(props.liveId)
   videoURL.value = res.liveUrl
   for (let i = 0; i < res.thumbnails.length; i++) {
     videoImages.value.push({src: new URL(`${res.thumbnails[i]}`, import.meta.url).href})

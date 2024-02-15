@@ -83,9 +83,10 @@ const router = createRouter({
       props: true
     },
     {
-      path: '/edit/:productId',
+      path: '/edit/:liveId',
       name: 'edit',
-      component: EditView
+      component: EditView,
+      props: true
     },
     {
       path: '/channel/:channelId/orders',

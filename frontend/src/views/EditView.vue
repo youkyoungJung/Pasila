@@ -9,6 +9,7 @@ import ShortpingHighlight from '@/components/shortping/ShortpingHighlight.vue'
 const video = ref('')
 const formData = new FormData()
 const sendData = ref({})
+const props = defineProps(['liveId'])
 
 const shortping = ref({
   title: ''
@@ -24,7 +25,7 @@ watch(highlights, () => {
 
 const getHighlightDatas = async () => {
   // 하이라이트 추천받기(라이브아이디)
-  const res = await getHighlightApi(1)
+  const res = await getHighlightApi(props.id)
   for (let i = 0; i < res.length; i++) {
     highlights.value.push({
       isEnroll: true,
@@ -88,7 +89,7 @@ const complete = () => {
           id="shortpingTitle"
           v-model="shortping.title"
         />
-        <shortping-video :data="highlights" :video="video" />
+        <shortping-video :data="highlights" :liveId="props.liveId" :video="video" />
       </div>
 
       <div class="show-highlight">
