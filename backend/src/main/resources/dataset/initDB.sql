@@ -1,25 +1,28 @@
 #Category
 INSERT INTO `category`
 VALUES (1, '뷰티', 'beauty_image_url'),
-        (2, '푸드', 'food_image_url'),
+        (2, '음식', 'food_image_url'),
         (3, '패션', 'fashion_image_url'),
         (4, '라이프', 'life_image_url'),
         (5, '여행/체험', 'travel_experience_image_url'),
-        (6, '키즈', 'kids_image_url'),
-        (7, '테크', 'tech_image_url');
+        (6, '테크', 'tech_image_url'),
+        (7, '유아', 'kids_image_url');
+        (8, '레저', 'activity_image_url');
+        (9, '티켓', 'ticket_image_url');
+        (10, '기타', 'etc_image_url');
 
 #Member
 INSERT INTO `member` VALUES
-        ('2000-12-11',NOW(),NULL,1,'우리','김지우','김지우','01022222222','bank-account','서울시 강남구 역삼동','멀티캠퍼스','김지우의 김지이우우채널입니다.','password-example',NULL,'abc@abc.com','profile-url','F','kakao'),
-        ('2000-06-12',NOW(),NULL,2,'신한','최지우','최지우','01011111111','bank-account','서울시 강남구 역삼동','멀티캠퍼스','최지우의 최지이우우채널입니다.','password-example',NULL,'cva@abc.com','profile-url','F','kakao'),
-        ('2000-02-13',NOW(),NULL,3,'신한','유소연','유소연','01011111111','bank-account','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','password-example',NULL,'cva@abc.com','profile-url','F','kakao'),
-        ('2000-01-04',NOW(),NULL,4,'신한','김소연','김소연','01011111111','bank-account','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다..','password-example',NULL,'cva@abc.com','profile-url','F','kakao'),
-        ('2000-02-15',NOW(),NULL,5,'신한','최동헌','최동헌','01011111111','bank-account','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','password-example',NULL,'cva@abc.com','profile-url','M','kakao'),
-        ('2000-01-16',NOW(),NULL,6,'신한','유동헌','유동헌','01011111111','bank-account','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','password-example',NULL,'cva@abc.com','profile-url','M','kakao'),
-        ('2000-04-17',NOW(),NULL,7,'신한','최경향','최경향','01011111111','bank-account','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','password-example',NULL,'cva@abc.com','profile-url','F','kakao'),
-        ('2000-03-18',NOW(),NULL,8,'신한','전경향','전경향','01011111111','bank-account','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','password-example',NULL,'cva@abc.com','profile-url','F','kakao'),
-        ('2000-02-19',NOW(),NULL,9,'신한','정유경','정유경','01011111111','bank-account','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','password-example',NULL,'cva@abc.com','profile-url','F','kakao'),
-        ('2000-05-10',NOW(),NULL,10,'신한','박지원','박지원','01011111111','bank-account','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','password-example',NULL,'cva@abc.com','profile-url','F','kakao');
+        ('2000-12-11',NOW(),NULL,1,'우리','김지우','김지우','01022222222','o3fm7/jS96pkDPa1Wy3R/w==','서울시 강남구 역삼동','멀티캠퍼스','김지우의 김지이우우채널입니다.','$10$aYgVwG3dX9IqwSmKywlUCeJNZqG/tGevbDTcuoyt5FTab/fxTrxke',NULL,'test1@test.com','profile-url','F','email'),
+        ('2000-06-12',NOW(),NULL,2,'신한','최지우','최지우','01011111111','o3fm7/jS96pkDPa1Wy3R/w==','서울시 강남구 역삼동','멀티캠퍼스','최지우의 최지이우우채널입니다.','$10$aYgVwG3dX9IqwSmKywlUCeJNZqG/tGevbDTcuoyt5FTab/fxTrxke',NULL,'test2@test.com','profile-url','F','email'),
+        ('2000-02-13',NOW(),NULL,3,'신한','유소연','유소연','01011111111','o3fm7/jS96pkDPa1Wy3R/w==','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','$10$aYgVwG3dX9IqwSmKywlUCeJNZqG/tGevbDTcuoyt5FTab/fxTrxke',NULL,'test3@test.com','profile-url','F','email'),
+        ('2000-01-04',NOW(),NULL,4,'신한','김소연','김소연','01011111111','o3fm7/jS96pkDPa1Wy3R/w==','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다..','$10$aYgVwG3dX9IqwSmKywlUCeJNZqG/tGevbDTcuoyt5FTab/fxTrxke',NULL,'test4@test.com','profile-url','F','email'),
+        ('2000-02-15',NOW(),NULL,5,'신한','최동헌','최동헌','01011111111','o3fm7/jS96pkDPa1Wy3R/w==','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','$10$aYgVwG3dX9IqwSmKywlUCeJNZqG/tGevbDTcuoyt5FTab/fxTrxke',NULL,'test5@test.com','profile-url','M','email'),
+        ('2000-01-16',NOW(),NULL,6,'신한','유동헌','유동헌','01011111111','o3fm7/jS96pkDPa1Wy3R/w==','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','$10$aYgVwG3dX9IqwSmKywlUCeJNZqG/tGevbDTcuoyt5FTab/fxTrxke',NULL,'test6@test.com','profile-url','M','email'),
+        ('2000-04-17',NOW(),NULL,7,'신한','최경향','최경향','01011111111','o3fm7/jS96pkDPa1Wy3R/w==','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','$10$aYgVwG3dX9IqwSmKywlUCeJNZqG/tGevbDTcuoyt5FTab/fxTrxke',NULL,'test7@test.com','profile-url','F','email'),
+        ('2000-03-18',NOW(),NULL,8,'신한','전경향','전경향','01011111111','o3fm7/jS96pkDPa1Wy3R/w==','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','$10$aYgVwG3dX9IqwSmKywlUCeJNZqG/tGevbDTcuoyt5FTab/fxTrxke',NULL,'test8@test.com','profile-url','F','email'),
+        ('2000-02-19',NOW(),NULL,9,'신한','정유경','정유경','01011111111','o3fm7/jS96pkDPa1Wy3R/w==','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','$10$aYgVwG3dX9IqwSmKywlUCeJNZqG/tGevbDTcuoyt5FTab/fxTrxke',NULL,'test9@test.com','profile-url','F','email'),
+        ('2000-05-10',NOW(),NULL,10,'신한','박지원','박지원','01011111111','o3fm7/jS96pkDPa1Wy3R/w==','서울시 강남구 역삼동','멀티캠퍼스','채널설명입니다.','$10$1LyG1oGjKeggHTX3KOtD.eLRKYUdTvgoJzTWrbhkj35CnQX..juYK',NULL,'wldnjs123@gmail.com','https://pasila.s3.ap-northeast-2.amazonaws.com/images/12.jpg','F','email');
 
 #Product
 INSERT INTO `product`

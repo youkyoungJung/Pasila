@@ -193,7 +193,7 @@ public class LiveApiController {
     public ApiCommonResponse<?> createQsheet(@RequestBody CreateQsheetRequestDto request) {
 
         String qsheet = gptService.generateQsheet(
-                "판매자",
+                request.getUserName(),
                 request.getProductName(),
                 request.getDescription()
         );
