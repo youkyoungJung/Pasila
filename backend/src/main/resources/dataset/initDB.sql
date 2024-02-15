@@ -9,7 +9,6 @@ VALUES (1, '뷰티', 'beauty_image_url'),
         (7, '유아', 'kids_image_url');
         (8, '레저', 'activity_image_url');
         (9, '티켓', 'ticket_image_url');
-        (10, '기타', 'etc_image_url');
 
 #Member
 INSERT INTO `member` VALUES
@@ -47,12 +46,11 @@ VALUES
 '귀엽고 특이한 디자인으로 눈에 확~띄는 곰돌이 프린팅 언발 기장 롱 셔츠 보여드릴게요! 부드럽고 하늘하늘거리는 소재라 피부에 챠르르 닿는 감촉이 좋고 구김이 덜해 휘뚜루마뚜루 활용하기 좋은 아이템이랍니다! 전체적으로 여유있는 루즈핏에 롱한 기장감으로 언니들의 미운 군살들을 쏙! 여리여리한 핏으로 연출해주어용. Color: 화이트, 핑크  FABRIC: 폴리혼방  SIZE: free', 1, NOW(), NOW()),
 ('33FD88R5Y5XM', 3, 7, '콘드 홀가먼트 라운드넥 울 니트', 'https://shop-phinf.pstatic.net/20231117_155/1700225587078ajuFH_JPEG/27052852278162305_1703841395.jpg?type=o1000'
 '피부에 닿는 부드러움이 너무 고급스러운 울 혼방소재의 니트로 울의 포근함과 따뜻함이 느껴지는 제품이에요. 봉제선 없이 통으로 편직되는 홀가먼트 가공법으로 피부가 예민하신 분들에게 더욱 좋은 하이퀄리티 니트입니다. ㅌ두껍지 않은 슬림한 원단으로 부해 보이지 않고 깔끔하게 떨어지는 스타일이라 아우터 안에 가볍게 입기 좋습니다. 사이즈 free 울80% 나일론20% 색상: 핑크, 베이지, 블루', 1, NOW(), NOW()),
-('41FD88R5Y5XM', 4, 4, '네르하 이케바나 화병 이케바나롱 대형 유리 화병 꽃병', 'https://shop-phinf.pstatic.net/20220329_98/1648520298936YVwrt_JPEG/49656133511298966_1211701576.jpg?type=o1000'
+('41FD88R5Y5XM', 4, 8, '네르하 이케바나 화병 이케바나롱 대형 유리 화병 꽃병', 'https://shop-phinf.pstatic.net/20220329_98/1648520298936YVwrt_JPEG/49656133511298966_1211701576.jpg?type=o1000'
 '유명 브랜드 제품도 식물, 물에 의한 변색이 나타나고 저가형 중국산 황동 도금 이케바나 화병에서는 빈번하게 부식과 변색이 발생합니다. 그래서 직접 만들었습니다. 100% 스테인리스 국내 제작 변색, 부식 없는 이케바나 화병! 취향에 따라 더 다양하게 선택할 수 있도록 라운드, 롱, 웨이브 옵션이 있습니다. 고급 중대형 이케바나 입니다. 선물용으로 좋습니다. 특별한 선물, 집들이 선물로 추천합니다.', 1, NOW(), NOW()),
-('42FD88R5Y5XM', 4, 4, '골드 부엉이장식품 금부엉이 집들이 집들이선물 인테리어 풍수 소품', 'https://shop-phinf.pstatic.net/20200901_85/1598890222080UNsqa_JPEG/36251764720864531_1427925739.JPG?type=o1000'
-'골드 부엉이 장식품과 부엉이 문종은 선물 포장이 가능합니다. 어디에서나 볼 수 있는 흔한 포장이 아닌, 고급스러운 선물상자는 여기서만 볼 수 있죠. 소중한 마음과 예쁨을 듬뿍 담아 보내드립니다.', 1, NOW(), NOW()),
-('43FD88R5Y5XM', 4, 4, '', ''
-'', 1, NOW(), NOW());
+('42FD88R5Y5XM', 4, 8, '골드 부엉이장식품 금부엉이 집들이 집들이선물 인테리어 풍수 소품', 'https://shop-phinf.pstatic.net/20200901_85/1598890222080UNsqa_JPEG/36251764720864531_1427925739.JPG?type=o1000'
+'골드 부엉이 장식품과 부엉이 문종은 선물 포장이 가능합니다. 어디에서나 볼 수 있는 흔한 포장이 아닌, 고급스러운 선물상자는 여기서만 볼 수 있죠. 소중한 마음과 예쁨을 듬뿍 담아 보내드립니다. 실제로 보시면 반짝이는 큐빅스톤장식이 더욱 빛을 발합니다. 선물로 굉장히 인기가 많아요', 1, NOW(), NOW());
+
 
 #PRODUCT_OPTION
 INSERT INTO `product_option`(id, product_id, name, stock, price, discount_price, version) VALUES
@@ -75,15 +73,13 @@ INSERT INTO `product_option`(id, product_id, name, stock, price, discount_price,
         (17, '41FD88R5Y5XM', '라운드', 100, 150000, 74000, 0),
         (18, '41FD88R5Y5XM', '롱', 100, 150000, 74000, 0),
         (19, '41FD88R5Y5XM', '웨이브', 100, 150000, 74000, 0),
+        (20, '42FD88R5Y5XM', '골드 부엉이', 100, 52000, 23000, 0),
+        (21, '42FD88R5Y5XM', '부엉이 문종', 100, 52000, 41000, 0);
 
 
 #Live
-INSERT INTO `live` VALUES
-         (1, 0, 20, NOW(), NULL, NULL, '2024-02-03', 1, '니트팝니다', 'full_video_url_exam', 1, '30FD88R5Y5XM', 'AI대본exam'),
-         (1, 0, 20, NOW(), NULL, NULL, '2024-02-04', 1, '구스다운팝니다', 'full_video_url_exam', 2, '60FD88R5Y5XM', 'AI대본exam'),
-         (1, 0, 20, NOW(), NULL, NULL, '2024-02-05', 1, '후리스팝니다', 'full_video_url_exam', 3, '70FD88R5Y5XM', 'AI대본exam'),
-         (1, 0, 20, NOW(), NULL, NULL, '2024-02-06', 1, '코트팝니다', 'full_video_url_exam', 4, '80FD88R5Y5XM', 'AI대본exam'),
-         (1, 0, 20, NOW(), NULL, NULL, '2024-02-07', 1, '맨투맨팝니다', 'full_video_url_exam', 5, '90FD88R5Y5XM', 'AI대본exam');
+INSERT INTO `live`(id, member_id, product_id, script, title, full_video_url like_cnt, is_on, live_on_at, live_off_at, live_scheduled_at, is_active, created_at) VALUES
+('11ABCR5', 1, '11FD88R5Y5XM', '', '')
 
 
 #Shortpring
