@@ -40,8 +40,9 @@ onMounted(async () => {
     }
   }
   .bottom {
-    @include flex-box(flex-start, center);
+    @include flex-box(center, center, column);
     padding-top: 3rem;
+    gap: 2rem;
   }
   .no-order {
     @include box(100%, 100%, $soft-pink, 20px, 2rem 0, 2rem 0);
