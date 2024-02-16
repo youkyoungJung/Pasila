@@ -171,7 +171,6 @@ const startLive = async () => {
   if (await startLiveApi(props.liveId)) {
     isStart.value = true
   }
-  router.go(0)
 }
 
 const stopLive = async () => {
@@ -187,7 +186,7 @@ const leaveSession = async () => {
       if (isEnd) {
         await stopLive()
         session.value.unpublish()
-        session.value.router.push(`/live/${props.liveId}/end`)
+        router.push(`/live/${props.liveId}/end`)
         return
       } else {
         return

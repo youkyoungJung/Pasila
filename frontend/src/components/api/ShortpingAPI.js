@@ -58,4 +58,21 @@ const deleteShortpingApi = async (shortpingId) => {
     return null
   }
 }
-export { getHighlightApi, getThumbnailApi, sendShortpingApi, getShortpingApi, deleteShortpingApi }
+
+const addLikeCntApi = async (shortpingId) => {
+  try {
+    const res = await local.put(`${url}/addLike`, { shortpingId: shortpingId })
+    return res
+  } catch (err) {
+    console.error('localAxios error', err)
+    return null
+  }
+}
+export {
+  getHighlightApi,
+  getThumbnailApi,
+  sendShortpingApi,
+  getShortpingApi,
+  deleteShortpingApi,
+  addLikeCntApi
+}

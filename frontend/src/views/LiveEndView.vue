@@ -12,10 +12,11 @@ const { liveendInfo } = useLiveendStore()
     <div class="report-box">
       <p>라이브 진행 시간: {{ liveendInfo.totalBroadcastTime }}</p>
       <p>좋아요 수: {{ liveendInfo.likeCnt }}개</p>
-      <p>시청자 수: {{ liveendInfo.participant }}명</p>
     </div>
     <button @click="() => router.push('/')" class="home">홈 화면</button>
-    <button @click="() => router.push(`/channel/${member.id}`)" class="channel">내 채널</button>
+    <button @click="() => router.push(`/channel/${localStorage.getItem('id')}`)" class="channel">
+      내 채널
+    </button>
   </div>
 </template>
 

@@ -32,7 +32,7 @@ const logout = () => {
       <img src="@/assets/img/pasila-logo.png" alt="logo" @click="goHome()" class="logo" />
     </router-link>
     <div class="menu">
-      <v-search />
+      <!-- <v-search /> -->
       <router-link to="/schedule">
         <span class="icon-color">
           <font-awesome-icon icon="fa-regular fa-calendar-check" />
