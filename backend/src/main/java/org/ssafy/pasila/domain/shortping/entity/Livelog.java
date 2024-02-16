@@ -2,6 +2,8 @@ package org.ssafy.pasila.domain.shortping.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.ssafy.pasila.domain.live.entity.Live;
 
 import java.time.LocalTime;
@@ -10,11 +12,15 @@ import java.time.LocalTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SequenceGenerator(name = "livelog_seq_generator",
+        sequenceName = "livelog_seq",
+        initialValue = 61,
+        allocationSize = 1 )
 @Entity
 @Table(name = "livelog")
 public class Livelog {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "livelog_seq_generator")
     private Long id;
 
     private LocalTime start;
@@ -23,9 +29,6 @@ public class Livelog {
 
     @Column(length = 30)
     private String title;
-
-    @Column(length = 30)
-    private String subtitle;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "live_id")
@@ -36,4 +39,10 @@ public class Livelog {
         live.getLivelogs().add(this);
     }
 
+    public Livelog(LocalTime start, LocalTime end, String title, Live live) {
+        this.start = start;
+        this.end = end;
+        this.title = title;
+        setLive(live);
+    }
 }

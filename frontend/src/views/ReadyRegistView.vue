@@ -6,17 +6,26 @@ import DescPreview from '@/components/editor/DescPreview.vue'
 import DescEditor from '@/components/editor/DescEditor.vue'
 
 import { ref } from 'vue'
+import { useReadyLiveStore } from '@/stores/readyLive'
 
 const step = ref('register')
 const nextStep = ref('script')
 const preview = ref('')
-
+const store = useReadyLiveStore()
+const product = ref({})
 const updateDesc = (message) => {
   preview.value = message
 }
 
-const sendProduct = () => {
-  //상품 정보 보내기
+const sendProduct = async () => {
+  for (let i = product.value.length - 1; i >= 0; i--) {
+    if (product.value.options[i].name == '') {
+      product.value.options.splice(i, 1)
+    }
+  }
+
+  store.liveProduct = product.value
+  store.productDesc = preview.value
 }
 
 const currentTab = ref(0)
@@ -28,7 +37,13 @@ const tabs = ref(['작성하기', '미리보기'])
     <ready-steps :data="step" />
     <div class="body">
       <div class="input-body">
-        <product-input />
+        <product-input
+          @getProduct="
+            (e) => {
+              product.value = e
+            }
+          "
+        />
       </div>
       <div class="editor-body">
         <div id="tabs" class="tabs">
@@ -43,7 +58,15 @@ const tabs = ref(['작성하기', '미리보기'])
           </ul>
         </div>
         <div v-show="currentTab == 0" class="show-body">
-          <desc-editor :message="preview" @preview-content="updateDesc" />
+          <desc-editor
+            :message="preview"
+            @preview-content="updateDesc"
+            @only-script="
+              (e) => {
+                store.onlyScript = e
+              }
+            "
+          />
         </div>
         <div v-show="currentTab == 1" class="show-body">
           <desc-preview :preview="preview" />

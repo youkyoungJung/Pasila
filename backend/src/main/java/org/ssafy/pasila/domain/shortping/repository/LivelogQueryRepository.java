@@ -18,11 +18,17 @@ public class LivelogQueryRepository {
 
         return em.createQuery(
                 "select lg from Livelog lg" +
-                        " join fetch lg.live l" +
                         " where lg.live.id =: liveId", Livelog.class)
                 .setParameter("liveId", liveId)
                 .getResultList();
 
+    }
+
+    public void deleteAllByLiveId(String liveId) {
+        em.createQuery("delete from Livelog lg" +
+                " where lg.live.id =: liveId")
+                .setParameter("liveId", liveId)
+                .executeUpdate();
     }
 
 }

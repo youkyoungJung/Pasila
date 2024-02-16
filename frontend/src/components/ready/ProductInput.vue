@@ -1,53 +1,67 @@
 <script setup>
-import { ref } from 'vue'
+import ProductOption from '@/components/ready/ProductOption.vue'
+import { ref, watch } from 'vue'
+
+const emit = defineEmits(['getProduct'])
+const products = ref([
+  {
+    name: '',
+    stock: '',
+    price: '',
+    discountPrice: '',
+    per: ''
+  }
+])
 
 const product = ref({
   name: '',
-  regularPrice: 0,
-  discountPercent: null,
-  discountPrice: null,
-  stock: {
-    option1: null,
-    option2: null,
-    option3: null
-  },
   description: '',
-  formatRegular: '',
-  formatDiscPrice: '',
-  formatOption1: '',
-  formatOption2: '',
-  formatOption3: ''
+  memberId: localStorage.getItem('id'),
+  categoryId: '',
+  options: []
+})
+const selectedCategory = ref('')
+const category = ref(['뷰티', '음식', '패션', '라이프', '여행', '테크', '유아', '레저', '티켓'])
+
+watch(product.value, () => {
+  const idx = category.value.indexOf(selectedCategory.value) + 1
+  product.value.categoryId = idx
+  emit('getProduct', product.value)
 })
 
-const discount = (per) => {
-  product.value.discountPercent = per
-  product.value.discountPrice = Math.round(((100 - per) / 100) * product.value.regularPrice)
-  product.value.formatDiscPrice = product.value.discountPrice.toLocaleString('en-US')
+watch(products.value, () => {
+  for (let i = 0; i < products.value.length; i++) {
+    product.value.options[i] = products.value[i]
+  }
+  product.value.options.splice(products.value.length)
+})
+
+const addOption = () => {
+  products.value.push({
+    name: '',
+    stock: '',
+    price: '',
+    discountPrice: '',
+    per: ''
+  })
 }
 
-const changeNumber = (field) => {
-  const parsedAmount = parseFloat(product.value[field].replace(/,/g, '')) || 0
-  product.value[field] = parsedAmount.toLocaleString('en-US')
-  const temp = product.value[field].replace(/,/g, '')
-  return temp
-}
-const changeInput = (field) => {
-  product.value.regularPrice = parseFloat(changeNumber(field))
-}
-
-const changeDiscount = (field) => {
-  product.value.discountPrice = parseFloat(changeNumber(field))
-}
-
-const changeStock = (field) => {
-  let cnt = 'option' + field.charAt(field.length - 1)
-  product.value.stock[cnt] = parseFloat(changeNumber(field))
+const removeOption = (index) => {
+  products.value.splice(index, 1)
 }
 </script>
 
 <template>
   <div class="content">
     <div class="product-input">
+      <div class="product-category">
+        <label for="category">분류</label>
+        <select id="category" class="category" v-model="selectedCategory">
+          <option v-for="(category, i) in category" :key="i">
+            {{ category }}
+          </option>
+        </select>
+      </div>
       <div class="product-name">
         <label for="name">품명</label>
         <input
@@ -58,110 +72,29 @@ const changeStock = (field) => {
           v-model="product.name"
         />
       </div>
-      <div class="product-price">
-        <div>
-          <label for="price">가격</label>
-        </div>
-        <div id="price">
-          <div class="price">
-            <label for="regularPrice">정가</label>
-            <div>
-              <input
-                type="text"
-                id="regularPrice"
-                placeholder="정가를 입력하세요"
-                class="product-price-input"
-                :value="product.formatRegular"
-                @input="
-                  (e) => {
-                    product.formatRegular = e.target.value
-                    changeInput('formatRegular')
-                  }
-                "
+      <div class="product-stock">
+        <label for="stock">구성</label>
+        <div id="stock" class="stocks">
+          <div v-for="(product, i) in products" :key="i" class="card">
+            <div class="option-part">
+              <product-option
+                :name="product.name"
+                :stock="product.stock"
+                :price="product.price"
+                :discountPrice="product.discountPrice"
+                :per="product.per"
+                @name="(e) => (product.name = e)"
+                @stock="(e) => (product.stock = e)"
+                @price="(e) => (product.price = e)"
+                @discountPrice="(e) => (product.discountPrice = e)"
+                @per="(e) => (product.per = e)"
               />
-              <span>원</span>
+            </div>
+            <div class="remove-part">
+              <button class="remove-btn" @click="removeOption(i)">ㅡ</button>
             </div>
           </div>
-
-          <div class="price">
-            <label for="discountPrice">할인가</label>
-            <input
-              type="number"
-              class="product-percent-input"
-              @input="(e) => discount(e.target.value)"
-            />%
-            <input
-              type="text"
-              id="discountPrice"
-              placeholder="할인가를 입력하세요"
-              class="product-price-input"
-              :value="product.formatDiscPrice"
-              @input="
-                (e) => {
-                  product.formatDiscPrice = e.target.value
-                  changeDiscount('formatDiscPrice')
-                }
-              "
-            />원
-          </div>
-          <div class="discount-btn">
-            <button @click="discount(5)" class="price-btn">5%</button>
-            <button @click="discount(10)" class="price-btn">10%</button>
-            <button @click="discount(15)" class="price-btn">15%</button>
-          </div>
-        </div>
-      </div>
-      <div class="product-stock">
-        <label for="stock">재고</label>
-        <div id="stock" class="stocks">
-          <div class="stock-option">
-            <label for="option1">구성1</label>
-            <input
-              type="text"
-              id="option1"
-              placeholder="개수 입력"
-              class="product-price-input"
-              :value="product.formatOption1"
-              @input="
-                (e) => {
-                  product.formatOption1 = e.target.value
-                  changeStock('formatOption1')
-                }
-              "
-            />개
-          </div>
-          <div class="stock-option">
-            <label for="option2">구성2</label>
-            <input
-              type="text"
-              id="option2"
-              placeholder="개수 입력"
-              class="product-price-input"
-              :value="product.formatOption2"
-              @input="
-                (e) => {
-                  product.formatOption2 = e.target.value
-                  changeStock('formatOption2')
-                }
-              "
-            />개
-          </div>
-          <div class="stock-option">
-            <label for="option3">구성3</label>
-            <input
-              type="text"
-              id="option3"
-              placeholder="개수 입력"
-              class="product-price-input"
-              :value="product.formatOption3"
-              @input="
-                (e) => {
-                  product.formatOption3 = e.target.value
-                  changeStock('formatOption3')
-                }
-              "
-            />개
-          </div>
+          <button @click="addOption" class="add-btn">옵션 추가</button>
         </div>
       </div>
     </div>
@@ -170,25 +103,43 @@ const changeStock = (field) => {
 
 <style lang="scss" scoped>
 .content {
-  @include box(95%, 100%, none, 0, 0.3rem, 0.1rem);
+  @include box(100%, 100%, none, 0, 0, 0);
   @include flex-box($align: center, $direction: column);
   @include font-factory($fs-1, null);
   margin-top: 2rem;
 
   .product-input {
-    @include box(95%, 95%, none, 0, 0.3rem, 0.1rem);
+    width: 100%;
+    height: 100%;
 
     label {
-      margin-right: 1rem;
+      width: 8%;
       font-size: $fs-2;
       font-weight: bold;
+    }
+    .product-category {
+      @include box(95%, 100%, none, 0, 0.1rem, 0.3rem);
+      @include flex-box($justify: flex-start);
+
+      select {
+        width: 150px;
+        height: 100%;
+        background-size: 20px;
+        padding: 5px 30px 5px 10px;
+        border-radius: 4px;
+        outline: 0 none;
+        border: 0.5px solid $light-dark;
+      }
+      select option {
+        background: $main;
+        color: #fff;
+        padding: 3px 0;
+      }
     }
     .product-name {
       @include box(95%, 100%, none, 0, 0.1rem, 0.3rem);
       @include flex-box($justify: flex-start);
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid $main;
+
       .product-name-input {
         @include box(40%, 2rem, $light-gray, 0.3rem, 0, 0.1rem);
         border: none;
@@ -198,77 +149,54 @@ const changeStock = (field) => {
       }
     }
 
-    .product-price {
-      @include box(95%, 100%, none, 0, 0.1rem, 0.3rem);
-      @include flex-box(flex-start, flex-start);
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid $main;
-      .price {
-        @include box(100%, null, none, 0, 0.1rem, 0.1rem);
-        @include flex-box(center, space-between);
-        padding-bottom: 0.4rem;
-        border-bottom: 1px solid $main;
-        margin-right: 1rem;
-
-        span {
-          margin-left: 0.3rem;
-        }
-        label {
-          font-size: $fs-1;
-          font-weight: normal;
-        }
-
-        .product-percent-input {
-          @include box(3rem, 2rem, $light-gray, 0, 0.1rem, 0.1rem);
-          border: none;
-          outline: none;
-          text-align: right;
-        }
-      }
-    }
-    .discount-btn {
-      display: flex;
-      justify-content: space-between;
-      padding: 0 3rem;
-    }
-    .price-btn {
-      border: none;
-      background-color: white;
-      border-radius: 0.2rem;
-      color: $main;
-      cursor: pointer;
-    }
-
-    .product-price-input {
-      @include box(10rem, 2rem, $light-gray, 0.3rem, 0.1rem, 0.1rem);
-      border: none;
-      outline: none;
-      text-align: right;
-      padding-right: 0.3rem;
-    }
     .product-stock {
       @include box(95%, 100%, none, 0, 0.1rem, 0.3rem);
-      @include flex-box(flex-start, flex-start);
+      display: flex;
       margin-bottom: 1rem;
       padding-bottom: 2rem;
-      border-bottom: 2px solid $main;
+      label {
+        width: 8%;
+        font-size: $fs-2;
+        font-weight: bold;
+      }
       .stocks {
-        label {
-          font-size: $fs-1;
-          font-weight: normal;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        .card {
+          @include box(100%, 100%, white, 0.625rem, 0.3rem, 0);
+          @include drop-shadow;
+          display: flex;
+          justify-content: center;
+          .option-part {
+            display: flex;
+            width: 100%;
+          }
+
+          .remove-part {
+            width: 8%;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            .remove-btn {
+              @include box(2rem, 2rem, white, 50%, 0.1rem, 0.2rem);
+              cursor: pointer;
+              color: $main;
+              border: 1px solid $main;
+            }
+          }
         }
-        .stock-option {
-          border-bottom: 1px solid $main;
-          padding-top: 0.3rem;
-          padding-bottom: 0.4rem;
+        .add-btn {
+          @include box(100%, 100%, white, 0.3rem, 0.1rem, 0.1rem);
+          cursor: pointer;
+          border: 1px solid #d9d9d9;
+          color: #ababab;
+          font-weight: 500;
         }
       }
     }
-  }
-
-  .editor-body {
-    @include box(95%, 95%, $light-gray, 0, 0.3rem, 0);
   }
 }
 </style>

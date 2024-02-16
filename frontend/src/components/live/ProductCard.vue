@@ -7,7 +7,7 @@ defineProps({
 <template>
   <div class="card">
     <div
-      :style="{ background: `center / cover url(${product?.thumbnail}) no-repeat` }"
+      :style="{ background: `center / cover url(${product?.productThumbnailUrl}) no-repeat` }"
       class="thumbnail"
     ></div>
     <div class="right">

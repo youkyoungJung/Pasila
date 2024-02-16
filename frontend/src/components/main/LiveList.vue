@@ -1,60 +1,78 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watchEffect, watch, onMounted } from 'vue'
+import { getPopularLiveApi, getVideosApi } from '@/components/api/SummaryAPI'
 import VideoCard from '@/components/common/VideoCard.vue'
 import ToggleButton from '@/components/common/ToggleButton.vue'
+import router from '@/router'
 
-//라이브, 숏핑 확인하고
-//받아오면 정렬대로 뿌리기
-const videos = ref([
-  {
-    src: new URL('@/assets/img/main-sample3.png', import.meta.url).href,
-    profile: new URL('@/assets/img/rose.jpg', import.meta.url).href,
-    name: '로제제',
-    title: '꿀보이스 만들어 주는 배 도라지 차',
-    price: '36,000',
-    discountPrice: '20,000'
-  },
-  {
-    src: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profile: new URL('@/assets/img/karina.jpg', import.meta.url).href,
-    name: '카리나나',
-    title: '겨울에 필수! 앙고라 니트',
-    price: '36,000',
-    discountPrice: '20,000'
-  },
-  {
-    src: new URL('@/assets/img/main-sample2.png', import.meta.url).href,
-    profile: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-    name: '김제니',
-    title: '제니도 쓴다는 그 스킨',
-    price: '18,000',
-    discountPrice: '15,000'
-  },
-  {
-    src: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profile: new URL('@/assets/img/jenny.jpg', import.meta.url).href,
-    name: '김가을',
-    title: '겨울에 필수! 앙고라 니트',
-    price: '36,000',
-    discountPrice: '20,000'
-  },
-  {
-    src: new URL('@/assets/img/main-sample3.png', import.meta.url).href,
-    profile: new URL('@/assets/img/rose.jpg', import.meta.url).href,
-    name: '로제제',
-    title: '꿀보이스 만들어 주는 배 도라지 차',
-    price: '36,000',
-    discountPrice: '20,000'
-  },
-  {
-    src: new URL('@/assets/img/main-sample.png', import.meta.url).href,
-    profile: new URL('@/assets/img/karina.jpg', import.meta.url).href,
-    name: '카리나나',
-    title: '겨울에 필수! 앙고라 니트',
-    price: '36,000',
-    discountPrice: '20,000'
+const latestShortping = ref([])
+const popularShortping = ref([])
+const latestLive = ref([])
+const popularLive = ref([])
+const top5Shortping = ref([])
+
+const props = defineProps(['categoryIndex'])
+const selected = ref('popular')
+const isLive = ref(true)
+const categoryIndex = ref(props.categoryIndex)
+const videos = ref([])
+
+onMounted(() => {
+  getDatas()
+})
+
+const getDatas = async () => {
+  const res = await getVideosApi(0)
+  top5Shortping.value = res.top5Shortping
+  latestShortping.value = res.latestShortping
+  popularShortping.value = res.popularShortping
+  const resp = await getPopularLiveApi(0)
+  latestLive.value = resp.latestLives
+  popularLive.value = resp.popularLives
+
+  videos.value = popularLive.value
+}
+
+//라이브, 쇼핑 토글
+watch(isLive, () => {
+  videoValue()
+})
+
+//카테고리 변경시
+watchEffect(async () => {
+  categoryIndex.value = props.categoryIndex
+  if (isLive.value) {
+    const resp = await getPopularLiveApi(categoryIndex.value)
+    latestLive.value = resp.latestLives
+    popularLive.value = resp.popularLives
+  } else {
+    const res = await getVideosApi(categoryIndex.value)
+    latestShortping.value = res.latestShortping
+    popularShortping.value = res.popularShortping
   }
-])
+  videoValue()
+})
+
+//최신순, 인기순
+const toggle = async (e) => {
+  selected.value = e.target.value
+  videoValue()
+}
+
+const videoValue = () => {
+  if (!isLive.value && selected.value == 'popular') videos.value = popularShortping.value
+  else if (!isLive.value && selected.value == 'new') videos.value = latestShortping.value
+  else if (isLive.value && selected.value == 'popular') videos.value = popularLive.value
+  else if (isLive.value && selected.value == 'new') videos.value = latestLive.value
+}
+
+const goVideo = (video) => {
+  if (video.on) {
+    router.push(`/live/${video.liveId}`)
+  } else {
+    router.push(`/replay/${video.liveId}`)
+  }
+}
 </script>
 
 <template>
@@ -65,11 +83,15 @@ const videos = ref([
         <span class="subtitle">원하는 상품을 찾아보세요!</span>
       </div>
       <div class="order-type">
-        <toggle-button />
+        <toggle-button
+          :isLive="isLive"
+          @clickShortping="() => (isLive = false)"
+          @clickLive="() => (isLive = true)"
+        />
         <div>
           <form action="#">
-            <select name="orders" id="order" class="select-type">
-              <option value="popular">인기순</option>
+            <select name="orders" id="order" class="select-type" @change="toggle">
+              <option value="popular" selected>인기순</option>
               <option value="new">최신순</option>
             </select>
           </form>
@@ -77,7 +99,7 @@ const videos = ref([
       </div>
       <div class="video-container">
         <template v-for="(video, i) in videos" :key="i">
-          <video-card :video="video" />
+          <video-card :video="video" @click="goVideo(video)" />
         </template>
       </div>
     </div>
@@ -91,17 +113,13 @@ const videos = ref([
 
   .running {
     @include box(90%, 100%, null, 0, 5px, 5px);
-    @include flex-box($align: center, $direction: column);
+    @include flex-box($align: flex-start, $direction: column);
 
     .title {
       @include font-factory($fs-4, bold);
-      @include box(100%, null, null, 0, 0, 0);
-      @include flex-box($align: flex-end, $justify: flex-start);
       .subtitle {
-        display: inline-block;
-        font-size: 13px;
+        @include font-factory($fs-1, 400);
         margin-left: 5px;
-        line-height: 28px;
       }
     }
 
@@ -119,6 +137,7 @@ const videos = ref([
         color: white;
         text-align: center;
         border: 1px solid $main;
+        outline: none;
 
         option {
           background-color: white;
@@ -131,7 +150,7 @@ const videos = ref([
 
     .video-container {
       @include box(100%, 90%, null, 0, 5px, 10px);
-      @include flex-box(flex-start);
+      @include flex-box(flex-start, null);
       overflow: hidden;
       flex-wrap: wrap;
     }
