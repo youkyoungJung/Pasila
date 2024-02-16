@@ -30,8 +30,10 @@ const getPictures = async () => {
   store.videoURL = res.liveUrl
 }
 let video = ref('')
+let flag = ref(false)
 
 const preview = async () => {
+  flag.value = true
   await ffmpeg.load({
     coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
     wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
@@ -123,9 +125,11 @@ const addHighlight = () => {
         </div>
       </div>
     </div>
-    <video controls width="400" height="300" :src="video">
-      <source :src="video" type="video/mp4" id="test" />
-    </video>
+    <div v-if="flag">
+      <video controls width="400" height="300" :src="video">
+        <source :src="video" type="video/mp4" id="test" />
+      </video>
+    </div>
   </div>
 </template>
 
