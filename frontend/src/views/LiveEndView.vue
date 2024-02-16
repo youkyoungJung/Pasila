@@ -14,7 +14,9 @@ const { liveendInfo } = useLiveendStore()
       <p>좋아요 수: {{ liveendInfo.likeCnt }}개</p>
     </div>
     <button @click="() => router.push('/')" class="home">홈 화면</button>
-    <button @click="() => router.push(`/channel/${member.id}`)" class="channel">내 채널</button>
+    <button @click="() => router.push(`/channel/${localStorage.getItem('id')}`)" class="channel">
+      내 채널
+    </button>
   </div>
 </template>
 
