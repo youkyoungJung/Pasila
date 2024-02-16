@@ -125,7 +125,7 @@ const addHighlight = () => {
         </div>
       </div>
     </div>
-    <div v-if="flag">
+    <div v-if="flag" style="display: none">
       <video controls width="400" height="300" :src="video">
         <source :src="video" type="video/mp4" id="test" />
       </video>
