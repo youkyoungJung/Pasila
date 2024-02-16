@@ -27,7 +27,7 @@ const scrollBottom = () => {
   <div class="live-chat-box">
     <div class="live-chat" ref="liveChat">
       <div class="chat-line" v-for="(item, index) in chatList" :key="index">
-        <span class="profile" :style="{ backgroundImage: item.profile }"></span>
+        <!-- <span class="profile" :style="{ backgroundImage: item.profile }"></span> -->
         <div class="chat-box">
           <span class="name">{{ item.name }}</span>
           <div class="content">{{ item.message }}</div>
